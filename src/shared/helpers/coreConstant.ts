@@ -36,8 +36,20 @@ export const coreConstant = {
   STREAM_EVENT: {
     CHAT: 'chat',
     SCREEN_GENERATE: 'screen_generate',
+    INTENT_ANALYSIS: 'intent_analysis',
+    AI_THINKING: 'ai_thinking',
+    STATUS_UPDATE: 'status_update',
+    THINKING_STEP: 'thinking_step',
+    TOOL_USE: 'tool_use',
+    PLANNING: 'planning',
+    PLANNING_COMPLETE: 'planning_complete',
+    SCREEN_START: 'screen_start',
+    SCREEN_COMPLETE: 'screen_complete',
     SCREEN_UPDATE: 'screen_update',
     SCREEN_DELETE: 'screen_delete',
+    SCREEN_ERROR: 'screen_error',
+    AGENT_STEP: 'agent_step',
+    ALL_COMPLETE: 'all_complete',
   } as const,
 
   // Post Status

@@ -1,0 +1,88 @@
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  Query,
+  Post,
+  Body,
+  Sse,
+  Patch,
+} from '@nestjs/common';
+import { DesignsChatService } from './designs-chat.service';
+import { DesignsService } from './designs.service';
+import { UserInfo } from 'src/shared/decorators/user.decorators';
+import { User } from '@prisma/client';
+import { ResponseModel } from 'src/shared/models/response.model';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+@Controller('designs')
+export class DesignsController {
+  constructor(
+    private readonly designsChatService: DesignsChatService,
+    private readonly designsService: DesignsService,
+  ) {}
+
+  @Get()
+  async getAllDesigns(
+    @UserInfo() user: User,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 10,
+    @Query('sortBy') sortBy = 'createdAt',
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'desc',
+  ): Promise<ResponseModel> {
+    return this.designsService.getAllDesigns(user.id, {
+      page: Number(page),
+      pageSize: Number(pageSize),
+      orderBy: { [sortBy]: sortOrder },
+    });
+  }
+
+  @Get(':id')
+  async getDesignById(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.designsService.getDesignById(id, user.id);
+  }
+
+  @Post('conversations')
+  async createDesignConversation(
+    @Body() body: { title: string },
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.designsService.createDesignConversation(body.title, user.id);
+  }
+
+  @Patch(':id')
+  async updateDesign(
+    @Param('id') id: string,
+    @Body() body: { title?: string },
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.designsService.updateDesign(id, user.id, body);
+  }
+
+  @Delete(':id')
+  async deleteDesign(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.designsService.deleteDesign(id, user.id);
+  }
+
+  @Sse('chat/stream/:designId')
+  async chatStream(
+    @Param('designId') designId: string,
+    @Query('prompt') prompt: string,
+    @UserInfo() user: User,
+  ): Promise<Observable<any>> {
+    const source$ = await this.designsChatService.chatStream(
+      prompt,
+      user.id,
+      designId,
+    );
+    return source$.pipe(map((update: any) => ({ data: update })));
+  }
+}

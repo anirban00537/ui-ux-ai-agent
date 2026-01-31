@@ -22,6 +22,7 @@ import { SubscriptionModule } from '../subscription/subscription.module';
 import { AdminModule } from '../admin/admin.module';
 import { BlogModule } from '../blog/blog.module';
 import { ContactModule } from '../contact/contact.module';
+import { DesignsModule } from '../designs/designs.module';
 import { API_PREFIX } from 'src/shared/constants/global.constants';
 
 @Module({
@@ -45,6 +46,7 @@ import { API_PREFIX } from 'src/shared/constants/global.constants';
     AdminModule,
     BlogModule,
     ContactModule,
+    DesignsModule,
   ],
   providers: [
     {
