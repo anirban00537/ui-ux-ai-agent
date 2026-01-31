@@ -6,9 +6,4 @@ export { default as IntentAnalyzer } from './intent-analyzer';
 export { ColorPaletteGenerator } from './color-pallette-generator';
 
 // Export types
-export type {
-  ImageQuery,
-  ScreenPromptWithImages,
-  ScreenPlanWithImages,
-  FetchedImage,
-} from './artboard-creator';
+// (No additional types to export from artboard-creator currently)

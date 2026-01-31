@@ -79,13 +79,11 @@ export class DesignsChatService {
             this.prisma,
             creditManager,
             this.aiUsageService,
-            this.imagesService, // Pass ImagesService for smart image handling
           );
           const artboardUpdater = new ArtboardUpdater(
             this.prisma,
             creditManager,
             this.aiUsageService,
-            this.imagesService, // Pass ImagesService for smart image handling
           );
           const artboardDeleter = new ArtboardDeleter(this.prisma, creditManager);
           const intentAnalyzer = new IntentAnalyzer(creditManager, this.aiUsageService);
@@ -330,17 +328,6 @@ export class DesignsChatService {
             for (let i = 0; i < plan.screenPrompts.length; i += 1) {
               const sp = plan.screenPrompts[i];
               
-              // Emit status for image fetching (if there are image queries)
-              if (sp.imageQueries && sp.imageQueries.length > 0) {
-                await messenger.emit(
-                  {
-                    type: coreConstant.STREAM_EVENT.AI_THINKING,
-                    data: { message: `Fetching ${sp.imageQueries.length} image(s) for "${sp.title}"...` },
-                  },
-                  `Fetching ${sp.imageQueries.length} image(s) for "${sp.title}"...`,
-                );
-              }
-
               await messenger.emit(
                 {
                   type: coreConstant.STREAM_EVENT.SCREEN_START,

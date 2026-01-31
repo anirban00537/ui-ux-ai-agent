@@ -31,10 +31,11 @@ DESIGN SYSTEM & IMPLEMENTATION GUIDELINES (STRICT):
    - Write professional, engaging content suitable for a presentation.
    - "Lorem Ipsum" is forbidden.
 
-IMAGERY POLICY (STRICT):
-- Use Unsplash URLs: https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=1200&q=80 (High Res for slides)
-- Select high-quality, relevant IDs.
-- NEVER use placeholders.
+34. IMAGERY POLICY (STRICT):
+- Use Unsplash URLs directly: https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=1200&q=80 (High Res for slides)
+- You MUST select high-quality, relevant IDs that match the presentation's mood.
+- NEVER use placeholders or blank images.
+- Ensure the image has enough contrast or use an overlay for text readability.
 
 CONTAINER:
 - The output HTML will be rendered in a container that simulates a slide.

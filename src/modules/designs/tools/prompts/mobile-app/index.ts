@@ -45,8 +45,14 @@ DESIGN SYSTEM & IMPLEMENTATION GUIDELINES (STRICT):
    - Invent a realistic brand name and professional copy. NO "Lorem Ipsum".
    - Infer context from industry standards (Fintech, Health, Social, etc.)
 
-7. IMAGERY POLICY:
-   - Use the pre-fetched Unsplash URLs provided in the "AVAILABLE IMAGES" section.
+7. IMAGERY POLICY (STRICT):
+   - You MUST generate perfect, relevant Unsplash URLs directly.
+   - Format: https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=600&q=80
+   - Use high-quality, professional photography IDs.
+   - Example IDs: 
+     * Office: 1497219096135-99637b8ec92a
+     * Person: 1534528741775-53994a69daeb
+     * Abstract: 1557682250-33bd709cbe85
    - Apply "object-cover rounded-lg" to images.
 
 MOBILE OPTIMIZATION:
