@@ -11,12 +11,14 @@ import { coreConstant } from '../../shared/helpers/coreConstant';
 import { StreamMessenger } from './tools/stream-messenger';
 import { CreditManager } from './tools/credit-manager';
 import { AiUsageService } from '../subscription/services/ai-usage.service';
+import { ImagesService } from '../images/images.service';
 
 @Injectable()
 export class DesignsChatService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly aiUsageService: AiUsageService,
+    private readonly imagesService: ImagesService,
   ) {}
 
   async chatStream(
@@ -72,8 +74,19 @@ export class DesignsChatService {
             messenger.setDesignId(designId);
           }
 
-          const artboardCreator = new ArtboardCreator(this.prisma, creditManager, this.aiUsageService);
-          const artboardUpdater = new ArtboardUpdater(this.prisma, creditManager, this.aiUsageService);
+          // Initialize tools with ImagesService for smart image fetching
+          const artboardCreator = new ArtboardCreator(
+            this.prisma,
+            creditManager,
+            this.aiUsageService,
+            this.imagesService, // Pass ImagesService for smart image handling
+          );
+          const artboardUpdater = new ArtboardUpdater(
+            this.prisma,
+            creditManager,
+            this.aiUsageService,
+            this.imagesService, // Pass ImagesService for smart image handling
+          );
           const artboardDeleter = new ArtboardDeleter(this.prisma, creditManager);
           const intentAnalyzer = new IntentAnalyzer(creditManager, this.aiUsageService);
           const colorPaletteGenerator = new ColorPaletteGenerator(creditManager, this.aiUsageService);
@@ -313,6 +326,18 @@ export class DesignsChatService {
 
             for (let i = 0; i < plan.screenPrompts.length; i += 1) {
               const sp = plan.screenPrompts[i];
+              
+              // Emit status for image fetching (if there are image queries)
+              if (sp.imageQueries && sp.imageQueries.length > 0) {
+                await messenger.emit(
+                  {
+                    type: coreConstant.STREAM_EVENT.AI_THINKING,
+                    data: { message: `Fetching ${sp.imageQueries.length} image(s) for "${sp.title}"...` },
+                  },
+                  `Fetching ${sp.imageQueries.length} image(s) for "${sp.title}"...`,
+                );
+              }
+
               await messenger.emit(
                 {
                   type: coreConstant.STREAM_EVENT.SCREEN_START,
@@ -322,8 +347,9 @@ export class DesignsChatService {
                 `Generating screen "${sp.title}"...`,
               );
 
+              // Pass the full sp object which includes imageQueries from planning
               const screen = await artboardCreator.generateArtboard(
-                { title: sp.title, prompt: sp.prompt },
+                sp, // Now includes title, prompt, order, and imageQueries
                 prompt,
                 contextMessages,
                 colorPalette ?? undefined,
