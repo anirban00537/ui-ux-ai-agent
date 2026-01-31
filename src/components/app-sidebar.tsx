@@ -42,7 +42,7 @@ import {
 // Navigation items
 const navItems = [
   { title: "Home", url: "/home", icon: IconDashboard },
-  { title: "My Presentations", url: "/my-docs", icon: IconFileText },
+  { title: "My Designs", url: "/my-designs", icon: IconFileText },
   { title: "Media", url: "/media", icon: IconPhoto },
   { title: "Pricing", url: "/pricing", icon: IconSparkles },
 ];

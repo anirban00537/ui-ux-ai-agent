@@ -1,5 +1,6 @@
 export * from "./use-auth";
 export * from "./use-blog";
+export * from "./use-designs";
 export * from "./use-images";
 export * from "./use-layouts";
 export * from "./use-mobile";
