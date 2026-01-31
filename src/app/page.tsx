@@ -11,7 +11,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen h-full w-full bg-white dark:bg-zinc-950">
+      <main className="min-h-screen h-full w-full bg-background">
         <HeroSection />
         <FeaturesSection />
         <HowItWorksSection />

@@ -34,11 +34,11 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   if (!post) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white pt-20">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background pt-20">
         <Navbar />
         <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-xl mb-6 text-slate-500">Post not found.</p>
-        <Link href="/blog" className="text-base underline underline-offset-4 hover:text-slate-600 transition-colors">
+        <p className="text-xl mb-6 text-muted-foreground">Post not found.</p>
+        <Link href="/blog" className="text-base underline underline-offset-4 hover:text-foreground transition-colors">
             Back to stories
         </Link>
       </div>
@@ -46,7 +46,7 @@ export default async function BlogPostPage({ params }: PageProps) {
   }
 
   return (
-    <article className="min-h-screen bg-white pt-10">
+    <article className="min-h-screen bg-background pt-10">
       {/* Featured Image - Full Width Hero */}
       {post.featuredImg && (
         <div className="w-full">
@@ -62,7 +62,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       <div className="max-w-[900px] mx-auto px-6 py-12">
         {/* Back Link */}
-        <Link href="/blog" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors mb-8 group">
+        <Link href="/blog" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8 group">
           <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
           <span className="text-sm font-medium">Back to Blog</span>
         </Link>
@@ -77,20 +77,20 @@ export default async function BlogPostPage({ params }: PageProps) {
         )}
 
         {/* Title */}
-        <h1 className="text-3xl md:text-5xl font-bold text-slate-900 leading-[1.15] tracking-tight mb-6">
+        <h1 className="text-3xl md:text-5xl font-bold text-foreground leading-[1.15] tracking-tight mb-6">
           {post.title}
         </h1>
 
         {/* Subtitle/Excerpt */}
         {post.excerpt && (
-          <p className="text-lg md:text-xl text-slate-500 leading-relaxed mb-8">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
             {post.excerpt}
           </p>
         )}
 
         {/* Author Section */}
-        <div className="flex items-center gap-4 pb-8 border-b border-slate-100 mb-10">
-          <div className="w-12 h-12 rounded-full bg-slate-100 overflow-hidden flex-shrink-0">
+        <div className="flex items-center gap-4 pb-8 border-b border-border mb-10">
+          <div className="w-12 h-12 rounded-full bg-muted overflow-hidden flex-shrink-0">
             {post.author.image ? (
               <img src={post.author.image} alt={post.author.name} className="w-full h-full object-cover" />
             ) : (
@@ -100,11 +100,11 @@ export default async function BlogPostPage({ params }: PageProps) {
             )}
           </div>
           <div className="flex-1">
-            <p className="font-semibold text-slate-900">
+            <p className="font-semibold text-foreground">
               {post.author.name}
             </p>
 
-            <div className="flex items-center gap-2 text-sm text-slate-500">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>{format(new Date(post.publishedAt), "MMMM d, yyyy")}</span>
               <span>•</span>
               <span className="flex items-center gap-1">
@@ -116,31 +116,31 @@ export default async function BlogPostPage({ params }: PageProps) {
         </div>
 
         {/* Content */}
-        <div className="prose prose-lg max-w-none 
-          prose-p:text-slate-700 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
-          prose-headings:text-slate-900 prose-headings:font-bold prose-headings:tracking-tight
+        <div className="prose prose-lg prose-invert max-w-none 
+          prose-p:text-foreground/90 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6
+          prose-headings:text-foreground prose-headings:font-bold prose-headings:tracking-tight
           prose-h1:text-3xl prose-h1:mt-12 prose-h1:mb-4
           prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
           prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-          prose-strong:text-slate-900 prose-strong:font-semibold
+          prose-strong:text-foreground prose-strong:font-semibold
           prose-a:text-primary prose-a:underline prose-a:underline-offset-2 hover:prose-a:text-primary/80
-          prose-blockquote:border-l-4 prose-blockquote:border-primary/30 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-slate-600
+          prose-blockquote:border-l-4 prose-blockquote:border-primary/30 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-muted-foreground
           prose-img:rounded-xl prose-img:my-8 prose-img:shadow-lg
           prose-ul:my-6 prose-ol:my-6
-          prose-li:text-lg prose-li:leading-relaxed prose-li:text-slate-700
-          prose-code:bg-slate-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-slate-800
-          prose-pre:bg-slate-900 prose-pre:rounded-xl prose-pre:p-6
+          prose-li:text-lg prose-li:leading-relaxed prose-li:text-foreground/90
+          prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono prose-code:text-foreground
+          prose-pre:bg-muted prose-pre:rounded-xl prose-pre:p-6
         ">
           <MarkdownReader content={post.content.body || post.content} />
         </div>
 
         {/* Tags */}
         {post.metaKeywords && (
-          <div className="mt-16 pt-8 border-t border-slate-100">
-            <p className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Topics</p>
+          <div className="mt-16 pt-8 border-t border-border">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Topics</p>
             <div className="flex flex-wrap gap-2">
               {post.metaKeywords.split(',').map((kw: string, i: number) => (
-                <Badge key={i} className="bg-slate-100 hover:bg-slate-200 text-slate-700 border-none rounded-full px-4 py-2 text-sm font-medium cursor-pointer transition-colors">
+                <Badge key={i} className="bg-muted hover:bg-muted/80 text-foreground border border-border rounded-full px-4 py-2 text-sm font-medium cursor-pointer transition-colors">
                   {kw.trim()}
                 </Badge>
               ))}
@@ -149,9 +149,9 @@ export default async function BlogPostPage({ params }: PageProps) {
         )}
 
         {/* Author Footer */}
-        <div className="mt-12 p-8 bg-slate-50 rounded-2xl">
+        <div className="mt-12 p-8 bg-card rounded-2xl border border-border">
           <div className="flex items-start gap-5">
-            <div className="w-16 h-16 rounded-full bg-slate-100 overflow-hidden flex-shrink-0">
+            <div className="w-16 h-16 rounded-full bg-muted overflow-hidden flex-shrink-0">
               {post.author.image ? (
                 <img src={post.author.image} alt={post.author.name} className="w-full h-full object-cover" />
               ) : (
@@ -161,11 +161,11 @@ export default async function BlogPostPage({ params }: PageProps) {
               )}
             </div>
             <div className="flex-1">
-              <p className="text-lg font-bold text-slate-900 mb-1">
+              <p className="text-lg font-bold text-foreground mb-1">
                 {post.author.name}
               </p>
 
-              <p className="text-slate-500 text-sm leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 Sharing insights on AI, productivity, and modern storytelling. Thanks for reading!
               </p>
             </div>

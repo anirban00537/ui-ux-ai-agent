@@ -12,19 +12,7 @@ export default function HeroSection() {
   const [videoError, setVideoError] = useState(false);
 
   return (
-    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-start">
-      {/* Background Image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/hero-background-image.png"
-          alt="Hero Background"
-          fill
-          priority
-          className="object-cover object-top"
-          unoptimized
-        />
-      </div>
-
+    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-start bg-background">
       <div className="container relative z-10 px-4 flex flex-col items-center">
         {/* Headline Section */}
         <div className="text-center max-w-5xl mx-auto mb-16">
@@ -77,7 +65,7 @@ export default function HeroSection() {
               <Button
                 size="lg"
                 onClick={() => trackEvent('button_click', 'engagement', 'hero_cta_start_creating')}
-                className="h-14 px-8 rounded-full text-lg bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 shadow-xl shadow-zinc-200/50 dark:shadow-none transition-all duration-300"
+                className="h-14 px-8 rounded-full text-lg bg-white text-zinc-900 hover:bg-zinc-100 shadow-xl transition-all duration-300"
               >
                 <IconSparkles className="mr-2 h-5 w-5" />
                 Start Creating Free

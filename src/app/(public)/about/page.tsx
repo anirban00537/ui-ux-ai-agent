@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { FooterSection } from "@/components/sections/footer-section";
 import { motion } from "framer-motion";
@@ -74,20 +73,8 @@ export default function AboutPage() {
     return (
         <>
             <Navbar />
-            <main className="relative min-h-screen overflow-auto">
-                {/* Fixed Background Image */}
-                <div className="fixed inset-0 z-0 opacity-50 pointer-events-none">
-                    <Image
-                        src="/hero-background-image.png"
-                        alt="Background"
-                        fill
-                        className="object-cover"
-                        priority
-                        unoptimized
-                    />
-                </div>
-
-                <div className="relative z-10">
+            <main className="relative min-h-screen overflow-auto bg-background">
+                <div>
                     {/* Hero Section */}
                     <section className="relative pt-32 pb-24">
                     <div className="container mx-auto px-4 relative z-10">
@@ -156,18 +143,18 @@ export default function AboutPage() {
                                         <motion.div 
                                             animate={{ y: [0, -10, 0] }}
                                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                                            className="absolute top-0 left-0 w-3/4 p-6 bg-white rounded-3xl shadow-xl border border-slate-100"
+                                            className="absolute top-0 left-0 w-3/4 p-6 bg-card rounded-3xl shadow-xl border border-border"
                                         >
                                             <div className="flex items-center gap-3 mb-4">
                                                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
                                                     <IconSparkles size={20} className="text-white" />
                                                 </div>
-                                                <div className="h-3 w-24 bg-slate-200 rounded-full" />
+                                                <div className="h-3 w-24 bg-muted rounded-full" />
                                             </div>
                                             <div className="space-y-2">
-                                                <div className="h-2 w-full bg-slate-100 rounded-full" />
-                                                <div className="h-2 w-4/5 bg-slate-100 rounded-full" />
-                                                <div className="h-2 w-3/5 bg-slate-100 rounded-full" />
+                                                <div className="h-2 w-full bg-muted rounded-full" />
+                                                <div className="h-2 w-4/5 bg-muted rounded-full" />
+                                                <div className="h-2 w-3/5 bg-muted rounded-full" />
                                             </div>
                                         </motion.div>
 
@@ -177,7 +164,7 @@ export default function AboutPage() {
                                             className="absolute bottom-0 right-0 w-3/4 p-6 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl border border-primary/20 backdrop-blur-sm"
                                         >
                                             <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                                                <div className="w-10 h-10 rounded-xl bg-card shadow-sm border border-border flex items-center justify-center">
                                                     <IconBrain size={20} className="text-primary" />
                                                 </div>
                                                 <div className="h-3 w-20 bg-primary/20 rounded-full" />
@@ -264,7 +251,7 @@ export default function AboutPage() {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="group relative p-8 rounded-3xl bg-white border border-slate-100 hover:border-slate-200 hover:shadow-xl transition-all duration-500"
+                                    className="group relative p-8 rounded-3xl bg-card border border-border hover:border-primary/20 hover:shadow-xl transition-all duration-500"
                                 >
                                     <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                                         <feature.icon size={28} className="text-white" />
@@ -315,7 +302,7 @@ export default function AboutPage() {
                                     transition={{ delay: idx * 0.1 }}
                                     className="text-center group"
                                 >
-                                    <div className="w-16 h-16 rounded-2xl bg-white shadow-lg border border-slate-100 flex items-center justify-center mx-auto mb-5 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
+                                    <div className="w-16 h-16 rounded-2xl bg-card shadow-lg border border-border flex items-center justify-center mx-auto mb-5 group-hover:scale-110 group-hover:shadow-xl transition-all duration-300">
                                         <value.icon size={28} className={value.color} />
                                     </div>
                                     <h3 className="text-lg font-bold mb-2 text-foreground">{value.title}</h3>
@@ -335,22 +322,9 @@ export default function AboutPage() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="max-w-4xl mx-auto text-center p-12 md:p-16 rounded-[32px] relative overflow-hidden shadow-2xl"
+                            className="max-w-4xl mx-auto text-center rounded-[32px] relative overflow-hidden shadow-2xl"
                         >
-                            {/* Banner Background Image */}
-                            <div className="absolute inset-0 z-0">
-                                <Image
-                                    src="/banner-background.png"
-                                    alt="Banner Background"
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                />
-                                {/* Optional overlay for better text contrast if needed */}
-                                <div className="absolute inset-0 bg-white/10" />
-                            </div>
-
-                            <div className="relative z-10">
+                            <div className="relative z-10 bg-card border border-border rounded-[32px] p-12 md:p-16">
                                 <h2 className="font-serif text-3xl md:text-5xl font-medium text-foreground mb-6">
                                     Ready to create something amazing?
                                 </h2>

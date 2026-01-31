@@ -37,7 +37,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-24 bg-sky-50 relative overflow-hidden" id="features">
+    <section className="py-24 bg-background relative overflow-hidden" id="features">
       {/* Background Subtle Elements */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
       <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
@@ -45,7 +45,7 @@ export function FeaturesSection() {
       <div className="container mx-auto px-4 relative z-10">
         {/* Header Section - Inspired by PricingSection */}
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-secondary/20 shadow-sm mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border shadow-sm mb-6">
             <span className="w-2 h-2 rounded-full bg-primary/70"></span>
             <span className="text-xs font-bold tracking-widest uppercase text-foreground/70">
               Powerful Capabilities
@@ -65,7 +65,7 @@ export function FeaturesSection() {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group p-8 rounded-3xl bg-white border border-secondary/20 shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/20 hover:bg-gradient-to-b hover:from-white hover:to-primary/5"
+              className="group p-8 rounded-3xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/20"
             >
               <div className="mb-6 inline-flex p-3 rounded-2xl bg-secondary/10 group-hover:bg-primary/10 transition-colors duration-300">
                 {feature.icon}

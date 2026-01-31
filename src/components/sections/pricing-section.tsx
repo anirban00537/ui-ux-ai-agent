@@ -11,7 +11,7 @@ export function PricingSection() {
   const displayPlans = products || [];
 
   return (
-    <section className="py-32 bg-sky-50 relative overflow-hidden" id="pricing">
+    <section className="py-32 bg-background relative overflow-hidden" id="pricing">
       {/* Background Gradients */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-secondary/30 to-transparent" />
 
@@ -20,7 +20,7 @@ export function PricingSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-secondary/20 shadow-sm mb-6"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border shadow-sm mb-6"
           >
             <span className="w-2 h-2 rounded-full bg-primary/70"></span>
             <span className="text-xs font-bold tracking-widest uppercase text-foreground/70">
@@ -39,7 +39,7 @@ export function PricingSection() {
         {isLoading && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white/50 rounded-3xl p-8 h-[450px] animate-pulse border border-secondary/10">
+              <div key={i} className="bg-card rounded-3xl p-8 h-[450px] animate-pulse border border-border">
                 <div className="h-6 w-24 bg-secondary/20 rounded mb-4" />
                 <div className="h-4 w-48 bg-secondary/10 rounded mb-8" />
                 <div className="h-12 w-32 bg-secondary/20 rounded mb-8" />

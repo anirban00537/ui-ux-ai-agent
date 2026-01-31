@@ -28,12 +28,12 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section className="py-32 bg-sky-50 overflow-hidden">
+    <section className="py-32 bg-background overflow-hidden">
       <div className="container mx-auto px-4 mb-20 text-center">
           <motion.div 
              initial={{ opacity: 0, y: 20 }}
              whileInView={{ opacity: 1, y: 0 }}
-             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-secondary/20 shadow-sm mb-6"
+             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border shadow-sm mb-6"
           >
               <span className="w-2 h-2 rounded-full bg-primary/70"></span>
               <span className="text-xs font-bold tracking-widest uppercase text-foreground/70">
@@ -61,7 +61,7 @@ export function TestimonialsSection() {
           {[...testimonials, ...testimonials].map((t, i) => (
             <div
               key={i}
-              className="relative w-[350px] md:w-[450px] p-10 bg-gradient-to-b from-white via-secondary/5 to-white rounded-2xl shadow-sm border border-secondary/10 shrink-0"
+              className="relative w-[350px] md:w-[450px] p-10 bg-card rounded-2xl shadow-sm border border-border shrink-0"
             >
               {/* Giant Quote Mark */}
               <span className="absolute top-4 left-6 text-9xl text-primary/10 font-serif leading-none select-none">

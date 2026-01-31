@@ -58,45 +58,59 @@
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #1a1a1a;
-  --card: #ffffff;
-  --card-foreground: #1a1a1a;
-  --popover: #ffffff;
-  --popover-foreground: #1a1a1a;
+  /* Dark theme by default - no theme switching */
+  --background: #1c1917;
+  --foreground: #f5f5f4;
+  --card: #292524;
+  --card-foreground: #f5f5f4;
+  --popover: #292524;
+  --popover-foreground: #f5f5f4;
   --primary: oklch(74.6% 0.16 232.661);
-  --primary-foreground: #ffffff;
-  --secondary: oklch(80.9% 0.105 251.813);
-  --secondary-foreground: #705b00;
-  --muted: #f7f2dc;
-  --muted-foreground: #5e573e;
-  --accent: #f2eabf;
-  --accent-foreground: #991b1b;
-  --destructive: #991b1b;
+  --primary-foreground: #faf7f5;
+  --secondary: oklch(60% 0.15 235);
+  --secondary-foreground: #ffffff;
+  --muted: #1f1c1a;
+  --muted-foreground: #d6d3d1;
+  --accent: oklch(55% 0.18 240);
+  --accent-foreground: #e0f2fe;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #f2eabf;
-  --input: #f2eabf;
+  --border: #44403c;
+  --input: #44403c;
   --ring: oklch(74.6% 0.16 232.661);
   --chart-1: oklch(74.6% 0.16 232.661);
   --chart-2: oklch(74.6% 0.16 232.661);
-  --chart-3: #f6e58d;
-  --chart-4: #f9ca24;
-  --chart-5: #f0932b;
-  --sidebar: #f7f2dc;
-  --sidebar-foreground: #1a1a1a;
+  --chart-3: oklch(60% 0.15 235);
+  --chart-4: #f7d76a;
+  --chart-5: #e89b3f;
+  --sidebar: #1c1917;
+  --sidebar-foreground: #f5f5f4;
   --sidebar-primary: oklch(74.6% 0.16 232.661);
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: oklch(80.9% 0.105 251.813);
-  --sidebar-accent-foreground: #705b00;
-  --sidebar-border: #f2eabf;
+  --sidebar-primary-foreground: #faf7f5;
+  --sidebar-accent: oklch(55% 0.18 240);
+  --sidebar-accent-foreground: #e0f2fe;
+  --sidebar-border: #44403c;
   --sidebar-ring: oklch(74.6% 0.16 232.661);
   --font-sans: var(--font-poppins), sans-serif;
   --font-serif: var(--font-libre), serif;
   --font-mono: "IBM Plex Mono", monospace;
-  --radius: 0.75rem;
+  --radius: 0.375rem;
 
   /* Effortless Silk Shadow System */
-  --shadow-color: 0deg 0% 63%;
+  --shadow-x: 1px;
+  --shadow-y: 1px;
+  --shadow-blur: 16px;
+  --shadow-spread: -2px;
+  --shadow-opacity: 0.12;
+  --shadow-color: hsl(0 63% 18%);
+  --shadow-2xs: 1px 1px 16px -2px hsl(0 63% 18% / 0.06);
+  --shadow-xs: 1px 1px 16px -2px hsl(0 63% 18% / 0.06);
+  --shadow-sm: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 1px 2px -3px hsl(0 63% 18% / 0.12);
+  --shadow: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 1px 2px -3px hsl(0 63% 18% / 0.12);
+  --shadow-md: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 2px 4px -3px hsl(0 63% 18% / 0.12);
+  --shadow-lg: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 4px 6px -3px hsl(0 63% 18% / 0.12);
+  --shadow-xl: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 8px 10px -3px hsl(0 63% 18% / 0.12);
+  --shadow-2xl: 1px 1px 16px -2px hsl(0 63% 18% / 0.30);
   --shadow-depth-1: 0 1px 2px -1px hsl(var(--shadow-color) / 0.1), 0 1px 3px 0 hsl(var(--shadow-color) / 0.1);
   --shadow-depth-2: 0 4px 6px -1px hsl(var(--shadow-color) / 0.1), 0 2px 4px -1px hsl(var(--shadow-color) / 0.06);
   --shadow-depth-3: 0 10px 15px -3px hsl(var(--shadow-color) / 0.1), 0 4px 6px -2px hsl(var(--shadow-color) / 0.05);
@@ -112,6 +126,7 @@
 }
 
 .dark {
+  /* Alias for dark variant - same as :root since app is always dark */
   --background: #1c1917;
   --foreground: #f5f5f4;
   --card: #292524;
@@ -120,12 +135,12 @@
   --popover-foreground: #f5f5f4;
   --primary: oklch(74.6% 0.16 232.661);
   --primary-foreground: #faf7f5;
-  --secondary: #92400e;
-  --secondary-foreground: oklch(80.9% 0.105 251.813);
+  --secondary: oklch(60% 0.15 235);
+  --secondary-foreground: #ffffff;
   --muted: #1f1c1a;
   --muted-foreground: #d6d3d1;
-  --accent: #b45309;
-  --accent-foreground: #ffdada;
+  --accent: oklch(55% 0.18 240);
+  --accent-foreground: #e0f2fe;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #44403c;
@@ -133,35 +148,17 @@
   --ring: oklch(74.6% 0.16 232.661);
   --chart-1: oklch(74.6% 0.16 232.661);
   --chart-2: oklch(74.6% 0.16 232.661);
-  --chart-3: oklch(80.9% 0.105 251.813);
+  --chart-3: oklch(60% 0.15 235);
   --chart-4: #f7d76a;
   --chart-5: #e89b3f;
   --sidebar: #1c1917;
   --sidebar-foreground: #f5f5f4;
   --sidebar-primary: oklch(74.6% 0.16 232.661);
   --sidebar-primary-foreground: #faf7f5;
-  --sidebar-accent: #b45309;
-  --sidebar-accent-foreground: #ffdada;
+  --sidebar-accent: oklch(55% 0.18 240);
+  --sidebar-accent-foreground: #e0f2fe;
   --sidebar-border: #44403c;
   --sidebar-ring: oklch(74.6% 0.16 232.661);
-  --font-sans: Poppins, sans-serif;
-  --font-serif: Libre Baskerville, serif;
-  --font-mono: IBM Plex Mono, monospace;
-  --radius: 0.375rem;
-  --shadow-x: 1px;
-  --shadow-y: 1px;
-  --shadow-blur: 16px;
-  --shadow-spread: -2px;
-  --shadow-opacity: 0.12;
-  --shadow-color: hsl(0 63% 18%);
-  --shadow-2xs: 1px 1px 16px -2px hsl(0 63% 18% / 0.06);
-  --shadow-xs: 1px 1px 16px -2px hsl(0 63% 18% / 0.06);
-  --shadow-sm: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 1px 2px -3px hsl(0 63% 18% / 0.12);
-  --shadow: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 1px 2px -3px hsl(0 63% 18% / 0.12);
-  --shadow-md: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 2px 4px -3px hsl(0 63% 18% / 0.12);
-  --shadow-lg: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 4px 6px -3px hsl(0 63% 18% / 0.12);
-  --shadow-xl: 1px 1px 16px -2px hsl(0 63% 18% / 0.12), 1px 8px 10px -3px hsl(0 63% 18% / 0.12);
-  --shadow-2xl: 1px 1px 16px -2px hsl(0 63% 18% / 0.30);
 }
 
 @layer base {
@@ -215,10 +212,10 @@
   outline-offset: 2px;
 }
 
-/* Custom Scrollbar Styles */
+/* Custom Scrollbar Styles - dark theme defaults */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -230,12 +227,12 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .custom-scrollbar-dark {

@@ -26,13 +26,13 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section className="py-32 relative overflow-hidden bg-sky-50">
+    <section className="py-32 relative overflow-hidden bg-background">
       <div className="container mx-auto px-4">
         <div className="mb-24 text-center max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-secondary/20 shadow-sm mb-6"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border shadow-sm mb-6"
           >
             <span className="w-2 h-2 rounded-full bg-primary/70"></span>
             <span className="text-xs font-bold tracking-widest uppercase text-foreground/70">
@@ -70,7 +70,7 @@ export function HowItWorksSection() {
                 <span className="font-serif text-[120px] leading-none text-secondary/30 select-none absolute -top-16 -left-6 z-0 mix-blend-multiply opacity-50">
                   {step.id}
                 </span>
-                <h3 className="relative z-10 text-2xl font-bold bg-gradient-to-r from-white/80 via-secondary/10 to-white/80 backdrop-blur-sm px-4 py-1 rounded-lg inline-block">
+                <h3 className="relative z-10 text-2xl font-bold px-4 py-1 inline-block">
                   {step.title}
                 </h3>
               </div>

@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState } from "react";
 import { useProducts } from "@/hooks";
 import { useAppSelector } from "@/store/hooks";
 import { selectSubscriptionStatus } from "@/store/slices/subscriptionSlice";
@@ -66,26 +65,14 @@ export default function PricingPage() {
 
   if (productsLoading) {
     return (
-      <div className="relative flex-1 min-h-screen overflow-auto">
-        {/* Fixed Background Image */}
-        <div className="fixed inset-0 z-0 opacity-50 pointer-events-none">
-          <Image
-            src="/hero-background-image.png"
-            alt="Background"
-            fill
-            className="object-cover"
-            priority
-            unoptimized
-          />
-        </div>
-        
-        <div className="relative z-10 flex flex-col items-center px-4 py-16 w-full min-h-full">
+      <div className="relative flex-1 min-h-screen overflow-auto bg-background">
+        <div className="flex flex-col items-center px-4 py-16 w-full min-h-full">
           <div className="w-full max-w-7xl">
             <PageSkeleton>
-              <Skeleton className="h-12 w-1/3 mx-auto rounded-2xl" />
+              <Skeleton className="h-12 w-1/3 mx-auto rounded-2xl border border-border" />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full pt-10">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-[500px] w-full rounded-3xl" />
+                  <Skeleton key={i} className="h-[500px] w-full rounded-3xl border border-border" />
                 ))}
               </div>
             </PageSkeleton>
@@ -107,20 +94,8 @@ export default function PricingPage() {
   });
 
   return (
-    <div className="relative flex-1 min-h-screen overflow-auto">
-      {/* Fixed Background Image */}
-      <div className="fixed inset-0 z-0 opacity-50 pointer-events-none">
-        <Image
-          src="/hero-background-image.png"
-          alt="Background"
-          fill
-          className="object-cover"
-          priority
-          unoptimized
-        />
-      </div>
-
-      <div className="relative z-10 flex flex-col items-center px-4 py-16 min-h-full w-full">
+    <div className="relative flex-1 min-h-screen overflow-auto bg-background">
+      <div className="flex flex-col items-center px-4 py-16 min-h-full w-full">
         <div className="w-full mt-16 max-w-7xl flex flex-col gap-16">
           <PricingHeader />
 

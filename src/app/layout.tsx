@@ -87,7 +87,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full dark">
       <body className={`${poppins.variable} ${libre.variable} font-sans antialiased h-full`}>
         <Providers>{children}</Providers>
         {/* Google Analytics */}

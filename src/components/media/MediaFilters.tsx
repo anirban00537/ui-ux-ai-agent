@@ -45,7 +45,7 @@ export const MediaFilters: React.FC<MediaFiltersProps> = ({
             placeholder="Search media..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 rounded-xl h-11 bg-white/60 border border-secondary/20 focus:bg-white transition-all shadow-sm"
+            className="pl-10 rounded-xl h-11 bg-card border border-border focus:bg-card transition-all shadow-sm"
         />
         {searchQuery && (
             <button
@@ -72,8 +72,8 @@ export const MediaFilters: React.FC<MediaFiltersProps> = ({
             className={cn(
                 "px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200",
                 category === cat.value
-                ? "bg-white text-foreground shadow-sm font-semibold"
-                : "text-muted-foreground hover:text-foreground hover:bg-white/50"
+                ? "bg-muted text-foreground shadow-sm font-semibold"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
             >
             {cat.label}

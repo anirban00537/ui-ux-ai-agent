@@ -11,7 +11,7 @@ export default function LoginPage() {
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-2">
       {/* Left Column - Login Form */}
-      <div className="flex flex-col justify-center items-center px-8 py-12 md:px-16 lg:px-24 bg-white dark:bg-zinc-950 relative">
+      <div className="flex flex-col justify-center items-center px-8 py-12 md:px-16 lg:px-24 bg-background relative">
         <div className="w-full max-w-sm space-y-10">
           {/* Logo & Header */}
           <div className="flex flex-col items-center text-center space-y-4">
@@ -24,10 +24,10 @@ export default function LoginPage() {
                  priority 
                />
              </Link>
-             <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+             <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 Welcome back
              </h1>
-             <p className="text-zinc-500 dark:text-zinc-400 text-sm max-w-[280px]">
+             <p className="text-muted-foreground text-sm max-w-[280px]">
                 Enter your details to access your presentations and start creating.
              </p>
           </div>
@@ -36,7 +36,7 @@ export default function LoginPage() {
           <div className="space-y-6">
             <button
               onClick={() => handleGoogleLogin()}
-              className="group flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-8 py-3.5 text-sm font-semibold text-zinc-900 shadow-sm transition-all hover:bg-zinc-50 hover:border-zinc-300 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 dark:hover:bg-zinc-900 dark:hover:border-zinc-700"
+              className="group flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-card px-8 py-3.5 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-muted hover:border-border focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             >
               <svg className="h-5 w-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24">
                 <path
@@ -61,10 +61,10 @@ export default function LoginPage() {
 
              <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+                  <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-[10px] uppercase">
-                  <span className="bg-white px-2 text-zinc-400 dark:bg-zinc-950 dark:text-zinc-500 tracking-wider font-medium">
+                  <span className="bg-background px-2 text-muted-foreground tracking-wider font-medium">
                     Secure Authentication
                   </span>
                 </div>
@@ -72,43 +72,32 @@ export default function LoginPage() {
           </div>
 
           {/* Footer Terms */}
-          <p className="text-center text-xs text-zinc-400 dark:text-zinc-500">
-             By clicking continue, you agree to our <a href="#" className="underline hover:text-zinc-900 dark:hover:text-zinc-300">Terms of Service</a> and <a href="#" className="underline hover:text-zinc-900 dark:hover:text-zinc-300">Privacy Policy</a>.
+          <p className="text-center text-xs text-muted-foreground">
+             By clicking continue, you agree to our <a href="#" className="underline hover:text-foreground">Terms of Service</a> and <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
           </p>
         </div>
       </div>
 
       {/* Right Column - Visuals */}
-      <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-black">
-        {/* Background Image */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/login-background.png"
-            alt="Abstract Background"
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-
+      <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-muted">
         <div className="relative z-10 w-full max-w-[480px] p-8">
-           <h2 className="text-4xl font-bold tracking-tight text-zinc-900 mb-12 font-serif text-center drop-shadow-sm leading-tight">
+           <h2 className="text-4xl font-bold tracking-tight text-foreground mb-12 font-serif text-center drop-shadow-sm leading-tight">
               From prompt<br/>to presentation.
            </h2>
 
            <div className="space-y-6 relative">
               {/* Connecting Line */}
-              <div className="absolute left-[27px] top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-zinc-900/10 to-transparent"></div>
+              <div className="absolute left-[27px] top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-foreground/10 to-transparent"></div>
 
               {/* Step 1 */}
-              <div className="relative group rounded-2xl bg-white/60 border border-white/60 p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-white/80 hover:shadow-md hover:translate-x-1">
+              <div className="relative group rounded-2xl bg-card/80 border border-border p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-card hover:shadow-md hover:translate-x-1">
                  <div className="flex items-start gap-5">
-                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm border border-zinc-100 group-hover:scale-110 transition-transform duration-500">
+                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-card shadow-sm border border-border group-hover:scale-110 transition-transform duration-500">
                        <span className="text-2xl filter drop-shadow-sm">💡</span>
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-zinc-900 mb-1">Describe your idea</h3>
-                       <p className="text-zinc-600 text-sm leading-relaxed font-medium">
+                       <h3 className="text-lg font-bold text-foreground mb-1">Describe your idea</h3>
+                       <p className="text-muted-foreground text-sm leading-relaxed font-medium">
                           Simply type a topic or paste your notes. Our AI understands context and structure instantly.
                        </p>
                     </div>
@@ -116,14 +105,14 @@ export default function LoginPage() {
               </div>
 
               {/* Step 2 */}
-              <div className="relative group rounded-2xl bg-white/60 border border-white/60 p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-white/80 hover:shadow-md hover:translate-x-1">
+              <div className="relative group rounded-2xl bg-card/80 border border-border p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-card hover:shadow-md hover:translate-x-1">
                  <div className="flex items-start gap-5">
-                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm border border-zinc-100 group-hover:scale-110 transition-transform duration-500">
+                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-card shadow-sm border border-border group-hover:scale-110 transition-transform duration-500">
                        <Sparkles className="w-6 h-6 text-indigo-500" />
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-zinc-900 mb-1">AI generates the deck</h3>
-                       <p className="text-zinc-600 text-sm leading-relaxed font-medium">
+                       <h3 className="text-lg font-bold text-foreground mb-1">AI generates the deck</h3>
+                       <p className="text-muted-foreground text-sm leading-relaxed font-medium">
                           Watch as layouts, images, and text are generated automatically in our premium design system.
                        </p>
                     </div>
@@ -131,14 +120,14 @@ export default function LoginPage() {
               </div>
 
               {/* Step 3 */}
-              <div className="relative group rounded-2xl bg-white/60 border border-white/60 p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-white/80 hover:shadow-md hover:translate-x-1">
+              <div className="relative group rounded-2xl bg-card/80 border border-border p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-card hover:shadow-md hover:translate-x-1">
                  <div className="flex items-start gap-5">
-                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm border border-zinc-100 group-hover:scale-110 transition-transform duration-500">
-                       <Zap className="w-6 h-6 text-teal-600" />
+                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-card shadow-sm border border-border group-hover:scale-110 transition-transform duration-500">
+                       <Zap className="w-6 h-6 text-teal-500" />
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-zinc-900 mb-1">Export & Present</h3>
-                       <p className="text-zinc-600 text-sm leading-relaxed font-medium">
+                       <h3 className="text-lg font-bold text-foreground mb-1">Export & Present</h3>
+                       <p className="text-muted-foreground text-sm leading-relaxed font-medium">
                           Download as an editable PowerPoint, PDF, or share a live link with your audience immediately.
                        </p>
                     </div>

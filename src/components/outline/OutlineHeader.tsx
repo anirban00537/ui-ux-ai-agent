@@ -34,7 +34,7 @@ export const OutlineHeader: React.FC<OutlineHeaderProps> = ({
         </div>
 
         {/* Prompt Input Area */}
-        <div className="bg-white/80 border border-secondary/10 rounded-[24px] shadow-sm p-4">
+        <div className="bg-card border border-border rounded-[24px] shadow-sm p-4">
             <PromptBox 
                 defaultValue={prompt} 
                 onSubmit={(p, n) => {

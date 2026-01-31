@@ -81,7 +81,7 @@ export const DocCard: React.FC<DocCardProps> = ({
         onClick={() => trackEvent('card_click', 'engagement', `doc_${doc.id}`)}
       >
         <div 
-          className="relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer bg-white/40 border border-secondary/20 hover:border-primary/20 hover:shadow-depth-3 hover:bg-white"
+          className="relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer bg-card border border-border hover:border-primary/20 hover:shadow-depth-3"
         >
           {/* Card Preview */}
           <div className="relative border-b border-black/5">
@@ -124,7 +124,7 @@ export const DocCard: React.FC<DocCardProps> = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              className="p-1.5 rounded-lg bg-white/80 backdrop-blur-sm border border-black/5 shadow-sm hover:bg-white transition-colors"
+              className="p-1.5 rounded-lg bg-card/90 backdrop-blur-sm border border-border shadow-sm hover:bg-card transition-colors"
               onClick={(e) => e.preventDefault()}
             >
               <IconDotsVertical size={16} className="text-foreground/70" />
@@ -132,7 +132,7 @@ export const DocCard: React.FC<DocCardProps> = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent 
             align="end"
-            className="rounded-xl border border-secondary/20 shadow-lg bg-white/95 backdrop-blur-md"
+            className="rounded-xl border border-border shadow-lg bg-card backdrop-blur-md"
           >
             <DropdownMenuItem
               onClick={(e) => {

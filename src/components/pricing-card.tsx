@@ -86,8 +86,8 @@ export function PricingCard({
       className={cn(
         "relative rounded-3xl p-8 transition-all duration-300 transform",
         isPopular
-          ? "bg-white shadow-depth-3 border-transparent md:scale-105 z-10"
-          : "bg-white/40 border border-secondary/20 shadow-sm hover:shadow-md hover:bg-white/80",
+          ? "bg-card shadow-depth-3 border border-border md:scale-105 z-10"
+          : "bg-card/80 border border-border shadow-sm hover:shadow-md hover:bg-card",
         className
       )}
     >

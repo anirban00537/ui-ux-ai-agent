@@ -2,7 +2,6 @@
 
 import React, { useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { useOutlineEditor } from "@/app/(protected)/docs/[id]/hooks/use-outline";
 import { OutlineViewer } from "@/components/outline-viewer";
@@ -68,22 +67,10 @@ export default function OutlinePage() {
   }
 
   return (
-    <div className="relative flex-1 min-h-screen overflow-auto">
-      {/* Fixed Background Image */}
-      <div className="fixed inset-0 z-0 opacity-50 pointer-events-none">
-        <Image
-          src="/hero-background-image.png"
-          alt="Background"
-          fill
-          className="object-cover"
-          priority
-          unoptimized
-        />
-      </div>
-      
+    <div className="relative flex-1 min-h-screen overflow-auto bg-background">
       {/* Scrollable Content */}
-      <div className="relative z-10 flex flex-col items-center py-8 min-h-full">
-        <div className="w-full max-w-5xl px-6 py-8 bg-white/60 backdrop-blur-xl border border-white/20 shadow-2xl rounded-[32px] flex flex-col gap-8">
+      <div className="flex flex-col items-center py-8 min-h-full">
+        <div className="w-full max-w-5xl px-6 py-8 bg-card backdrop-blur-xl border border-border shadow-2xl rounded-[32px] flex flex-col gap-8">
         
         <OutlineHeader prompt={outline?.prompt || ""} onRegenerate={handleRegenerate} />
 

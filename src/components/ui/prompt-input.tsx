@@ -302,7 +302,7 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
       <form onSubmit={handleSubmit}>
         <div
           className={cn(
-            "flex flex-col rounded-[24px] p-2 transition-all duration-300 bg-slate-50 shadow-depth-3 border border-slate-200 focus-within:shadow-xl focus-within:border-slate-200 focus-within:ring-1 focus-within:ring-slate-200 cursor-text",
+            "flex flex-col rounded-[24px] p-2 transition-all duration-300 bg-card shadow-depth-3 border border-border focus-within:shadow-xl focus-within:border-border focus-within:ring-1 focus-within:ring-border cursor-text",
             className
           )}
         >
@@ -317,8 +317,8 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
               className={cn(
                 "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                 mode === "presentation"
-                  ? "bg-white text-foreground shadow-sm border border-slate-200"
-                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/80"
+                  ? "bg-muted text-foreground shadow-sm border border-border"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               Presentation
@@ -332,8 +332,8 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
               className={cn(
                 "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                 mode === "mobile-app"
-                  ? "bg-white text-foreground shadow-sm border border-slate-200"
-                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/80"
+                  ? "bg-muted text-foreground shadow-sm border border-border"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
               Mobile App

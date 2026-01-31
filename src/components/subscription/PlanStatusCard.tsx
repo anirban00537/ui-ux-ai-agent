@@ -34,7 +34,7 @@ const getStatusBadge = (status: string) => {
     past_due: { label: "Past Due", class: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" },
   };
 
-  const config = configs[status] || { label: status, class: "bg-slate-100 text-slate-600 border-slate-200" };
+  const config = configs[status] || { label: status, class: "bg-muted text-muted-foreground border-border" };
 
   return (
     <div className={cn("px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest border", config.class)}>
@@ -56,7 +56,7 @@ export const PlanStatusCard: React.FC<PlanStatusCardProps> = ({
         initial={{ opacity: 0, x: 15 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="relative flex flex-col p-6 rounded-2xl overflow-hidden group bg-white/40 border border-secondary/20 shadow-sm hover:shadow-depth-3 hover:bg-white transition-all duration-300"
+        className="relative flex flex-col p-6 rounded-2xl overflow-hidden group bg-card border border-border shadow-sm hover:shadow-depth-3 transition-all duration-300"
       >
         <div className="flex flex-col items-center justify-center py-6 text-center">
           <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center mb-4">
@@ -137,9 +137,9 @@ export const PlanStatusCard: React.FC<PlanStatusCardProps> = ({
           ) : isActive ? (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" className="text-red-500 hover:text-red-600 h-9 px-3 text-sm hover:bg-red-50 rounded-lg">Cancel Subscription</Button>
+                <Button variant="ghost" className="text-red-500 hover:text-red-600 h-9 px-3 text-sm hover:bg-destructive/10 rounded-lg">Cancel Subscription</Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="rounded-2xl border border-secondary/20 shadow-2xl bg-white/95 backdrop-blur-3xl">
+              <AlertDialogContent className="rounded-2xl border border-border shadow-2xl bg-card backdrop-blur-3xl">
                 <AlertDialogHeader>
                   <AlertDialogTitle className="text-xl font-bold tracking-tight">Cancel Subscription?</AlertDialogTitle>
                   <AlertDialogDescription className="text-sm font-medium text-muted-foreground/80 leading-relaxed">

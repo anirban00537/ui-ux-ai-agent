@@ -26,7 +26,7 @@ export const GridSkeleton: React.FC<GridSkeletonProps> = ({
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: i * 0.05 }}
         className={cn(
-          "rounded-2xl overflow-hidden bg-white/40 border border-secondary/20 shadow-sm",
+          "rounded-2xl overflow-hidden bg-card border border-border shadow-sm",
           itemClassName
         )}
       >
@@ -55,10 +55,10 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ className, children 
   <div className={cn("w-full space-y-8 animate-pulse", className)}>
     {children || (
       <>
-        <Skeleton className="h-12 w-1/3 rounded-2xl" />
+        <Skeleton className="h-12 w-1/3 rounded-2xl border border-border" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Skeleton className="h-64 rounded-[32px] border border-secondary/10 shadow-sm" />
-          <Skeleton className="h-64 rounded-[32px] border border-secondary/10 shadow-sm" />
+          <Skeleton className="h-64 rounded-[32px] border border-border shadow-sm" />
+          <Skeleton className="h-64 rounded-[32px] border border-border shadow-sm" />
         </div>
       </>
     )}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/navbar";
@@ -47,20 +46,8 @@ export default function ContactPage() {
     return (
         <>
             <Navbar />
-            <main className="relative min-h-screen overflow-auto">
-                {/* Fixed Background Image */}
-                <div className="fixed inset-0 z-0 opacity-50 pointer-events-none">
-                    <Image
-                        src="/hero-background-image.png"
-                        alt="Background"
-                        fill
-                        className="object-cover"
-                        priority
-                        unoptimized
-                    />
-                </div>
-
-                <div className="relative z-10">
+            <main className="relative min-h-screen overflow-auto bg-background">
+                <div>
                     <section className="pt-32 pb-24">
                         <div className="container mx-auto px-4">
                             <div className="max-w-5xl mx-auto">

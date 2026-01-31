@@ -98,7 +98,7 @@ export function AppSidebar() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         onClick={() => setIsMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 p-2.5 rounded-full md:hidden bg-white/70 backdrop-blur-xl border border-white/20 shadow-sm text-foreground/80 hover:bg-white/90 transition-all custom-shadow"
+        className="fixed top-4 left-4 z-50 p-2.5 rounded-full md:hidden bg-card/90 backdrop-blur-xl border border-border shadow-sm text-foreground/80 hover:bg-card transition-all custom-shadow"
       >
         <IconMenu2 size={20} />
       </motion.button>
@@ -172,7 +172,7 @@ export function AppSidebar() {
                     className={cn(
                       "relative flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-300 ease-out",
                       isActive
-                        ? "bg-blue-50"
+                        ? "bg-primary/10"
                         : "hover:bg-secondary/10 text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -218,7 +218,7 @@ export function AppSidebar() {
                   className={cn(
                     "flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group",
                     isActive
-                      ? "bg-blue-50 text-primary font-medium"
+                      ? "bg-primary/10 text-primary font-medium"
                       : "hover:bg-secondary/10 text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -242,8 +242,8 @@ export function AppSidebar() {
           <div className="p-4 space-y-4">
             {/* Premium/Credits Card - Updated Design */}
             <div className="relative overflow-hidden rounded-2xl p-[1px] group">
-              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/20 via-white to-secondary/20 opacity-100" />
-              <div className="relative rounded-[15px] p-5 bg-secondary/10 backdrop-blur-md overflow-hidden border border-white/50">
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary/20 via-card to-secondary/20 opacity-100" />
+              <div className="relative rounded-[15px] p-5 bg-card/80 backdrop-blur-md overflow-hidden border border-border">
                 {!isSubscribed ? (
                   <Link 
                     href="/pricing" 
@@ -355,7 +355,7 @@ export function AppSidebar() {
                   <DropdownMenuSeparator className="bg-black/5" />
                   <DropdownMenuItem
                     onClick={handleSignOut}
-                    className="rounded-lg cursor-pointer text-xs font-medium py-2 text-destructive focus:text-destructive focus:bg-red-50/50"
+                    className="rounded-lg cursor-pointer text-xs font-medium py-2 text-destructive focus:text-destructive focus:bg-destructive/10"
                   >
                     <IconLogout size={14} className="mr-2" />
                     Sign Out

@@ -20,7 +20,7 @@ export const CreditBalanceCard: React.FC<CreditBalanceCardProps> = ({
       initial={{ opacity: 0, x: -15 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative flex flex-col p-6 rounded-2xl overflow-hidden group bg-white/40 border border-secondary/20 shadow-sm hover:shadow-depth-3 hover:bg-white transition-all duration-300"
+      className="relative flex flex-col p-6 rounded-2xl overflow-hidden group bg-card border border-border shadow-sm hover:shadow-depth-3 transition-all duration-300"
     >
       <div className="relative z-10 flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">

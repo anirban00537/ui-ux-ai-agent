@@ -33,7 +33,7 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(prompt)}
-      className="group relative flex flex-col items-start gap-3 p-4 bg-white dark:bg-card/50 rounded-2xl text-left transition-all duration-300 border border-border/50 hover:border-primary/20 hover:shadow-depth-2 h-full w-full overflow-hidden"
+      className="group relative flex flex-col items-start gap-3 p-4 bg-card rounded-2xl text-left transition-all duration-300 border border-border/50 hover:border-primary/20 hover:shadow-depth-2 h-full w-full overflow-hidden"
     >
       <div 
         className={cn(

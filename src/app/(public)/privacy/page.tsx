@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Navbar } from "@/components/navbar";
 import { FooterSection } from "@/components/sections/footer-section";
 import { motion } from "framer-motion";
@@ -10,20 +9,8 @@ export default function PrivacyPage() {
     return (
         <>
             <Navbar />
-            <main className="relative min-h-screen overflow-auto">
-                {/* Fixed Background Image */}
-                <div className="fixed inset-0 z-0 opacity-50 pointer-events-none">
-                    <Image
-                        src="/hero-background-image.png"
-                        alt="Background"
-                        fill
-                        className="object-cover"
-                        priority
-                        unoptimized
-                    />
-                </div>
-
-                <div className="relative z-10">
+            <main className="relative min-h-screen overflow-auto bg-background">
+                <div>
                     <section className="pt-32 pb-24">
                         <div className="container mx-auto px-4">
                             <div className="max-w-3xl mx-auto">
