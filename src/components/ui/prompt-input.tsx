@@ -73,23 +73,23 @@ const SendIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 // --- The Final, Self-Contained PromptBox Component ---
-type PromptMode = "presentation" | "mobile-app";
+export type PromptMode = "presentation" | "mobile-app";
 
 interface PromptBoxProps {
   className?: string;
   name?: string;
   defaultValue?: string;
+  mode?: PromptMode;
   onError?: (error: string) => void;
   onSubmit?: (value: string, numberOfCards: number) => void;
 }
 
 export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
-  ({ className, onError, onSubmit, defaultValue = "", ...props }, ref) => {
+  ({ className, onError, onSubmit, defaultValue = "", mode = "presentation", ...props }, ref) => {
     const router = useRouter();
     const savePromptMutation = useSavePrompt();
     const internalTextareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = React.useState(defaultValue);
-    const [mode, setMode] = React.useState<PromptMode>("presentation");
     const { data: subscriptionStatus, isLoading: isLoadingStatus } =
       useSubscriptionStatus();
 
@@ -306,40 +306,6 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
             className
           )}
         >
-          {/* Presentation | Mobile App tabs */}
-          <div className="flex gap-0.5 px-1 pt-1 pb-0.5">
-            <button
-              type="button"
-              onClick={() => {
-                setMode("presentation");
-                trackEvent("prompt_mode_switch", "engagement", "presentation");
-              }}
-              className={cn(
-                "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
-                mode === "presentation"
-                  ? "bg-muted text-foreground shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              Presentation
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("mobile-app");
-                trackEvent("prompt_mode_switch", "engagement", "mobile-app");
-              }}
-              className={cn(
-                "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
-                mode === "mobile-app"
-                  ? "bg-muted text-foreground shadow-sm border border-border"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              Mobile App
-            </button>
-          </div>
-
           <textarea
             ref={internalTextareaRef}
             rows={1}

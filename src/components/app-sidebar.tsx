@@ -121,7 +121,7 @@ export function AppSidebar() {
         initial={false}
         animate={{ x: isMobile ? (isMobileOpen ? 0 : "-100%") : 0 }}
         transition={{ type: "spring", damping: 25, stiffness: 300, mass: 0.8 }}
-        className="fixed inset-y-0 left-0 z-50 w-[280px] flex flex-col"
+        className="fixed inset-y-0 left-0 z-50 w-[280px] flex flex-col border-r border-border"
       >
         {/* Main Glass Container - Updated Gradient */}
         <div className="absolute inset-0 w-full h-full overflow-hidden " />
