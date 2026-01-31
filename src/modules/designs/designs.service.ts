@@ -106,18 +106,25 @@ export class DesignsService {
   async updateDesign(
     id: string,
     userId: string,
-    data: { title?: string },
+    data: { title?: string; colorPalette?: Record<string, string> },
   ): Promise<ResponseModel> {
     try {
       const existing = await this.prisma.design.findUnique({ where: { id } });
       if (!existing || existing.userId !== userId) {
         return errorResponse('User does not have this Design');
       }
+      
+      const updateData: any = {};
+      if (data.title !== undefined) {
+        updateData.title = data.title;
+      }
+      if (data.colorPalette !== undefined) {
+        updateData.colorPalette = data.colorPalette;
+      }
+      
       const updated = await this.prisma.design.update({
         where: { id },
-        data: {
-          title: data.title ?? existing.title,
-        },
+        data: updateData,
       });
       return successResponse('Design updated successfully', updated);
     } catch (error) {

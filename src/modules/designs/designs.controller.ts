@@ -58,7 +58,7 @@ export class DesignsController {
   @Patch(':id')
   async updateDesign(
     @Param('id') id: string,
-    @Body() body: { title?: string },
+    @Body() body: { title?: string; colorPalette?: Record<string, string> },
     @UserInfo() user: User,
   ): Promise<ResponseModel> {
     return this.designsService.updateDesign(id, user.id, body);
