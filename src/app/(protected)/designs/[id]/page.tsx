@@ -65,12 +65,13 @@ export default function DesignEditorPage() {
 
       <div className="relative flex-1 min-w-0 h-full">
         <Editor
-          screens={conversation?.screens ?? []}
+          artboards={conversation?.screens ?? []}
+          designType={conversation?.designType ?? "mobile_app"}
           error={error ?? undefined}
           loading={isGenerating}
-          onDeleteScreen={(screenId, screenTitle) => {
+          onDeleteArtboard={(artboardId: string, artboardTitle: string) => {
             sendMessage(
-              `Delete the screen "${screenTitle}" with ID ${screenId}`,
+              `Delete the screen "${artboardTitle}" with ID ${artboardId}`,
               designId
             );
           }}

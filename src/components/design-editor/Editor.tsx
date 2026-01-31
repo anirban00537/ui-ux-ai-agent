@@ -3,11 +3,13 @@
 import React from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MobileFrame } from "@/components/design-editor/MobileFrame";
+import { PresentationFrame } from "@/components/design-editor/PresentationFrame";
 import { Trash2 } from "lucide-react";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
+import { DesignType } from "@/services/designs";
 
-interface Screen {
+interface Artboard {
   id: string;
   title: string;
   description?: string;
@@ -16,18 +18,22 @@ interface Screen {
 }
 
 interface EditorProps {
-  screens: Screen[];
+  artboards: Artboard[];
+  designType?: DesignType;
   loading?: boolean;
   error?: string;
-  onDeleteScreen?: (screenId: string, screenTitle: string) => void;
+  onDeleteArtboard?: (artboardId: string, artboardTitle: string) => void;
 }
 
 export function Editor({
-  screens,
+  artboards,
+  designType = "mobile_app",
   loading,
   error,
-  onDeleteScreen,
+  onDeleteArtboard,
 }: EditorProps) {
+  const isPresentationMode = designType === "presentation";
+  
   return (
     <div className="w-full h-full bg-background relative overflow-hidden">
       <DotPattern
@@ -36,7 +42,7 @@ export function Editor({
         )}
       />
       <TransformWrapper
-        initialScale={0.6}
+        initialScale={isPresentationMode ? 0.5 : 0.6}
         minScale={0.1}
         maxScale={3}
         centerOnInit={true}
@@ -88,26 +94,38 @@ export function Editor({
               contentStyle={{ width: "max-content", height: "max-content" }}
             >
               <div
-                className="flex items-center justify-center gap-12 p-20"
+                className={cn(
+                  "flex items-center justify-center p-20",
+                  isPresentationMode ? "flex-col gap-8" : "gap-12"
+                )}
                 style={{ minWidth: "800px", minHeight: "800px" }}
               >
-                {screens.map((screen) => (
-                  <div key={screen.id} className="relative group">
-                    {onDeleteScreen && (
+                {artboards.map((artboard) => (
+                  <div key={artboard.id} className="relative group">
+                    {onDeleteArtboard && (
                       <button
-                        onClick={() => onDeleteScreen(screen.id, screen.title)}
+                        onClick={() => onDeleteArtboard(artboard.id, artboard.title)}
                         className="absolute -top-2 -right-2 z-30 bg-red-500/90 hover:bg-red-500 backdrop-blur-sm text-white rounded-full p-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl ring-1 ring-red-400/20 hover:scale-110"
-                        title={`Delete ${screen.title}`}
+                        title={`Delete ${artboard.title}`}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
-                    <MobileFrame
-                      title={screen.title}
-                      subtitle={loading ? "Generating..." : screen.description}
-                      htmlContent={screen.html}
-                      width={320}
-                    />
+                    {isPresentationMode ? (
+                      <PresentationFrame
+                        title={artboard.title}
+                        subtitle={loading ? "Generating..." : artboard.description}
+                        htmlContent={artboard.html}
+                        width={1640}
+                      />
+                    ) : (
+                      <MobileFrame
+                        title={artboard.title}
+                        subtitle={loading ? "Generating..." : artboard.description}
+                        htmlContent={artboard.html}
+                        width={320}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
@@ -115,7 +133,7 @@ export function Editor({
             <div className="absolute bottom-6 left-6 z-20">
               <div className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
                 <p className="text-sm text-white/80 font-medium">
-                  {screens.length} screen{screens.length !== 1 ? "s" : ""}
+                  {artboards.length} {isPresentationMode ? "slide" : "screen"}{artboards.length !== 1 ? "s" : ""}
                 </p>
               </div>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { getDesignById } from "@/services/designs";
+import { getDesignById, DesignType } from "@/services/designs";
 import { CONFIG } from "@/lib/config";
 
 interface Screen {
@@ -25,6 +25,7 @@ interface Message {
 interface Conversation {
   id: string;
   title: string;
+  designType: DesignType;
   messages: Message[];
   screens: Screen[];
 }
@@ -72,6 +73,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
           return {
             id: designId || "temp",
             title: message.slice(0, 50) + (message.length > 50 ? "..." : ""),
+            designType: "mobile_app",
             messages: [userMessage],
             screens: [],
           };
@@ -365,6 +367,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
       const conv: Conversation = {
         id: designData.id,
         title: designData.title || "Untitled Design",
+        designType: designData.type || "mobile_app",
         messages: (designData.messages || []).map((msg: any) => ({
           id: msg.id,
           content: msg.content,
@@ -372,12 +375,12 @@ export function useChatGenerator(): UseChatGeneratorResult {
           createdAt: msg.createdAt,
           status: msg.status,
         })),
-        screens: (designData.screens || []).map((screen: any) => ({
-          id: screen.id,
-          title: screen.title,
-          description: screen.description,
-          html: screen.html,
-          createdAt: screen.createdAt,
+        screens: (designData.artboards || []).map((artboard: any) => ({
+          id: artboard.id,
+          title: artboard.title,
+          description: artboard.description,
+          html: artboard.html,
+          createdAt: artboard.createdAt,
         })),
       };
       setConversation(conv);

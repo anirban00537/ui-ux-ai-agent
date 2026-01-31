@@ -1,13 +1,16 @@
 import request from "@/lib/request";
 
+export type DesignType = "mobile_app" | "presentation";
+
 export interface Design {
   id: string;
   userId: string;
   title: string | null;
+  type: DesignType;
   colorPalette: any;
   createdAt: string;
   updatedAt: string;
-  screens?: { id: string; title: string; description?: string | null }[];
+  artboards?: { id: string; title: string; description?: string | null; html: string }[];
 }
 
 export interface DesignListResponse {
@@ -42,10 +45,10 @@ export async function getDesignsList(params?: {
   return response.data;
 }
 
-export async function createDesignConversation(title: string) {
+export async function createDesignConversation(title: string, type: DesignType = "mobile_app") {
   const response = await request.post<CreateDesignConversationResponse>(
     "/designs/conversations",
-    { title }
+    { title, type }
   );
   return response.data;
 }

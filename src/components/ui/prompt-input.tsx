@@ -11,12 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useSavePrompt } from "@/app/(protected)/docs/[id]/hooks/use-outline";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useSubscriptionStatus } from "@/hooks/use-subscription";
 import { trackEvent } from "@/components/analytics/trackEvent";
-import { createDesignConversation } from "@/services/designs";
+import { createDesignConversation, DesignType } from "@/services/designs";
 
 // --- Utility Function & Radix Primitives ---
 const TooltipProvider = TooltipPrimitive.Provider;
@@ -81,21 +79,23 @@ interface PromptBoxProps {
   defaultValue?: string;
   mode?: PromptMode;
   onError?: (error: string) => void;
-  onSubmit?: (value: string, numberOfCards: number) => void;
+  onSubmit?: (value: string, designType: DesignType) => void;
 }
 
 export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
   ({ className, onError, onSubmit, defaultValue = "", mode = "presentation", ...props }, ref) => {
     const router = useRouter();
-    const savePromptMutation = useSavePrompt();
     const internalTextareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = React.useState(defaultValue);
-    const { data: subscriptionStatus, isLoading: isLoadingStatus } =
-      useSubscriptionStatus();
+
+    // Map mode to design type
+    const getDesignType = (): DesignType => {
+      return mode === "mobile-app" ? "mobile_app" : "presentation";
+    };
 
     const createDesignMutation = useMutation({
-      mutationFn: async (title: string) => {
-        const resp = await createDesignConversation(title);
+      mutationFn: async ({ title, type }: { title: string; type: DesignType }) => {
+        const resp = await createDesignConversation(title, type);
         if (!resp?.success || !resp?.data?.id) {
           throw new Error(resp?.message || "Failed to create design");
         }
@@ -116,9 +116,6 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
         onError?.(msg);
       },
     });
-
-    // Always default to 10 cards
-    const [numberOfCards, setNumberOfCards] = React.useState<string>("10");
 
     // Update value when defaultValue prop changes
     React.useEffect(() => {
@@ -150,96 +147,23 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
         return;
       }
 
-      // Mobile App: create design and redirect to design page
-      if (mode === "mobile-app") {
-        if (createDesignMutation.isPending) return;
-        const title = value.trim().slice(0, 50) + (value.trim().length > 50 ? "..." : "");
-        createDesignMutation.mutate(title);
-        return;
-      }
+      const designType = getDesignType();
 
-      // Presentation: validate cards and save prompt
-      const cards = parseInt(numberOfCards);
-      if (isNaN(cards) || cards < 1) {
-        onError?.("Please select a valid number of cards");
-        return;
-      }
-
-      // Check slide limit (default to 15 for free tier)
-      const slideLimit = subscriptionStatus?.slideLimit || 15;
-      if (cards > slideLimit) {
-        onError?.(
-          `Your plan allows up to ${slideLimit} slides per document. Please upgrade to create more slides.`
-        );
-        return;
-      }
-
+      // If custom onSubmit is provided, use it
       if (onSubmit) {
-        trackEvent('prompt_submit_custom', 'engagement', `${cards}_cards`);
-        onSubmit(value.trim(), cards);
+        trackEvent("prompt_submit_custom", "engagement", mode);
+        onSubmit(value.trim(), designType);
         return;
       }
 
-      trackEvent('prompt_submit_start', 'engagement', `${cards}_cards`);
-
-      savePromptMutation.mutate(
-        {
-          prompt: value.trim(),
-          numberOfCards: cards,
-        },
-        {
-          onSuccess: (response) => {
-            if (response.success && response.data?.id) {
-              trackEvent('prompt_submit_success', 'engagement', response.data.id);
-              // Redirect to outline page
-              router.push(`/create/outline/${response.data.id}`);
-            } else {
-              // Handle API response with success: false
-              const errorMessage = response.message || "Failed to save prompt";
-              trackEvent('prompt_submit_fail', 'engagement', errorMessage);
-
-              // Check if it's a credit-related error
-              if (
-                errorMessage.toLowerCase().includes("insufficient credits") ||
-                errorMessage.toLowerCase().includes("credits")
-              ) {
-                toast.error(errorMessage, {
-                  duration: 10000,
-                  action: {
-                    label: "Upgrade",
-                    onClick: () => {
-                      trackEvent('insufficient_credits_upgrade_click', 'engagement', 'prompt_box');
-                      window.location.href = "/subscription";
-                    },
-                  },
-                });
-              } else {
-                toast.error(errorMessage, { duration: 5000 });
-              }
-
-              onError?.(errorMessage);
-            }
-          },
-          onError: (err: any) => {
-            const errorMessage =
-              err?.response?.data?.message ||
-              err?.message ||
-              "An unexpected error occurred";
-
-            trackEvent('prompt_submit_error', 'engagement', errorMessage);
-            toast.error(errorMessage, { duration: 5000 });
-
-            onError?.(errorMessage);
-          },
-        }
-      );
+      // Otherwise, create design and redirect
+      if (createDesignMutation.isPending) return;
+      const title = value.trim().slice(0, 50) + (value.trim().length > 50 ? "..." : "");
+      createDesignMutation.mutate({ title, type: designType });
     };
 
     const hasValue = value.trim().length > 0;
-    const isPending =
-      mode === "presentation"
-        ? savePromptMutation.isPending
-        : createDesignMutation.isPending;
+    const isPending = createDesignMutation.isPending;
 
     // --- Dynamic Placeholder Logic ---
     const placeholders = React.useMemo(
@@ -320,84 +244,20 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
           <div className="mt-0.5 p-1 pt-0">
             <TooltipProvider delayDuration={100}>
               <div className="flex items-center gap-2 flex-wrap">
-                {/* Number of Cards Select - only for Presentation */}
-                {mode === "presentation" && (
-                <Select
-                  value={numberOfCards}
-                  onValueChange={(v) => {
-                    trackEvent('prompt_cards_change', 'engagement', v);
-                    setNumberOfCards(v);
-                  }}
-                  disabled={isLoadingStatus}
-                >
-                  <SelectTrigger className="h-8 w-fit gap-2 px-2 text-xs border-0 bg-transparent hover:bg-secondary/10 transition-colors focus:ring-0">
-                    <SelectValue
-                      placeholder={isLoadingStatus ? "Loading..." : "Cards"}
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border-secondary/10 max-h-[300px]">
-                    <div className="px-2 py-1.5 text-xs text-muted-foreground border-b border-secondary/10">
-                      <p className="text-[10px] text-muted-foreground/70">
-                        Tip: cards are like slides
-                      </p>
-                    </div>
-                    {(() => {
-                      // User's allowed slide limit from subscription
-                      const allowedSlides = subscriptionStatus?.slideLimit || 15;
-
-                      // Generate card options: 1-20 (all numbers), then 25, 30, 35, 40, 50 (max 50)
-                      const cardOptions = [
-                        ...Array.from({ length: 20 }, (_, i) => i + 1),
-                        25,
-                        30,
-                        35,
-                        40,
-                        50,
-                      ];
-
-                      // Show PREMIUM badge for cards exceeding user's limit
-                      const isPremium = (cardCount: number): boolean => cardCount > allowedSlides;
-
-                      return cardOptions.map((num) => {
-                        const isSelected = numberOfCards === num.toString();
-
-                        return (
-                          <SelectItem
-                            key={num}
-                            value={num.toString()}
-                            className={cn(
-                              "focus:bg-secondary/10 flex items-center justify-between",
-                              isSelected && "bg-secondary/20"
-                            )}
-                          >
-                            <span className="flex items-center gap-2">
-                              {isSelected && (
-                                <svg
-                                  className="h-3 w-3 text-primary"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              )}
-                              {num} {num === 1 ? "card" : "cards"}
-                            </span>
-                            {isPremium(num) && (
-                              <span className="ml-2 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-600 text-white">
-                                PREMIUM
-                              </span>
-                            )}
-                          </SelectItem>
-                        );
-                      });
-                    })()}
-                  </SelectContent>
-                </Select>
-                )}
+                {/* Mode indicator */}
+                <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
+                  {mode === "mobile-app" ? (
+                    <>
+                      <i className="ri-smartphone-line"></i>
+                      <span>Mobile App</span>
+                    </>
+                  ) : (
+                    <>
+                      <i className="ri-slideshow-line"></i>
+                      <span>Presentation</span>
+                    </>
+                  )}
+                </div>
 
                 {/* Right-aligned buttons container */}
                 <div className="ml-auto flex items-center gap-2">
@@ -440,9 +300,7 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
                     <TooltipContent side="top" showArrow={true}>
                       <p>
                         {isPending
-                          ? mode === "mobile-app"
-                            ? "Creating design..."
-                            : "Generating..."
+                          ? "Creating design..."
                           : "Send"}
                       </p>
                     </TooltipContent>
