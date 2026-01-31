@@ -37,6 +37,7 @@ interface MobileFrameProps {
   className?: string;
   width?: number;
   colorPalette?: ColorPalette;
+  isGenerating?: boolean;
 }
 
 export function MobileFrame({
@@ -46,21 +47,17 @@ export function MobileFrame({
   className = "",
   width = 400,
   colorPalette,
+  isGenerating = false,
 }: MobileFrameProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   
-  // Calculate height based on typical aspect ratio (approx 19.5:9 like iPhone 14/15)
-  // iPhone 14 Pro Max is 430x932
   const aspectRatio = 932 / 430;
   const height = Math.floor(width * aspectRatio);
 
-  // Handle Communication
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      // Ensure the message comes from THIS specific iframe
       if (iframeRef.current && event.source === iframeRef.current.contentWindow) {
-        // Listen for ready signal from the canvas
         if (typeof event.data === 'object' && event.data?.type === 'CANVAS_READY') {
           setIsLoaded(true);
         }
@@ -71,27 +68,19 @@ export function MobileFrame({
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  // Sync content
   useEffect(() => {
     if (isLoaded && iframeRef.current?.contentWindow) {
       iframeRef.current.contentWindow.postMessage(
-        {
-          type: "UPDATE_CONTENT",
-          html: htmlContent,
-        },
+        { type: "UPDATE_CONTENT", html: htmlContent },
         "*"
       );
     }
   }, [htmlContent, isLoaded]);
 
-  // Sync palette
   useEffect(() => {
     if (isLoaded && colorPalette && iframeRef.current?.contentWindow) {
       iframeRef.current.contentWindow.postMessage(
-        {
-          type: "UPDATE_THEME",
-          palette: colorPalette,
-        },
+        { type: "UPDATE_THEME", palette: colorPalette },
         "*"
       );
     }
@@ -102,46 +91,81 @@ export function MobileFrame({
       {(title || subtitle) && (
         <div className="w-full text-center pb-4 opacity-70 hover:opacity-100 transition-opacity">
           {title && (
-            <h3 className="text-sm font-medium text-gray-500 tracking-wide uppercase font-mono">
+            <h3 className={`text-sm font-medium ${isGenerating ? 'text-indigo-400' : 'text-gray-500'} tracking-wide uppercase font-mono`}>
               {title}
             </h3>
           )}
         </div>
       )}
 
-      {/* Frame Container */}
-      <div
-        className="relative bg-white overflow-hidden isolate"
-        style={{
-          width: `${width}px`,
-          height: `${height}px`,
-          // Large border radius to mimic the smooth "squircle" curve
-          borderRadius: "50px", 
-          // Soft, premium shadow
-          boxShadow: `
-            0 0 0 1px rgba(0,0,0,0.03),
-            0 1px 2px -1px rgba(0,0,0,0.04),
-            0 12px 32px -8px rgba(0,0,0,0.08),
-            0 24px 64px -12px rgba(0,0,0,0.08)
-          `
-        }}
+      {/* Frame with animated border */}
+      <div 
+        className="relative"
+        style={{ width: `${width}px`, height: `${height}px` }}
       >
-        <iframe
-          ref={iframeRef}
-          src="/renderers/canvas"
-          className={`size-full border-0 block transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-          title="Canvas Frame"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-        />
-
-        {/* Loading State */}
-        {!isLoaded && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-300">
-             <div className="w-8 h-8 rounded-full border-2 border-current border-t-transparent animate-spin mb-4" />
-             <p className="text-xs font-mono uppercase tracking-widest">Loading Renderer</p>
-          </div>
+        {/* Animated gradient border - only when generating */}
+        {isGenerating && (
+          <>
+            {/* Glow effect */}
+            <div 
+              className="absolute -inset-1 rounded-[36px] opacity-75 blur-md"
+              style={{
+                background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
+                backgroundSize: "300% 100%",
+                animation: "gradient-flow 2s linear infinite",
+              }}
+            />
+            {/* Sharp border */}
+            <div 
+              className="absolute -inset-[3px] rounded-[35px]"
+              style={{
+                background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
+                backgroundSize: "300% 100%",
+                animation: "gradient-flow 2s linear infinite",
+              }}
+            />
+          </>
         )}
+        
+        {/* Inner Frame Container */}
+        <div
+          className="relative bg-white overflow-hidden isolate"
+          style={{
+            width: `${width}px`,
+            height: `${height}px`,
+            borderRadius: "32px", 
+            boxShadow: isGenerating ? undefined : `
+              0 0 0 1px rgba(0,0,0,0.03),
+              0 1px 2px -1px rgba(0,0,0,0.4),
+              0 12px 32px -8px rgba(0,0,0,0.08)
+            `,
+            border: isGenerating ? undefined : "1px solid rgba(200,200,200,0.3)",
+          }}
+        >
+          <iframe
+            ref={iframeRef}
+            src="/renderers/canvas"
+            className={`size-full border-0 block transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+            title="Canvas Frame"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+          />
+
+          {!isLoaded && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-300">
+               <div className="w-8 h-8 rounded-full border-2 border-current border-t-transparent animate-spin mb-4" />
+               <p className="text-xs font-mono uppercase tracking-widest">Loading Renderer</p>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Generating Indicator Badge */}
+      {isGenerating && (
+        <div className="mt-4 flex items-center gap-2 px-4 py-2 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/20">
+          <div className="w-3 h-3 rounded-full border-2 border-white border-t-transparent animate-spin" />
+          <span className="text-xs font-semibold text-white tracking-wide">Generating...</span>
+        </div>
+      )}
     </div>
   );
 }

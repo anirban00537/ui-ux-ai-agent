@@ -15,6 +15,7 @@ interface Artboard {
   description?: string;
   html: string;
   createdAt: string;
+  status?: 'generating' | 'complete';
 }
 
 interface ColorPalette {
@@ -155,6 +156,7 @@ export function Editor({
                         htmlContent={artboard.html}
                         width={320}
                         colorPalette={colorPalette}
+                        isGenerating={artboard.status === 'generating'}
                       />
                     )}
                   </div>

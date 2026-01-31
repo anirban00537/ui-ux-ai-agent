@@ -10,6 +10,7 @@ interface Screen {
   description?: string;
   html: string;
   createdAt: string;
+  status?: 'generating' | 'complete';
 }
 
 interface Message {
@@ -251,6 +252,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       description: screenPayload.description,
                       html: screenPayload.html,
                       createdAt: new Date().toISOString(),
+                      status: 'complete',
                     };
                     generatedScreens.push(newScreen);
                     addStreamMessage(`Completed: ${screenPayload.title}`, "screen_complete");
@@ -315,6 +317,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
                         updatedScreens[existingIndex] = {
                           ...updatedScreens[existingIndex],
                           html: partialHtml,
+                          status: 'generating',
                         };
                         return { ...prev, screens: updatedScreens };
                       } else {
@@ -325,6 +328,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
                           description: "Generating...",
                           html: partialHtml,
                           createdAt: new Date().toISOString(),
+                          status: 'generating',
                         };
                         return { ...prev, screens: [...prev.screens, newScreen] };
                       }
