@@ -85,12 +85,13 @@ export class DesignsService {
     });
     return message;
   }
-  async createDesignConversation(title: string, userId: string) {
+  async createDesignConversation(title: string, userId: string, type?: string) {
     try {
       const design = await this.prisma.design.create({
         data: {
           userId,
           title,
+          type: type || 'mobile_app',
         },
       });
       return successResponse(

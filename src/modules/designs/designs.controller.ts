@@ -49,10 +49,10 @@ export class DesignsController {
 
   @Post('conversations')
   async createDesignConversation(
-    @Body() body: { title: string },
+    @Body() body: { title: string; type?: string },
     @UserInfo() user: User,
   ): Promise<ResponseModel> {
-    return this.designsService.createDesignConversation(body.title, user.id);
+    return this.designsService.createDesignConversation(body.title, user.id, body.type);
   }
 
   @Patch(':id')

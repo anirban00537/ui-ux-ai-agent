@@ -4,9 +4,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StreamUpdate, ExistingArtboard } from './schemas';
 import { ColorPaletteGenerator } from './tools/agents-tools/color-pallette-generator';
 import IntentAnalyzer from './tools/agents-tools/intent-analyzer';
-import ScreenCreator from './tools/agents-tools/screen-creator';
-import ScreenUpdater from './tools/agents-tools/screen-updater';
-import ScreenDeleter from './tools/agents-tools/screen-deleter';
+import ArtboardCreator from './tools/agents-tools/artboard-creator';
+import ArtboardUpdater from './tools/agents-tools/artboard-updater';
+import ArtboardDeleter from './tools/agents-tools/artboard-deleter';
 import { coreConstant } from '../../shared/helpers/coreConstant';
 import { StreamMessenger } from './tools/stream-messenger';
 import { CreditManager } from './tools/credit-manager';
@@ -72,9 +72,9 @@ export class DesignsChatService {
             messenger.setDesignId(designId);
           }
 
-          const screenCreator = new ScreenCreator(this.prisma, creditManager, this.aiUsageService);
-          const screenUpdater = new ScreenUpdater(this.prisma, creditManager, this.aiUsageService);
-          const screenDeleter = new ScreenDeleter(this.prisma, creditManager);
+          const artboardCreator = new ArtboardCreator(this.prisma, creditManager, this.aiUsageService);
+          const artboardUpdater = new ArtboardUpdater(this.prisma, creditManager, this.aiUsageService);
+          const artboardDeleter = new ArtboardDeleter(this.prisma, creditManager);
           const intentAnalyzer = new IntentAnalyzer(creditManager, this.aiUsageService);
           const colorPaletteGenerator = new ColorPaletteGenerator(creditManager, this.aiUsageService);
 
@@ -239,16 +239,17 @@ export class DesignsChatService {
                 `Updating screen "${s.title ?? dbArtboard.title}"...`,
               );
 
-              const updatedScreen = await screenUpdater.updateScreen(
+              const updatedScreen = await artboardUpdater.updateArtboard(
                 dbArtboard as ExistingArtboard,
                 prompt,
                 contextMessages,
                 colorPalette ?? undefined,
                 userId,
                 designId,
+                design.type,
               );
 
-              const saved = await screenUpdater.saveUpdatedScreen(
+              const saved = await artboardUpdater.saveUpdatedArtboard(
                 dbArtboard.id,
                 updatedScreen,
               );
@@ -275,7 +276,7 @@ export class DesignsChatService {
                 `Deleting screen "${s.title}"...`,
               );
 
-              await screenDeleter.deleteScreen(s.id, userId, designId);
+              await artboardDeleter.deleteArtboard(s.id, userId, designId);
 
               await messenger.emit(
                 {
@@ -291,11 +292,12 @@ export class DesignsChatService {
               'Planning screens to create...',
             );
 
-            const plan = await screenCreator.planScreens(
+            const plan = await artboardCreator.planArtboards(
               prompt,
               contextMessages,
               userId,
               designId,
+              design.type,
             );
 
             await messenger.emit(
@@ -320,16 +322,17 @@ export class DesignsChatService {
                 `Generating screen "${sp.title}"...`,
               );
 
-              const screen = await screenCreator.generateScreen(
+              const screen = await artboardCreator.generateArtboard(
                 { title: sp.title, prompt: sp.prompt },
                 prompt,
                 contextMessages,
                 colorPalette ?? undefined,
                 userId,
                 designId,
+                design.type,
               );
 
-              const saved = await screenCreator.saveScreen(screen, designId);
+              const saved = await artboardCreator.saveArtboard(screen, designId);
 
               await messenger.emit(
                 {

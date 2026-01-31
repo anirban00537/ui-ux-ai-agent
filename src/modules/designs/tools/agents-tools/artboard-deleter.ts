@@ -1,17 +1,17 @@
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreditManager } from '../credit-manager';
 
-export class ScreenDeleter {
+export class ArtboardDeleter {
   constructor(
     private prisma: PrismaService,
     private creditManager: CreditManager,
   ) {}
 
   /**
-   * Delete a screen and deduct minimal credits for the operation
+   * Delete an artboard and deduct minimal credits for the operation
    */
-  async deleteScreen(
-    screenId: string,
+  async deleteArtboard(
+    artboardId: string,
     userId: string,
     designId: string,
   ): Promise<void> {
@@ -23,13 +23,13 @@ export class ScreenDeleter {
     };
 
     try {
-      // Delete the screen
+      // Delete the artboard
       await this.prisma.artboard.delete({
-        where: { id: screenId },
+        where: { id: artboardId },
       });
 
       console.log(
-        `[ScreenDeleter] Deleted screen ${screenId}, deducting credits`,
+        `[ArtboardDeleter] Deleted artboard ${artboardId}, deducting credits`,
       );
 
       // Deduct credits for the delete operation
@@ -41,22 +41,22 @@ export class ScreenDeleter {
       );
 
       console.log(
-        `[ScreenDeleter] Successfully deleted screen and deducted credits`,
+        `[ArtboardDeleter] Successfully deleted artboard and deducted credits`,
       );
     } catch (error) {
-      console.error(`[ScreenDeleter] Error deleting screen:`, error);
+      console.error(`[ArtboardDeleter] Error deleting artboard:`, error);
       throw error;
     }
   }
 
   /**
-   * Get a screen by ID
+   * Get an artboard by ID
    */
-  async getScreenById(screenId: string) {
+  async getArtboardById(artboardId: string) {
     return await this.prisma.artboard.findUnique({
-      where: { id: screenId },
+      where: { id: artboardId },
     });
   }
 }
 
-export default ScreenDeleter;
+export default ArtboardDeleter;
