@@ -3,61 +3,55 @@ import { PromptTemplate } from '@langchain/core/prompts';
 export const designSystemInstructions = `
 DESIGN SYSTEM & IMPLEMENTATION GUIDELINES (STRICT):
 
-1. LAYOUT & SPACING (8pt Grid System):
+1. SEMANTIC THEMING (Mandatory):
+   - You MUST use the provided semantic classes instead of hex codes:
+     * Backgrounds: bg-background (main), bg-muted (secondary), bg-card (containers)
+     * Text: text-foreground (primary), text-muted-foreground (secondary), text-primary-foreground (on primary bg)
+     * Actions: bg-primary, bg-secondary, bg-accent, bg-destructive
+     * Borders: border-border, border-input
+   - Leverage opacity for variants: e.g., bg-primary/10 for soft backgrounds.
+
+2. TYPOGRAPHY (Hierarchical & Variable-Driven):
+   - Fonts: Use font-sans (default), font-heading (for H1/H2), font-mono (for data), font-serif (for luxury).
+   - Hierarchy:
+     * H1: font-heading text-2xl or text-3xl, font-extrabold, tracking-tight
+     * H2: font-heading text-xl, font-bold
+     * Body: font-sans text-sm or text-base, text-foreground
+     * Secondary: text-muted-foreground
+   - Readability: Use leading-relaxed for long-form text.
+
+3. LAYOUT & SPACING (8pt Grid System):
    - Use strict 8pt grid: px-4 (16px), p-6 (24px), gap-4, mb-8, etc.
    - For mobile (300px width), use COMPACT spacing: px-4 or px-5 is standard.
-   - Whitespace: Use abundant whitespace (space-y-6, py-8) to create premium feel.
-   - Safe Areas: Ensure content doesn't touch edges (always use px-4 minimal).
-
-2. TYPOGRAPHY (Modern & Hierarchical):
-   - Font Family: Use sans-serif default (Inter-like).
-   - Hierarchy:
-     * H1: text-2xl or text-3xl, font-bold, tight-tracking (tracking-tight)
-     * H2: text-xl, font-semibold
-     * Body: text-sm or text-base, text-gray-600 (never pure black for body)
-     * Caption: text-xs, text-gray-500
-   - Readability: relaxed leading (leading-relaxed) for body text.
-
-3. COLORS & CONTRAST (Premium Palette):
-   - Never use pure black (#000000). Use slate-900, gray-900, or zinc-900.
-   - Never use default blue/red/green. Use tailored shades (e.g., blue-600, rose-500, emerald-500).
-   - Backgrounds: Use subtle off-whites (bg-gray-50/bg-slate-50) for depth, white for cards.
-   - Gradients: Use subtle, modern gradients for primary actions (e.g., bg-gradient-to-r from-blue-600 to-indigo-600).
+   - Mobile Safety: Always ensure horizontal padding (px-4 minimum).
 
 4. COMPONENTS & INTERACTIVITY:
    - Buttons:
-     * Primary: rounded-xl or rounded-2xl, shadow-lg, shadow-primary/20, active:scale-95 transition-all
-     * Secondary: bg-gray-100 text-gray-900, hover:bg-gray-200
+     * Primary: bg-primary text-primary-foreground, rounded-lg, shadow-lg shadow-primary/20, active:scale-95 transition-all
+     * Secondary: bg-secondary text-secondary-foreground, rounded-lg
      * Height: Minimum h-12 (48px) for thumb-friendliness.
-   - Cards:
-     * bg-white, rounded-2xl or rounded-3xl.
-     * Shadows: shadow-[0_2px_8px_rgba(0,0,0,0.08)] (custom arbitrary) or shadow-sm/md.
-     * Borders: border border-gray-100 (subtle).
+   - Cards & Containers:
+     * bg-card text-card-foreground, rounded-lg, shadow-sm, border border-border/50.
+     * Radius: Use "rounded-lg" as the default base radius.
    - Inputs:
-     * bg-gray-50, border-transparent focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all rounded-xl.
+     * bg-muted/50, border-input, focus:border-ring focus:ring-1 focus:ring-ring transition-all rounded-lg.
 
-5. VISUAL FLOURISHES (The "Wow" Factor):
-   - Glassmorphism: backdrop-blur-md bg-white/80 for sticky headers/overlays.
-   - Micro-interactions: hover:scale-[1.02] on cards, active:scale-95 on buttons.
-   - Images: rounded-2xl, shadow-md, object-cover.
-   - Icons: Use remixicon (e.g., <i class="ri-heart-line"></i>). text-xl or text-2xl.
+5. VISUAL FLOURISHES:
+   - Glassmorphism: backdrop-blur-md bg-background/80 for sticky headers.
+   - Animations: Use "animate-in slide-in-from-bottom-2 duration-500" for entry effects (mapped in renderer).
+   - Icons: Use remixicon (e.g., <i class="ri-heart-line"></i>).
 
-6. CONTENT GENERATION (Smart Fill):
-   - If user request is simple ("make a login page"), YOU MUST INVENT THE BRAND.
-   - Create a fictitious but realistic brand name, logo concept, and copy.
-   - NEVER use "Lorem Ipsum". Write real, engaging marketing copy.
-   - If context is missing, infer it from standard industry patterns (e.g., for a fitness app, assume tracking, social, and profile features).
+6. CONTENT GENERATION:
+   - Invent a realistic brand name and professional copy. NO "Lorem Ipsum".
+   - Infer context from industry standards (Fintech, Health, Social, etc.)
 
-IMAGERY POLICY (STRICT):
-- Use Unsplash URLs: https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=600&q=80
-- Select high-quality, relevant IDs.
-- NEVER use placeholders.
+7. IMAGERY POLICY:
+   - Use the pre-fetched Unsplash URLs provided in the "AVAILABLE IMAGES" section.
+   - Apply "object-cover rounded-lg" to images.
 
-MOBILE OPTIMIZATION (300px Frame):
+MOBILE OPTIMIZATION:
 - The output HTML will be rendered in a phone frame (~300-320px width).
-- Ensure flex-wrap: wrap for grids that might break.
-- Use line-clamp-2 for long text.
-- Avoid fixed widths > 280px. Use w-full.
+- Avoid fixed widths > 280px. Use "w-full".
 `;
 
 export const generationTemplate = PromptTemplate.fromTemplate(

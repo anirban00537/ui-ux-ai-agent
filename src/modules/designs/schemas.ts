@@ -3,24 +3,34 @@
 // ==========================
 
 export interface ColorPalette {
-  primary: string;
-  primaryLight: string;
-  primaryDark: string;
-  secondary: string;
-  accent: string;
+  // --- New System Design Tokens (Competitor Aligned) ---
   background: string;
-  backgroundSecondary: string;
-  surface: string;
-  surfaceSecondary: string;
-  textPrimary: string;
-  textSecondary: string;
-  textMuted: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  muted: string;
+  mutedForeground: string;
+  accent: string;
+  accentForeground: string;
+  destructive: string;
+  destructiveForeground: string;
   border: string;
-  borderLight: string;
-  success: string;
-  warning: string;
-  error: string;
-  info: string;
+  input: string;
+  ring: string;
+  radius: string;
+  
+  // Chart Colors
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
 }
 
 export interface ScreenPromptItem {
@@ -60,6 +70,7 @@ export interface StreamUpdate {
     | 'screen_update'
     | 'screen_delete'
     | 'screen_error'
+    | 'color_palette'
     | 'agent_step'
     | 'all_complete';
   data?: any;

@@ -48,6 +48,7 @@ export const coreConstant = {
     SCREEN_UPDATE: 'screen_update',
     SCREEN_DELETE: 'screen_delete',
     SCREEN_ERROR: 'screen_error',
+    COLOR_PALETTE: 'color_palette',
     AGENT_STEP: 'agent_step',
     ALL_COMPLETE: 'all_complete',
   } as const,

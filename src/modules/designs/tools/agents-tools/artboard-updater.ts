@@ -85,40 +85,36 @@ const generateColorPaletteInstructions = (
     return `COLOR PALETTE: Use default Tailwind colors with good contrast and accessibility.`;
   }
 
-  return `COLOR PALETTE (STRICT ADHERENCE REQUIRED):
-Use ONLY these specific colors from the conversation's color palette:
+  return `DESIGN SYSTEM (STRICT ADHERENCE REQUIRED):
+The app uses a CSS variable-driven Design System. When updating the HTML, you MUST use semantic Tailwind classes that map to these variables.
 
-PRIMARY COLORS:
-- Primary: ${colorPalette.primary} (use for main CTAs, primary buttons, key highlights)
-${colorPalette.primaryLight ? `- Primary Light: ${colorPalette.primaryLight} (use for hover states, light backgrounds)` : ''}
-${colorPalette.primaryDark ? `- Primary Dark: ${colorPalette.primaryDark} (use for active states, emphasis)` : ''}
-${colorPalette.secondary ? `- Secondary: ${colorPalette.secondary} (use for secondary actions, complementary elements)` : ''}
-${colorPalette.accent ? `- Accent: ${colorPalette.accent} (use for highlights, notifications, special elements)` : ''}
+CORE SYSTEM COLORS:
+- Background: ${colorPalette.background} -> use class "bg-background"
+- Foreground: ${colorPalette.foreground} -> use class "text-foreground"
+- Primary: ${colorPalette.primary} -> use class "bg-primary" or "text-primary"
+- Primary Foreground: ${colorPalette.primaryForeground} -> use class "text-primary-foreground" (text on primary bg)
+- Secondary: ${colorPalette.secondary} -> use class "bg-secondary"
+- Secondary Foreground: ${colorPalette.secondaryForeground} -> use class "text-secondary-foreground"
+- Card: ${colorPalette.card} -> use class "bg-card"
+- Card Foreground: ${colorPalette.cardForeground} -> use class "text-card-foreground"
+- Muted: ${colorPalette.muted} -> use class "bg-muted"
+- Muted Foreground: ${colorPalette.mutedForeground} -> use class "text-muted-foreground"
+- Accent: ${colorPalette.accent} -> use class "bg-accent"
+- Accent Foreground: ${colorPalette.accentForeground} -> use class "text-accent-foreground"
+- Destructive: ${colorPalette.destructive} -> use class "bg-destructive"
+- Destructive Foreground: ${colorPalette.destructiveForeground} -> use class "text-destructive-foreground"
+- Border: ${colorPalette.border} -> use class "border-border"
+- Input: ${colorPalette.input} -> use class "border-input"
+- Ring: ${colorPalette.ring} -> use class "ring-ring"
 
-BACKGROUND & SURFACE:
-- Background: ${colorPalette.background} (main app background)
-${colorPalette.backgroundSecondary ? `- Background Secondary: ${colorPalette.backgroundSecondary} (secondary backgrounds)` : ''}
-- Surface: ${colorPalette.surface} (cards, containers, elevated surfaces)
-${colorPalette.surfaceSecondary ? `- Surface Secondary: ${colorPalette.surfaceSecondary} (secondary surfaces)` : ''}
-
-TEXT COLORS:
-- Text Primary: ${colorPalette.textPrimary} (main text, headings)
-- Text Secondary: ${colorPalette.textSecondary} (secondary text, descriptions)
-${colorPalette.textMuted ? `- Text Muted: ${colorPalette.textMuted} (muted text, placeholders)` : ''}
-
-BORDERS & STATES:
-${colorPalette.border ? `- Border: ${colorPalette.border} (main borders, dividers)` : ''}
-${colorPalette.borderLight ? `- Border Light: ${colorPalette.borderLight} (subtle borders)` : ''}
-${colorPalette.success ? `- Success: ${colorPalette.success} (success states, confirmations)` : ''}
-${colorPalette.warning ? `- Warning: ${colorPalette.warning} (warning states, cautions)` : ''}
-${colorPalette.error ? `- Error: ${colorPalette.error} (error states, destructive actions)` : ''}
-${colorPalette.info ? `- Info: ${colorPalette.info} (info states, neutral notifications)` : ''}
+RADIUS & SHAPE:
+- Radius: ${colorPalette.radius} -> use classes "rounded-lg" (full radius), "rounded-md" (inner), "rounded-sm"
 
 IMPLEMENTATION RULES:
-- Convert hex colors to appropriate Tailwind classes or use arbitrary values like bg-[${colorPalette.primary}]
-- Maintain proper contrast ratios (4.5:1 minimum for text)
-- Use the palette consistently across all UI elements
-- Do not deviate from these colors unless absolutely necessary for accessibility`;
+1. USE semantic classes (e.g., "bg-primary text-primary-foreground") to ensure the UI remains themeable.
+2. If you need a specific variant, use arbitrary values with variables: e.g., "bg-[var(--primary)]/80" for 80% opacity.
+3. Ensure all text meets WCAG AA contrast standards. Use the "Foreground" tokens on their respective parents.
+4. Use "rounded-lg", "rounded-md", or "rounded-sm" to respect the system's border radius.`;
 };
 
 /**

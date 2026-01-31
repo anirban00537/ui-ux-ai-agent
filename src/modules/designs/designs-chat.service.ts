@@ -206,7 +206,10 @@ export class DesignsChatService {
               : "I couldn't generate a palette from the prompt, so I set a sensible default palette.";
 
             await messenger.emit(
-              { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
+              {
+                type: coreConstant.STREAM_EVENT.COLOR_PALETTE,
+                data: colorPalette,
+              },
               paletteMsg,
             );
           }
