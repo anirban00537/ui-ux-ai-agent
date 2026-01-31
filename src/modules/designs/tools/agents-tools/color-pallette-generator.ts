@@ -2,6 +2,8 @@ import { OpenRouter } from '@openrouter/sdk';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { type ColorPalette } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+import { coreConstant } from '../../../../shared/helpers/coreConstant';
+import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
 // JSON Schema for ColorPalette (replaces Zod schema)
 const colorPaletteJsonSchema = {
@@ -238,7 +240,10 @@ export class ColorPaletteGenerator {
     apiKey: process.env.OPENROUTER_API_KEY!,
   });
 
-  constructor(private creditManager: CreditManager) {}
+  constructor(
+    private creditManager: CreditManager,
+    private aiUsageService: AiUsageService,
+  ) {}
 
   /**
    * Generates a color palette based on the user's request
@@ -257,7 +262,7 @@ export class ColorPaletteGenerator {
     });
 
     const response = await this.openrouter.chat.send({
-      model: 'minimax/minimax-m2.1',
+      model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: [
         { role: 'system', content: colorPrompt },
         { role: 'user', content: message },
@@ -291,6 +296,16 @@ export class ColorPaletteGenerator {
     };
 
     console.log('[ColorPaletteGenerator] Deducting credits:', tokenUsage);
+
+    // Cost logging
+    await this.aiUsageService.logUsage({
+      userId,
+      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      inputTokens: tokenUsage.inputTokens,
+      outputTokens: tokenUsage.outputTokens,
+      type: 'color_palette',
+      designId,
+    } as any);
 
     // Deduct credits immediately after generation
     await this.creditManager.deductCredits(

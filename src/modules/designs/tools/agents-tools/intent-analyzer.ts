@@ -2,6 +2,8 @@ import { OpenRouter } from '@openrouter/sdk';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { type Intent, type ExistingScreen } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+import { coreConstant } from '../../../../shared/helpers/coreConstant';
+import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
 // JSON Schema for Intent (replaces Zod schema)
 const intentJsonSchema = {
@@ -72,7 +74,10 @@ export class IntentAnalyzer {
     apiKey: process.env.OPENROUTER_API_KEY!,
   });
 
-  constructor(private creditManager: CreditManager) {}
+  constructor(
+    private creditManager: CreditManager,
+    private aiUsageService: AiUsageService,
+  ) {}
 
   async analyzeIntent(
     message: string,
@@ -105,7 +110,7 @@ export class IntentAnalyzer {
     ];
 
     const response = await this.openrouter.chat.send({
-      model: 'minimax/minimax-m2.1',
+      model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: allMessages,
       responseFormat: {
         type: 'json_schema',
@@ -136,6 +141,16 @@ export class IntentAnalyzer {
     };
 
     console.log('[IntentAnalyzer] Deducting credits:', tokenUsage);
+
+    // Filter through AiUsageService for cost logging
+    await this.aiUsageService.logUsage({
+      userId,
+      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      inputTokens: tokenUsage.inputTokens,
+      outputTokens: tokenUsage.outputTokens,
+      type: 'intent_analysis',
+      designId,
+    } as any);
 
     // Deduct credits immediately after analysis
     await this.creditManager.deductCredits(

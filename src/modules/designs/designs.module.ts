@@ -3,9 +3,10 @@ import { DesignsController } from './designs.controller';
 import { DesignsService } from './designs.service';
 import { DesignsChatService } from './designs-chat.service';
 import { PrismaModule } from '../prisma/prisma.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, SubscriptionModule],
   controllers: [DesignsController],
   providers: [DesignsService, DesignsChatService],
   exports: [DesignsService, DesignsChatService],

@@ -7,6 +7,8 @@ import {
   type ColorPalette,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+import { coreConstant } from '../../../../shared/helpers/coreConstant';
+import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
 // JSON Schema for SingleScreen (replaces Zod schema)
 const singleScreenJsonSchema = {
@@ -461,6 +463,7 @@ export class ScreenUpdater {
   constructor(
     private prisma: PrismaService,
     private creditManager: CreditManager,
+    private aiUsageService: AiUsageService,
   ) {}
 
   async updateScreen(
@@ -488,7 +491,7 @@ export class ScreenUpdater {
     ];
 
     const response = await this.openrouter.chat.send({
-      model: 'minimax/minimax-m2.1',
+      model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: allMessages,
       responseFormat: {
         type: 'json_schema',
@@ -522,6 +525,16 @@ export class ScreenUpdater {
       '[ScreenUpdater] Deducting credits for screen update:',
       tokenUsage,
     );
+
+    // Cost logging
+    await this.aiUsageService.logUsage({
+      userId,
+      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      inputTokens: tokenUsage.inputTokens,
+      outputTokens: tokenUsage.outputTokens,
+      type: 'screen_update',
+      designId,
+    } as any);
 
     // Deduct credits immediately after update
     await this.creditManager.deductCredits(

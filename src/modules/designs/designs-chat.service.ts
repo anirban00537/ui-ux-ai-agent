@@ -10,10 +10,14 @@ import ScreenDeleter from './tools/agents-tools/screen-deleter';
 import { coreConstant } from '../../shared/helpers/coreConstant';
 import { StreamMessenger } from './tools/stream-messenger';
 import { CreditManager } from './tools/credit-manager';
+import { AiUsageService } from '../subscription/services/ai-usage.service';
 
 @Injectable()
 export class DesignsChatService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly aiUsageService: AiUsageService,
+  ) {}
 
   async chatStream(
     prompt: string,
@@ -68,11 +72,11 @@ export class DesignsChatService {
             messenger.setDesignId(designId);
           }
 
-          const screenCreator = new ScreenCreator(this.prisma, creditManager);
-          const screenUpdater = new ScreenUpdater(this.prisma, creditManager);
+          const screenCreator = new ScreenCreator(this.prisma, creditManager, this.aiUsageService);
+          const screenUpdater = new ScreenUpdater(this.prisma, creditManager, this.aiUsageService);
           const screenDeleter = new ScreenDeleter(this.prisma, creditManager);
-          const intentAnalyzer = new IntentAnalyzer(creditManager);
-          const colorPaletteGenerator = new ColorPaletteGenerator(creditManager);
+          const intentAnalyzer = new IntentAnalyzer(creditManager, this.aiUsageService);
+          const colorPaletteGenerator = new ColorPaletteGenerator(creditManager, this.aiUsageService);
 
           await this.prisma.message.create({
             data: { designId, role: 'user', content: prompt },

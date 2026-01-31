@@ -9,6 +9,8 @@ import {
   type ColorPalette,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+import { coreConstant } from '../../../../shared/helpers/coreConstant';
+import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
 // JSON Schema for ScreenPlan (replaces Zod schema)
 const screenPlanJsonSchema = {
@@ -787,6 +789,7 @@ export class ScreenCreator {
   constructor(
     private prisma: PrismaService,
     private creditManager: CreditManager,
+    private aiUsageService: AiUsageService,
   ) {}
 
   async planScreens(
@@ -807,7 +810,7 @@ export class ScreenCreator {
     ];
 
     const response = await this.openrouter.chat.send({
-      model: 'minimax/minimax-m2.1',
+      model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: allMessages,
       responseFormat: {
         type: 'json_schema',
@@ -847,6 +850,16 @@ export class ScreenCreator {
 
     console.log('[ScreenCreator] Deducting credits for planning:', tokenUsage);
 
+    // Cost logging
+    await this.aiUsageService.logUsage({
+      userId,
+      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      inputTokens: tokenUsage.inputTokens,
+      outputTokens: tokenUsage.outputTokens,
+      type: 'screen_planning',
+      designId,
+    } as any);
+
     // Deduct credits immediately after planning
     await this.creditManager.deductCredits(
       userId,
@@ -883,7 +896,7 @@ export class ScreenCreator {
     ];
 
     const response = await this.openrouter.chat.send({
-      model: 'minimax/minimax-m2.1',
+      model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: allMessages,
       responseFormat: {
         type: 'json_schema',
@@ -917,6 +930,16 @@ export class ScreenCreator {
       '[ScreenCreator] Deducting credits for screen generation:',
       tokenUsage,
     );
+
+    // Cost logging
+    await this.aiUsageService.logUsage({
+      userId,
+      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      inputTokens: tokenUsage.inputTokens,
+      outputTokens: tokenUsage.outputTokens,
+      type: 'screen_creation',
+      designId,
+    } as any);
 
     // Deduct credits immediately after generation
     await this.creditManager.deductCredits(
