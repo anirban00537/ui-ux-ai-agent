@@ -106,7 +106,7 @@ export function Editor({
                       title={screen.title}
                       subtitle={loading ? "Generating..." : screen.description}
                       htmlContent={screen.html}
-                      width={300}
+                      width={320}
                     />
                   </div>
                 ))}

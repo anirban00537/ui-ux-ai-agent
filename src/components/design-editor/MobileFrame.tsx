@@ -15,7 +15,7 @@ export function MobileFrame({
   title,
   subtitle,
   className = "",
-  width = 300,
+  width = 360,
 }: MobileFrameProps) {
   const hasContent = htmlContent && htmlContent.trim().length > 0;
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -35,7 +35,7 @@ export function MobileFrame({
       * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
       *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
       :root { color-scheme: light; }
-      #root { width: ${width}px; box-sizing: border-box; }
+      #root { width: ${width}px; background-color: #ffffff; min-height: 100vh; position: relative; overflow: hidden; }
     </style>
   </head>
   <body>
@@ -66,7 +66,7 @@ export function MobileFrame({
             doc.documentElement?.scrollHeight || 0
           );
         }
-        newHeight = Math.max(newHeight, 1) + 4;
+        newHeight = Math.max(newHeight, 600); // Minimum height of 600px for better feel
         setIframeHeight((prev) => (prev !== newHeight ? newHeight : prev));
       } catch {}
     };
@@ -98,18 +98,20 @@ export function MobileFrame({
   }, [srcDoc]);
 
   return (
-    <div className={`relative ${className}`}>
-      <div
-        className="rounded-lg shadow-sm overflow-hidden"
+    <div className={`relative ${className} flex flex-col items-center`}>
+      {(title || subtitle) && (
+        <div className="w-full text-center pb-4">
+          {title && (
+            <h3 className="text-sm font-medium text-gray-500 tracking-wide uppercase">{title}</h3>
+          )}
+        </div>
+      )}
+      
+      {/* Screen Area without thick bezel */}
+      <div 
+        className="bg-white rounded-[2rem] overflow-hidden relative shadow-2xl ring-1 ring-gray-900/5"
         style={{ width: `${width}px` }}
       >
-        {(title || subtitle) && (
-          <div className="text-left py-3 px-4">
-            {title && (
-              <h3 className="text-sm font-light text-gray-400 mb-1">{title}</h3>
-            )}
-          </div>
-        )}
         {hasContent ? (
           <iframe
             ref={iframeRef}
@@ -121,13 +123,18 @@ export function MobileFrame({
               height: `${iframeHeight}px`,
               border: "0",
               display: "block",
-              background: "transparent",
-              overflow: "hidden",
+              background: "white",
             }}
           />
         ) : (
-          <div className="flex items-center justify-center h-32 text-gray-500">
-            <p>No content available</p>
+          <div 
+            className="flex items-center justify-center text-gray-400 bg-gray-50"
+            style={{ height: '640px' }}
+          >
+            <div className="text-center">
+              <i className="ri-smartphone-line text-4xl mb-2 block"></i>
+              <p className="text-sm">Generating Preview...</p>
+            </div>
           </div>
         )}
       </div>
