@@ -22,6 +22,7 @@ export class DesignsService {
         'design',
         where,
         paginationOptions,
+        { include: { screens: { select: { id: true, title: true } } } },
       );
 
       return successResponse('Designs fetched successfully', result);
