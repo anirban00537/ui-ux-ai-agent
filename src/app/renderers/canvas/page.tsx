@@ -91,7 +91,7 @@ export default function CanvasPage() {
       <div
         id="root"
         ref={rootRef}
-        className="w-full h-full overflow-y-auto overflow-x-hidden bg-white relative"
+        className="w-full h-full overflow-y-auto overflow-x-hidden bg-transparent relative"
       />
     </>
   );

@@ -129,17 +129,11 @@ export function MobileFrame({
         
         {/* Inner Frame Container */}
         <div
-          className="relative bg-white overflow-hidden isolate"
+          className="relative overflow-hidden isolate"
           style={{
             width: `${width}px`,
             height: `${height}px`,
             borderRadius: "32px", 
-            boxShadow: isGenerating ? undefined : `
-              0 0 0 1px rgba(0,0,0,0.03),
-              0 1px 2px -1px rgba(0,0,0,0.4),
-              0 12px 32px -8px rgba(0,0,0,0.08)
-            `,
-            border: isGenerating ? undefined : "1px solid rgba(200,200,200,0.3)",
           }}
         >
           <iframe
