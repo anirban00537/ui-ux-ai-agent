@@ -1,92 +1,134 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { IconSparkles, IconPlayerPlay } from "@tabler/icons-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { PromptBox, type PromptMode } from "@/components/ui";
 import { trackEvent } from "@/components/analytics/trackEvent";
+import { cn } from "@/lib/utils";
+
+const spinningWords = ["Presentation", "Mobile App"];
 
 export default function HeroSection() {
-  const [videoError, setVideoError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<PromptMode>("presentation");
+  const [wordIndex, setWordIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % spinningWords.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-start bg-background">
+    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center bg-background">
       <div className="container relative z-10 px-4 flex flex-col items-center">
-        {/* Headline Section */}
-        <div className="text-center max-w-5xl mx-auto mb-16">
+        <div className="w-full max-w-4xl flex flex-col gap-3">
+          {/* Headline */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 mb-8"
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8"
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            <span className="text-xs font-semibold tracking-wide uppercase text-zinc-600 dark:text-zinc-400">
-              AI-Powered Design v2.0
-            </span>
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground leading-[1.1] mb-6">
+              Design{" "}
+              <span className="relative inline-block text-left">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={wordIndex}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="absolute left-0 bottom-0 italic text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 whitespace-nowrap"
+                  >
+                    {spinningWords[wordIndex]}
+                  </motion.span>
+                </AnimatePresence>
+                {/* Invisible spacer to maintain layout height/width based on longest word */}
+                <span className="opacity-0 invisible pointer-events-none italic whitespace-nowrap">
+                  {spinningWords[wordIndex]}
+                </span>
+              </span>{" "}
+              in Seconds
+            </h1>
+            <p className="text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Transform your prompts into stunning presentations and mobile app
+              designs. No design skills needed.
+            </p>
           </motion.div>
 
-          <motion.h1
+          {/* Mode Tabs */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-serif text-6xl md:text-7xl lg:text-9xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50 leading-[0.95] mb-8"
+            transition={{ delay: 0.1 }}
+            className="flex justify-center gap-1 w-full max-w-2xl mx-auto"
           >
-            Ideas to{" "}
-            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500">
-              Presentations
-            </span>{" "}
-            <br />
-            in Seconds.
-          </motion.h1>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("presentation");
+                trackEvent("prompt_mode_switch", "engagement", "presentation");
+              }}
+              className={cn(
+                "rounded-full px-5 py-2 text-sm font-medium transition-colors",
+                mode === "presentation"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              )}
+            >
+              Presentation
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("mobile-app");
+                trackEvent("prompt_mode_switch", "engagement", "mobile-app");
+              }}
+              className={cn(
+                "rounded-full px-5 py-2 text-sm font-medium transition-colors",
+                mode === "mobile-app"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              )}
+            >
+              Mobile App
+            </button>
+          </motion.div>
 
-          <motion.p
+          {/* Prompt Box */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed font-light"
+            transition={{ delay: 0.15 }}
+            className="relative w-full max-w-2xl mx-auto"
           >
-            Butterfast transforms your prompts into stunning, professional
-            presentations. No design skills needed. Just pure storytelling.
-          </motion.p>
+            <PromptBox
+              name="message"
+              mode={mode}
+              onError={(errorMessage) => setError(errorMessage)}
+              className="border border-border bg-card shadow-none"
+            />
 
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-500 text-center font-medium"
+              >
+                {error}
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <Link href="/home">
-              <Button
-                size="lg"
-                onClick={() => trackEvent('button_click', 'engagement', 'hero_cta_start_creating')}
-                className="h-14 px-8 rounded-full text-lg bg-white text-zinc-900 hover:bg-zinc-100 shadow-xl transition-all duration-300"
-              >
-                <IconSparkles className="mr-2 h-5 w-5" />
-                Start Creating Free
-              </Button>
-            </Link>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => trackEvent('button_click', 'engagement', 'hero_cta_how_it_works')}
-              className="h-14 px-8 rounded-full text-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-800"
-            >
-              <IconPlayerPlay className="mr-2 h-5 w-5 fill-current" />
-              See how it works
-            </Button>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-10 flex justify-center"
+            className="mt-8 flex justify-center"
           >
             <a href="https://twelve.tools" target="_blank" rel="noreferrer">
               <img
@@ -98,41 +140,6 @@ export default function HeroSection() {
             </a>
           </motion.div>
         </div>
-
-        {/* Sleek Video Preview */}
-        <motion.div
-          className="relative w-full max-w-6xl"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-        >
-          {/* Glow Effect behind the video */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-purple-600/30 rounded-2xl blur-2xl opacity-30"></div>
-          
-          <div className="relative aspect-[21/9] rounded-xl overflow-hidden shadow-2xl border border-zinc-200/50 dark:border-zinc-800/50 bg-black">
-            {!videoError ? (
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/bkIDMSYVVLc?vq=hd1080&hd=1&rel=0"
-                title="Demo video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                onError={() => setVideoError(true)}
-              />
-            ) : (
-              <Image
-                src="/demo.png"
-                alt="Demo preview"
-                fill
-                className="object-cover"
-                priority
-              />
-            )}
-            
-            {/* Subtle Texture Overlay */}
-            <div className="absolute inset-0 bg-noise opacity-[0.02] pointer-events-none" />
-          </div>
-        </motion.div>
       </div>
     </section>
   );
