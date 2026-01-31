@@ -1,7 +1,7 @@
 import React from "react";
 import { Save, FolderOpen, RotateCcw, ArrowLeft, Library } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { LayoutMetadata } from "@/app/(protected)/(layout-editor)/hooks/useLayoutEditor";
+import type { LayoutMetadata } from "@/app/(app)/(protected)/(layout-editor)/hooks/useLayoutEditor";
 
 interface LayoutEditorHeaderProps {
   metadata: LayoutMetadata;

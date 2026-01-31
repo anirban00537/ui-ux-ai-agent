@@ -3,7 +3,7 @@ import { X, Plus, Search, Edit, Trash2, Calendar, Tag, Check } from "lucide-reac
 import { motion, AnimatePresence } from "framer-motion";
 import type { Theme } from "@/types";
 import type { LayoutTemplate } from "@/services/layouts";
-import { useLayouts, useDeleteLayout } from "@/app/(protected)/(layout-editor)/hooks/useLayoutEditor";
+import { useLayouts, useDeleteLayout } from "@/app/(app)/(protected)/(layout-editor)/hooks/useLayoutEditor";
 
 interface LayoutListPanelProps {
   isOpen: boolean;

@@ -13,14 +13,14 @@ import {
   BLOCK_TYPES,
   MAX_BLOCKS_PER_ROW,
 } from "@/types/docs";
-import { BLOCK_DEFINITIONS } from "@/app/(protected)/docs/[id]/engine/registry/block-definitions";
+import { BLOCK_DEFINITIONS } from "@/app/(app)/(protected)/docs/[id]/engine/registry/block-definitions";
 
 import {
   createBlockInstance,
   createRow,
   createRowWithColumns,
   createCard,
-} from "@/app/(protected)/docs/[id]/engine/registry/factories";
+} from "@/app/(app)/(protected)/docs/[id]/engine/registry/factories";
 import {
   findCard,
   findRow,

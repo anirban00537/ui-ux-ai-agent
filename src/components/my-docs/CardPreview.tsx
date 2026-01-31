@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import { CardCanvas } from "@/app/(protected)/docs/[id]/engine/layout/CardCanvas";
-import { EditorThemeProvider } from "@/app/(protected)/docs/[id]/engine/theme/EditorThemeProvider";
+import { CardCanvas } from "@/app/(app)/(protected)/docs/[id]/engine/layout/CardCanvas";
+import { EditorThemeProvider } from "@/app/(app)/(protected)/docs/[id]/engine/theme/EditorThemeProvider";
 import { Theme } from "@/store/slices/cardsSlice";
 import { CARD_MAX_WIDTH } from "@/lib/constants";
 

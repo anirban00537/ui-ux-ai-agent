@@ -1,5 +1,5 @@
 import type { Card as ReduxCard, Block, Row } from "@/types";
-import { BLOCK_TYPES } from "@/app/(protected)/docs/[id]/editor/blocks/definitions";
+import { BLOCK_TYPES } from "@/app/(app)/(protected)/docs/[id]/editor/blocks/definitions";
 
 /**
  * Migration helper for block content. 
