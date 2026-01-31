@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -15,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useSubscriptionStatus } from "@/hooks/use-subscription";
 import { trackEvent } from "@/components/analytics/trackEvent";
+import { createDesignConversation } from "@/services/designs";
 
 // --- Utility Function & Radix Primitives ---
 const TooltipProvider = TooltipPrimitive.Provider;
@@ -71,6 +73,8 @@ const SendIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 // --- The Final, Self-Contained PromptBox Component ---
+type PromptMode = "presentation" | "mobile-app";
+
 interface PromptBoxProps {
   className?: string;
   name?: string;
@@ -85,8 +89,33 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
     const savePromptMutation = useSavePrompt();
     const internalTextareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = React.useState(defaultValue);
+    const [mode, setMode] = React.useState<PromptMode>("presentation");
     const { data: subscriptionStatus, isLoading: isLoadingStatus } =
       useSubscriptionStatus();
+
+    const createDesignMutation = useMutation({
+      mutationFn: async (title: string) => {
+        const resp = await createDesignConversation(title);
+        if (!resp?.success || !resp?.data?.id) {
+          throw new Error(resp?.message || "Failed to create design");
+        }
+        return resp.data;
+      },
+      onSuccess: (data) => {
+        trackEvent("design_create_success", "engagement", data.id);
+        const prompt = value.trim();
+        router.push(
+          `/designs/${data.id}${prompt ? `?prompt=${encodeURIComponent(prompt)}` : ""}`
+        );
+      },
+      onError: (err: any) => {
+        const msg =
+          err?.response?.data?.message || err?.message || "Failed to create design";
+        trackEvent("design_create_error", "engagement", msg);
+        toast.error(msg, { duration: 5000 });
+        onError?.(msg);
+      },
+    });
 
     // Always default to 10 cards
     const [numberOfCards, setNumberOfCards] = React.useState<string>("10");
@@ -121,6 +150,15 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
         return;
       }
 
+      // Mobile App: create design and redirect to design page
+      if (mode === "mobile-app") {
+        if (createDesignMutation.isPending) return;
+        const title = value.trim().slice(0, 50) + (value.trim().length > 50 ? "..." : "");
+        createDesignMutation.mutate(title);
+        return;
+      }
+
+      // Presentation: validate cards and save prompt
       const cards = parseInt(numberOfCards);
       if (isNaN(cards) || cards < 1) {
         onError?.("Please select a valid number of cards");
@@ -198,16 +236,28 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
     };
 
     const hasValue = value.trim().length > 0;
+    const isPending =
+      mode === "presentation"
+        ? savePromptMutation.isPending
+        : createDesignMutation.isPending;
 
     // --- Dynamic Placeholder Logic ---
     const placeholders = React.useMemo(
-      () => [
-        "Create a deck about AI in Modern Healthcare...",
-        "Design a pitch for a Sustainable Fashion startup...",
-        "Explain Quantum Physics to a fifth grader...",
-        "Develop a marketing plan for a boutique coffee shop...",
-      ],
-      []
+      () =>
+        mode === "mobile-app"
+          ? [
+              "Create a dating app",
+              "Design a finance tracker with charts",
+              "Generate a workout planner UI",
+              "Build a recipe sharing app",
+            ]
+          : [
+              "Create a deck about AI in Modern Healthcare...",
+              "Design a pitch for a Sustainable Fashion startup...",
+              "Explain Quantum Physics to a fifth grader...",
+              "Develop a marketing plan for a boutique coffee shop...",
+            ],
+      [mode]
     );
 
     const [currentPlaceholderIndex, setCurrentPlaceholderIndex] =
@@ -256,6 +306,40 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
             className
           )}
         >
+          {/* Presentation | Mobile App tabs */}
+          <div className="flex gap-0.5 px-1 pt-1 pb-0.5">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("presentation");
+                trackEvent("prompt_mode_switch", "engagement", "presentation");
+              }}
+              className={cn(
+                "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                mode === "presentation"
+                  ? "bg-white text-foreground shadow-sm border border-slate-200"
+                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/80"
+              )}
+            >
+              Presentation
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("mobile-app");
+                trackEvent("prompt_mode_switch", "engagement", "mobile-app");
+              }}
+              className={cn(
+                "flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                mode === "mobile-app"
+                  ? "bg-white text-foreground shadow-sm border border-slate-200"
+                  : "text-muted-foreground hover:text-foreground hover:bg-slate-100/80"
+              )}
+            >
+              Mobile App
+            </button>
+          </div>
+
           <textarea
             ref={internalTextareaRef}
             rows={1}
@@ -270,7 +354,8 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
           <div className="mt-0.5 p-1 pt-0">
             <TooltipProvider delayDuration={100}>
               <div className="flex items-center gap-2 flex-wrap">
-                {/* Number of Cards Select */}
+                {/* Number of Cards Select - only for Presentation */}
+                {mode === "presentation" && (
                 <Select
                   value={numberOfCards}
                   onValueChange={(v) => {
@@ -346,6 +431,7 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
                     })()}
                   </SelectContent>
                 </Select>
+                )}
 
                 {/* Right-aligned buttons container */}
                 <div className="ml-auto flex items-center gap-2">
@@ -355,10 +441,10 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
                     <TooltipTrigger asChild>
                       <button
                         type="submit"
-                        disabled={!hasValue || savePromptMutation.isPending}
+                        disabled={!hasValue || isPending}
                         className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none bg-primary text-primary-foreground hover:bg-primary/90 shadow-coral-glow hover:scale-105 disabled:bg-primary/40 disabled:shadow-none"
                       >
-                        {savePromptMutation.isPending ? (
+                        {isPending ? (
                           <svg
                             className="h-4 w-4 animate-spin"
                             xmlns="http://www.w3.org/2000/svg"
@@ -387,8 +473,10 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
                     </TooltipTrigger>
                     <TooltipContent side="top" showArrow={true}>
                       <p>
-                        {savePromptMutation.isPending
-                          ? "Generating..."
+                        {isPending
+                          ? mode === "mobile-app"
+                            ? "Creating design..."
+                            : "Generating..."
                           : "Send"}
                       </p>
                     </TooltipContent>
