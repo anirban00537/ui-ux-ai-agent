@@ -29,6 +29,44 @@ export default function CanvasPage() {
           });
         }
       }
+
+      if (data.type === "UPDATE_THEME" && data.palette) {
+        const p = data.palette;
+        const root = document.documentElement;
+        
+        // Map camelCase palette to kebab-case CSS variables
+        const mappings: Record<string, string> = {
+          background: p.background,
+          foreground: p.foreground,
+          card: p.card,
+          'card-foreground': p.cardForeground,
+          popover: p.popover,
+          'popover-foreground': p.popoverForeground,
+          primary: p.primary,
+          'primary-foreground': p.primaryForeground,
+          secondary: p.secondary,
+          'secondary-foreground': p.secondaryForeground,
+          muted: p.muted,
+          'muted-foreground': p.mutedForeground,
+          accent: p.accent,
+          'accent-foreground': p.accentForeground,
+          destructive: p.destructive,
+          'destructive-foreground': p.destructiveForeground,
+          border: p.border,
+          input: p.input,
+          ring: p.ring,
+          radius: p.radius,
+          'chart-1': p.chart1,
+          'chart-2': p.chart2,
+          'chart-3': p.chart3,
+          'chart-4': p.chart4,
+          'chart-5': p.chart5,
+        };
+
+        Object.entries(mappings).forEach(([key, value]) => {
+          if (value) root.style.setProperty(`--${key}`, value);
+        });
+      }
     };
 
     window.addEventListener("message", handleMessage);

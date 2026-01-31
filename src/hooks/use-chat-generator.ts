@@ -22,12 +22,41 @@ interface Message {
   status?: string;
 }
 
+interface ColorPalette {
+  background: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  muted: string;
+  mutedForeground: string;
+  accent: string;
+  accentForeground: string;
+  destructive: string;
+  destructiveForeground: string;
+  border: string;
+  input: string;
+  ring: string;
+  radius: string;
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
+}
+
 interface Conversation {
   id: string;
   title: string;
   designType: DesignType;
   messages: Message[];
   screens: Screen[];
+  colorPalette?: ColorPalette;
 }
 
 interface GenerationProgress {
@@ -288,6 +317,14 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   }
                   break;
                 }
+                case "color_palette": {
+                  if (eventData) {
+                    setConversation((prev) =>
+                      prev ? { ...prev, colorPalette: eventData } : prev
+                    );
+                  }
+                  break;
+                }
                 case "all_complete":
                   addStreamMessage(
                     eventData?.message || "All tasks completed.",
@@ -382,6 +419,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
           html: artboard.html,
           createdAt: artboard.createdAt,
         })),
+        colorPalette: designData.colorPalette,
       };
       setConversation(conv);
     } catch (e: any) {

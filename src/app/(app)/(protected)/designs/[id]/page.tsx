@@ -69,6 +69,7 @@ export default function DesignEditorPage() {
           designType={conversation?.designType ?? "mobile_app"}
           error={error ?? undefined}
           loading={isGenerating}
+          colorPalette={conversation?.colorPalette}
           onDeleteArtboard={(artboardId: string, artboardTitle: string) => {
             sendMessage(
               `Delete the screen "${artboardTitle}" with ID ${artboardId}`,

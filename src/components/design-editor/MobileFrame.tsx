@@ -2,12 +2,41 @@
 
 import React, { useEffect, useRef, useState } from "react";
 
+interface ColorPalette {
+  background: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  muted: string;
+  mutedForeground: string;
+  accent: string;
+  accentForeground: string;
+  destructive: string;
+  destructiveForeground: string;
+  border: string;
+  input: string;
+  ring: string;
+  radius: string;
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
+}
+
 interface MobileFrameProps {
   htmlContent: string;
   title?: string;
   subtitle?: string;
   className?: string;
   width?: number;
+  colorPalette?: ColorPalette;
 }
 
 export function MobileFrame({
@@ -15,7 +44,8 @@ export function MobileFrame({
   title,
   subtitle,
   className = "",
-  width = 400, // Slightly wider default for modern feel
+  width = 400,
+  colorPalette,
 }: MobileFrameProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -53,6 +83,19 @@ export function MobileFrame({
       );
     }
   }, [htmlContent, isLoaded]);
+
+  // Sync palette
+  useEffect(() => {
+    if (isLoaded && colorPalette && iframeRef.current?.contentWindow) {
+      iframeRef.current.contentWindow.postMessage(
+        {
+          type: "UPDATE_THEME",
+          palette: colorPalette,
+        },
+        "*"
+      );
+    }
+  }, [colorPalette, isLoaded]);
 
   return (
     <div className={`relative ${className} flex flex-col items-center select-none`}>
