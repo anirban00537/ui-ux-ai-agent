@@ -44,6 +44,7 @@ export const coreConstant = {
     PLANNING: 'planning',
     PLANNING_COMPLETE: 'planning_complete',
     SCREEN_START: 'screen_start',
+    SCREEN_STREAMING: 'screen_streaming',
     SCREEN_COMPLETE: 'screen_complete',
     SCREEN_UPDATE: 'screen_update',
     SCREEN_DELETE: 'screen_delete',

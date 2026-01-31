@@ -66,6 +66,7 @@ export interface StreamUpdate {
     | 'planning'
     | 'planning_complete'
     | 'screen_start'
+    | 'screen_streaming'
     | 'screen_complete'
     | 'screen_update'
     | 'screen_delete'

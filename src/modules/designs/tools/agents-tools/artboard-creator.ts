@@ -215,9 +215,10 @@ export class ArtboardCreator {
   }
 
   /**
-   * Generate an artboard with pre-fetched images
+   * Generate an artboard with streaming support
+   * Yields partial content chunks for real-time UI updates
    */
-  async generateArtboard(
+  async *generateArtboardStreaming(
     promptData: ScreenPromptData,
     message: string,
     contextMessages: Array<{
@@ -228,7 +229,7 @@ export class ArtboardCreator {
     userId: string,
     designId: string,
     designType: string,
-  ): Promise<SingleScreen> {
+  ): AsyncGenerator<{ type: 'chunk' | 'complete'; data: any }, void, unknown> {
     const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
     
     const prompts = PromptManager.getPrompts(designType);
@@ -247,35 +248,75 @@ export class ArtboardCreator {
       { role: 'user' as const, content: userContent },
     ];
 
-    const response = await this.openrouter.chat.send({
+    // Use OpenAI SDK for streaming (OpenRouter compatible)
+    const { OpenAI } = await import('openai');
+    const openai = new OpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: process.env.OPENROUTER_API_KEY!,
+      defaultHeaders: {
+        'HTTP-Referer': 'https://butterfast.app',
+        'X-Title': 'Butterfast',
+      },
+    });
+
+    const stream = await openai.chat.completions.create({
       model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: allMessages,
-      responseFormat: {
+      response_format: {
         type: 'json_schema',
-        jsonSchema: {
+        json_schema: {
           name: 'artboard',
           strict: true,
           schema: singleArtboardJsonSchema,
         },
       },
       temperature: 0.7,
-      stream: false,
+      stream: true,
+      stream_options: {
+        include_usage: true,
+      },
     });
 
-    const content = response.choices[0]?.message?.content;
-    const artboard = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
+    let accumulatedContent = '';
+    let usageData: any = null;
 
-    // Extract token usage from completion
-    const usage = response.usage as any || {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
-    };
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content;
+      
+      if (delta) {
+        accumulatedContent += delta;
+        
+        // Yield chunk for real-time streaming
+        yield {
+          type: 'chunk',
+          data: {
+            rawChunk: delta,
+            accumulatedText: accumulatedContent,
+            title: promptData.title,
+          },
+        };
+      }
 
+      // Capture usage data
+      if (chunk.usage) {
+        usageData = chunk.usage;
+      }
+    }
+
+    // Parse final JSON
+    let artboard: SingleScreen;
+    try {
+      artboard = JSON.parse(accumulatedContent) as SingleScreen;
+    } catch (e) {
+      console.error('[ArtboardCreator] Failed to parse streamed JSON:', e);
+      throw new Error('Failed to parse generated artboard content');
+    }
+
+    // Handle token usage and credits
     const tokenUsage = {
-      inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-      outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-      totalTokens: usage.totalTokens || usage.total_tokens || 0,
+      inputTokens: usageData?.prompt_tokens || 0,
+      outputTokens: usageData?.completion_tokens || 0,
+      totalTokens: usageData?.total_tokens || 0,
     };
 
     console.log('[ArtboardCreator] Deducting credits for artboard generation:', tokenUsage);
@@ -290,7 +331,7 @@ export class ArtboardCreator {
       designId,
     } as any);
 
-    // Deduct credits immediately after generation
+    // Deduct credits
     await this.creditManager.deductCredits(
       userId,
       designId,
@@ -298,7 +339,11 @@ export class ArtboardCreator {
       tokenUsage,
     );
 
-    return artboard;
+    // Yield final complete artboard
+    yield {
+      type: 'complete',
+      data: artboard,
+    };
   }
 
   async saveArtboard(

@@ -337,9 +337,10 @@ export class DesignsChatService {
                 `Generating screen "${sp.title}"...`,
               );
 
-              // Pass the full sp object which includes imageQueries from planning
-              const screen = await artboardCreator.generateArtboard(
-                sp, // Now includes title, prompt, order, and imageQueries
+              // Use the streaming generator for real-time UI updates
+              let screen: any = null;
+              const streamGenerator = artboardCreator.generateArtboardStreaming(
+                sp,
                 prompt,
                 contextMessages,
                 colorPalette ?? undefined,
@@ -347,6 +348,30 @@ export class DesignsChatService {
                 designId,
                 design.type,
               );
+
+              for await (const streamEvent of streamGenerator) {
+                if (streamEvent.type === 'chunk') {
+                  // Forward streaming chunk to frontend
+                  await messenger.emit(
+                    {
+                      type: coreConstant.STREAM_EVENT.SCREEN_STREAMING,
+                      progress: { current: i, total: plan.totalScreens },
+                      data: {
+                        title: sp.title,
+                        rawChunk: streamEvent.data.rawChunk,
+                        accumulatedText: streamEvent.data.accumulatedText,
+                      },
+                    },
+                    '', // No console message for chunks
+                  );
+                } else if (streamEvent.type === 'complete') {
+                  screen = streamEvent.data;
+                }
+              }
+
+              if (!screen) {
+                throw new Error(`Failed to generate screen "${sp.title}"`);
+              }
 
               const saved = await artboardCreator.saveArtboard(screen, designId);
 
