@@ -259,7 +259,13 @@ export function useChatGenerator(): UseChatGeneratorResult {
                         ? {
                             ...prev,
                             id: responseDesignId || prev.id,
-                            screens: [...prev.screens, newScreen],
+                            screens: prev.screens.map((s) =>
+                              s.title === newScreen.title ? newScreen : s
+                            ).concat(
+                              prev.screens.some((s) => s.title === newScreen.title)
+                                ? []
+                                : [newScreen]
+                            ),
                           }
                         : prev
                     );
@@ -272,6 +278,57 @@ export function useChatGenerator(): UseChatGeneratorResult {
                         currentScreen: `Completed: ${screenPayload.title}`,
                       });
                     }
+                  }
+                  break;
+                }
+                case "screen_streaming": {
+                  // Real-time streaming of LLM content
+                  const title = eventData?.title;
+                  const accumulatedText = eventData?.accumulatedText || "";
+                  
+                  // Try to extract partial HTML from the accumulated JSON
+                  let partialHtml = "";
+                  try {
+                    // Robust regex to match partial JSON strings including escaped quotes
+                    const htmlMatch = accumulatedText.match(/"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"|$)/);
+                    if (htmlMatch && htmlMatch[1]) {
+                      // Unescape JSON string
+                      partialHtml = htmlMatch[1]
+                        .replace(/\\n/g, "\n")
+                        .replace(/\\"/g, '"')
+                        .replace(/\\\\/g, "\\");
+                    }
+                  } catch {
+                    // Ignore parse errors
+                  }
+                  
+                  if (title && partialHtml) {
+                    setConversation((prev) => {
+                      if (!prev) return prev;
+                      
+                      // Find or create the streaming screen
+                      const existingIndex = prev.screens.findIndex((s) => s.title === title);
+                      
+                      if (existingIndex >= 0) {
+                        // Update existing screen
+                        const updatedScreens = [...prev.screens];
+                        updatedScreens[existingIndex] = {
+                          ...updatedScreens[existingIndex],
+                          html: partialHtml,
+                        };
+                        return { ...prev, screens: updatedScreens };
+                      } else {
+                        // Create new placeholder screen
+                        const newScreen: Screen = {
+                          id: `streaming-${Date.now()}`,
+                          title,
+                          description: "Generating...",
+                          html: partialHtml,
+                          createdAt: new Date().toISOString(),
+                        };
+                        return { ...prev, screens: [...prev.screens, newScreen] };
+                      }
+                    });
                   }
                   break;
                 }
