@@ -3,7 +3,7 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   type SingleScreen,
-  type ExistingScreen,
+  type ExistingArtboard,
   type ColorPalette,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
@@ -236,7 +236,7 @@ export class ScreenUpdater {
   ) {}
 
   async updateScreen(
-    screen: ExistingScreen,
+    screen: ExistingArtboard,
     message: string,
     contextMessages: Array<{
       role: 'system' | 'user' | 'assistant';
@@ -325,8 +325,8 @@ export class ScreenUpdater {
   async saveUpdatedScreen(
     screenId: string,
     updateData: SingleScreen,
-  ): Promise<ExistingScreen> {
-    return await this.prisma.screen.update({
+  ): Promise<ExistingArtboard> {
+    return await this.prisma.artboard.update({
       where: { id: screenId },
       data: {
         title: updateData.title,
@@ -356,8 +356,8 @@ export class ScreenUpdater {
    * @param screenId - The screen ID to fetch
    * @returns Promise<ExistingScreen | null> - The screen or null if not found
    */
-  async getScreenById(screenId: string): Promise<ExistingScreen | null> {
-    return await this.prisma.screen.findUnique({
+  async getScreenById(screenId: string): Promise<ExistingArtboard | null> {
+    return await this.prisma.artboard.findUnique({
       where: { id: screenId },
     });
   }

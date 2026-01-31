@@ -5,7 +5,7 @@ import {
   type ScreenPlan,
   type SingleScreen,
   type ScreenPromptData,
-  type ExistingScreen,
+  type ExistingArtboard,
   type ColorPalette,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
@@ -461,8 +461,8 @@ export class ScreenCreator {
   async saveScreen(
     screen: SingleScreen,
     designId: string,
-  ): Promise<ExistingScreen> {
-    return await this.prisma.screen.create({
+  ): Promise<ExistingArtboard> {
+    return await this.prisma.artboard.create({
       data: {
         designId,
         title: screen.title,

@@ -73,7 +73,7 @@ export interface StreamUpdate {
 // Database Types
 // ==========================
 
-export interface ExistingScreen {
+export interface ExistingArtboard {
   id: string;
   title: string;
   description: string | null;
@@ -96,7 +96,7 @@ export interface ScreenPromptData {
   prompt: string;
 }
 
-export interface ScreenToUpdate {
+export interface ArtboardToUpdate {
   id: string;
   title: string;
   description: string;

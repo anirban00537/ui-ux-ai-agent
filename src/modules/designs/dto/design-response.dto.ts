@@ -1,9 +1,9 @@
-import { Screen } from '@prisma/client';
+import { Artboard } from '@prisma/client';
 
 export class DesignResponseDto {
   success: boolean;
   message: string;
-  data?: Screen | Screen[];
+  data?: Artboard | Artboard[];
 }
 
 export interface DesignWithUser {

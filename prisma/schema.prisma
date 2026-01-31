@@ -608,13 +608,14 @@ model Design {
   id           String   @id @default(cuid())
   userId       String
   title        String?
+  type         String   @default("mobile_app")
   colorPalette Json?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages Message[]
-  screens  Screen[]
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+  artboards Artboard[]
 
   @@map("designs")
 }
@@ -632,7 +633,7 @@ model Message {
   @@map("messages")
 }
 
-model Screen {
+model Artboard {
   id          String   @id @default(cuid())
   designId    String
   title       String
@@ -642,5 +643,5 @@ model Screen {
 
   design Design @relation(fields: [designId], references: [id], onDelete: Cascade)
 
-  @@map("screens")
+  @@map("artboards")
 }

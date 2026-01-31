@@ -1,6 +1,6 @@
 import { OpenRouter } from '@openrouter/sdk';
 import { PromptTemplate } from '@langchain/core/prompts';
-import { type Intent, type ExistingScreen } from '../../schemas';
+import { type Intent, type ExistingArtboard } from '../../schemas';
 import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
@@ -81,7 +81,7 @@ export class IntentAnalyzer {
 
   async analyzeIntent(
     message: string,
-    existingScreens: ExistingScreen[],
+    existingScreens: ExistingArtboard[],
     contextMessages: Array<{
       role: 'system' | 'user' | 'assistant';
       content: string;

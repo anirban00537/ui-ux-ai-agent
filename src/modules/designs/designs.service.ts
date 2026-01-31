@@ -22,7 +22,7 @@ export class DesignsService {
         'design',
         where,
         paginationOptions,
-        { include: { screens: { select: { id: true, title: true } } } },
+        { include: { artboards: { select: { id: true, title: true } } } },
       );
 
       return successResponse('Designs fetched successfully', result);
@@ -43,7 +43,7 @@ export class DesignsService {
               createdAt: 'asc',
             },
           },
-          screens: {
+          artboards: {
             orderBy: {
               createdAt: 'asc',
             },

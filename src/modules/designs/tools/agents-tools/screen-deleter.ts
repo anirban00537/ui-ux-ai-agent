@@ -24,7 +24,7 @@ export class ScreenDeleter {
 
     try {
       // Delete the screen
-      await this.prisma.screen.delete({
+      await this.prisma.artboard.delete({
         where: { id: screenId },
       });
 
@@ -53,7 +53,7 @@ export class ScreenDeleter {
    * Get a screen by ID
    */
   async getScreenById(screenId: string) {
-    return await this.prisma.screen.findUnique({
+    return await this.prisma.artboard.findUnique({
       where: { id: screenId },
     });
   }

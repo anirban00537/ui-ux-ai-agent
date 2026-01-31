@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
-import { StreamUpdate, ExistingScreen } from './schemas';
+import { StreamUpdate, ExistingArtboard } from './schemas';
 import { ColorPaletteGenerator } from './tools/agents-tools/color-pallette-generator';
 import IntentAnalyzer from './tools/agents-tools/intent-analyzer';
 import ScreenCreator from './tools/agents-tools/screen-creator';
@@ -101,10 +101,10 @@ export class DesignsChatService {
             content: m.content,
           }));
 
-          const existingScreens = (await this.prisma.screen.findMany({
+          const existingArtboards = (await this.prisma.artboard.findMany({
             where: { designId },
             orderBy: { createdAt: 'asc' },
-          })) as ExistingScreen[];
+          })) as ExistingArtboard[];
 
           await messenger.emit(
             {
@@ -116,12 +116,12 @@ export class DesignsChatService {
 
           const hasColorPalette = !!design.colorPalette;
           const estimatedOperation =
-            existingScreens.length > 0 ? 'update_existing' : 'create_new';
+            existingArtboards.length > 0 ? 'update_existing' : 'create_new';
           const estimatedCredits = creditManager.estimateCredits(
             estimatedOperation,
             {
               numScreens: 3,
-              numScreensToUpdate: existingScreens.length > 0 ? 1 : 0,
+              numScreensToUpdate: existingArtboards.length > 0 ? 1 : 0,
               hasColorPalette,
             },
           );
@@ -200,7 +200,7 @@ export class DesignsChatService {
 
           const intent = await intentAnalyzer.analyzeIntent(
             prompt,
-            existingScreens,
+            existingArtboards,
             contextMessages,
             userId,
             designId,
@@ -222,10 +222,10 @@ export class DesignsChatService {
             intent.screensToUpdate.length > 0
           ) {
             for (const s of intent.screensToUpdate) {
-              const dbScreen = await this.prisma.screen.findUnique({
+              const dbArtboard = await this.prisma.artboard.findUnique({
                 where: { id: s.id },
               });
-              if (!dbScreen) continue;
+              if (!dbArtboard) continue;
 
               await messenger.emit(
                 {
@@ -233,14 +233,14 @@ export class DesignsChatService {
                   data: {
                     status: 'start',
                     screenId: s.id,
-                    title: s.title ?? dbScreen.title,
+                    title: s.title ?? dbArtboard.title,
                   },
                 },
-                `Updating screen "${s.title ?? dbScreen.title}"...`,
+                `Updating screen "${s.title ?? dbArtboard.title}"...`,
               );
 
               const updatedScreen = await screenUpdater.updateScreen(
-                dbScreen as ExistingScreen,
+                dbArtboard as ExistingArtboard,
                 prompt,
                 contextMessages,
                 colorPalette ?? undefined,
@@ -249,7 +249,7 @@ export class DesignsChatService {
               );
 
               const saved = await screenUpdater.saveUpdatedScreen(
-                dbScreen.id,
+                dbArtboard.id,
                 updatedScreen,
               );
 
