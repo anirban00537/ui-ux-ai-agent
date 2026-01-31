@@ -1,8 +1,44 @@
 import { OpenRouter } from '@openrouter/sdk';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { PromptTemplate } from '@langchain/core/prompts';
-import { IntentSchema, type Intent, type ExistingScreen } from '../../schemas';
+import { type Intent, type ExistingScreen } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+
+// JSON Schema for Intent (replaces Zod schema)
+const intentJsonSchema = {
+  type: 'object',
+  properties: {
+    intent: {
+      type: 'string',
+      enum: ['create_new', 'update_existing', 'delete_existing'],
+      description: 'Whether to create new screens, update existing ones, or delete existing ones',
+    },
+    reasoning: {
+      type: 'string',
+      description: 'Brief explanation of why this intent was chosen',
+    },
+    screensToUpdate: {
+      type: ['array', 'null'],
+      items: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'Database ID of the screen to update or delete',
+          },
+          title: {
+            type: 'string',
+            description: 'Title of the screen for reference',
+          },
+        },
+        required: ['id', 'title'],
+        additionalProperties: false,
+      },
+      description: 'Array of screens to update/delete with their IDs and titles (only for update_existing/delete_existing intent, null for create_new)',
+    },
+  },
+  required: ['intent', 'reasoning', 'screensToUpdate'],
+  additionalProperties: false,
+};
 
 const intentAnalysisTemplate =
   PromptTemplate.fromTemplate(`You are an AI assistant that analyzes user requests to determine intent.
@@ -38,12 +74,6 @@ export class IntentAnalyzer {
 
   constructor(private creditManager: CreditManager) {}
 
-  private static toChatMessages(
-    messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>,
-  ) {
-    return messages;
-  }
-
   async analyzeIntent(
     message: string,
     existingScreens: ExistingScreen[],
@@ -76,13 +106,13 @@ export class IntentAnalyzer {
 
     const response = await this.openrouter.chat.send({
       model: 'minimax/minimax-m2.1',
-      messages: IntentAnalyzer.toChatMessages(allMessages),
+      messages: allMessages,
       responseFormat: {
         type: 'json_schema',
         jsonSchema: {
           name: 'intent',
           strict: true,
-          schema: zodToJsonSchema(IntentSchema) as any,
+          schema: intentJsonSchema,
         },
       },
       temperature: 0.3,
@@ -90,8 +120,7 @@ export class IntentAnalyzer {
     });
 
     const content = response.choices[0]?.message?.content;
-    const contentString = typeof content === 'string' ? content : JSON.stringify(content);
-    const intent = IntentSchema.parse(JSON.parse(contentString ?? '{}'));
+    const intent = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as Intent;
 
     // Extract token usage from completion
     const usage = response.usage as any || {

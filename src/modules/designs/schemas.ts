@@ -1,116 +1,73 @@
-import { z } from 'zod';
-
 // ==========================
-// Zod Schemas
+// TypeScript Types (Pure TypeScript - No Zod)
 // ==========================
 
-export const ColorPaletteSchema = z.object({
-  primary: z.string().describe('Primary brand color (hex code)'),
-  primaryLight: z.string().describe('Light variant of primary color'),
-  primaryDark: z.string().describe('Dark variant of primary color'),
-  secondary: z.string().describe('Secondary brand color (hex code)'),
-  accent: z.string().describe('Accent color for highlights and CTAs'),
-  background: z.string().describe('Main background color'),
-  backgroundSecondary: z.string().describe('Secondary background color'),
-  surface: z.string().describe('Surface color for cards and containers'),
-  surfaceSecondary: z.string().describe('Secondary surface color'),
-  textPrimary: z.string().describe('Primary text color'),
-  textSecondary: z.string().describe('Secondary text color'),
-  textMuted: z.string().describe('Muted text color'),
-  border: z.string().describe('Border color'),
-  borderLight: z.string().describe('Light border color'),
-  success: z.string().describe('Success state color'),
-  warning: z.string().describe('Warning state color'),
-  error: z.string().describe('Error state color'),
-  info: z.string().describe('Info state color'),
-});
+export interface ColorPalette {
+  primary: string;
+  primaryLight: string;
+  primaryDark: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  backgroundSecondary: string;
+  surface: string;
+  surfaceSecondary: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  border: string;
+  borderLight: string;
+  success: string;
+  warning: string;
+  error: string;
+  info: string;
+}
 
-export const ScreenPlanSchema = z.object({
-  totalScreens: z
-    .number()
-    .min(1)
-    .max(8)
-    .describe('Total number of screens needed'),
-  screenPrompts: z
-    .array(
-      z.object({
-        title: z.string().describe('Screen title'),
-        prompt: z
-          .string()
-          .describe('Detailed prompt for generating this specific screen'),
-        order: z.number().describe('Order of screen generation'),
-      }),
-    )
-    .describe('Individual prompts for each screen'),
-});
+export interface ScreenPromptItem {
+  title: string;
+  prompt: string;
+  order: number;
+}
 
-export const SingleScreenSchema = z.object({
-  title: z.string().describe('A concise title for the mobile screen'),
-  description: z
-    .string()
-    .describe("A brief description of the screen's purpose and functionality"),
-  html: z.string().describe('Complete HTML code for the mobile screen'),
-});
+export interface ScreenPlan {
+  totalScreens: number;
+  screenPrompts: ScreenPromptItem[];
+}
 
-export const IntentSchema = z.object({
-  intent: z
-    .enum(['create_new', 'update_existing', 'delete_existing'])
-    .describe(
-      'Whether to create new screens, update existing ones, or delete existing ones',
-    ),
-  reasoning: z
-    .string()
-    .describe('Brief explanation of why this intent was chosen'),
-  screensToUpdate: z
-    .array(
-      z.object({
-        id: z
-          .string()
-          .describe('Database ID of the screen to update or delete'),
-        title: z.string().describe('Title of the screen for reference'),
-      }),
-    )
-    .nullable()
-    .describe(
-      'Array of screens to update/delete with their IDs and titles (only for update_existing/delete_existing intent, null for create_new)',
-    ),
-});
+export interface SingleScreen {
+  title: string;
+  description: string;
+  html: string;
+}
 
-export const StreamUpdateSchema = z.object({
-  type: z.enum([
-    'intent_analysis',
-    'ai_thinking',
-    'status_update',
-    'thinking_step',
-    'tool_use',
-    'planning',
-    'planning_complete',
-    'screen_start',
-    'screen_complete',
-    'screen_update',
-    'screen_delete',
-    'screen_error',
-    'agent_step',
-    'all_complete',
-  ]),
-  data: z.any().optional(),
-  progress: z
-    .object({
-      current: z.number(),
-      total: z.number(),
-    })
-    .optional(),
-});
+export interface Intent {
+  intent: 'create_new' | 'update_existing' | 'delete_existing';
+  reasoning: string;
+  screensToUpdate: Array<{ id: string; title: string }> | null;
+}
 
-// ==========================
-// TypeScript Types
-// ==========================
-
-export type ColorPalette = z.infer<typeof ColorPaletteSchema>;
-export type ScreenPlan = z.infer<typeof ScreenPlanSchema>;
-export type SingleScreen = z.infer<typeof SingleScreenSchema>;
-export type Intent = z.infer<typeof IntentSchema>;
-export type StreamUpdate = z.infer<typeof StreamUpdateSchema>;
+export interface StreamUpdate {
+  type:
+    | 'intent_analysis'
+    | 'ai_thinking'
+    | 'status_update'
+    | 'thinking_step'
+    | 'tool_use'
+    | 'planning'
+    | 'planning_complete'
+    | 'screen_start'
+    | 'screen_complete'
+    | 'screen_update'
+    | 'screen_delete'
+    | 'screen_error'
+    | 'agent_step'
+    | 'all_complete';
+  data?: any;
+  progress?: {
+    current: number;
+    total: number;
+  };
+}
 
 // ==========================
 // Database Types

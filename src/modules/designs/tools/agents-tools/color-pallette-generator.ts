@@ -1,8 +1,39 @@
 import { OpenRouter } from '@openrouter/sdk';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { PromptTemplate } from '@langchain/core/prompts';
-import { ColorPaletteSchema, type ColorPalette } from '../../schemas';
+import { type ColorPalette } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+
+// JSON Schema for ColorPalette (replaces Zod schema)
+const colorPaletteJsonSchema = {
+  type: 'object',
+  properties: {
+    primary: { type: 'string', description: 'Primary brand color (hex code)' },
+    primaryLight: { type: 'string', description: 'Light variant of primary color' },
+    primaryDark: { type: 'string', description: 'Dark variant of primary color' },
+    secondary: { type: 'string', description: 'Secondary brand color (hex code)' },
+    accent: { type: 'string', description: 'Accent color for highlights and CTAs' },
+    background: { type: 'string', description: 'Main background color' },
+    backgroundSecondary: { type: 'string', description: 'Secondary background color' },
+    surface: { type: 'string', description: 'Surface color for cards and containers' },
+    surfaceSecondary: { type: 'string', description: 'Secondary surface color' },
+    textPrimary: { type: 'string', description: 'Primary text color' },
+    textSecondary: { type: 'string', description: 'Secondary text color' },
+    textMuted: { type: 'string', description: 'Muted text color' },
+    border: { type: 'string', description: 'Border color' },
+    borderLight: { type: 'string', description: 'Light border color' },
+    success: { type: 'string', description: 'Success state color' },
+    warning: { type: 'string', description: 'Warning state color' },
+    error: { type: 'string', description: 'Error state color' },
+    info: { type: 'string', description: 'Info state color' },
+  },
+  required: [
+    'primary', 'primaryLight', 'primaryDark', 'secondary', 'accent',
+    'background', 'backgroundSecondary', 'surface', 'surfaceSecondary',
+    'textPrimary', 'textSecondary', 'textMuted',
+    'border', 'borderLight', 'success', 'warning', 'error', 'info',
+  ],
+  additionalProperties: false,
+};
 
 const colorPaletteTemplate =
   PromptTemplate.fromTemplate(`You are a professional Color Theory expert and UI/UX designer specializing in creating accessible, cohesive mobile app color palettes. Your palettes power $1B+ apps and pass WCAG AA accessibility standards.
@@ -236,7 +267,7 @@ export class ColorPaletteGenerator {
         jsonSchema: {
           name: 'colorPalette',
           strict: true,
-          schema: zodToJsonSchema(ColorPaletteSchema) as any,
+          schema: colorPaletteJsonSchema,
         },
       },
       temperature: 0.7,
@@ -244,10 +275,7 @@ export class ColorPaletteGenerator {
     });
 
     const content = response.choices[0]?.message?.content;
-    const contentString = typeof content === 'string' ? content : JSON.stringify(content);
-    const colorPalette = ColorPaletteSchema.parse(
-      JSON.parse(contentString ?? '{}'),
-    ) as ColorPalette;
+    const colorPalette = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ColorPalette;
 
     // Extract token usage from completion
     const usage = response.usage as any || {

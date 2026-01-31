@@ -1,10 +1,7 @@
 import { OpenRouter } from '@openrouter/sdk';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
-  ScreenPlanSchema,
-  SingleScreenSchema,
   type ScreenPlan,
   type SingleScreen,
   type ScreenPromptData,
@@ -12,6 +9,65 @@ import {
   type ColorPalette,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+
+// JSON Schema for ScreenPlan (replaces Zod schema)
+const screenPlanJsonSchema = {
+  type: 'object',
+  properties: {
+    totalScreens: {
+      type: 'number',
+      minimum: 1,
+      maximum: 8,
+      description: 'Total number of screens needed',
+    },
+    screenPrompts: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string',
+            description: 'Screen title',
+          },
+          prompt: {
+            type: 'string',
+            description: 'Detailed prompt for generating this specific screen',
+          },
+          order: {
+            type: 'number',
+            description: 'Order of screen generation',
+          },
+        },
+        required: ['title', 'prompt', 'order'],
+        additionalProperties: false,
+      },
+      description: 'Individual prompts for each screen',
+    },
+  },
+  required: ['totalScreens', 'screenPrompts'],
+  additionalProperties: false,
+};
+
+// JSON Schema for SingleScreen (replaces Zod schema)
+const singleScreenJsonSchema = {
+  type: 'object',
+  properties: {
+    title: {
+      type: 'string',
+      description: 'A concise title for the mobile screen',
+    },
+    description: {
+      type: 'string',
+      description: "A brief description of the screen's purpose and functionality",
+    },
+    html: {
+      type: 'string',
+      description: 'Complete HTML code for the mobile screen',
+    },
+  },
+  required: ['title', 'description', 'html'],
+  additionalProperties: false,
+};
 
 import { screen1HTML } from '../../demo-screens/screen-1';
 import { screen2HTML } from '../../demo-screens/screen-2';
@@ -758,7 +814,7 @@ export class ScreenCreator {
         jsonSchema: {
           name: 'screenPlan',
           strict: true,
-          schema: zodToJsonSchema(ScreenPlanSchema) as any,
+          schema: screenPlanJsonSchema,
         },
       },
       temperature: 0.7,
@@ -766,10 +822,7 @@ export class ScreenCreator {
     });
 
     const content = response.choices[0]?.message?.content;
-    const contentString = typeof content === 'string' ? content : JSON.stringify(content);
-    const screenPlan = ScreenPlanSchema.parse(
-      JSON.parse(contentString ?? '{}'),
-    ) as ScreenPlan;
+    const screenPlan = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ScreenPlan;
 
     // Fix inconsistency: ensure totalScreens matches screenPrompts.length
     if (screenPlan.totalScreens !== screenPlan.screenPrompts.length) {
@@ -837,7 +890,7 @@ export class ScreenCreator {
         jsonSchema: {
           name: 'screen',
           strict: true,
-          schema: zodToJsonSchema(SingleScreenSchema) as any,
+          schema: singleScreenJsonSchema,
         },
       },
       temperature: 0.7,
@@ -845,10 +898,7 @@ export class ScreenCreator {
     });
 
     const content = response.choices[0]?.message?.content;
-    const contentString = typeof content === 'string' ? content : JSON.stringify(content);
-    const screen = SingleScreenSchema.parse(
-      JSON.parse(contentString ?? '{}'),
-    ) as SingleScreen;
+    const screen = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
 
     // Extract token usage from completion
     const usage = response.usage as any || {

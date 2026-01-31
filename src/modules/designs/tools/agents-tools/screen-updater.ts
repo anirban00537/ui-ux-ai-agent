@@ -1,14 +1,33 @@
 import { OpenRouter } from '@openrouter/sdk';
-import { zodToJsonSchema } from 'zod-to-json-schema';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
-  SingleScreenSchema,
   type SingleScreen,
   type ExistingScreen,
   type ColorPalette,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
+
+// JSON Schema for SingleScreen (replaces Zod schema)
+const singleScreenJsonSchema = {
+  type: 'object',
+  properties: {
+    title: {
+      type: 'string',
+      description: 'A concise title for the mobile screen',
+    },
+    description: {
+      type: 'string',
+      description: "A brief description of the screen's purpose and functionality",
+    },
+    html: {
+      type: 'string',
+      description: 'Complete HTML code for the mobile screen',
+    },
+  },
+  required: ['title', 'description', 'html'],
+  additionalProperties: false,
+};
 
 // Import demo screens for design inspiration
 import { screen1HTML } from '../../demo-screens/screen-1';
@@ -476,7 +495,7 @@ export class ScreenUpdater {
         jsonSchema: {
           name: 'screen',
           strict: true,
-          schema: zodToJsonSchema(SingleScreenSchema) as any,
+          schema: singleScreenJsonSchema,
         },
       },
       temperature: 0.7,
@@ -484,10 +503,7 @@ export class ScreenUpdater {
     });
 
     const content = response.choices[0]?.message?.content;
-    const contentString = typeof content === 'string' ? content : JSON.stringify(content);
-    const updatedScreen = SingleScreenSchema.parse(
-      JSON.parse(contentString ?? '{}'),
-    ) as SingleScreen;
+    const updatedScreen = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
 
     // Extract token usage from completion
     const usage = response.usage as any || {
