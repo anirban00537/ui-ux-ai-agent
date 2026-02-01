@@ -43,36 +43,13 @@ export default function CanvasLayout({
         `}} />
         
         {/* Tailwind Engine with Plugins */}
-        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"></script>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries" defer />
 
         <style>{`
           :root {
-            /* Minimal Theme Defaults (Competitor Style) */
             --primary: #13ec5b;
             --background-light: #f6f8f6;
             --background-dark: #102216;
-            
-            /* Shadcn Mappings for compatibility */
-            --background: #f6f8f6;
-            --foreground: #102216;
-            --card: #ffffff;
-            --card-foreground: #102216;
-            --muted: #f1f5f9;
-            --muted-foreground: #64748b;
-            --border: #e2e8f0;
-            --input: #e2e8f0;
-            --radius: 0.5rem;
-          }
-
-          .dark {
-            --background: #102216;
-            --foreground: #ffffff;
-            --card: #1a2e22;
-            --card-foreground: #ffffff;
-            --muted: #1a2e22;
-            --muted-foreground: #92c9a4;
-            --border: #23482f;
-            --input: #23482f;
           }
 
           html, body {
@@ -81,11 +58,16 @@ export default function CanvasLayout({
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--background);
+            background-color: var(--background-light);
             font-family: "Lexend", sans-serif;
-            color: var(--foreground);
+            color: var(--background-dark);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+          }
+
+          html.dark body {
+            background-color: var(--background-dark);
+            color: #e2e8f0;
           }
 
           /* GlobalScrollbar Hide */
