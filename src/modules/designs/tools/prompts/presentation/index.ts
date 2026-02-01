@@ -5,31 +5,30 @@ export const designSystemInstructions = `
                      PRESENTATION DESIGN SYSTEM (16:9 SLIDES)
 ═══════════════════════════════════════════════════════════════════════════════
 
-🎨 CORE THEME (STRICT - use ONLY these semantic classes):
+🎨 THEME SYSTEM (11 colors - use ONLY these semantic classes):
 ───────────────────────────────────────────────────────────────────────────────
-• background: bg-background (slide/surface)
-• primary: bg-primary, text-primary (CTAs, key visuals)
-• cardBackground: bg-card-background (cards, panels, content blocks)
+• Background: bg-background (slide/surface) | Foreground: text-foreground (default text)
+• Primary: bg-primary | Primary Foreground: text-primary-foreground (text/icons on primary)
+• Secondary: bg-secondary | Secondary Foreground: text-secondary-foreground
+• Muted Foreground: text-muted-foreground (hints, captions)
+• Card: bg-card | Card Foreground: text-card-foreground
+• Border: border-border | Input: bg-input, border-input
 
-For main body and muted/supporting text use standard Tailwind (e.g. text-slate-900, text-white, text-slate-500, text-slate-600). NEUTRALS (only where needed): border-slate-200, border-white/10, bg-white/5. Main background MUST come from theme classes above.
+On bg-primary use text-primary-foreground. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. Use text-foreground for default body text, text-muted-foreground for subtle text. Use border-border for borders, bg-input for inputs.
 
-CRITICAL — DEEP COLOR SURFACES (bg-primary): Primary is often a deep/dark color. On ANY element that has bg-primary (buttons, CTAs, badges, header areas), you MUST use text-white and white/light icons ONLY. Never use text-primary, text-slate-900, or dark icons on bg-primary—dark text on deep color looks bad and fails contrast. Use text-primary only on light backgrounds (e.g. bg-background, bg-card-background). On bg-card-background use standard text (text-slate-900 on light cards, text-white on dark cards).
-
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY bg-background, bg-primary, bg-card-background, text-primary. Strictly adhere to these classes—no deviations.
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY the theme classes above. Strictly adhere—no deviations.
 
 VISUAL STYLE: Use outline style (borders or dividers for depth; avoid flat blocks). Prefer minimal (generous spacing, one clear message per slide). When the brief mentions a trend: glassmorphism → backdrop-blur, bg-white/10; bento grid → asymmetric grid; Swiss style → grid-based minimal; use "deep shadows" (shadow-xl) or "massive typography" (text-5xl, text-6xl) where they fit.
 
 Shadows: Use layered or colored shadows where they support hierarchy. Active/lifted elements need shadow-lg or shadow-xl; avoid flat blocks. Optionally use shadow-primary/20 for accent.
 
-Depth: Use borders (border-slate-200, border-white/10) or dividers; ensure primary elements stand out with color and shadow.
+Depth: Use border-border or dividers; ensure primary elements stand out with color and shadow.
 
 COLOR CHOICE & VISIBILITY (ALL AREAS):
-   • On bg-primary: ALWAYS use text-white (and white/light Material Symbols). Never put dark text or dark icons on primary—dark-on-deep looks bad.
-   • Whenever you use a deep or dark color (bg-primary, dark background, or an image), ensure any text or element on top is clearly visible.
-   • On dark/deep backgrounds: use text-white or text-white/90; use light borders (border-white/10, border-white/20) so content reads clearly.
-   • On light backgrounds: use text-slate-900 or text-slate-700 for body text; use text-primary for accents on light only. For muted text use text-slate-500 or text-slate-600.
-   • Text or UI on top of images: always add a scrim/overlay (e.g. absolute inset-0 bg-black/40 or bg-black/50) and use text-white so content is readable. Never place dark text directly on a busy or dark image without an overlay.
-   • Apply this everywhere: headers, cards, hero areas, image overlays, CTAs. If a background is deep or busy, the foreground (text, icons) must have sufficient contrast—aim for WCAG AA (white on dark, dark on light).
+   • On bg-primary use text-primary-foreground only. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. On bg-background use text-foreground. For hints/captions use text-muted-foreground.
+   • Whenever you use a colored surface or image, ensure text/elements on top use the matching foreground class (WCAG AA).
+   • Text or UI on top of images: add scrim (e.g. absolute inset-0 bg-black/40) and use text-foreground or text-primary-foreground so content is readable.
+   • Apply everywhere: headers, cards, hero areas, image overlays, CTAs. Use border-border, bg-input for inputs.
 
 3. LAYOUT (16:9 Slide):
    • Use w-full h-full to fill the slide. Do NOT use any fixed width or height (no min-height, no style="width:..." or "height:..." in px).
@@ -73,7 +72,7 @@ DESIGN PROCESS (think step-by-step before generating code):
 2. **Plan layout and spacing**: Split screen? Hero image? Bento or grid? Use generous padding (p-8, p-12) and spacing system consistently.
 3. **Select vibe and aesthetics**: From the brief; use only colors and typography from the design system.
 4. **Add depth and visual interest**: Shadows, borders, layers (no flat blocks). High-quality icons, gradients, cards, or images.
-5. **Verify**: Readable from the back of the room (min text-lg). WCAG contrast; visibility on deep/dark areas and images (text-white on dark, scrim on images so text/UI is readable). Self-critique: hierarchy, contrast, constraints—fix before output.
+5. **Verify**: Readable from the back of the room (min text-lg). WCAG contrast; use matching foreground classes on colored surfaces and scrim on images. Self-critique: hierarchy, contrast, constraints—fix before output.
 
 ═══════════════════════════════════════════════════════════════════════════════
                                THE REQUEST
@@ -111,7 +110,7 @@ If available, match the design pattern (spacing, layout, theme) of these recent 
 • ❌ NO walls of text. Use bullet points or cards.
 • ❌ NO drawing or generating images. Use ONLY Unsplash URLs (https://images.unsplash.com/...) for any photos. No SVG for photos, no data: URLs.
 • ❌ NO text or elements on deep/dark backgrounds or on images without ensuring visibility—use text-white on dark, scrim (bg-black/40) on images, and WCAG contrast everywhere.
-• ❌ NO dark text or dark icons on bg-primary (e.g. no text-primary, text-slate-900 on primary)—always use text-white and white icons on bg-primary.
+• ❌ NO wrong foreground on colored surfaces—on bg-primary use text-primary-foreground; on bg-secondary use text-secondary-foreground; on bg-card use text-card-foreground.
 • ❌ NO fixed width or height (no min-height: 800px, no style="width:..." or "height:..."). Root must use w-full h-full only.
 • ❌ NO flat blocks; no single flat shadow for key elements.
 • ❌ NO inline \`style="..."\`. Use Tailwind classes ONLY.

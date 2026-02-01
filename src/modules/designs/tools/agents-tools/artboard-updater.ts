@@ -1,23 +1,21 @@
+const THEME_CLASSES_BLOCK = `
+STRICT THEME MAPPINGS (use ONLY these Tailwind classes; they map to CSS vars):
+- Background: bg-background | Foreground: text-foreground
+- Primary: bg-primary | Primary Foreground: text-primary-foreground
+- Secondary: bg-secondary | Secondary Foreground: text-secondary-foreground
+- Muted Foreground: text-muted-foreground (hints, captions)
+- Card: bg-card | Card Foreground: text-card-foreground
+- Border: border-border | Input: bg-input, border-input
+
+On bg-primary use text-primary-foreground. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. On images use scrim + text-foreground. DO NOT use arbitrary colors (e.g. bg-[#...]). WCAG contrast everywhere.`;
+
 const generateColorPaletteInstructions = (
   colorPalette?: ColorPalette | null,
 ): string => {
   if (!colorPalette) {
-    return `COLOR PALETTE: Use Tailwind classes "bg-background", "bg-primary", "bg-card-background", "text-primary" (they map to CSS vars). For main body and muted text use standard Tailwind (e.g. text-slate-900, text-white, text-slate-500). On bg-primary always use text-white and white icons. On images use scrim + text-white.
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these semantic classes so every screen shares the same theme.`;
+    return `COLOR PALETTE: Use the full theme system: bg-background, text-foreground, bg-primary, text-primary-foreground, bg-secondary, text-secondary-foreground, text-muted-foreground, bg-card, text-card-foreground, border-border, bg-input. On primary/secondary/card use the matching foreground class. On images use scrim + text-foreground. DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]).`;
   }
-
-  return `DESIGN SYSTEM (3-color theme) - SAME FOR EVERY SCREEN:
-
-STRICT VARIABLE MAPPINGS - Use ONLY these Tailwind classes (they map to CSS vars):
-- background: "bg-background"
-- primary: "bg-primary", "text-primary"
-- cardBackground: "bg-card-background" (cards, panels, list item surfaces)
-
-For main body and muted/supporting text use standard Tailwind (e.g. text-slate-900, text-white, text-slate-500, text-slate-600). For neutrals use standard Tailwind: border-slate-200, border-white/10, etc. where needed.
-
-Use layered or colored shadows (e.g. shadow-primary/20) for depth; avoid flat blocks.
-
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme. On bg-primary: ALWAYS use text-white and white icons—never dark text/icons on primary. On bg-card-background use standard text (text-slate-900 on light cards, text-white on dark cards). On images use scrim (bg-black/40) + text-white. WCAG contrast everywhere.`;
+  return `DESIGN SYSTEM (11-color theme) - SAME FOR EVERY SCREEN:${THEME_CLASSES_BLOCK}`;
 };
 
 import { OpenRouter } from '@openrouter/sdk';

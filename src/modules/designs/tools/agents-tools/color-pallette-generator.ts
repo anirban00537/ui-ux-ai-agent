@@ -5,33 +5,53 @@ import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
-// JSON Schema for ColorPalette - 3 tokens: background, primary, cardBackground
+// JSON Schema for ColorPalette - 11 theme tokens (shadcn-style theming)
 const colorPaletteJsonSchema = {
   type: 'object',
   properties: {
-    background: { type: 'string', description: 'Page/surface background color (hex)' },
-    primary: { type: 'string', description: 'Primary brand/accent color (hex)' },
-    cardBackground: { type: 'string', description: 'Card/panel background color (hex)' },
+    background: { type: 'string', description: 'Page/surface background (hex)' },
+    foreground: { type: 'string', description: 'Default text color on background (hex)' },
+    primary: { type: 'string', description: 'Primary brand/CTA color (hex)' },
+    primaryForeground: { type: 'string', description: 'Text on primary (hex)' },
+    secondary: { type: 'string', description: 'Secondary accent/surface (hex)' },
+    secondaryForeground: { type: 'string', description: 'Text on secondary (hex)' },
+    mutedForeground: { type: 'string', description: 'Muted/subtle text (hex)' },
+    card: { type: 'string', description: 'Card/panel background (hex)' },
+    cardForeground: { type: 'string', description: 'Text on card (hex)' },
+    border: { type: 'string', description: 'Border color (hex)' },
+    input: { type: 'string', description: 'Input background/border (hex)' },
   },
-  required: ['background', 'primary', 'cardBackground'],
+  required: [
+    'background', 'foreground', 'primary', 'primaryForeground',
+    'secondary', 'secondaryForeground', 'mutedForeground',
+    'card', 'cardForeground', 'border', 'input',
+  ],
   additionalProperties: false,
 };
 
 const colorPaletteTemplate =
-  PromptTemplate.fromTemplate(`You are a Design System Architect. Generate a color palette for a mobile app defined by this request: "{message}"
+  PromptTemplate.fromTemplate(`You are a Design System Architect. Generate a full theme color palette for a mobile app defined by this request: "{message}"
+
+THEME ROLES (output all 11 as hex codes):
+1. background - Page/surface background
+2. foreground - Default text on background (must contrast with background, WCAG AA)
+3. primary - Brand anchor, main CTAs, key interactive elements
+4. primaryForeground - Text/icons on primary (must contrast with primary)
+5. secondary - Secondary accent, alternate surfaces (e.g. hover states, badges)
+6. secondaryForeground - Text on secondary
+7. mutedForeground - Muted/subtle text (hints, captions, placeholders)
+8. card - Card/panel/list item background (distinct from page background)
+9. cardForeground - Text on card
+10. border - Borders and dividers
+11. input - Input field background and border
 
 CONSIDERATIONS:
-• Choose palette so primary has strong contrast on background (WCAG AA). Consider mood: trustworthy (finance), energetic (fitness), calm (wellness).
-• **Mood/Tone**: What is the emotional goal? (Trustworthy for finance, Energetic for fitness, Calm for meditation).
-• **Accessibility**: High contrast is non-negotiable (WCAG AA). Primary must contrast with background.
-• **Visual Hierarchy**: Primary color must pop against background. Card background should work on top of page background (e.g. slightly lighter/darker or subtle tint).
+• Mood: trustworthy (finance), energetic (fitness), calm (wellness). Ensure primary contrasts with background (WCAG AA).
+• primaryForeground must contrast with primary (e.g. white on dark primary). Same for secondary/secondaryForeground, card/cardForeground.
+• mutedForeground should be readable but subordinate (e.g. gray one step lighter/darker than foreground).
+• border and input can be subtle (e.g. same hue as background at lower opacity or neutral gray).
 
-OUTPUT (strictly 3 colors, hex codes):
-1. "background": Page/surface background (one value; no light/dark split).
-2. "primary": Brand anchor and main CTAs.
-3. "cardBackground": Background for cards, panels, and list items (distinct from page background).
-
-Return JSON with keys: background, primary, cardBackground.`);
+Return JSON with keys: background, foreground, primary, primaryForeground, secondary, secondaryForeground, mutedForeground, card, cardForeground, border, input.`);
 
 export class ColorPaletteGenerator {
   private openrouter = new OpenRouter({
@@ -43,13 +63,6 @@ export class ColorPaletteGenerator {
     private aiUsageService: AiUsageService,
   ) {}
 
-  /**
-   * Generates a color palette based on the user's request
-   * @param message - The user's message describing the app
-   * @param userId - The user's ID for credit tracking
-   * @param designId - Design ID for logging
-   * @returns Promise with color palette
-   */
   async generateColorPalette(
     message: string,
     userId: string,
@@ -80,7 +93,6 @@ export class ColorPaletteGenerator {
     const content = response.choices[0]?.message?.content;
     const colorPalette = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ColorPalette;
 
-    // Extract token usage from completion
     const usage = response.usage as any || {
       promptTokens: 0,
       completionTokens: 0,
@@ -95,7 +107,6 @@ export class ColorPaletteGenerator {
 
     console.log('[ColorPaletteGenerator] Deducting credits:', tokenUsage);
 
-    // Cost logging
     await this.aiUsageService.logUsage({
       userId,
       modelName: coreConstant.AI_MODELS.DESIGN.NAME,
@@ -105,7 +116,6 @@ export class ColorPaletteGenerator {
       designId,
     } as any);
 
-    // Deduct credits immediately after generation
     await this.creditManager.deductCredits(
       userId,
       designId,
@@ -119,8 +129,16 @@ export class ColorPaletteGenerator {
   generateDefaultColorPalette(): ColorPalette {
     return {
       background: '#0f172a',
+      foreground: '#f8fafc',
       primary: '#3b82f6',
-      cardBackground: '#1e293b',
+      primaryForeground: '#ffffff',
+      secondary: '#1e293b',
+      secondaryForeground: '#f8fafc',
+      mutedForeground: '#94a3b8',
+      card: '#1e293b',
+      cardForeground: '#f8fafc',
+      border: '#334155',
+      input: '#1e293b',
     };
   }
 }
