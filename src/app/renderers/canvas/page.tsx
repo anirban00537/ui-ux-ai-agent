@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 
 const FALLBACK_IMAGE = "https://picsum.photos/seed/placeholder/400/600";
+const FALLBACK_BG_IMAGE = "https://picsum.photos/seed/background/1200/800";
 
 const applyFallback = (img: HTMLImageElement) => {
   if (img.src === FALLBACK_IMAGE) return;
@@ -10,6 +11,48 @@ const applyFallback = (img: HTMLImageElement) => {
   img.onerror = null;
   img.style.objectFit = "contain";
   img.style.objectPosition = "center";
+};
+
+const testImageUrl = (url: string): Promise<boolean> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+
+const extractBgUrl = (bgImage: string): string | null => {
+  const match = bgImage.match(/url\(["']?([^"')]+)["']?\)/);
+  return match ? match[1].trim() : null;
+};
+
+const applyBackgroundFallbacks = async (root: HTMLElement) => {
+  const elementsWithBg: Array<{ el: HTMLElement; url: string }> = [];
+  const uniqueUrls = new Set<string>();
+
+  root.querySelectorAll("*").forEach((node) => {
+    const el = node as HTMLElement;
+    const bg = getComputedStyle(el).backgroundImage;
+    if (!bg || bg === "none") return;
+    const url = extractBgUrl(bg);
+    if (!url || url.startsWith("data:") || url === FALLBACK_BG_IMAGE) return;
+    elementsWithBg.push({ el, url });
+    uniqueUrls.add(url);
+  });
+
+  const failedUrls = new Set<string>();
+  for (const url of uniqueUrls) {
+    const ok = await testImageUrl(url);
+    if (!ok) failedUrls.add(url);
+  }
+
+  elementsWithBg.forEach(({ el, url }) => {
+    if (failedUrls.has(url)) {
+      el.style.backgroundImage = `url("${FALLBACK_BG_IMAGE}")`;
+      el.style.backgroundSize = "cover";
+      el.style.backgroundPosition = "center";
+    }
+  });
 };
 
 export default function CanvasPage() {
@@ -51,6 +94,11 @@ export default function CanvasPage() {
             );
             newScript.appendChild(document.createTextNode(oldScript.innerHTML));
             oldScript.parentNode?.replaceChild(newScript, oldScript);
+          });
+
+          // 4. Apply fallback for background images that fail to load
+          requestAnimationFrame(() => {
+            applyBackgroundFallbacks(root).catch(() => {});
           });
         }
       }
