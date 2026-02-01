@@ -56,7 +56,15 @@ export interface StreamUpdate {
     | 'screen_error'
     | 'color_palette'
     | 'agent_step'
-    | 'all_complete';
+    | 'all_complete'
+    // Clean phase events for UI status badges
+    | 'phase_analyzing'
+    | 'phase_analyzed'
+    | 'phase_planning'
+    | 'phase_planned'
+    | 'phase_theme_generating'
+    | 'phase_theme_complete'
+    | 'ai_response';
   data?: any;
   progress?: {
     current: number;

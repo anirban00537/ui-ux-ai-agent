@@ -106,15 +106,8 @@ export class DesignsChatService {
           await this.prisma.message.create({
             data: { designId, role: 'user', content: prompt },
           });
-          await messenger.emit(
-            {
-              type: coreConstant.STREAM_EVENT.STATUS_UPDATE,
-              data: {
-                message: 'Got it! Let me think this through.',
-              },
-            },
-            'Got it! Let me think this through.',
-          );
+          
+          // No verbose status message - just proceed silently
 
           const messages = await this.prisma.message.findMany({
             where: { designId },
@@ -141,14 +134,7 @@ export class DesignsChatService {
               html: a.html,
             }));
 
-          await messenger.emit(
-            {
-              type: coreConstant.STREAM_EVENT.STATUS_UPDATE,
-              data: { message: 'Checking credit balance...' },
-            },
-            'Checking credit balance...',
-          );
-
+          // Credit check (silent - no status message)
           const hasColorPalette = !!design.colorPalette;
           const estimatedOperation =
             existingArtboards.length > 0 ? 'update_existing' : 'create_new';
@@ -187,31 +173,25 @@ export class DesignsChatService {
             return;
           }
 
-          // Check for cancellation before intent analysis
+          // Check for cancellation
           if (signal.aborted) {
             console.log('[DesignsChatService] Cancelled before intent analysis');
             subscriber.complete();
             return;
           }
 
-          await messenger.emit(
-            {
-              type: coreConstant.STREAM_EVENT.INTENT_ANALYSIS,
-              data: { message: 'Analyzing your request...' },
-            },
-            'Analyzing your request...',
-          );
+          // === PHASE 1: ANALYZING REQUEST ===
+          messenger.emitFast({
+            type: coreConstant.STREAM_EVENT.PHASE_ANALYZING,
+          });
 
           let colorPalette = design.colorPalette ?? null;
 
+          // Generate color palette if needed (part of analyzing phase)
           if (!colorPalette) {
-            await messenger.emit(
-              {
-                type: coreConstant.STREAM_EVENT.AI_THINKING,
-                data: { message: 'Generating a color palette...' },
-              },
-              'Generating a color palette...',
-            );
+            messenger.emitFast({
+              type: coreConstant.STREAM_EVENT.PHASE_THEME_GENERATING,
+            });
 
             try {
               colorPalette = await colorPaletteGenerator.generateColorPalette(
@@ -236,17 +216,17 @@ export class DesignsChatService {
               data: { colorPalette },
             });
 
-            const paletteMsg = colorPalette
-              ? 'I created a custom color palette for your app.'
-              : "I couldn't generate a palette from the prompt, so I set a sensible default palette.";
-
-            await messenger.emit(
-              {
-                type: coreConstant.STREAM_EVENT.COLOR_PALETTE,
-                data: colorPalette,
-              },
-              paletteMsg,
-            );
+            // Emit theme complete event (silent, just for UI badge)
+            messenger.emitFast({
+              type: coreConstant.STREAM_EVENT.PHASE_THEME_COMPLETE,
+              data: colorPalette,
+            });
+          } else {
+            // Already have theme - emit complete immediately
+            messenger.emitFast({
+              type: coreConstant.STREAM_EVENT.PHASE_THEME_COMPLETE,
+              data: colorPalette,
+            });
           }
 
           // Check for cancellation before intent analysis
@@ -256,6 +236,7 @@ export class DesignsChatService {
             return;
           }
 
+          // Analyze intent
           const intent = await intentAnalyzer.analyzeIntent(
             prompt,
             existingArtboards,
@@ -265,15 +246,11 @@ export class DesignsChatService {
             signal,
           );
 
-          await messenger.emit(
-            {
-              type: coreConstant.STREAM_EVENT.INTENT_ANALYSIS,
-              data: {
-                message: `Intent: ${intent.intent}. ${intent.reasoning ?? ''}`,
-              },
-            },
-            `Intent: ${intent.intent}. ${intent.reasoning ?? ''}`.trim(),
-          );
+          // === PHASE 1 COMPLETE: ANALYZED REQUEST ===
+          messenger.emitFast({
+            type: coreConstant.STREAM_EVENT.PHASE_ANALYZED,
+            data: { intent: intent.intent },
+          });
 
           if (
             intent.intent === 'update_existing' &&
@@ -365,10 +342,10 @@ export class DesignsChatService {
             }
           } else {
             // CREATE NEW SCREENS
-            await messenger.emit(
-              { type: coreConstant.STREAM_EVENT.PLANNING },
-              'Planning screens to create...',
-            );
+            // === PHASE 2: PLANNING ===
+            messenger.emitFast({
+              type: coreConstant.STREAM_EVENT.PHASE_PLANNING,
+            });
 
             const plan = await artboardCreator.planArtboards(
               prompt,
@@ -385,15 +362,28 @@ export class DesignsChatService {
               return;
             }
 
+            // === PHASE 2 COMPLETE: PLANNED ACTIONS ===
+            messenger.emitFast({
+              type: coreConstant.STREAM_EVENT.PHASE_PLANNED,
+              data: {
+                totalScreens: plan.totalScreens,
+                screenTitles: plan.screenPrompts.map(s => s.title),
+              },
+            });
+
+            // Create AI response message describing what we're building (persisted)
+            const screenDescriptions = plan.screenPrompts
+              .map(s => `• **${s.title}**: ${s.prompt}`)
+              .join('\n');
+            const aiResponseContent = `I'll create ${plan.totalScreens} screen${plan.totalScreens > 1 ? 's' : ''} for your ${design.type || 'mobile app'}:\n\n${screenDescriptions}`;
+            
             await messenger.emit(
               {
-                type: coreConstant.STREAM_EVENT.PLANNING_COMPLETE,
-                data: {
-                  totalScreens: plan.totalScreens,
-                  screenPrompts: plan.screenPrompts,
-                },
+                type: coreConstant.STREAM_EVENT.AI_RESPONSE,
+                data: { message: aiResponseContent },
               },
-              `Planning complete: ${plan.totalScreens} screen(s).`,
+              aiResponseContent,
+              true, // persist to DB
             );
 
             // Prepare context for generation
@@ -420,14 +410,12 @@ export class DesignsChatService {
               const sp = plan.screenPrompts[i];
               const previousScreens = getLastScreensForDesignPattern(screensForContext);
 
-              await messenger.emit(
-                {
-                  type: coreConstant.STREAM_EVENT.SCREEN_START,
-                  progress: { current: i, total: plan.totalScreens },
-                  data: { title: sp.title },
-                },
-                `Generating screen "${sp.title}"...`,
-              );
+              // Emit screen start (no verbose message, just UI update)
+              messenger.emitFast({
+                type: coreConstant.STREAM_EVENT.SCREEN_START,
+                progress: { current: i, total: plan.totalScreens },
+                data: { title: sp.title },
+              });
 
               // Use the streaming generator for real-time UI updates
               let screen: any = null;

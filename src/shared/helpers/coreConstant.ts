@@ -52,6 +52,15 @@ export const coreConstant = {
     COLOR_PALETTE: 'color_palette',
     AGENT_STEP: 'agent_step',
     ALL_COMPLETE: 'all_complete',
+    // Clean phase events for UI status badges
+    PHASE_ANALYZING: 'phase_analyzing',
+    PHASE_ANALYZED: 'phase_analyzed',
+    PHASE_PLANNING: 'phase_planning',
+    PHASE_PLANNED: 'phase_planned',
+    PHASE_THEME_GENERATING: 'phase_theme_generating',
+    PHASE_THEME_COMPLETE: 'phase_theme_complete',
+    // AI response message (persisted to chat)
+    AI_RESPONSE: 'ai_response',
   } as const,
 
   // Post Status
