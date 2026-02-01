@@ -18,14 +18,17 @@ const colorPaletteJsonSchema = {
 };
 
 const colorPaletteTemplate =
-  PromptTemplate.fromTemplate(`You are a Design System Architect. Generate a MINIMALIST color palette for a mobile app.
+  PromptTemplate.fromTemplate(`You are a Design System Architect. Generate a color palette for a mobile app defined by this request: "{message}"
 
-User Request: "{message}"
+CONSIDERATIONS:
+• **Mood/Tone**: What is the emotional goal? (Trustworthy for finance, Energetic for fitness, Calm for meditation).
+• **Accessibility**: High contrast is non-negotiable (WCAG AA).
+• **Visual Hierarchy**: The primary color must pop against the background.
 
-OUTPUT (exactly 3 colors, hex codes):
-- "primary": Main brand color (default #13ec5b if unspecified).
-- "backgroundLight": Light mode background - off-white or very light gray (e.g. #f6f8f6, #f8fafc).
-- "backgroundDark": Dark mode background - deep, rich dark (e.g. #102216, #0f172a).
+OUTPUT (strictly 3 colors):
+1. "primary": Brand anchor color.
+2. "backgroundLight": A refined, off-white/light-grey tone (avoid pure #ffffff).
+3. "backgroundDark": A rich, deep dark tone (avoid pure #000000; prefer slate, navy, or deep forest).
 
 Return JSON with keys: primary, backgroundLight, backgroundDark.`);
 
