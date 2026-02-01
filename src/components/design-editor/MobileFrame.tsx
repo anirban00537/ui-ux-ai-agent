@@ -31,7 +31,7 @@ export function MobileFrame({
   title,
   subtitle,
   className = "",
-  width = 400,
+  width = 440,
   colorPalette,
   isGenerating = false,
 }: MobileFrameProps) {

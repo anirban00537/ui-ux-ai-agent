@@ -34,8 +34,8 @@ export default function CanvasLayout({
 
         {/* Tailwind v4 - Play CDN / browser build */}
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer />
-        {/* Iconify icons */}
-        <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js" defer />
+        {/* Remix Icon */}
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
 
         {/* v4 @theme inline: map runtime CSS vars (set by UPDATE_THEME) to Tailwind utilities; :root defaults from competitor */}
         <style type="text/tailwindcss">{`
