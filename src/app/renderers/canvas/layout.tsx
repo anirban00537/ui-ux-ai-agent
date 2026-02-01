@@ -84,6 +84,8 @@ export default function CanvasLayout({
 
           #root, .canvas-content-wrapper {
             background-color: var(--background);
+            height: 100%;
+            min-height: 100%;
           }
 
           /* Theme utilities - must exist for dynamically injected content before Tailwind JIT */

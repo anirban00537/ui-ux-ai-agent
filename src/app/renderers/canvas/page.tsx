@@ -78,7 +78,7 @@ export default function CanvasPage() {
         const html = data.html || "";
         if (root) {
           // 1. Set HTML wrapped so background applies
-          root.innerHTML = `<div class="canvas-content-wrapper min-h-full w-full">${html}</div>`;
+          root.innerHTML = `<div class="canvas-content-wrapper w-full h-full min-h-full">${html}</div>`;
 
           // 2. Attach fallback for images that fail to load
           root.querySelectorAll("img").forEach((img) => {
