@@ -157,6 +157,8 @@ export function Editor({
                         subtitle={loading ? "Generating..." : artboard.description}
                         htmlContent={artboard.html}
                         width={1640}
+                        colorPalette={colorPalette}
+                        isGenerating={artboard.status === 'generating'}
                       />
                     ) : (
                       <MobileFrame
