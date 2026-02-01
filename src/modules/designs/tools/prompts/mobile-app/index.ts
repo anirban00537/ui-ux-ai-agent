@@ -13,11 +13,23 @@ export const designSystemInstructions = `
 
 For main body text use standard Tailwind (e.g. text-slate-900, text-white). NEUTRALS (only where needed): border-slate-200, border-white/10. Main background MUST come from theme classes above.
 
+CRITICAL — DEEP COLOR SURFACES (bg-primary, bg-secondary): Primary and secondary are often deep/dark colors. On ANY element that has bg-primary or bg-secondary (buttons, avatars, badges, FAB, pills, chips), you MUST use text-white and white/light icons ONLY. Never use text-primary, text-secondary, text-slate-900, or dark icons on bg-primary or bg-secondary—dark text on deep color looks bad and fails contrast. Use text-primary and text-secondary only on light backgrounds (e.g. bg-background, white).
+
 DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary. Strictly adhere to these classes—no deviations.
 
 VISUAL STYLE: Use outline style (borders or dividers for depth; avoid flat blocks with no separation). Prefer minimal (generous spacing, clear hierarchy). When the brief mentions a trend, use: glassmorphism → backdrop-blur, bg-white/10; bento grid → asymmetric grid layouts; Swiss style → grid-based minimal; neumorphism → soft shadows; neobrutalism → bold borders. Modifiers like "deep shadows" (shadow-xl, shadow-2xl) or "massive typography" (text-3xl, text-4xl) are allowed where they fit the vibe.
 
 VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrained palette. Playful → vibrant accents, hover:scale-105 or hover:translate-y-[-2px], rounded-full. Luxury → glassmorphism, generous whitespace, font-display for headings, shadow-primary/20.
+
+═══════════════════════════════════════════════════════════════════════════════
+🎨 COLOR CHOICE & VISIBILITY (ALL AREAS)
+───────────────────────────────────────────────────────────────────────────────
+• On bg-primary or bg-secondary: ALWAYS use text-white (and white/light Material Symbols). Never put dark text or dark icons on these—they are deep colors and dark-on-deep looks bad.
+• Whenever you use a deep or dark color (bg-primary, bg-secondary, dark background, or an image), ensure any text or element on top is clearly visible.
+• On dark/deep backgrounds: use text-white or text-white/90 for text; use light borders (border-white/10, border-white/20) so UI reads clearly.
+• On light backgrounds: use text-slate-900 or text-slate-700 for body text; use text-primary or text-secondary for accents (labels, links) on light only.
+• Text or UI on top of images: always add a scrim/overlay (e.g. absolute inset-0 bg-black/40 or bg-black/50) and use text-white so content is readable. Never place dark text directly on a busy or dark image without an overlay.
+• Apply this everywhere: headers, cards, hero sections, image overlays, buttons, footers. If a background is deep or busy, the foreground (text, icons, buttons) must have sufficient contrast—aim for WCAG AA (e.g. white on dark, dark on light).
 
 ═══════════════════════════════════════════════════════════════════════════════
 📱 LAYOUT & DIMENSIONS (MOBILE FRAME — CRITICAL)
@@ -52,8 +64,8 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
 
 STANDARD LIST ITEM HTML (Use this structure):
 <div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-background hover:bg-white/5 transition-colors">
-  <div class="size-12 rounded-xl bg-secondary flex items-center justify-center text-primary">
-    <span class="material-symbols-outlined">schedule</span>
+  <div class="size-12 rounded-xl bg-secondary flex items-center justify-center text-white">
+    <span class="material-symbols-outlined text-white">schedule</span>
   </div>
   <div class="flex-1">
      <p class="text-slate-900 font-medium text-base">Meeting with Team</p>
@@ -70,9 +82,9 @@ PRIMARY BUTTON:
   <span class="material-symbols-outlined text-lg">arrow_forward</span>
 </button>
 
-ICON BUTTON:
-<button class="size-10 flex items-center justify-center rounded-full bg-secondary text-slate-900 hover:bg-white/20 transition-colors">
-  <span class="material-symbols-outlined">add</span>
+ICON BUTTON (on primary/secondary surface — use white text/icon):
+<button class="size-10 flex items-center justify-center rounded-full bg-secondary text-white hover:bg-white/20 hover:text-slate-900 transition-colors">
+  <span class="material-symbols-outlined text-white">add</span>
 </button>
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -85,6 +97,14 @@ Common names:
 arrow_back_ios, search, close, add, check, person, settings, calendar_today, 
 fitness_center, restaurant, local_fire_department, bar_chart, notifications,
 favorite, share, more_vert, mail, lock, visibility
+
+═══════════════════════════════════════════════════════════════════════════════
+🖼️ IMAGES (UNSPLASH ONLY — DO NOT DRAW)
+───────────────────────────────────────────────────────────────────────────────
+• Use ONLY real Unsplash image URLs. Example: https://images.unsplash.com/photo-XXXXX?auto=format&fit=crop&w=800&q=80
+• Do NOT draw, generate, or describe images. Do NOT use SVG for photos, data: URLs, or placeholder boxes.
+• When a screen needs a photo (product, hero, avatar, etc.), use an <img src="https://images.unsplash.com/..."> with a real Unsplash URL that fits the context (e.g. "coffee" → search Unsplash-style URL for coffee).
+• Use object-cover rounded-xl or rounded-2xl on images. Add alt text for accessibility.
 ═══════════════════════════════════════════════════════════════════════════════
 `;
 
@@ -102,7 +122,7 @@ DESIGN PROCESS (think step-by-step before generating code):
 2. **Plan layout and spacing**: Bento grid? Generous whitespace? Use spacing system (p-4, p-6, gap-3, gap-4) consistently.
 3. **Select vibe and aesthetics**: From the brief tone (trustworthy / playful / luxury) apply the matching Tailwind treatment; use only colors and typography from the design system.
 4. **Apply depth and interactivity**: Shadows, borders, layers (no flat blocks). Add interactivity: hover states (hover:bg-*, hover:scale-105), focus rings (focus:ring-2 focus:ring-primary) for accessibility.
-5. **Verify**: Tap targets ≥ 44px; WCAG contrast; focus rings on interactive elements; requested state (empty/loading/populated/error) clearly represented. Before outputting, self-critique: hierarchy, contrast, constraints—fix any issue.
+5. **Verify**: Tap targets ≥ 44px; WCAG contrast; visibility on deep/dark areas and images (text-white on dark, scrim on images so text/UI is readable); focus rings on interactive elements; requested state (empty/loading/populated/error) clearly represented. Before outputting, self-critique: hierarchy, contrast, constraints—fix any issue.
 
 ═══════════════════════════════════════════════════════════════════════════════
                                THE REQUEST
@@ -140,6 +160,9 @@ If available, match the design pattern (spacing, components, theme) of these rec
 • ❌ NO fixed width or height (no min-height: 800px, no w-[400px], no style="width:..." or "height:..."). Root must use w-full h-full so the screen fills the full height (no empty space at bottom).
 • ❌ NO arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY semantic theme classes: bg-background, bg-primary, bg-secondary, text-primary, text-secondary. Use standard Tailwind for body text (e.g. text-slate-900, text-white).
 • ❌ NO flat blocks; no single flat shadow for cards; no walls of text.
+• ❌ NO drawing or generating images. Use ONLY Unsplash URLs (https://images.unsplash.com/...) for any photos. No SVG for photos, no data: URLs.
+• ❌ NO text or elements on deep/dark backgrounds or on images without ensuring visibility—use text-white on dark, scrim (bg-black/40) on images, and WCAG contrast everywhere.
+• ❌ NO dark text or dark icons on bg-primary or bg-secondary (e.g. no text-primary, text-slate-900 on those surfaces)—always use text-white and white icons on bg-primary and bg-secondary.
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
 • ❌ NO \`ri-{{name}}\` icons. Use \`<span class="material-symbols-outlined">name</span>\` ONLY.
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.
@@ -172,6 +195,7 @@ Before outputting, verify:
 ☐ State (empty/loading/populated) clear?
 ☐ No flat blocks?
 ☐ Focus rings on buttons/links (focus:ring-2 focus:ring-primary)? WCAG contrast?
+☐ Color choice & visibility: on every deep/dark area or image, is text/UI on top clearly visible (text-white on dark, overlay on images)?
 ☐ Self-critique: hierarchy, contrast, design-system constraints—fix before output.
 
 NOW CREATE AN EXTRAORDINARY SCREEN.
@@ -284,6 +308,7 @@ IMPROVEMENT PRIORITIES:
 • Do NOT change the layout structure unless asked.
 • Do NOT use fixed width or height (no min-height: 800px, no style="width:..." or "height:..."). Root must use w-full h-full; main content must have flex-1 so screen fills full height.
 • Do NOT remove shadows or depth; do NOT make the screen look flatter.
+• Do NOT draw or generate images; use ONLY Unsplash URLs (https://images.unsplash.com/...) for any photos.
 • Do NOT use Lorem Ipsum.
 • Do NOT use Remix Icons.
 

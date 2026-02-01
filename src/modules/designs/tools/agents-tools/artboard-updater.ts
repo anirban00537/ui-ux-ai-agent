@@ -3,7 +3,7 @@ const generateColorPaletteInstructions = (
 ): string => {
   if (!colorPalette) {
     return `COLOR PALETTE: Use Tailwind classes "bg-background", "bg-primary", "bg-secondary", "text-primary", "text-secondary" (they map to CSS vars). For main body text use standard Tailwind (e.g. text-slate-900, text-white).
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these semantic classes so every screen shares the same theme.`;
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these semantic classes so every screen shares the same theme. On bg-primary or bg-secondary always use text-white and white icons—never dark text/icons on those surfaces. On images use scrim + text-white.`;
   }
 
   return `DESIGN SYSTEM (3-color theme) - SAME FOR EVERY SCREEN:
@@ -17,7 +17,7 @@ For main body text use standard Tailwind (e.g. text-slate-900, text-white). For 
 
 Use layered or colored shadows (e.g. shadow-primary/20) for depth; avoid flat blocks.
 
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme.`;
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme. On bg-primary or bg-secondary: ALWAYS use text-white and white icons—never text-primary, text-slate-900, or dark icons on those surfaces (dark-on-deep looks bad). On images use scrim (bg-black/40) + text-white. WCAG contrast everywhere.`;
 };
 
 import { OpenRouter } from '@openrouter/sdk';
