@@ -5,15 +5,16 @@ import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
-// JSON Schema for ColorPalette - 3 tokens only
+// JSON Schema for ColorPalette - 4 tokens: background, primary, secondary, text
 const colorPaletteJsonSchema = {
   type: 'object',
   properties: {
-    primary: { type: 'string', description: 'Primary brand color (hex code)' },
-    backgroundLight: { type: 'string', description: 'Light mode background color (hex)' },
-    backgroundDark: { type: 'string', description: 'Dark mode background color (hex)' },
+    background: { type: 'string', description: 'Page/surface background color (hex)' },
+    primary: { type: 'string', description: 'Primary brand/accent color (hex)' },
+    secondary: { type: 'string', description: 'Secondary accent color (hex)' },
+    text: { type: 'string', description: 'Main text color on background (hex)' },
   },
-  required: ['primary', 'backgroundLight', 'backgroundDark'],
+  required: ['background', 'primary', 'secondary', 'text'],
   additionalProperties: false,
 };
 
@@ -22,15 +23,16 @@ const colorPaletteTemplate =
 
 CONSIDERATIONS:
 • **Mood/Tone**: What is the emotional goal? (Trustworthy for finance, Energetic for fitness, Calm for meditation).
-• **Accessibility**: High contrast is non-negotiable (WCAG AA).
-• **Visual Hierarchy**: The primary color must pop against the background.
+• **Accessibility**: High contrast is non-negotiable (WCAG AA). Primary and text must contrast with background.
+• **Visual Hierarchy**: Primary color must pop against background; text must be readable on background.
 
-OUTPUT (strictly 3 colors):
-1. "primary": Brand anchor color.
-2. "backgroundLight": A refined, off-white/light-grey tone (avoid pure #ffffff).
-3. "backgroundDark": A rich, deep dark tone (avoid pure #000000; prefer slate, navy, or deep forest).
+OUTPUT (strictly 4 colors, hex codes):
+1. "background": Page/surface background (one value; no light/dark split).
+2. "primary": Brand anchor and main CTAs.
+3. "secondary": Supporting accent for variety.
+4. "text": Main text color on background (must contrast with background).
 
-Return JSON with keys: primary, backgroundLight, backgroundDark.`);
+Return JSON with keys: background, primary, secondary, text.`);
 
 export class ColorPaletteGenerator {
   private openrouter = new OpenRouter({
@@ -117,9 +119,10 @@ export class ColorPaletteGenerator {
 
   generateDefaultColorPalette(): ColorPalette {
     return {
-      primary: '#13ec5b',
-      backgroundLight: '#f6f8f6',
-      backgroundDark: '#102216',
+      background: '#0f172a',
+      primary: '#3b82f6',
+      secondary: '#8b5cf6',
+      text: '#f1f5f9',
     };
   }
 }

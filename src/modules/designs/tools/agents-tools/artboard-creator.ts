@@ -75,17 +75,21 @@ const generateColorPaletteInstructions = (
   colorPalette?: ColorPalette | null,
 ): string => {
   if (!colorPalette) {
-    return `COLOR PALETTE: Use Tailwind classes "bg-primary", "text-primary", "bg-background-light", "bg-background-dark" (these map to CSS vars). Default: primary #13ec5b, background-light #f6f8f6, background-dark #102216.`;
+    return `COLOR PALETTE: Use Tailwind classes "bg-background", "bg-primary", "bg-secondary", "text-primary", "text-secondary", "text-foreground" (they map to CSS vars).
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these semantic classes so every screen shares the same theme.`;
   }
 
-  return `DESIGN SYSTEM (3-color minimal theme):
+  return `DESIGN SYSTEM (4-color theme) - SAME FOR EVERY SCREEN:
 
 STRICT VARIABLE MAPPINGS - Use ONLY these Tailwind classes (they map to CSS vars):
-- Primary (${colorPalette.primary}): "bg-primary", "text-primary"
-- Light background (${colorPalette.backgroundLight}): "bg-background-light"
-- Dark background (${colorPalette.backgroundDark}): "bg-background-dark"
+- background: "bg-background"
+- primary: "bg-primary", "text-primary"
+- secondary: "bg-secondary", "text-secondary"
+- text: "text-foreground" (main text on background)
 
-For neutrals use standard Tailwind: text-slate-900, dark:text-white, border-slate-200, dark:border-white/10, bg-white, dark:bg-white/5.`;
+For neutrals use standard Tailwind: border-slate-200, border-white/10, etc. where needed.
+
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme.`;
 };
 
 export class ArtboardCreator {

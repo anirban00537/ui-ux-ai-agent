@@ -5,20 +5,18 @@ export const designSystemInstructions = `
                      PRESENTATION DESIGN SYSTEM (16:9 SLIDES)
 ═══════════════════════════════════════════════════════════════════════════════
 
-🎨 CORE THEME STRATEGY (STRICT):
+🎨 CORE THEME (STRICT - use ONLY these semantic classes):
 ───────────────────────────────────────────────────────────────────────────────
-1. CUSTOM BRAND VARIABLES (Use strictly for brand identity):
-   • bg-primary          → Main accents, key visuals, CTAs (#13ec5b)
-   • text-primary        → Links, highlights, emphasis
-   • bg-background-light → Main slide background in Light Mode (#f6f8f6)
-   • bg-background-dark  → Main slide background in Dark Mode (#102216)
+• background: bg-background (slide/surface)
+• primary: bg-primary, text-primary (CTAs, key visuals)
+• secondary: bg-secondary, text-secondary (supporting accent)
+• text: text-foreground (main text on background)
 
-2. NEUTRAL COLORS (Standard Tailwind):
-   • Text: text-slate-900 (light), dark:text-white
-   • Muted: text-slate-500 (light), dark:text-slate-400
-   • Borders: border-slate-200 (light), dark:border-white/10
-   • Cards: bg-white/80 (light), dark:bg-white/5
-   • Shadows: active/lifted elements need "shadow-lg" or "shadow-xl"
+NEUTRALS (only where needed): border-slate-200, border-white/10, bg-white/5. Main background and text MUST come from theme classes above.
+
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
+
+Shadows: active/lifted elements need "shadow-lg" or "shadow-xl".
 
 3. LAYOUT (16:9 Slide):
    • Use w-full h-full to fill the slide

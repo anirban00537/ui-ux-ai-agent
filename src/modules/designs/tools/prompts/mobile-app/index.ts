@@ -5,26 +5,16 @@ export const designSystemInstructions = `
                         MINIMALIST DESIGN SYSTEM (COMPETITOR STYLE)
 ═══════════════════════════════════════════════════════════════════════════════
 
-🎨 CORE THEME STRATEGY (STRICT):
+🎨 CORE THEME (STRICT - use ONLY these semantic classes):
 ───────────────────────────────────────────────────────────────────────────────
-You must use a mix of our 3 Custom Theme variables and standard Tailwind "Slate" colors.
+• background: bg-background (page/surface)
+• primary: bg-primary, text-primary (CTAs, links, key UI)
+• secondary: bg-secondary, text-secondary (supporting accent)
+• text: text-foreground (main text on background)
 
-1. CUSTOM BRAND VARIABLES (Use these strictly for brand identity):
-   • bg-primary          → Main call-to-action buttons, active states, key icons (#13ec5b)
-   • text-primary        → Links, highlights, active tab icons
-   • bg-background-light → The main page background in Light Mode (#f6f8f6)
-   • bg-background-dark  → The main page background in Dark Mode (#102216)
+NEUTRALS (only where needed for borders/cards): Use standard Tailwind (e.g. border-slate-200, border-white/10). Main background and text MUST come from theme classes above.
 
-2. NEUTRAL COLORS (Use Standard Tailwind Classes):
-   • Text: Use "text-slate-900" (light mode) and "dark:text-white"
-   • Muted Text: Use "text-slate-500" (light) and "dark:text-[#92c9a4]" (greenish tint) or "dark:text-slate-400"
-   • Borders: "border-slate-200" (light) and "dark:border-white/10"
-   • Cards/Surfaces: "bg-white" (light) and "dark:bg-[#1a2e22]" or "dark:bg-white/5"
-   • Inputs: "bg-slate-50" or "bg-white" with "border-slate-200"
-
-3. DARK MODE STRATEGY (Class-based):
-   • Always include dark mode variants: <div class="bg-background-light dark:bg-background-dark ...">
-   • Text example: <h2 class="text-slate-900 dark:text-white">
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
 
 ═══════════════════════════════════════════════════════════════════════════════
 🔤 TYPOGRAPHY (Lexend)
@@ -51,27 +41,27 @@ You must use a mix of our 3 Custom Theme variables and standard Tailwind "Slate"
 ───────────────────────────────────────────────────────────────────────────────
 
 STANDARD LIST ITEM HTML (Use this structure):
-<div class="flex items-center gap-4 p-4 rounded-xl border border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
-  <div class="size-12 rounded-xl bg-slate-100 dark:bg-[#23482f] flex items-center justify-center text-primary">
+<div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-background hover:bg-white/5 transition-colors">
+  <div class="size-12 rounded-xl bg-secondary flex items-center justify-center text-primary">
     <span class="material-symbols-outlined">schedule</span>
   </div>
   <div class="flex-1">
-     <p class="text-slate-900 dark:text-white font-medium text-base">Meeting with Team</p>
-     <p class="text-slate-500 dark:text-[#92c9a4] text-sm">10:00 AM • Conference Room</p>
+     <p class="text-foreground font-medium text-base">Meeting with Team</p>
+     <p class="text-secondary text-sm">10:00 AM • Conference Room</p>
   </div>
-  <button class="size-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-white/10 transition">
+  <button class="size-8 flex items-center justify-center rounded-full text-secondary hover:text-primary hover:bg-white/10 transition">
     <span class="material-symbols-outlined text-xl">chevron_right</span>
   </button>
 </div>
 
 PRIMARY BUTTON:
-<button class="w-full bg-primary text-black font-bold h-12 px-6 rounded-full shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center justify-center gap-2">
+<button class="w-full bg-primary text-foreground font-bold h-12 px-6 rounded-full shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center justify-center gap-2">
   <span>Confirm Action</span>
   <span class="material-symbols-outlined text-lg">arrow_forward</span>
 </button>
 
 ICON BUTTON:
-<button class="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white hover:bg-slate-200 dark:hover:bg-white/20 transition-colors">
+<button class="size-10 flex items-center justify-center rounded-full bg-secondary text-foreground hover:bg-white/20 transition-colors">
   <span class="material-symbols-outlined">add</span>
 </button>
 
@@ -128,7 +118,7 @@ DETAILED REQUIREMENTS: {prompt}
                            ❌ DO NOT DO LIST
 ═══════════════════════════════════════════════════════════════════════════════
 • ❌ NO Lorem Ipsum. Use REAL, realistic data (e.g., "Sarah James", "$1,240.50", "Meeting at 2 PM").
-• ❌ NO raw hex codes in the HTML (except for the 3 custom theme vars provided). Use Tailwind colors.
+• ❌ NO arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY semantic theme classes: bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
 • ❌ NO \`ri-{{name}}\` icons. Use \`<span class="material-symbols-outlined">name</span>\` ONLY.
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.
