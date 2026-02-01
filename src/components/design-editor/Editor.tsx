@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MobileFrame } from "@/components/design-editor/MobileFrame";
 import { PresentationFrame } from "@/components/design-editor/PresentationFrame";
-import { Trash2 } from "lucide-react";
+import { Trash2, Copy, Check } from "lucide-react";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
 import { DesignType } from "@/services/designs";
@@ -64,7 +64,25 @@ export function Editor({
   onDeleteArtboard,
 }: EditorProps) {
   const isPresentationMode = designType === "presentation";
-  
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = useCallback(async (html: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(html);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } catch {
+      const textArea = document.createElement("textarea");
+      textArea.value = html;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  }, []);
+
   return (
     <div className="w-full h-full bg-background relative overflow-hidden">
       <DotPattern
@@ -133,15 +151,28 @@ export function Editor({
               >
                 {artboards.map((artboard) => (
                   <div key={artboard.id} className="relative group">
-                    {onDeleteArtboard && (
+                    <div className="absolute -top-2 -right-2 z-30 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300">
                       <button
-                        onClick={() => onDeleteArtboard(artboard.id, artboard.title)}
-                        className="absolute -top-2 -right-2 z-30 bg-red-500/90 hover:bg-red-500 backdrop-blur-sm text-white rounded-full p-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl ring-1 ring-red-400/20 hover:scale-110"
-                        title={`Delete ${artboard.title}`}
+                        onClick={() => handleCopy(artboard.html, artboard.id)}
+                        className="rounded-full p-2.5 bg-zinc-800/90 hover:bg-zinc-700 backdrop-blur-sm text-white shadow-xl ring-1 ring-white/10 hover:scale-110 transition-all"
+                        title={`Copy HTML`}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        {copiedId === artboard.id ? (
+                          <Check className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
                       </button>
-                    )}
+                      {onDeleteArtboard && (
+                        <button
+                          onClick={() => onDeleteArtboard(artboard.id, artboard.title)}
+                          className="rounded-full p-2.5 bg-red-500/90 hover:bg-red-500 backdrop-blur-sm text-white shadow-xl ring-1 ring-red-400/20 hover:scale-110 transition-all"
+                          title={`Delete ${artboard.title}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                     {isPresentationMode ? (
                       <PresentationFrame
                         title={artboard.title}

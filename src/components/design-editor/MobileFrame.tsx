@@ -51,7 +51,7 @@ export function MobileFrame({
 }: MobileFrameProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  
+
   const aspectRatio = 932 / 430;
   const height = Math.floor(width * aspectRatio);
 
