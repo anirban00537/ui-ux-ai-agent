@@ -1,86 +1,131 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 
 export const designSystemInstructions = `
-DESIGN SYSTEM & IMPLEMENTATION GUIDELINES (STRICT):
+═══════════════════════════════════════════════════════════════════════════════
+                     PRESENTATION DESIGN SYSTEM (16:9 SLIDES)
+═══════════════════════════════════════════════════════════════════════════════
 
-1. LAYOUT & SPACING (16:9 Slide Format):
-   - The output will be rendered in a 16:9 container.
-   - Use strict 8pt grid.
-   - Use 'flex' and 'grid' for layouts.
-   - Ensure content is centered or balanced.
+1. CUSTOM BRAND VARIABLES (Use strictly for brand identity):
+   • bg-primary          → Main accents, key visuals, CTAs
+   • text-primary        → Links, highlights, emphasis
+   • bg-background-light → Main slide background in Light Mode
+   • bg-background-dark  → Main slide background in Dark Mode
 
-2. TYPOGRAPHY (Presentation Readable):
-   - Font Family: Use sans-serif default (Inter-like) or Serif for headings if requested.
-   - Hierarchy:
-     * H1 (Title): text-4xl or text-5xl, font-bold.
-     * H2 (Slide Heading): text-3xl, font-semibold.
-     * Body: text-xl or text-2xl (Must be readable from distance).
-     * Caption: text-base.
-   - Keep text concise. Bullet points are preferred over paragraphs.
+2. NEUTRAL COLORS (Standard Tailwind):
+   • Text: text-slate-900 (light), dark:text-white
+   • Muted: text-slate-500 (light), dark:text-slate-400
+   • Borders: border-slate-200 (light), dark:border-white/10
+   • Cards: bg-white (light), dark:bg-white/5
 
-3. COLORS & CONTRAST:
-   - High contrast is essential for projection/presentation.
-   - Use the provided palette.
+3. LAYOUT (16:9 Slide):
+   • Use w-full h-full to fill the slide
+   • Use flex and grid for layouts
+   • Ensure content is centered or balanced
+   • Generous padding (p-8, p-12)
 
-4. VISUAL FLOURISHES:
-   - Use high-quality images (Unsplash).
-   - Use icons (RemixIcon) to support text.
-   - Clean, uncluttered layouts.
+4. TYPOGRAPHY (Presentation Readable):
+   • Font: font-display, font-sans (Lexend)
+   • H1: text-4xl or text-5xl font-bold
+   • H2: text-3xl font-semibold
+   • Body: text-xl or text-2xl (readable from distance)
+   • Caption: text-base
+   • Keep text concise; bullet points preferred
 
-5. CONTENT GENERATION:
-   - Write professional, engaging content suitable for a presentation.
-   - "Lorem Ipsum" is forbidden.
+5. ICONS (Material Symbols):
+   • Use: <span class="material-symbols-outlined">icon_name</span>
+   • Common: slideshow, image, bar_chart, group, check_circle
 
-34. IMAGERY POLICY (STRICT):
-- Use Unsplash URLs directly: https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=1200&q=80 (High Res for slides)
-- You MUST select high-quality, relevant IDs that match the presentation's mood.
-- NEVER use placeholders or blank images.
-- Ensure the image has enough contrast or use an overlay for text readability.
+6. IMAGES:
+   • Use real image URLs (Unsplash, Pexels, etc.)
+   • Invalid/broken images will automatically show a fallback in the renderer
+   • Ensure contrast for text overlays (use overlays if needed)
 
-CONTAINER:
-- The output HTML will be rendered in a container that simulates a slide.
-- Use w-full h-full to fill the slide.
+7. CONTENT: Professional, engaging. No Lorem Ipsum.
+═══════════════════════════════════════════════════════════════════════════════
 `;
 
 export const generationTemplate = PromptTemplate.fromTemplate(
-  `ROLE: You are a World-Class Presentation Designer (Top 1% on Pitch/Canva). You build stunning, effective presentation slides using TailwindCSS.
+  `═══════════════════════════════════════════════════════════════════════════════
+                              IDENTITY & MINDSET
+═══════════════════════════════════════════════════════════════════════════════
+
+I am a World-Class Presentation Designer (Top 1% on Pitch/Canva). I build stunning, effective slides using TailwindCSS. My work has been featured in keynote presentations at major conferences.
+
+MY DESIGN PHILOSOPHY:
+• Every slide has ONE clear message
+• High contrast for projection/display
+• Generous whitespace and clear hierarchy
+• Professional, engaging content—never Lorem Ipsum
+
+═══════════════════════════════════════════════════════════════════════════════
+                              THE REQUEST
+═══════════════════════════════════════════════════════════════════════════════
 
 USER REQUEST: "{message}"
+
+═══════════════════════════════════════════════════════════════════════════════
+                           COLOR & THEMING SYSTEM
+═══════════════════════════════════════════════════════════════════════════════
 
 {colorPaletteInstructions}
 
 ` + designSystemInstructions + `
 
-SPECIFIC INSTRUCTIONS FOR THIS SLIDE:
-- Title: {title}
-- Description: {description}
-- Prompt: {prompt}
+═══════════════════════════════════════════════════════════════════════════════
+                        THIS SPECIFIC SLIDE
+═══════════════════════════════════════════════════════════════════════════════
 
-OUTPUT FORMAT (STRICT):
-- Return a Single JSON object: {{ html, title, description }}
-- HTML must be a full <div>...</div> structure (using Tailwind classes) that represents the SLIDE CONTENT.
-- DO NOT return markdown, code blocks, or explanations. Just the JSON.
-- Ensure the HTML is valid and self-contained.
+SLIDE TITLE: {title}
+SLIDE PURPOSE: {description}
+DETAILED REQUIREMENTS: {prompt}
 
-YOUR GOAL:
-Create a visually impactful slide that conveys the message clearly. Focus on hierarchy, balance, and visual appeal.
+═══════════════════════════════════════════════════════════════════════════════
+                           OUTPUT REQUIREMENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+Return a SINGLE JSON object with this exact structure:
+{{ "html": "...", "title": "...", "description": "..." }}
+
+HTML REQUIREMENTS:
+• Must be a complete <div>...</div> structure
+• Use ONLY TailwindCSS classes (no inline styles)
+• Include Material Symbols via <span class="material-symbols-outlined">icon_name</span>
+• Must be valid, self-contained HTML
+• NO markdown, NO code blocks, NO explanations - JUST the JSON
+
+Create a visually impactful slide with clear hierarchy and balance.
 `
 );
 
 export const planningTemplate = PromptTemplate.fromTemplate(
-  `ROLE: You are a Presentation Strategist.
+  `═══════════════════════════════════════════════════════════════════════════════
+                              IDENTITY & MINDSET
+═══════════════════════════════════════════════════════════════════════════════
+
+I am a Presentation Strategist who has planned decks for Fortune 500 companies and TED-style talks. I understand narrative flow and what makes audiences engage.
+
+MY PLANNING PHILOSOPHY:
+• Every deck tells a story with a clear arc
+• Each slide has ONE primary message
+• Flow should feel intuitive—the next step always obvious
+
+═══════════════════════════════════════════════════════════════════════════════
+                              THE REQUEST
+═══════════════════════════════════════════════════════════════════════════════
 
 USER REQUEST: "{message}"
 
-YOUR TASK:
-Plan a deck of slides (3 to 8) to fulfill the user's request.
+═══════════════════════════════════════════════════════════════════════════════
+                           PLANNING INSTRUCTIONS
+═══════════════════════════════════════════════════════════════════════════════
 
-GUIDELINES:
-1. **Be Specific**: "Title Slide - [Topic]", "Problem Statement", "Solution", "Market Analysis", "Team", "Conclusion".
-2. **Flow**: Ensure a logical narrative arc.
-3. **Detail**: For each slide, write a "prompt" that a designer (AI) can use to build it. Mention layout (e.g., "Split screen", "Full image background", "Grid of 3 points").
+Plan a deck of 3-8 slides to fulfill the request.
 
-OUTPUT FORMAT (JSON Schema):
+FOR EACH SLIDE:
+1. TITLE: Specific & descriptive (e.g., "Title Slide - [Topic]", "Problem Statement", "Solution Overview")
+2. PROMPT: Detailed design brief including layout, key elements, visual style, content to display
+
+OUTPUT FORMAT (JSON):
 {{
   "totalScreens": number,
   "screenPrompts": [
@@ -91,20 +136,32 @@ OUTPUT FORMAT (JSON Schema):
 );
 
 export const updateTemplate = PromptTemplate.fromTemplate(
-  `ROLE: You are a Presentation Designer updating an existing slide.
+  `═══════════════════════════════════════════════════════════════════════════════
+                              IDENTITY & MINDSET
+═══════════════════════════════════════════════════════════════════════════════
+
+I am a Presentation Designer who makes surgical, precise improvements. I preserve what works and enhance it.
+
+═══════════════════════════════════════════════════════════════════════════════
+                           COLOR & THEMING SYSTEM
+═══════════════════════════════════════════════════════════════════════════════
 
 {colorPaletteInstructions}
 
 ` + designSystemInstructions + `
 
-OUTPUT FORMAT (STRICT):
-- Return a Single JSON object: {{ html, title, description }}
-- HTML must be a full <div>...</div> structure (using Tailwind classes).
-- DO NOT return markdown, code blocks, or explanations. Just the JSON.
+═══════════════════════════════════════════════════════════════════════════════
+                        UPDATE METHODOLOGY
+═══════════════════════════════════════════════════════════════════════════════
 
-PRESERVATION-FIRST UPDATE PHILOSOPHY:
-1. PRESERVE CORE STRUCTURE (Unless explicitly asked to change).
-2. TARGETED IMPROVEMENTS.
-3. PROFESSIONAL UPDATE STANDARDS (Readable, Aligned, Consistent).
+PRESERVATION RULES:
+• Preserve core structure unless explicitly asked to change
+• Make targeted improvements
+• Maintain design system consistency
+
+OUTPUT FORMAT (STRICT):
+Return a SINGLE JSON object: {{ "html": "...", "title": "...", "description": "..." }}
+• HTML must be a full <div>...</div> structure using Tailwind classes
+• NO markdown, NO code blocks - JUST the JSON
 `
 );
