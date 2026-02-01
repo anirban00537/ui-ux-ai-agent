@@ -7,15 +7,27 @@ export default function CanvasLayout({
     <html lang="en" className="h-full w-full overflow-hidden antialiased">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
-        
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
+        />
+
         {/* Fonts: Lexend (Competitor), Plus Bricolage & DM Sans (Premium) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:opsz,wght@9..40,100..900&display=swap" rel="stylesheet" />
-        
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:opsz,wght@9..40,100..900&display=swap"
+          rel="stylesheet"
+        />
+
         {/* Tailwind Config - Minimal & Robust */}
-        <script dangerouslySetInnerHTML={{ __html: `
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
           tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -40,10 +52,15 @@ export default function CanvasLayout({
               }
             }
           }
-        `}} />
-        
+        `,
+          }}
+        />
+
         {/* Tailwind Engine with Plugins */}
-        <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries" defer />
+        <script
+          src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"
+          defer
+        />
 
         <style>{`
           :root {
@@ -69,6 +86,11 @@ export default function CanvasLayout({
             background-color: var(--background-dark);
             color: #e2e8f0;
           }
+
+          /* Theme utilities - must exist for dynamically injected content before Tailwind JIT */
+          .bg-background-light { background-color: var(--background-light, #f6f8f6) !important; }
+          .bg-background-dark { background-color: var(--background-dark, #102216) !important; }
+          .text-primary { color: var(--primary, #13ec5b) !important; }
 
           /* GlobalScrollbar Hide */
           ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }

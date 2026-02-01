@@ -105,11 +105,10 @@ export default function CanvasPage() {
 
       if (data.type === "UPDATE_THEME" && data.palette) {
         const p = data.palette;
-        const root = document.documentElement;
-
-        if (p.primary) root.style.setProperty("--primary", p.primary);
-        if (p.backgroundLight) root.style.setProperty("--background-light", p.backgroundLight);
-        if (p.backgroundDark) root.style.setProperty("--background-dark", p.backgroundDark);
+        const docRoot = document.documentElement;
+        if (p.primary) docRoot.style.setProperty("--primary", p.primary);
+        if (p.backgroundLight) docRoot.style.setProperty("--background-light", p.backgroundLight);
+        if (p.backgroundDark) docRoot.style.setProperty("--background-dark", p.backgroundDark);
       }
     };
 
