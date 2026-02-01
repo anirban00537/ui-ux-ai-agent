@@ -185,7 +185,7 @@ export function Editor({
                         title={artboard.title}
                         subtitle={loading ? "Generating..." : artboard.description}
                         htmlContent={artboard.html}
-                        width={320}
+                        width={400}
                         colorPalette={colorPalette}
                         isGenerating={artboard.status === 'generating'}
                       />
