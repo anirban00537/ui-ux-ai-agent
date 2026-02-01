@@ -78,22 +78,21 @@ export class ColorPaletteGenerator {
     checkAborted(signal, 'color_palette_generation');
 
     const response = await withTimeout(
-      this.openrouter.chat.send({
+      this.openrouter.chat.completions.create({
         model: coreConstant.AI_MODELS.DESIGN.NAME,
         messages: [
           { role: 'system', content: colorPrompt },
           { role: 'user', content: message },
         ],
-        responseFormat: {
+        response_format: {
           type: 'json_schema',
-          jsonSchema: {
+          json_schema: {
             name: 'colorPalette',
             strict: true,
             schema: colorPaletteJsonSchema,
           },
         },
         temperature: 0.5,
-        stream: false,
       }),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Color Palette LLM Call',

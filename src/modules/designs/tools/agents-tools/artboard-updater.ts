@@ -113,19 +113,18 @@ export class ArtboardUpdater {
     checkAborted(signal, `screen_update:${artboard.title}`);
 
     const response = await withTimeout(
-      this.openrouter.chat.send({
+      this.openrouter.chat.completions.create({
         model: coreConstant.AI_MODELS.DESIGN.NAME,
         messages: allMessages,
-        responseFormat: {
+        response_format: {
           type: 'json_schema',
-          jsonSchema: {
+          json_schema: {
             name: 'artboard',
             strict: true,
             schema: singleArtboardJsonSchema,
           },
         },
         temperature: 0.5,
-        stream: false,
       }),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       `Screen Update: ${artboard.title}`,

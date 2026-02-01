@@ -11,7 +11,7 @@ import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 import { PromptManager } from '../prompts/prompt-manager';
-import { getOpenRouterClient, getOpenAIClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
+import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
 
 // JSON Schema for ScreenPlan
 const artboardPlanJsonSchema = {
@@ -119,8 +119,8 @@ export interface ScreenGenerationResult {
 }
 
 export class ArtboardCreator {
+  // Using OpenAI SDK pointed at OpenRouter for full streaming support
   private openrouter = getOpenRouterClient();
-  private openai = getOpenAIClient();
 
   constructor(
     private prisma: PrismaService,
@@ -158,19 +158,18 @@ export class ArtboardCreator {
     checkAborted(signal, 'screen_planning');
 
     const response = await withTimeout(
-      this.openrouter.chat.send({
+      this.openrouter.chat.completions.create({
         model: coreConstant.AI_MODELS.DESIGN.NAME,
         messages: allMessages,
-        responseFormat: {
+        response_format: {
           type: 'json_schema',
-          jsonSchema: {
+          json_schema: {
             name: 'artboardPlan',
             strict: true,
             schema: artboardPlanJsonSchema,
           },
         },
         temperature: 0.5,
-        stream: false,
       }),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Screen Planning LLM Call',
@@ -265,8 +264,8 @@ export class ArtboardCreator {
 
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
-    // Use the singleton OpenAI client for streaming
-    const stream = await this.openai.chat.completions.create({
+    // Use the singleton OpenRouter client for streaming
+    const stream = await this.openrouter.chat.completions.create({
       model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: allMessages,
       response_format: {
@@ -424,19 +423,18 @@ export class ArtboardCreator {
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
     const response = await withTimeout(
-      this.openrouter.chat.send({
+      this.openrouter.chat.completions.create({
         model: coreConstant.AI_MODELS.DESIGN.NAME,
         messages: allMessages,
-        responseFormat: {
+        response_format: {
           type: 'json_schema',
-          jsonSchema: {
+          json_schema: {
             name: 'artboard',
             strict: true,
             schema: singleArtboardJsonSchema,
           },
         },
         temperature: 0.5,
-        stream: false,
       }),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       `Screen Generation: ${promptData.title}`,
