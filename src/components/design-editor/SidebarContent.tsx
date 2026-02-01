@@ -3,8 +3,38 @@
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarPromptInput } from "@/components/design-editor/SidebarPromptInput";
+import { ThemeEditor } from "@/components/design-editor/ThemeEditor";
 import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
+import { MessageCircle, Palette } from "lucide-react";
+
+interface ColorPalette {
+  background: string;
+  foreground: string;
+  card: string;
+  cardForeground: string;
+  popover: string;
+  popoverForeground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  muted: string;
+  mutedForeground: string;
+  accent: string;
+  accentForeground: string;
+  destructive: string;
+  destructiveForeground: string;
+  border: string;
+  input: string;
+  ring: string;
+  radius: string;
+  chart1: string;
+  chart2: string;
+  chart3: string;
+  chart4: string;
+  chart5: string;
+}
 
 interface Conversation {
   id: string;
@@ -25,6 +55,7 @@ interface Conversation {
     html: string;
     createdAt: string;
   }>;
+  colorPalette?: ColorPalette;
 }
 
 interface GenerationProgress {
@@ -41,6 +72,47 @@ interface SidebarContentProps {
   progress?: GenerationProgress | null;
   hasScreens?: boolean;
   conversation?: Conversation | null;
+  onColorChange?: (key: keyof ColorPalette, value: string) => void;
+  onFontChange?: (fontFamily: string) => void;
+}
+
+type TabType = "chat" | "theme";
+
+function TabBar({ 
+  activeTab, 
+  onTabChange 
+}: { 
+  activeTab: TabType; 
+  onTabChange: (tab: TabType) => void 
+}) {
+  return (
+    <div className="px-2 py-2 border-b border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm">
+      <div className="flex items-center gap-1 p-1 bg-zinc-800/30 rounded-lg">
+        <button
+          onClick={() => onTabChange("chat")}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+            activeTab === "chat"
+              ? "bg-zinc-700/50 text-white shadow-sm"
+              : "text-white/60 hover:text-white/80 hover:bg-zinc-700/30"
+          }`}
+        >
+          <MessageCircle className="w-3.5 h-3.5" />
+          Chat
+        </button>
+        <button
+          onClick={() => onTabChange("theme")}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-md transition-all duration-200 ${
+            activeTab === "theme"
+              ? "bg-zinc-700/50 text-white shadow-sm"
+              : "text-white/60 hover:text-white/80 hover:bg-zinc-700/30"
+          }`}
+        >
+          <Palette className="w-3.5 h-3.5" />
+          Theme
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export function SidebarContent({
@@ -50,8 +122,11 @@ export function SidebarContent({
   progress,
   hasScreens = false,
   conversation,
+  onColorChange,
+  onFontChange,
 }: SidebarContentProps) {
   const [prompt, setPrompt] = useState("");
+  const [activeTab, setActiveTab] = useState<TabType>("chat");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { balance, loading: balanceLoading, refetch: refetchBalance } =
@@ -105,8 +180,28 @@ export function SidebarContent({
     return "text-green-400";
   };
 
+  // If theme tab is active, render the theme editor
+  if (activeTab === "theme") {
+    return (
+      <div className="relative flex flex-col h-full font-sans bg-zinc-900/20 backdrop-blur-sm">
+        <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+        <div className="flex-1 overflow-hidden">
+          <ThemeEditor
+            colorPalette={conversation?.colorPalette}
+            onColorChange={onColorChange}
+            onFontChange={onFontChange}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Chat tab content
   return (
     <div className="relative flex flex-col h-full font-sans bg-zinc-900/20 backdrop-blur-sm">
+      <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {/* Header */}
       <div className="px-4 py-3 border-b border-zinc-800/50 bg-zinc-900/20 backdrop-blur-sm">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
@@ -142,6 +237,8 @@ export function SidebarContent({
           </div>
         )}
       </div>
+
+      {/* Messages */}
       <div
         ref={chatContainerRef}
         className="flex-1 p-4 space-y-3 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-600/30 scrollbar-track-transparent hover:scrollbar-thumb-zinc-500/50"
@@ -198,6 +295,8 @@ export function SidebarContent({
           </div>
         )}
       </div>
+
+      {/* Input */}
       <div className="p-4 border-t border-zinc-800/50 bg-zinc-900/20 backdrop-blur-sm">
         <SidebarPromptInput
           prompt={prompt}

@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { getDesignById, DesignType } from "@/services/designs";
+import { useDebouncedCallback } from "use-debounce";
+
+import { getDesignById, updateDesign, DesignType } from "@/services/designs";
 import { CONFIG } from "@/lib/config";
 
 interface Screen {
@@ -75,6 +77,7 @@ interface UseChatGeneratorResult {
   sendMessage: (message: string, designId?: string) => Promise<void>;
   clearConversation: () => void;
   loadConversation: (designId: string) => Promise<void>;
+  updateColorPalette: (key: keyof ColorPalette, value: string) => void;
 }
 
 export function useChatGenerator(): UseChatGeneratorResult {
@@ -133,7 +136,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
 
         const decoder = new TextDecoder();
         let buffer = "";
-        let generatedScreens: Screen[] = [];
+        const generatedScreens: Screen[] = [];
         let assistantMessageContent = "";
 
         const updateAvailableScreens = (availableScreens: any[]) => {
@@ -246,6 +249,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
                 case "screen_complete": {
                   const screenPayload = eventData?.screen ?? eventData;
                   if (screenPayload) {
+                    const planTitle = screenPayload.planTitle;
                     const newScreen: Screen = {
                       id: screenPayload.id ?? `${Date.now()}`,
                       title: screenPayload.title,
@@ -256,21 +260,18 @@ export function useChatGenerator(): UseChatGeneratorResult {
                     };
                     generatedScreens.push(newScreen);
                     addStreamMessage(`Completed: ${screenPayload.title}`, "screen_complete");
-                    setConversation((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            id: responseDesignId || prev.id,
-                            screens: prev.screens.map((s) =>
-                              s.title === newScreen.title ? newScreen : s
-                            ).concat(
-                              prev.screens.some((s) => s.title === newScreen.title)
-                                ? []
-                                : [newScreen]
-                            ),
-                          }
-                        : prev
-                    );
+                    setConversation((prev) => {
+                      if (!prev) return prev;
+                      const matchesBy = (s: Screen) =>
+                        s.id === newScreen.id ||
+                        s.title === newScreen.title ||
+                        (planTitle != null && s.title === planTitle);
+                      const matched = prev.screens.filter(matchesBy);
+                      const nextScreens = prev.screens
+                        .map((s) => (matchesBy(s) ? newScreen : s))
+                        .concat(matched.length ? [] : [newScreen]);
+                      return { ...prev, id: responseDesignId || prev.id, screens: nextScreens };
+                    });
                     if (raw?.progress || eventData?.progress) {
                       const pg = raw?.progress ?? eventData?.progress;
                       setProgress({
@@ -286,6 +287,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
                 case "screen_streaming": {
                   // Real-time streaming of LLM content
                   const title = eventData?.title;
+                  const screenId = eventData?.id || eventData?.screenId;
                   const accumulatedText = eventData?.accumulatedText || "";
                   
                   // Try to extract partial HTML from the accumulated JSON
@@ -309,8 +311,9 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       if (!prev) return prev;
                       
                       // Find or create the streaming screen
-                      const existingIndex = prev.screens.findIndex((s) => s.title === title);
-                      
+                      const existingIndex = prev.screens.findIndex(
+                        (s) => (screenId && s.id === screenId) || s.title === title
+                      );
                       if (existingIndex >= 0) {
                         // Update existing screen
                         const updatedScreens = [...prev.screens];
@@ -318,12 +321,14 @@ export function useChatGenerator(): UseChatGeneratorResult {
                           ...updatedScreens[existingIndex],
                           html: partialHtml,
                           status: 'generating',
+                          // Update ID if we have a real one now and didn't before
+                          ...(screenId ? { id: screenId } : {}), 
                         };
                         return { ...prev, screens: updatedScreens };
                       } else {
                         // Create new placeholder screen
                         const newScreen: Screen = {
-                          id: `streaming-${Date.now()}`,
+                          id: screenId ?? `streaming-${Date.now()}`,
                           title,
                           description: "Generating...",
                           html: partialHtml,
@@ -489,6 +494,30 @@ export function useChatGenerator(): UseChatGeneratorResult {
     }
   }, []);
 
+  const debouncedUpdate = useDebouncedCallback((id: string, palette: any) => {
+    updateDesign(id, { colorPalette: palette }).catch((err) => {
+      console.error("Failed to save color palette:", err);
+    });
+  }, 1000);
+
+  const updateColorPalette = useCallback(
+    (key: keyof ColorPalette, value: string) => {
+      setConversation((prev) => {
+        if (!prev) return prev;
+        const updatedPalette = {
+          ...(prev.colorPalette || {}),
+          [key]: value,
+        } as ColorPalette;
+        
+        // Persist to backend with debounce
+        debouncedUpdate(prev.id, updatedPalette);
+        
+        return { ...prev, colorPalette: updatedPalette };
+      });
+    },
+    [debouncedUpdate]
+  );
+
   return {
     conversation,
     isGenerating,
@@ -497,5 +526,6 @@ export function useChatGenerator(): UseChatGeneratorResult {
     sendMessage,
     clearConversation,
     loadConversation,
+    updateColorPalette,
   };
 }

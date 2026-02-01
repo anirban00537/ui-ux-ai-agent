@@ -23,6 +23,7 @@ export default function DesignEditorPage() {
     sendMessage,
     clearConversation,
     loadConversation,
+    updateColorPalette,
   } = useChatGenerator();
 
   const hasSentInitialPrompt = useRef(false);
@@ -93,6 +94,7 @@ export default function DesignEditorPage() {
           progress={progress}
           hasScreens={(conversation?.screens.length ?? 0) > 0}
           conversation={conversation}
+          onColorChange={updateColorPalette}
         />
       </CustomResizableSidebar>
     </div>

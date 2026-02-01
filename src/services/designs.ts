@@ -62,3 +62,11 @@ export async function deleteDesign(designId: string) {
   const response = await request.delete(`/designs/${designId}`);
   return response.data;
 }
+
+export async function updateDesign(
+  designId: string,
+  data: { title?: string; colorPalette?: Record<string, string> }
+) {
+  const response = await request.patch(`/designs/${designId}`, data);
+  return response.data;
+}
