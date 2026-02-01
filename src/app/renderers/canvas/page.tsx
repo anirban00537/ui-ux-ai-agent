@@ -108,7 +108,7 @@ export default function CanvasPage() {
         const docRoot = document.documentElement;
         if (p.background != null) docRoot.style.setProperty("--background", p.background);
         if (p.primary != null) docRoot.style.setProperty("--primary", p.primary);
-        if (p.secondary != null) docRoot.style.setProperty("--secondary", p.secondary);
+        if (p.cardBackground != null) docRoot.style.setProperty("--card-background", p.cardBackground);
       }
     };
 

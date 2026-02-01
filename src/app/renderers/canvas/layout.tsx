@@ -39,7 +39,7 @@ export default function CanvasLayout({
                 colors: {
                   "background": "var(--background)",
                   "primary": "var(--primary)",
-                  "secondary": "var(--secondary)",
+                  "card-background": "var(--card-background)",
                 },
                 fontFamily: {
                   "display": ["Lexend", "sans-serif"],
@@ -89,9 +89,8 @@ export default function CanvasLayout({
           /* Theme utilities - must exist for dynamically injected content before Tailwind JIT */
           .bg-background { background-color: var(--background) !important; }
           .bg-primary { background-color: var(--primary) !important; }
-          .bg-secondary { background-color: var(--secondary) !important; }
+          .bg-card-background { background-color: var(--card-background) !important; }
           .text-primary { color: var(--primary) !important; }
-          .text-secondary { color: var(--secondary) !important; }
 
           /* GlobalScrollbar Hide */
           ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }

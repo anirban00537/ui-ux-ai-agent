@@ -28,7 +28,7 @@ interface Message {
 interface ColorPalette {
   background: string;
   primary: string;
-  secondary: string;
+  cardBackground: string;
 }
 
 interface Conversation {

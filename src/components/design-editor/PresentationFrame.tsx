@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 interface ColorPalette {
   background: string;
   primary: string;
-  secondary: string;
+  cardBackground: string;
 }
 
 interface PresentationFrameProps {

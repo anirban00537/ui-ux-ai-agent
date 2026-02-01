@@ -21,7 +21,7 @@ interface Artboard {
 interface ColorPalette {
   background: string;
   primary: string;
-  secondary: string;
+  cardBackground: string;
 }
 
 interface EditorProps {

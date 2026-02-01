@@ -9,7 +9,7 @@ import Link from "next/link";
 interface ColorPalette {
   background: string;
   primary: string;
-  secondary: string;
+  cardBackground: string;
 }
 
 interface Conversation {
