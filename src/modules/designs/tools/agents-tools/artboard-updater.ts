@@ -2,39 +2,27 @@ const generateColorPaletteInstructions = (
   colorPalette?: ColorPalette | null,
 ): string => {
   if (!colorPalette) {
-    return `COLOR PALETTE: Use default Tailwind colors with good contrast and accessibility.`;
+    return `COLOR PALETTE: Use default minimalist Green theme vars and standard Tailwind Slate colors.`;
   }
 
-  return `DESIGN SYSTEM (STRICT ADHERENCE REQUIRED):
-The app uses a CSS variable-driven Design System. When updating the HTML, you MUST use semantic Tailwind classes that map to these variables.
+  return `DESIGN SYSTEM (MINIMALIST THEME):
+You must use a mix of our Custom Theme variables and standard Tailwind "Slate" colors.
 
-CORE SYSTEM COLORS:
-- Background: ${colorPalette.background} -> use class "bg-background"
-- Foreground: ${colorPalette.foreground} -> use class "text-foreground"
-- Primary: ${colorPalette.primary} -> use class "bg-primary" or "text-primary"
-- Primary Foreground: ${colorPalette.primaryForeground} -> use class "text-primary-foreground" (text on primary bg)
-- Secondary: ${colorPalette.secondary} -> use class "bg-secondary"
-- Secondary Foreground: ${colorPalette.secondaryForeground} -> use class "text-secondary-foreground"
-- Card: ${colorPalette.card} -> use class "bg-card"
-- Card Foreground: ${colorPalette.cardForeground} -> use class "text-card-foreground"
-- Muted: ${colorPalette.muted} -> use class "bg-muted"
-- Muted Foreground: ${colorPalette.mutedForeground} -> use class "text-muted-foreground"
-- Accent: ${colorPalette.accent} -> use class "bg-accent"
-- Accent Foreground: ${colorPalette.accentForeground} -> use class "text-accent-foreground"
-- Destructive: ${colorPalette.destructive} -> use class "bg-destructive"
-- Destructive Foreground: ${colorPalette.destructiveForeground} -> use class "text-destructive-foreground"
-- Border: ${colorPalette.border} -> use class "border-border"
-- Input: ${colorPalette.input} -> use class "border-input"
-- Ring: ${colorPalette.ring} -> use class "ring-ring"
+STRICT VARIABLE MAPPINGS (Use these for the main brand & mode):
+- Background: \${colorPalette.background} -> class "bg-background-light" (Light) or "bg-background-dark" (Dark)
+- Primary: \${colorPalette.primary} -> class "bg-primary" or "text-primary"
+- Primary Foreground: \${colorPalette.primaryForeground} -> class "text-primary-foreground" (text on primary bg)
 
-RADIUS & SHAPE:
-- Radius: ${colorPalette.radius} -> use classes "rounded-lg" (full radius), "rounded-md" (inner), "rounded-sm"
+NEUTRAL & SYSTEM COLORS (Use Standard Tailwind Classes):
+- Text: Use "text-slate-900" (light) and "dark:text-white"
+- Muted Text: Use "text-slate-500" (light) and "dark:text-[#92c9a4]" (greenish tint) or "dark:text-slate-400"
+- Borders: Use "border-slate-200" (light) and "dark:border-white/10"
+- Cards: Use "bg-white" (light) and "dark:bg-[#1a2e22]" or "dark:bg-white/5"
+- Inputs/Forms: Use "bg-slate-50" or "bg-white" with "border-slate-200"
+- Radius: Use "rounded-xl" or "rounded-2xl"
 
-IMPLEMENTATION RULES:
-1. USE semantic classes (e.g., "bg-primary text-primary-foreground") to ensure the UI remains themeable.
-2. If you need a specific variant, use arbitrary values with variables: e.g., "bg-[var(--primary)]/80" for 80% opacity.
-3. Ensure all text meets WCAG AA contrast standards. Use the "Foreground" tokens on their respective parents.
-4. Use "rounded-lg", "rounded-md", or "rounded-sm" to respect the system's border radius.`;
+DO NOT use complex variable chains for neutrals (e.g. avoid bg-muted, border-input unless you are sure they map to Slate).
+Prefer direct Tailwind utility classes for structure (e.g. border-slate-100) to match the provided minimal aesthetic.`;
 };
 
 import { OpenRouter } from '@openrouter/sdk';
@@ -118,7 +106,7 @@ export class ArtboardUpdater {
           schema: singleArtboardJsonSchema,
         },
       },
-      temperature: 0.7,
+      temperature: 0.5,
       stream: false,
     });
 

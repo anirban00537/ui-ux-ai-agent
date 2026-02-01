@@ -49,45 +49,31 @@ const colorPaletteJsonSchema = {
 };
 
 const colorPaletteTemplate =
-  PromptTemplate.fromTemplate(`You are a top-tier Design System Architect. Your goal is to generate a comprehensive, premium, and accessible color palette for a mobile application.
+  PromptTemplate.fromTemplate(`You are a top-tier Design System Architect. Your goal is to generate a MINIMALIST, CLEAN color palette for a mobile application, strictly following the "Competitor Style".
 
 User Request: "{message}"
 
-DESIGN SYSTEM ARCHITECTURE GUIDELINES:
+MINIMALIST THEME STRATEGY (Non-Negotiable):
+1. **Primary Color**: This is the ONLY strong color. derived from user request (default to Green #13ec5b if unspecified).
+2. **Backgrounds**:
+   - Light Mode: Off-white / very light gray (e.g., #f6f8f6 or #f8fafc).
+   - Dark Mode: Deep, rich dark (e.g., #102216 or #0f172a).
+3. **Neutrals (Muted/Cards/Borders)**: 
+   - STRICTLY use standard Tailwind Slate or Zinc values.
+   - Do NOT generate custom pastel or tinted neutrals unless explicitly asked.
+   - Example: Muted = #f1f5f9, Border = #e2e8f0.
 
-1. THEME VARIABLES (CSS VARIABLE DRIVEN):
-Generate a palette that works as a cohesive "Design System as a Runtime".
-- "Background" vs "Foreground": Ensure extreme contrast (WCAG AA).
-- "Primary" vs "PrimaryForeground": Text must be readable on the primary color.
-- "Card" vs "CardForeground": Text must be readable inside cards.
-- "Muted": Typically a soft background variant (e.g. #F1F5F9).
-
-2. BRAND PERSONALITY:
-{message}
-
-Emotional Associations:
-- Trust: Blues, Professional Grays
-- Energy: Oranges, Vibrant Reds
-- Growth: Emeralds, Soft Greens
-- Luxury: Deep Purples, Gold
-- Modern: Slate, Zinc, Neutral Pure White
-
-3. COMPONENT-SPECIFIC TOKENS:
-- "Ring": Focus state color (usually primary with opacity or lighter).
-- "Input": Border color for form fields.
-- "Radius": The "Roundness" of the app (e.g. "0.5rem" for modern, "0px" for brutalist).
-
-4. CHART COLORS:
-Provide 5 distinct but harmonious colors for data visualization that follow the theme's mood.
-
-5. OUTPUT FORMAT (STRICT):
-Return a JSON object with 26+ design system tokens in hex color codes (or rem/px for radius).
-
-Verification Checklist:
-✓ All Foreground variants have contrast ratio > 4.5:1 against their Background parent.
-✓ The primary color is vibrant but professional.
-✓ All state colors (destructive) are identifiable.
-✓ Radius matches the requested "vibe" (curved vs sharp).
+OUTPUT GUIDELINES:
+- "primary": The main brand color.
+- "primaryForeground": Usually #ffffff or #000000 depending on primary brightness.
+- "background": The light mode background.
+- "foreground": The light mode text (usually #0f172a).
+- "card": White #ffffff.
+- "cardForeground": #0f172a.
+- "muted": #f1f5f9.
+- "mutedForeground": #64748b.
+- "border": #e2e8f0.
+- "radius": "0.5rem" or "1rem".
 
 Generate the full Design System Color Palette JSON now.`);
 
@@ -131,7 +117,7 @@ export class ColorPaletteGenerator {
           schema: colorPaletteJsonSchema,
         },
       },
-      temperature: 0.7,
+      temperature: 0.5,
       stream: false,
     });
 
@@ -176,34 +162,34 @@ export class ColorPaletteGenerator {
 
   generateDefaultColorPalette(): ColorPalette {
     return {
-      // --- System Tokens ---
-      background: '#FFFFFF',
-      foreground: '#1E293B',
+      // --- System Tokens (Green Minimalist Default) ---
+      background: '#f6f8f6',
+      foreground: '#102216',
       card: '#FFFFFF',
-      cardForeground: '#1E293B',
+      cardForeground: '#102216',
       popover: '#FFFFFF',
-      popoverForeground: '#1E293B',
-      primary: '#3B82F6',
-      primaryForeground: '#FFFFFF',
-      secondary: '#F1F5F9',
-      secondaryForeground: '#1E293B',
-      muted: '#F1F5F9',
-      mutedForeground: '#64748B',
-      accent: '#F1F5F9',
-      accentForeground: '#1E293B',
-      destructive: '#EF4444',
+      popoverForeground: '#102216',
+      primary: '#13ec5b',
+      primaryForeground: '#000000',
+      secondary: '#f1f5f9',
+      secondaryForeground: '#102216',
+      muted: '#f1f5f9', // Slate-100
+      mutedForeground: '#64748b', // Slate-500
+      accent: '#f1f5f9',
+      accentForeground: '#102216',
+      destructive: '#ef4444',
       destructiveForeground: '#FFFFFF',
-      border: '#E2E8F0',
-      input: '#E2E8F0',
-      ring: '#3B82F6',
-      radius: '0.5rem',
+      border: '#e2e8f0', // Slate-200
+      input: '#e2e8f0',
+      ring: '#13ec5b',
+      radius: '0.75rem', // rounded-xl
 
       // --- Charts ---
-      chart1: '#3B82F6',
-      chart2: '#8B5CF6',
-      chart3: '#10B981',
-      chart4: '#F59E0B',
-      chart5: '#EF4444',
+      chart1: '#13ec5b',
+      chart2: '#2a9d8f',
+      chart3: '#e9c46a',
+      chart4: '#f4a261',
+      chart5: '#e76e50',
     };
   }
 }
