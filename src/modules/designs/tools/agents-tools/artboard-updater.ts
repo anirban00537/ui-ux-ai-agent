@@ -2,27 +2,17 @@ const generateColorPaletteInstructions = (
   colorPalette?: ColorPalette | null,
 ): string => {
   if (!colorPalette) {
-    return `COLOR PALETTE: Use default minimalist Green theme vars and standard Tailwind Slate colors.`;
+    return `COLOR PALETTE: Use Tailwind classes "bg-primary", "text-primary", "bg-background-light", "bg-background-dark" (these map to CSS vars). Default: primary #13ec5b, background-light #f6f8f6, background-dark #102216.`;
   }
 
-  return `DESIGN SYSTEM (MINIMALIST THEME):
-You must use a mix of our Custom Theme variables and standard Tailwind "Slate" colors.
+  return `DESIGN SYSTEM (3-color minimal theme):
 
-STRICT VARIABLE MAPPINGS (Use these for the main brand & mode):
-- Background: \${colorPalette.background} -> class "bg-background-light" (Light) or "bg-background-dark" (Dark)
-- Primary: \${colorPalette.primary} -> class "bg-primary" or "text-primary"
-- Primary Foreground: \${colorPalette.primaryForeground} -> class "text-primary-foreground" (text on primary bg)
+STRICT VARIABLE MAPPINGS - Use ONLY these Tailwind classes (they map to CSS vars):
+- Primary (${colorPalette.primary}): "bg-primary", "text-primary"
+- Light background (${colorPalette.backgroundLight}): "bg-background-light"
+- Dark background (${colorPalette.backgroundDark}): "bg-background-dark"
 
-NEUTRAL & SYSTEM COLORS (Use Standard Tailwind Classes):
-- Text: Use "text-slate-900" (light) and "dark:text-white"
-- Muted Text: Use "text-slate-500" (light) and "dark:text-[#92c9a4]" (greenish tint) or "dark:text-slate-400"
-- Borders: Use "border-slate-200" (light) and "dark:border-white/10"
-- Cards: Use "bg-white" (light) and "dark:bg-[#1a2e22]" or "dark:bg-white/5"
-- Inputs/Forms: Use "bg-slate-50" or "bg-white" with "border-slate-200"
-- Radius: Use "rounded-xl" or "rounded-2xl"
-
-DO NOT use complex variable chains for neutrals (e.g. avoid bg-muted, border-input unless you are sure they map to Slate).
-Prefer direct Tailwind utility classes for structure (e.g. border-slate-100) to match the provided minimal aesthetic.`;
+For neutrals use standard Tailwind: text-slate-900, dark:text-white, border-slate-200, dark:border-white/10, bg-white, dark:bg-white/5.`;
 };
 
 import { OpenRouter } from '@openrouter/sdk';
