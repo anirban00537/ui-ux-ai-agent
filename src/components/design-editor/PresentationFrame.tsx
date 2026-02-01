@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useState } from "react";
 
 interface ColorPalette {
+  background: string;
   primary: string;
-  backgroundLight: string;
-  backgroundDark: string;
+  secondary: string;
+  text: string;
 }
 
 interface PresentationFrameProps {
@@ -103,13 +104,13 @@ export function PresentationFrame({
           </>
         )}
 
-        {/* Inner Frame Container - no rounded corners (anti-aliasing at rounded clip caused thin light border) */}
+        {/* Inner Frame Container - no rounded corners (anti-aliasing at rounded clip caused thin border) */}
         <div
           className="relative overflow-hidden isolate rounded-none"
           style={{
             width: `${width}px`,
             height: `${height}px`,
-            backgroundColor: colorPalette?.backgroundDark ?? "#0f172a",
+            backgroundColor: colorPalette?.background ?? "#0f172a",
           }}
         >
           <iframe

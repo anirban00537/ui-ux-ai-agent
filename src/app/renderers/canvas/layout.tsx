@@ -4,7 +4,7 @@ export default function CanvasLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark h-full w-full overflow-hidden antialiased">
+    <html lang="en" className="h-full w-full overflow-hidden antialiased">
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -34,13 +34,13 @@ export default function CanvasLayout({
           dangerouslySetInnerHTML={{
             __html: `
           tailwind.config = {
-            darkMode: 'class',
             theme: {
               extend: {
                 colors: {
-                  "primary": "var(--primary, #13ec5b)",
-                  "background-light": "var(--background-light, #f6f8f6)",
-                  "background-dark": "var(--background-dark, #102216)",
+                  "background": "var(--background)",
+                  "primary": "var(--primary)",
+                  "secondary": "var(--secondary)",
+                  "foreground": "var(--text)",
                 },
                 fontFamily: {
                   "display": ["Lexend", "sans-serif"],
@@ -68,34 +68,31 @@ export default function CanvasLayout({
         />
 
         <style>{`
-          :root {
-            --primary: #13ec5b;
-            --background-light: #f6f8f6;
-            --background-dark: #102216;
-          }
-
+          /* Single theme only: no dark/light mode. Whatever palette is sent via UPDATE_THEME is shown. */
           html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--background-light);
+            background-color: var(--background);
             font-family: "Lexend", sans-serif;
-            color: var(--background-dark);
+            color: var(--text);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
           }
 
-          html.dark body {
-            background-color: var(--background-dark);
-            color: #e2e8f0;
+          #root, .canvas-content-wrapper {
+            background-color: var(--background);
           }
 
           /* Theme utilities - must exist for dynamically injected content before Tailwind JIT */
-          .bg-background-light { background-color: var(--background-light, #f6f8f6) !important; }
-          .bg-background-dark { background-color: var(--background-dark, #102216) !important; }
-          .text-primary { color: var(--primary, #13ec5b) !important; }
+          .bg-background { background-color: var(--background) !important; }
+          .bg-primary { background-color: var(--primary) !important; }
+          .bg-secondary { background-color: var(--secondary) !important; }
+          .text-primary { color: var(--primary) !important; }
+          .text-secondary { color: var(--secondary) !important; }
+          .text-foreground { color: var(--text) !important; }
 
           /* GlobalScrollbar Hide */
           ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }

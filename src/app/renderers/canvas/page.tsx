@@ -77,8 +77,8 @@ export default function CanvasPage() {
       if (data.type === "UPDATE_CONTENT") {
         const html = data.html || "";
         if (root) {
-          // 1. Set HTML
-          root.innerHTML = html;
+          // 1. Set HTML wrapped so background applies
+          root.innerHTML = `<div class="canvas-content-wrapper min-h-full w-full">${html}</div>`;
 
           // 2. Attach fallback for images that fail to load
           root.querySelectorAll("img").forEach((img) => {
@@ -106,11 +106,10 @@ export default function CanvasPage() {
       if (data.type === "UPDATE_THEME" && data.palette) {
         const p = data.palette;
         const docRoot = document.documentElement;
-        if (p.primary) docRoot.style.setProperty("--primary", p.primary);
-        if (p.backgroundLight) docRoot.style.setProperty("--background-light", p.backgroundLight);
-        if (p.backgroundDark) docRoot.style.setProperty("--background-dark", p.backgroundDark);
-        // Match body to slide background so no light border shows at edges/corners
-        docRoot.classList.add("dark");
+        if (p.background != null) docRoot.style.setProperty("--background", p.background);
+        if (p.primary != null) docRoot.style.setProperty("--primary", p.primary);
+        if (p.secondary != null) docRoot.style.setProperty("--secondary", p.secondary);
+        if (p.text != null) docRoot.style.setProperty("--text", p.text);
       }
     };
 

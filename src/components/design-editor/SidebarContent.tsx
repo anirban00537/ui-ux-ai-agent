@@ -7,9 +7,10 @@ import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
 
 interface ColorPalette {
+  background: string;
   primary: string;
-  backgroundLight: string;
-  backgroundDark: string;
+  secondary: string;
+  text: string;
 }
 
 interface Conversation {

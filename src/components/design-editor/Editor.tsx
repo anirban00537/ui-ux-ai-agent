@@ -19,9 +19,10 @@ interface Artboard {
 }
 
 interface ColorPalette {
+  background: string;
   primary: string;
-  backgroundLight: string;
-  backgroundDark: string;
+  secondary: string;
+  text: string;
 }
 
 interface EditorProps {
