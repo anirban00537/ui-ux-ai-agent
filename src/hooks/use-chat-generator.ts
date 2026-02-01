@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 import { getDesignById, updateDesign, DesignType } from "@/services/designs";
@@ -61,6 +61,7 @@ interface UseChatGeneratorResult {
   progress: GenerationProgress | null;
   error: string | null;
   sendMessage: (message: string, designId?: string) => Promise<void>;
+  cancelGeneration: () => void;
   clearConversation: () => void;
   loadConversation: (designId: string) => Promise<void>;
   updateColorPalette: (key: keyof ColorPalette, value: string) => void;
@@ -71,9 +72,67 @@ export function useChatGenerator(): UseChatGeneratorResult {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState<GenerationProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
+  
+  // AbortController ref for cancellation support
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (readerRef.current) {
+        readerRef.current.cancel().catch(() => {});
+      }
+    };
+  }, []);
+
+  const cancelGeneration = useCallback(() => {
+    console.log('[useChatGenerator] Cancelling generation...');
+    
+    // Abort the fetch request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    
+    // Cancel the reader
+    if (readerRef.current) {
+      readerRef.current.cancel().catch(() => {});
+      readerRef.current = null;
+    }
+    
+    setIsGenerating(false);
+    setProgress(null);
+    
+    // Add a system message about cancellation
+    setConversation((prev) => {
+      if (!prev) return prev;
+      const cancelMessage: Message = {
+        id: `cancel-${Date.now()}`,
+        content: "Generation cancelled.",
+        role: "system",
+        createdAt: new Date().toISOString(),
+        type: "stream",
+        eventType: "cancelled",
+      };
+      return { ...prev, messages: [...prev.messages, cancelMessage] };
+    });
+  }, []);
 
   const sendMessage = useCallback(
     async (message: string, designId?: string) => {
+      // Cancel any existing generation
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      
+      // Create new AbortController for this request
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+      
       try {
         setIsGenerating(true);
         setError(null);
@@ -107,6 +166,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
             apisecretkeycheck: CONFIG.API_SECRET,
           },
           credentials: "include",
+          signal: abortController.signal, // Add abort signal
         });
 
         if (!res.ok) {
@@ -119,6 +179,9 @@ export function useChatGenerator(): UseChatGeneratorResult {
         const responseDesignId = designId;
         const reader = res.body?.getReader();
         if (!reader) throw new Error("No response body");
+        
+        // Store reader ref for cancellation
+        readerRef.current = reader;
 
         const decoder = new TextDecoder();
         let buffer = "";
@@ -161,6 +224,12 @@ export function useChatGenerator(): UseChatGeneratorResult {
         };
 
         while (true) {
+          // Check for cancellation
+          if (abortController.signal.aborted) {
+            console.log('[useChatGenerator] Request was aborted');
+            break;
+          }
+          
           const { done, value } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
@@ -404,6 +473,9 @@ export function useChatGenerator(): UseChatGeneratorResult {
           }
         }
 
+        // Clean up reader ref
+        readerRef.current = null;
+
         if (assistantMessageContent || generatedScreens.length > 0) {
           const assistantMessage: Message = {
             id: (Date.now() + 1).toString(),
@@ -425,22 +497,33 @@ export function useChatGenerator(): UseChatGeneratorResult {
           );
         }
       } catch (e: any) {
+        // Check if this was an abort error
+        if (e.name === 'AbortError') {
+          console.log('[useChatGenerator] Request aborted by user');
+          return; // Don't set error for user-initiated cancellation
+        }
+        
         console.error("Error sending message:", e);
         setError(e?.message || "Failed to send message");
       } finally {
         setIsGenerating(false);
         setProgress(null);
+        abortControllerRef.current = null;
+        readerRef.current = null;
       }
     },
     []
   );
 
   const clearConversation = useCallback(() => {
+    // Cancel any in-progress generation
+    cancelGeneration();
+    
     setConversation(null);
     setError(null);
     setIsGenerating(false);
     setProgress(null);
-  }, []);
+  }, [cancelGeneration]);
 
   const loadConversation = useCallback(async (designId: string) => {
     try {
@@ -510,6 +593,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
     progress,
     error,
     sendMessage,
+    cancelGeneration,
     clearConversation,
     loadConversation,
     updateColorPalette,

@@ -52,6 +52,7 @@ interface GenerationProgress {
 interface SidebarContentProps {
   onGenerate?: (prompt: string) => Promise<void> | void;
   onClear?: () => void;
+  onCancel?: () => void;
   loading?: boolean;
   progress?: GenerationProgress | null;
   hasScreens?: boolean;
@@ -63,6 +64,7 @@ interface SidebarContentProps {
 export function SidebarContent({
   onGenerate,
   onClear,
+  onCancel,
   loading,
   progress,
   hasScreens = false,
@@ -234,9 +236,20 @@ export function SidebarContent({
               <span className="truncate">
                 {progress.currentScreen || "Processing..."}
               </span>
-              <span className="flex-shrink-0 ml-2">
-                {progress.current}/{progress.total}
-              </span>
+              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                <span>
+                  {progress.current}/{progress.total}
+                </span>
+                {onCancel && (
+                  <button
+                    onClick={onCancel}
+                    className="px-2 py-0.5 text-[10px] text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-all duration-200"
+                    title="Cancel generation"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
             </div>
             <div className="w-full bg-zinc-800/50 rounded-full h-1 overflow-hidden">
               <div

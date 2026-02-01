@@ -21,6 +21,7 @@ export default function DesignEditorPage() {
     progress,
     error,
     sendMessage,
+    cancelGeneration,
     clearConversation,
     loadConversation,
     updateColorPalette,
@@ -90,6 +91,7 @@ export default function DesignEditorPage() {
         <SidebarContent
           onGenerate={(prompt) => sendMessage(prompt, designId)}
           onClear={clearConversation}
+          onCancel={cancelGeneration}
           loading={isGenerating}
           progress={progress}
           hasScreens={(conversation?.screens.length ?? 0) > 0}
