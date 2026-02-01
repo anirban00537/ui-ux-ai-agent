@@ -2,10 +2,30 @@
 
 import { useEffect, useRef } from "react";
 
+const FALLBACK_IMAGE = "https://picsum.photos/seed/placeholder/400/600";
+
+const applyFallback = (img: HTMLImageElement) => {
+  if (img.src === FALLBACK_IMAGE) return;
+  img.src = FALLBACK_IMAGE;
+  img.onerror = null;
+  img.style.objectFit = "contain";
+  img.style.objectPosition = "center";
+};
+
 export default function CanvasPage() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const handleImageError = (e: Event) => {
+      const img = e.target;
+      if (img instanceof HTMLImageElement) applyFallback(img);
+    };
+
+    root.addEventListener("error", handleImageError, true);
+
     const handleMessage = (event: MessageEvent) => {
       // Just accept messages for now. In production, check origin.
       const data = event.data;
@@ -13,12 +33,17 @@ export default function CanvasPage() {
 
       if (data.type === "UPDATE_CONTENT") {
         const html = data.html || "";
-        if (rootRef.current) {
+        if (root) {
           // 1. Set HTML
-          rootRef.current.innerHTML = html;
+          root.innerHTML = html;
 
-          // 2. Execute scripts manually consistently
-          const scripts = rootRef.current.querySelectorAll("script");
+          // 2. Attach fallback for images that fail to load
+          root.querySelectorAll("img").forEach((img) => {
+            img.onerror = () => applyFallback(img);
+          });
+
+          // 3. Execute scripts manually consistently
+          const scripts = root.querySelectorAll("script");
           scripts.forEach((oldScript) => {
             const newScript = document.createElement("script");
             Array.from(oldScript.attributes).forEach((attr) =>
@@ -48,6 +73,7 @@ export default function CanvasPage() {
     window.parent.postMessage({ type: "CANVAS_READY" }, "*");
 
     return () => {
+      root.removeEventListener("error", handleImageError, true);
       window.removeEventListener("message", handleMessage);
     };
   }, []);
