@@ -257,6 +257,30 @@ export class DesignsChatService {
             intent.screensToUpdate &&
             intent.screensToUpdate.length > 0
           ) {
+            // === PHASE 2 COMPLETE: PLANNED ACTIONS ===
+            messenger.emitFast({
+              type: coreConstant.STREAM_EVENT.PHASE_PLANNED,
+              data: {
+                totalScreens: intent.screensToUpdate.length,
+                screenTitles: intent.screensToUpdate.map(s => s.title),
+              },
+            });
+
+            // AI Response describing updates
+            const updateDescription = intent.screensToUpdate
+              .map(s => `• **${s.title}**: Updating based on your request.`)
+              .join('\n');
+            const aiResponseContent = `I'll update ${intent.screensToUpdate.length} screen${intent.screensToUpdate.length > 1 ? 's' : ''} for you:\n\n${updateDescription}`;
+            
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.AI_RESPONSE,
+                data: { message: aiResponseContent },
+              },
+              aiResponseContent,
+              true,
+            );
+
             // Update screens - can be parallelized for multiple updates
             for (const s of intent.screensToUpdate) {
               if (signal.aborted) {
@@ -269,17 +293,12 @@ export class DesignsChatService {
               });
               if (!dbArtboard) continue;
 
-              await messenger.emit(
-                {
-                  type: coreConstant.STREAM_EVENT.SCREEN_UPDATE,
-                  data: {
-                    status: 'start',
-                    screenId: s.id,
-                    title: s.title ?? dbArtboard.title,
-                  },
-                },
-                `Updating screen "${s.title ?? dbArtboard.title}"...`,
-              );
+              // Emit start update (silent, for UI state)
+              messenger.emitFast({
+                type: coreConstant.STREAM_EVENT.SCREEN_START,
+                progress: { current: 0, total: intent.screensToUpdate.length },
+                data: { title: s.title ?? dbArtboard.title },
+              });
 
               const otherArtboards = existingArtboards.filter(
                 (a) => a.id !== dbArtboard.id,
@@ -303,10 +322,13 @@ export class DesignsChatService {
                 updatedScreen,
               );
 
+              // Embed plan title context for UI grouping
+              const completeData = { ...saved, planTitle: saved.title };
+
               await messenger.emit(
                 {
                   type: coreConstant.STREAM_EVENT.SCREEN_UPDATE,
-                  data: { status: 'complete', screen: saved },
+                  data: { status: 'complete', screen: completeData },
                 },
                 `Updated screen "${saved.title}".`,
               );
