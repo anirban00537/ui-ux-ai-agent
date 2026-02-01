@@ -51,7 +51,7 @@ interface Conversation {
 interface GenerationProgress {
   current: number;
   total: number;
-  phase: "planning" | "generating" | "complete";
+  phase: "analyzing" | "planning" | "generating" | "complete";
   currentScreen?: string;
 }
 
@@ -253,7 +253,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   setProgress({
                     current: 0,
                     total: 0,
-                    phase: "planning",
+                    phase: "analyzing",
                     currentScreen: eventData?.message,
                   });
                   updateAvailableScreens(availableScreens || []);
@@ -460,6 +460,64 @@ export function useChatGenerator(): UseChatGeneratorResult {
                     currentScreen: "Complete",
                   });
                   break;
+                // === NEW CLEAN PHASE EVENTS ===
+                case "phase_analyzing":
+                  setProgress({
+                    current: 0,
+                    total: 0,
+                    phase: "analyzing",
+                    currentScreen: "Analyzing request...",
+                  });
+                  break;
+                case "phase_analyzed":
+                  // Just update progress state, no message
+                  break;
+                case "phase_theme_generating":
+                  // Silent - shown via phase badge
+                  break;
+                case "phase_theme_complete":
+                  if (eventData) {
+                    setConversation((prev) =>
+                      prev ? { ...prev, colorPalette: eventData } : prev
+                    );
+                  }
+                  break;
+                case "phase_planning":
+                  setProgress({
+                    current: 0,
+                    total: 0,
+                    phase: "planning",
+                    currentScreen: "Planning actions...",
+                  });
+                  break;
+                case "phase_planned":
+                  setProgress({
+                    current: 0,
+                    total: eventData?.totalScreens ?? 0,
+                    phase: "generating",
+                    currentScreen: "Starting generation...",
+                  });
+                  break;
+                case "ai_response":
+                  // This is the persisted AI response message
+                  if (eventData?.message) {
+                    assistantMessageContent = eventData.message;
+                    // Add immediately to conversation
+                    const aiMsg: Message = {
+                      id: `ai-${Date.now()}`,
+                      content: eventData.message,
+                      role: "assistant",
+                      createdAt: new Date().toISOString(),
+                      type: "final",
+                      eventType: "ai_response",
+                    };
+                    setConversation((prev) =>
+                      prev
+                        ? { ...prev, messages: [...prev.messages, aiMsg] }
+                        : prev
+                    );
+                  }
+                  break;
                 default:
                   if (eventData?.error && eventData?.code === "INSUFFICIENT_CREDITS") {
                     setError(eventData.error);
@@ -546,6 +604,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
           role: msg.role,
           createdAt: msg.createdAt,
           status: msg.status,
+          type: msg.role === 'assistant' ? 'final' : undefined,
         })),
         screens: (designData.artboards || []).map((artboard: any) => ({
           id: artboard.id,
