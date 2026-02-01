@@ -17,6 +17,14 @@ NEUTRALS (only where needed for borders/cards): Use standard Tailwind (e.g. bord
 DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
 
 ═══════════════════════════════════════════════════════════════════════════════
+📱 LAYOUT & DIMENSIONS (MOBILE FRAME — CRITICAL)
+───────────────────────────────────────────────────────────────────────────────
+• Do NOT use any fixed width or height. No min-height, max-height, width, or height in px/rem (e.g. no min-height: 800px, no w-[400px], no style="width:..." or "height:...").
+• Use FULL WIDTH and FULL HEIGHT only: the root (outermost) element MUST have w-full h-full (full height, not just min-h-full) so the screen fills the ENTIRE frame with no empty space at the bottom. Example: <div class="w-full h-full bg-background overflow-hidden flex flex-col">
+• Give the main content section (the area between header and bottom nav) flex-1 so it expands to fill the screen. The root must use flex flex-col; one child should have flex-1 so content fills all vertical space.
+• Never add fixed dimensions. The screen must fill the full height—no half-empty screen.
+
+═══════════════════════════════════════════════════════════════════════════════
 🔤 TYPOGRAPHY (Lexend)
 ───────────────────────────────────────────────────────────────────────────────
   • Headings: class="font-display font-bold tracking-tight"
@@ -118,6 +126,7 @@ DETAILED REQUIREMENTS: {prompt}
                            ❌ DO NOT DO LIST
 ═══════════════════════════════════════════════════════════════════════════════
 • ❌ NO Lorem Ipsum. Use REAL, realistic data (e.g., "Sarah James", "$1,240.50", "Meeting at 2 PM").
+• ❌ NO fixed width or height (no min-height: 800px, no w-[400px], no style="width:..." or "height:..."). Root must use w-full h-full so the screen fills the full height (no empty space at bottom).
 • ❌ NO arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY semantic theme classes: bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
 • ❌ NO \`ri-{{name}}\` icons. Use \`<span class="material-symbols-outlined">name</span>\` ONLY.
@@ -132,7 +141,7 @@ Return a SINGLE JSON object with this exact structure:
 {{ "html": "...", "title": "...", "description": "..." }}
 
 HTML REQUIREMENTS:
-• Must be a complete <div>...</div> structure
+• Must be a complete <div>...</div> structure. Root div MUST have w-full h-full and flex flex-col; main content area must have flex-1 so the screen fills full height with no empty space at bottom. Do NOT use any fixed width or height.
 • Use ONLY TailwindCSS classes
 • Include Material Symbols via <span class="material-symbols-outlined">{{name}}</span>
 • Must be valid, self-contained HTML
@@ -239,9 +248,11 @@ IMPROVEMENT PRIORITIES:
 1. Address the SPECIFIC user request directly.
 2. Fix any design system violations (wrong icons, bad contrast).
 3. Ensure all icons are Material Symbols (<span class="material-symbols-outlined">...</span>).
+4. Ensure root has w-full h-full and flex flex-col; main content area must have flex-1 so the screen fills full height (no empty space at bottom). Do NOT use fixed width or height.
 
 ❌ DO NOT DO:
 • Do NOT change the layout structure unless asked.
+• Do NOT use fixed width or height (no min-height: 800px, no style="width:..." or "height:..."). Root must use w-full h-full; main content must have flex-1 so screen fills full height.
 • Do NOT use Lorem Ipsum.
 • Do NOT use Remix Icons.
 

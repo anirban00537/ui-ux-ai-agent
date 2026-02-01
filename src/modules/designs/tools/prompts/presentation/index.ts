@@ -19,7 +19,7 @@ DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY bg-backgro
 Shadows: active/lifted elements need "shadow-lg" or "shadow-xl".
 
 3. LAYOUT (16:9 Slide):
-   • Use w-full h-full to fill the slide
+   • Use w-full h-full to fill the slide. Do NOT use any fixed width or height (no min-height, no style="width:..." or "height:..." in px).
    • Use grid or flex for structural layouts (typically 2-col or single focused)
    • Ensure content is centered or balanced
    • Generous padding (p-8, p-12, p-16)
@@ -85,6 +85,7 @@ DETAILED REQUIREMENTS: {prompt}
 ═══════════════════════════════════════════════════════════════════════════════
 • ❌ NO Lorem Ipsum. Use realistic mock content (e.g. "Q4 Revenue Growth: +25%").
 • ❌ NO walls of text. Use bullet points or cards.
+• ❌ NO fixed width or height (no min-height: 800px, no style="width:..." or "height:..."). Root must use w-full h-full only.
 • ❌ NO inline \`style="..."\`. Use Tailwind classes ONLY.
 • ❌ NO small text (text-xs, text-sm). Minimum text-lg/text-xl for body.
 • ❌ NO broken HTML tags.
