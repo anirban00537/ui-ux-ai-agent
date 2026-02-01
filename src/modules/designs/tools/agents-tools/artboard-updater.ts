@@ -15,6 +15,8 @@ STRICT VARIABLE MAPPINGS - Use ONLY these Tailwind classes (they map to CSS vars
 
 For main body text use standard Tailwind (e.g. text-slate-900, text-white). For neutrals use standard Tailwind: border-slate-200, border-white/10, etc. where needed.
 
+Use layered or colored shadows (e.g. shadow-primary/20) for depth; avoid flat blocks.
+
 DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme.`;
 };
 

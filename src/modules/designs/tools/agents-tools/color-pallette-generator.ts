@@ -21,6 +21,7 @@ const colorPaletteTemplate =
   PromptTemplate.fromTemplate(`You are a Design System Architect. Generate a color palette for a mobile app defined by this request: "{message}"
 
 CONSIDERATIONS:
+• Choose palette so primary has strong contrast on background (WCAG AA). Consider mood: trustworthy (finance), energetic (fitness), calm (wellness).
 • **Mood/Tone**: What is the emotional goal? (Trustworthy for finance, Energetic for fitness, Calm for meditation).
 • **Accessibility**: High contrast is non-negotiable (WCAG AA). Primary must contrast with background.
 • **Visual Hierarchy**: Primary color must pop against background.

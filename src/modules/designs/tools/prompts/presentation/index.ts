@@ -13,9 +13,13 @@ export const designSystemInstructions = `
 
 For main body text use standard Tailwind (e.g. text-slate-900, text-white). NEUTRALS (only where needed): border-slate-200, border-white/10, bg-white/5. Main background MUST come from theme classes above.
 
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary.
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary. Strictly adhere to these classes—no deviations.
 
-Shadows: active/lifted elements need "shadow-lg" or "shadow-xl".
+VISUAL STYLE: Use outline style (borders or dividers for depth; avoid flat blocks). Prefer minimal (generous spacing, one clear message per slide). When the brief mentions a trend: glassmorphism → backdrop-blur, bg-white/10; bento grid → asymmetric grid; Swiss style → grid-based minimal; use "deep shadows" (shadow-xl) or "massive typography" (text-5xl, text-6xl) where they fit.
+
+Shadows: Use layered or colored shadows where they support hierarchy. Active/lifted elements need shadow-lg or shadow-xl; avoid flat blocks. Optionally use shadow-primary/20 or shadow-secondary/10 for accent.
+
+Depth: Use borders (border-slate-200, border-white/10) or dividers; ensure primary elements stand out with color and shadow.
 
 3. LAYOUT (16:9 Slide):
    • Use w-full h-full to fill the slide. Do NOT use any fixed width or height (no min-height, no style="width:..." or "height:..." in px).
@@ -24,7 +28,8 @@ Shadows: active/lifted elements need "shadow-lg" or "shadow-xl".
    • Generous padding (p-8, p-12, p-16)
 
 4. TYPOGRAPHY (Presentation Readable):
-   • Font: font-display, font-sans (Lexend)
+   • Font pairing: font-display for headings, font-sans for body (Lexend).
+   • Letter-spacing: tracking-tight or tracking-tighter for titles.
    • H1: text-5xl or text-6xl font-bold tracking-tight
    • H2: text-3xl or text-4xl font-semibold opacity-90
    • Body: text-xl or text-2xl (readable from distance)
@@ -50,12 +55,14 @@ export const generationTemplate = PromptTemplate.fromTemplate(
 
 I am a World-Class Presentation Designer (ex-McKinsey, IDEO). My slides don't just display information; they tell a compelling story.
 
-MY THINKING PROCESS:
-1. **Determine the Single Message**: What is the ONE takeaway for this slide?
-2. **Choose the Layout**: Split screen? Hero image? Grid of cards?
-3. **Hierarchy implies Importance**: The most important element must be the largest/boldest.
-4. **Visual Interest**: Use high-quality icons, gradients, cards, or images to break up text.
-5. **Readability Check**: Can this be read from the back of the room? (Min font size: text-lg).
+People buy outcomes; this slide's design should make the audience's takeaway obvious.
+
+DESIGN PROCESS (think step-by-step before generating code):
+1. **Analyze message and hierarchy**: What is the ONE takeaway? Make it the largest/boldest; secondary content clearly subordinate.
+2. **Plan layout and spacing**: Split screen? Hero image? Bento or grid? Use generous padding (p-8, p-12) and spacing system consistently.
+3. **Select vibe and aesthetics**: From the brief; use only colors and typography from the design system.
+4. **Add depth and visual interest**: Shadows, borders, layers (no flat blocks). High-quality icons, gradients, cards, or images.
+5. **Verify**: Readable from the back of the room (min text-lg). WCAG contrast. Self-critique: hierarchy, contrast, constraints—fix before output.
 
 ═══════════════════════════════════════════════════════════════════════════════
                                THE REQUEST
@@ -85,6 +92,7 @@ DETAILED REQUIREMENTS: {prompt}
 • ❌ NO Lorem Ipsum. Use realistic mock content (e.g. "Q4 Revenue Growth: +25%").
 • ❌ NO walls of text. Use bullet points or cards.
 • ❌ NO fixed width or height (no min-height: 800px, no style="width:..." or "height:..."). Root must use w-full h-full only.
+• ❌ NO flat blocks; no single flat shadow for key elements.
 • ❌ NO inline \`style="..."\`. Use Tailwind classes ONLY.
 • ❌ NO small text (text-xs, text-sm). Minimum text-lg/text-xl for body.
 • ❌ NO broken HTML tags.
@@ -101,6 +109,10 @@ HTML REQUIREMENTS:
 • TailwindCSS classes ONLY
 • Material Symbols for icons
 • NO markdown, NO code blocks
+
+QUALITY CHECKLIST:
+☐ One clear message per slide? Layered or colored shadow where it helps hierarchy? No flat blocks?
+☐ WCAG contrast? Self-critique: hierarchy, contrast, design-system constraints—fix before output.
 `
 );
 
@@ -110,6 +122,8 @@ export const planningTemplate = PromptTemplate.fromTemplate(
 ═══════════════════════════════════════════════════════════════════════════════
 
 I am a Strategic Storyteller. I structure presentations to persuade, inform, and inspire.
+
+Design for the outcome the audience should take away; each slide should make that outcome obvious.
 
 MY PLANNING PHILOSOPHY:
 • **Narrative Arc**: Beginning (Hook/Problem), Middle (Solution/Data), End (Call to Action/Impact).
@@ -129,9 +143,10 @@ Plan a deck of 3-8 slides.
 
 FOR EACH SLIDE:
 1. **TITLE**: Specific & descriptive (e.g., "The Problem: Inefficiency in Q1")
-2. **PROMPT (Detailed Brief)**:
-   • **Slide Goal**: verifiable outcome for the audience.
-   • **Key Elements**: "Big Number metric", "3-column comparison", "Full-bleed quote".
+2. **PROMPT (Detailed Brief)** — include so generation has a clear target:
+   • **Slide Goal**: Verifiable outcome for the audience.
+   • **Key state or focus**: e.g. "Title slide", "Data with 3 metrics", "Full-bleed quote", "Image-led hero".
+   • **Key Elements**: "Big Number metric", "3-column comparison", etc.
    • **Content**: Specific data points or copy to use.
    • **Visual Style**: "Bold & clean", "Data-heavy but organized", "Image-led".
 
