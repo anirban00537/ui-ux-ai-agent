@@ -5,15 +5,15 @@ import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
-// JSON Schema for ColorPalette - 3 tokens: background, primary, secondary
+// JSON Schema for ColorPalette - 3 tokens: background, primary, cardBackground
 const colorPaletteJsonSchema = {
   type: 'object',
   properties: {
     background: { type: 'string', description: 'Page/surface background color (hex)' },
     primary: { type: 'string', description: 'Primary brand/accent color (hex)' },
-    secondary: { type: 'string', description: 'Secondary accent color (hex)' },
+    cardBackground: { type: 'string', description: 'Card/panel background color (hex)' },
   },
-  required: ['background', 'primary', 'secondary'],
+  required: ['background', 'primary', 'cardBackground'],
   additionalProperties: false,
 };
 
@@ -24,14 +24,14 @@ CONSIDERATIONS:
 • Choose palette so primary has strong contrast on background (WCAG AA). Consider mood: trustworthy (finance), energetic (fitness), calm (wellness).
 • **Mood/Tone**: What is the emotional goal? (Trustworthy for finance, Energetic for fitness, Calm for meditation).
 • **Accessibility**: High contrast is non-negotiable (WCAG AA). Primary must contrast with background.
-• **Visual Hierarchy**: Primary color must pop against background.
+• **Visual Hierarchy**: Primary color must pop against background. Card background should work on top of page background (e.g. slightly lighter/darker or subtle tint).
 
 OUTPUT (strictly 3 colors, hex codes):
 1. "background": Page/surface background (one value; no light/dark split).
 2. "primary": Brand anchor and main CTAs.
-3. "secondary": Supporting accent for variety.
+3. "cardBackground": Background for cards, panels, and list items (distinct from page background).
 
-Return JSON with keys: background, primary, secondary.`);
+Return JSON with keys: background, primary, cardBackground.`);
 
 export class ColorPaletteGenerator {
   private openrouter = new OpenRouter({
@@ -120,7 +120,7 @@ export class ColorPaletteGenerator {
     return {
       background: '#0f172a',
       primary: '#3b82f6',
-      secondary: '#8b5cf6',
+      cardBackground: '#1e293b',
     };
   }
 }

@@ -76,8 +76,8 @@ const generateColorPaletteInstructions = (
   colorPalette?: ColorPalette | null,
 ): string => {
   if (!colorPalette) {
-    return `COLOR PALETTE: Use Tailwind classes "bg-background", "bg-primary", "bg-secondary", "text-primary", "text-secondary" (they map to CSS vars). For main body text use standard Tailwind (e.g. text-slate-900, text-white).
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these semantic classes so every screen shares the same theme. On bg-primary or bg-secondary always use text-white and white icons—never dark text/icons on those surfaces. On images use scrim + text-white.`;
+    return `COLOR PALETTE: Use Tailwind classes "bg-background", "bg-primary", "bg-card-background", "text-primary" (they map to CSS vars). For main body and muted text use standard Tailwind (e.g. text-slate-900, text-white, text-slate-500). On bg-primary always use text-white and white icons. On images use scrim + text-white.
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these semantic classes so every screen shares the same theme.`;
   }
 
   return `DESIGN SYSTEM (3-color theme) - SAME FOR EVERY SCREEN:
@@ -85,13 +85,13 @@ DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these sema
 STRICT VARIABLE MAPPINGS - Use ONLY these Tailwind classes (they map to CSS vars):
 - background: "bg-background"
 - primary: "bg-primary", "text-primary"
-- secondary: "bg-secondary", "text-secondary"
+- cardBackground: "bg-card-background" (cards, panels, list item surfaces)
 
-For main body text use standard Tailwind (e.g. text-slate-900, text-white). For neutrals use standard Tailwind: border-slate-200, border-white/10, etc. where needed.
+For main body and muted/supporting text use standard Tailwind (e.g. text-slate-900, text-white, text-slate-500, text-slate-600). For neutrals use standard Tailwind: border-slate-200, border-white/10, etc. where needed.
 
 Use layered or colored shadows (e.g. shadow-primary/20) for depth; avoid flat blocks.
 
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme. On bg-primary or bg-secondary: ALWAYS use text-white and white icons—never text-primary, text-slate-900, or dark icons on those surfaces (dark-on-deep looks bad). On images use scrim (bg-black/40) + text-white. WCAG contrast everywhere.`;
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme. On bg-primary: ALWAYS use text-white and white icons—never dark text/icons on primary. On bg-card-background use standard text (text-slate-900 on light cards, text-white on dark cards). On images use scrim (bg-black/40) + text-white. WCAG contrast everywhere.`;
 };
 
 const MAX_HTML_LENGTH_PER_SCREEN = 2500;

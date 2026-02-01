@@ -9,13 +9,13 @@ export const designSystemInstructions = `
 ───────────────────────────────────────────────────────────────────────────────
 • background: bg-background (page/surface)
 • primary: bg-primary, text-primary (CTAs, links, key UI)
-• secondary: bg-secondary, text-secondary (supporting accent)
+• cardBackground: bg-card-background (cards, panels, list item surfaces)
 
-For main body text use standard Tailwind (e.g. text-slate-900, text-white). NEUTRALS (only where needed): border-slate-200, border-white/10. Main background MUST come from theme classes above.
+For main body and muted/supporting text use standard Tailwind (e.g. text-slate-900, text-white, text-slate-500, text-slate-600). NEUTRALS (only where needed): border-slate-200, border-white/10. Main background MUST come from theme classes above.
 
-CRITICAL — DEEP COLOR SURFACES (bg-primary, bg-secondary): Primary and secondary are often deep/dark colors. On ANY element that has bg-primary or bg-secondary (buttons, avatars, badges, FAB, pills, chips), you MUST use text-white and white/light icons ONLY. Never use text-primary, text-secondary, text-slate-900, or dark icons on bg-primary or bg-secondary—dark text on deep color looks bad and fails contrast. Use text-primary and text-secondary only on light backgrounds (e.g. bg-background, white).
+CRITICAL — DEEP COLOR SURFACES (bg-primary): Primary is often a deep/dark color. On ANY element that has bg-primary (buttons, avatars, badges, FAB, pills, chips), you MUST use text-white and white/light icons ONLY. Never use text-primary, text-slate-900, or dark icons on bg-primary—dark text on deep color looks bad and fails contrast. Use text-primary only on light backgrounds (e.g. bg-background, bg-card-background). On bg-card-background use standard text (text-slate-900 on light cards, text-white on dark cards).
 
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary. Strictly adhere to these classes—no deviations.
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY bg-background, bg-primary, bg-card-background, text-primary. Strictly adhere to these classes—no deviations.
 
 VISUAL STYLE: Use outline style (borders or dividers for depth; avoid flat blocks with no separation). Prefer minimal (generous spacing, clear hierarchy). When the brief mentions a trend, use: glassmorphism → backdrop-blur, bg-white/10; bento grid → asymmetric grid layouts; Swiss style → grid-based minimal; neumorphism → soft shadows; neobrutalism → bold borders. Modifiers like "deep shadows" (shadow-xl, shadow-2xl) or "massive typography" (text-3xl, text-4xl) are allowed where they fit the vibe.
 
@@ -24,10 +24,10 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
 ═══════════════════════════════════════════════════════════════════════════════
 🎨 COLOR CHOICE & VISIBILITY (ALL AREAS)
 ───────────────────────────────────────────────────────────────────────────────
-• On bg-primary or bg-secondary: ALWAYS use text-white (and white/light Material Symbols). Never put dark text or dark icons on these—they are deep colors and dark-on-deep looks bad.
-• Whenever you use a deep or dark color (bg-primary, bg-secondary, dark background, or an image), ensure any text or element on top is clearly visible.
+• On bg-primary: ALWAYS use text-white (and white/light Material Symbols). Never put dark text or dark icons on primary—dark-on-deep looks bad.
+• Whenever you use a deep or dark color (bg-primary, dark background, or an image), ensure any text or element on top is clearly visible.
 • On dark/deep backgrounds: use text-white or text-white/90 for text; use light borders (border-white/10, border-white/20) so UI reads clearly.
-• On light backgrounds: use text-slate-900 or text-slate-700 for body text; use text-primary or text-secondary for accents (labels, links) on light only.
+• On light backgrounds: use text-slate-900 or text-slate-700 for body text; use text-primary for accents (labels, links) on light only. For muted/supporting text use text-slate-500 or text-slate-600.
 • Text or UI on top of images: always add a scrim/overlay (e.g. absolute inset-0 bg-black/40 or bg-black/50) and use text-white so content is readable. Never place dark text directly on a busy or dark image without an overlay.
 • Apply this everywhere: headers, cards, hero sections, image overlays, buttons, footers. If a background is deep or busy, the foreground (text, icons, buttons) must have sufficient contrast—aim for WCAG AA (e.g. white on dark, dark on light).
 
@@ -56,22 +56,22 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
   • Radius: Use rounded-xl or rounded-2xl for cards. rounded-full for buttons.
   • Spacing: Generous padding (p-4, p-6). Gap-3 or Gap-4 between items.
   • Depth: Use borders (border-slate-200, border-white/10) or dividers to create depth; ensure primary actions stand out with color and shadow.
-  • Shadows: Use layered or subtle colored shadows where they support hierarchy (e.g. card lift, primary button). Prefer shadow-lg or shadow-xl for key surfaces; avoid flat blocks. Optionally use shadow-primary/20 or shadow-secondary/10 for accent.
+  • Shadows: Use layered or subtle colored shadows where they support hierarchy (e.g. card lift, primary button). Prefer shadow-lg or shadow-xl for key surfaces; avoid flat blocks. Optionally use shadow-primary/20 for accent.
 
 ═══════════════════════════════════════════════════════════════════════════════
 🎯 COMPONENT PATTERNS & EXAMPLES
 ───────────────────────────────────────────────────────────────────────────────
 
 STANDARD LIST ITEM HTML (Use this structure):
-<div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-background hover:bg-white/5 transition-colors">
-  <div class="size-12 rounded-xl bg-secondary flex items-center justify-center text-white">
+<div class="flex items-center gap-4 p-4 rounded-xl border border-white/10 bg-card-background hover:bg-white/5 transition-colors">
+  <div class="size-12 rounded-xl bg-primary flex items-center justify-center text-white">
     <span class="material-symbols-outlined text-white">schedule</span>
   </div>
   <div class="flex-1">
      <p class="text-slate-900 font-medium text-base">Meeting with Team</p>
-     <p class="text-secondary text-sm">10:00 AM • Conference Room</p>
+     <p class="text-slate-500 text-sm">10:00 AM • Conference Room</p>
   </div>
-  <button class="size-8 flex items-center justify-center rounded-full text-secondary hover:text-primary hover:bg-white/10 transition">
+  <button class="size-8 flex items-center justify-center rounded-full text-slate-500 hover:text-primary hover:bg-white/10 transition">
     <span class="material-symbols-outlined text-xl">chevron_right</span>
   </button>
 </div>
@@ -82,10 +82,13 @@ PRIMARY BUTTON:
   <span class="material-symbols-outlined text-lg">arrow_forward</span>
 </button>
 
-ICON BUTTON (on primary/secondary surface — use white text/icon):
-<button class="size-10 flex items-center justify-center rounded-full bg-secondary text-white hover:bg-white/20 hover:text-slate-900 transition-colors">
+ICON BUTTON (on primary surface — use white text/icon):
+<button class="size-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-white/20 hover:text-slate-900 transition-colors">
   <span class="material-symbols-outlined text-white">add</span>
 </button>
+
+CARD / LIST ITEM (use card background):
+<div class="p-4 rounded-xl border border-white/10 bg-card-background ...">
 
 ═══════════════════════════════════════════════════════════════════════════════
 ✨ ICONS (MATERIAL SYMBOLS)
@@ -158,11 +161,11 @@ If available, match the design pattern (spacing, components, theme) of these rec
 ═══════════════════════════════════════════════════════════════════════════════
 • ❌ NO Lorem Ipsum. Use REAL, realistic data (e.g., "Sarah James", "$1,240.50", "Meeting at 2 PM").
 • ❌ NO fixed width or height (no min-height: 800px, no w-[400px], no style="width:..." or "height:..."). Root must use w-full h-full so the screen fills the full height (no empty space at bottom).
-• ❌ NO arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY semantic theme classes: bg-background, bg-primary, bg-secondary, text-primary, text-secondary. Use standard Tailwind for body text (e.g. text-slate-900, text-white).
+• ❌ NO arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY semantic theme classes: bg-background, bg-primary, bg-card-background, text-primary. Use standard Tailwind for body and muted text (e.g. text-slate-900, text-white, text-slate-500).
 • ❌ NO flat blocks; no single flat shadow for cards; no walls of text.
 • ❌ NO drawing or generating images. Use ONLY Unsplash URLs (https://images.unsplash.com/...) for any photos. No SVG for photos, no data: URLs.
 • ❌ NO text or elements on deep/dark backgrounds or on images without ensuring visibility—use text-white on dark, scrim (bg-black/40) on images, and WCAG contrast everywhere.
-• ❌ NO dark text or dark icons on bg-primary or bg-secondary (e.g. no text-primary, text-slate-900 on those surfaces)—always use text-white and white icons on bg-primary and bg-secondary.
+• ❌ NO dark text or dark icons on bg-primary (e.g. no text-primary, text-slate-900 on primary)—always use text-white and white icons on bg-primary.
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
 • ❌ NO \`ri-{{name}}\` icons. Use \`<span class="material-symbols-outlined">name</span>\` ONLY.
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.

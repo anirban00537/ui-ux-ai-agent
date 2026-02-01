@@ -5,7 +5,7 @@
 export interface ColorPalette {
   background: string;
   primary: string;
-  secondary: string;
+  cardBackground: string;
 }
 
 export interface ScreenPromptItem {
