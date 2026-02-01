@@ -417,11 +417,14 @@ export function SidebarContent({
                         completed={isComplete || (turn.isActive && activePhases.planned)} 
                         loading={turn.isActive && activePhases.planLoading}
                       />
-                      <StatusBadge 
-                        label="Generated Theme" 
-                        completed={isComplete || (turn.isActive && activePhases.themeGenerated)} 
-                        loading={turn.isActive && activePhases.themeLoading}
-                      />
+                      {/* Only show theme badge for first turn or if actively generating theme */}
+                      {(turnIndex === 0 || (turn.isActive && (activePhases.themeGenerated || activePhases.themeLoading))) && (
+                        <StatusBadge 
+                          label="Generated Theme" 
+                          completed={isComplete || (turn.isActive && activePhases.themeGenerated)} 
+                          loading={turn.isActive && activePhases.themeLoading}
+                        />
+                      )}
                     </div>
                   )}
 
