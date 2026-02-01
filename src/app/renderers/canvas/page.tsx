@@ -107,8 +107,16 @@ export default function CanvasPage() {
         const p = data.palette;
         const docRoot = document.documentElement;
         if (p.background != null) docRoot.style.setProperty("--background", p.background);
+        if (p.foreground != null) docRoot.style.setProperty("--foreground", p.foreground);
         if (p.primary != null) docRoot.style.setProperty("--primary", p.primary);
-        if (p.cardBackground != null) docRoot.style.setProperty("--card-background", p.cardBackground);
+        if (p.primaryForeground != null) docRoot.style.setProperty("--primary-foreground", p.primaryForeground);
+        if (p.secondary != null) docRoot.style.setProperty("--secondary", p.secondary);
+        if (p.secondaryForeground != null) docRoot.style.setProperty("--secondary-foreground", p.secondaryForeground);
+        if (p.mutedForeground != null) docRoot.style.setProperty("--muted-foreground", p.mutedForeground);
+        if (p.card != null) docRoot.style.setProperty("--card", p.card);
+        if (p.cardForeground != null) docRoot.style.setProperty("--card-foreground", p.cardForeground);
+        if (p.border != null) docRoot.style.setProperty("--border", p.border);
+        if (p.input != null) docRoot.style.setProperty("--input", p.input);
       }
     };
 

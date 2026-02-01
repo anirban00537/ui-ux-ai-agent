@@ -24,47 +24,38 @@ export default function CanvasLayout({
           rel="stylesheet"
         />
         {/* Material Symbols for Icons */}
-        <link 
-          rel="stylesheet" 
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" 
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
         />
 
-        {/* Tailwind Config - Minimal & Robust */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-          tailwind.config = {
-            theme: {
-              extend: {
-                colors: {
-                  "background": "var(--background)",
-                  "primary": "var(--primary)",
-                  "card-background": "var(--card-background)",
-                },
-                fontFamily: {
-                  "display": ["Lexend", "sans-serif"],
-                  "sans": ["Lexend", "sans-serif"], // Set Lexend as default sans too for consistency
-                },
-                borderRadius: {
-                  "DEFAULT": "0.5rem",
-                  "lg": "1rem",
-                  "xl": "1.5rem",
-                  "2xl": "2rem",
-                  "3xl": "2.5rem",
-                  "full": "9999px"
-                },
-              }
-            }
+        {/* Tailwind v4.1.18 - Play CDN / browser build */}
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.18" defer />
+
+        {/* v4 @theme: map runtime CSS vars (set by UPDATE_THEME) to Tailwind utilities */}
+        <style type="text/tailwindcss">{`
+          @theme {
+            --color-background: var(--background);
+            --color-foreground: var(--foreground);
+            --color-primary: var(--primary);
+            --color-primary-foreground: var(--primary-foreground);
+            --color-secondary: var(--secondary);
+            --color-secondary-foreground: var(--secondary-foreground);
+            --color-muted-foreground: var(--muted-foreground);
+            --color-card: var(--card);
+            --color-card-foreground: var(--card-foreground);
+            --color-border: var(--border);
+            --color-input: var(--input);
+            --font-display: "Lexend", sans-serif;
+            --font-sans: "Lexend", sans-serif;
+            --radius: 0.5rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-2xl: 2rem;
+            --radius-3xl: 2.5rem;
+            --radius-full: 9999px;
           }
-        `,
-          }}
-        />
-
-        {/* Tailwind Engine with Plugins */}
-        <script
-          src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,container-queries"
-          defer
-        />
+        `}</style>
 
         <style>{`
           /* Single theme only: no dark/light mode. Whatever palette is sent via UPDATE_THEME is shown. */
@@ -88,9 +79,28 @@ export default function CanvasLayout({
 
           /* Theme utilities - must exist for dynamically injected content before Tailwind JIT */
           .bg-background { background-color: var(--background) !important; }
+          .bg-foreground { background-color: var(--foreground) !important; }
           .bg-primary { background-color: var(--primary) !important; }
-          .bg-card-background { background-color: var(--card-background) !important; }
+          .bg-primary-foreground { background-color: var(--primary-foreground) !important; }
+          .bg-secondary { background-color: var(--secondary) !important; }
+          .bg-secondary-foreground { background-color: var(--secondary-foreground) !important; }
+          .bg-muted-foreground { background-color: var(--muted-foreground) !important; }
+          .bg-card { background-color: var(--card) !important; }
+          .bg-card-foreground { background-color: var(--card-foreground) !important; }
+          .bg-border { background-color: var(--border) !important; }
+          .bg-input { background-color: var(--input) !important; }
+          .text-foreground { color: var(--foreground) !important; }
           .text-primary { color: var(--primary) !important; }
+          .text-primary-foreground { color: var(--primary-foreground) !important; }
+          .text-secondary { color: var(--secondary) !important; }
+          .text-secondary-foreground { color: var(--secondary-foreground) !important; }
+          .text-muted-foreground { color: var(--muted-foreground) !important; }
+          .text-card { color: var(--card) !important; }
+          .text-card-foreground { color: var(--card-foreground) !important; }
+          .text-border { color: var(--border) !important; }
+          .text-input { color: var(--input) !important; }
+          .border-border { border-color: var(--border) !important; }
+          .border-input { border-color: var(--input) !important; }
 
           /* GlobalScrollbar Hide */
           ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }

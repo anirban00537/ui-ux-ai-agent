@@ -8,8 +8,16 @@ import Link from "next/link";
 
 interface ColorPalette {
   background: string;
+  foreground: string;
   primary: string;
-  cardBackground: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  mutedForeground: string;
+  card: string;
+  cardForeground: string;
+  border: string;
+  input: string;
 }
 
 interface Conversation {
