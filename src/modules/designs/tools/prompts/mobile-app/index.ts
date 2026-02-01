@@ -2,10 +2,10 @@ import { PromptTemplate } from '@langchain/core/prompts';
 
 export const designSystemInstructions = `
 ═══════════════════════════════════════════════════════════════════════════════
-                        MINIMALIST DESIGN SYSTEM (COMPETITOR STYLE)
+                        MINIMALIST DESIGN SYSTEM (Shadcn-style)
 ═══════════════════════════════════════════════════════════════════════════════
 
-🎨 THEME SYSTEM (use ONLY these semantic classes):
+🎨 THEME SYSTEM (use ONLY these semantic classes — they match Shadcn design tokens):
 ───────────────────────────────────────────────────────────────────────────────
 • Background: bg-background (page/surface) | Foreground: text-foreground (default text)
 • Primary: bg-primary | Primary Foreground: text-primary-foreground (text/icons on primary)
@@ -17,7 +17,7 @@ export const designSystemInstructions = `
 
 On bg-primary use text-primary-foreground and primary-foreground icons. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. Use text-foreground for default body text on bg-background. Use text-muted-foreground for subtle text. Use border-border for borders, bg-input for input fields.
 
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the theme classes above. Strictly adhere—no deviations.
+Use ONLY the semantic theme classes above (Shadcn design tokens: background, foreground, primary, etc.). NO arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Strictly adhere—no deviations.
 
 VISUAL STYLE: Use outline style (borders or dividers for depth; avoid flat blocks with no separation). Prefer minimal (generous spacing, clear hierarchy). When the brief mentions a trend, use: glassmorphism → backdrop-blur, bg-white/10; bento grid → asymmetric grid layouts; Swiss style → grid-based minimal; neumorphism → soft shadows; neobrutalism → bold borders. Modifiers like "deep shadows" (shadow-xl, shadow-2xl) or "massive typography" (text-3xl, text-4xl) are allowed where they fit the vibe.
 
@@ -51,44 +51,59 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
   • Body Text: text-sm or text-base leading-relaxed
 
 ═══════════════════════════════════════════════════════════════════════════════
-📐 SPACING, SHAPE & DEPTH
+📐 SPACING, SHAPE & DEPTH (Shadcn-style)
 ───────────────────────────────────────────────────────────────────────────────
-  • Radius: Use rounded-xl or rounded-2xl for cards. rounded-full for buttons.
-  • Spacing: Generous padding (p-4, p-6). Gap-3 or Gap-4 between items.
+  • Radius: Buttons and inputs use rounded-md. Cards and panels use rounded-lg. Pills/badges use rounded-full. Prefer rounded-md for small controls, rounded-lg for cards. Do NOT use one-off rounded-[...] unless needed.
+  • Spacing: Generous padding (p-4, p-6). Gap-3 or Gap-4 between items. Use consistent padding in line with Shadcn (e.g. button px-4 py-2, card p-6).
   • Depth: Use border-border or dividers to create depth; ensure primary actions stand out with color and shadow.
-  • Shadows: Use layered or subtle colored shadows where they support hierarchy (e.g. card lift, primary button). Prefer shadow-lg or shadow-xl for key surfaces; avoid flat blocks. Optionally use shadow-primary/20 for accent.
+  • Shadows: Use layered or subtle colored shadows where they support hierarchy (e.g. card lift, primary button). Prefer shadow-sm or shadow for Shadcn-style surfaces; shadow-lg for key CTAs. Avoid flat blocks. Optionally use shadow-primary/20 for accent.
 
 ═══════════════════════════════════════════════════════════════════════════════
-🎯 COMPONENT PATTERNS & EXAMPLES
+🎯 COMPONENT PATTERNS & EXAMPLES (Shadcn-style)
 ───────────────────────────────────────────────────────────────────────────────
 
-STANDARD LIST ITEM HTML (Use this structure):
-<div class="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:bg-secondary/10 transition-colors">
-  <div class="size-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground">
-    <iconify-icon icon="solar:calendar-bold" class="text-primary-foreground size-6"></iconify-icon>
-  </div>
-  <div class="flex-1">
-     <p class="text-card-foreground font-medium text-base">Meeting with Team</p>
-     <p class="text-muted-foreground text-sm">10:00 AM • Conference Room</p>
-  </div>
-  <button class="size-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/10 transition">
-    <iconify-icon icon="solar:arrow-right-bold" class="size-5"></iconify-icon>
-  </button>
-</div>
-
-PRIMARY BUTTON:
-<button class="w-full bg-primary text-primary-foreground font-bold h-12 px-6 rounded-full shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
+PRIMARY BUTTON (Shadcn-style):
+<button class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:opacity-90 active:scale-[0.98] gap-2">
   <span>Confirm Action</span>
   <iconify-icon icon="solar:arrow-right-bold" class="size-5"></iconify-icon>
 </button>
 
-ICON BUTTON (on primary — use primary-foreground):
-<button class="size-10 flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
+SECONDARY BUTTON (Shadcn-style):
+<button class="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">Cancel</button>
+
+CARD (Shadcn-style):
+<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm">
+  <div class="p-6">
+    <h3 class="font-semibold leading-none tracking-tight">Card Title</h3>
+    <p class="text-sm text-muted-foreground mt-2">Card description or content.</p>
+  </div>
+</div>
+
+INPUT (Shadcn-style):
+<input class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground" placeholder="Placeholder" />
+
+BADGE / PILL (Shadcn-style):
+<span class="inline-flex items-center rounded-full border border-transparent bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground">Badge</span>
+Or secondary: bg-secondary text-secondary-foreground
+
+LIST ITEM / ROW (Shadcn-style):
+<div class="flex items-center gap-4 p-4 rounded-lg border border-border bg-card shadow-sm hover:bg-secondary/10 transition-colors">
+  <div class="size-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
+    <iconify-icon icon="solar:calendar-bold" class="text-primary-foreground size-6"></iconify-icon>
+  </div>
+  <div class="flex-1">
+    <p class="text-card-foreground font-medium text-base">Meeting with Team</p>
+    <p class="text-muted-foreground text-sm">10:00 AM • Conference Room</p>
+  </div>
+  <button class="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition">
+    <iconify-icon icon="solar:arrow-right-bold" class="size-5"></iconify-icon>
+  </button>
+</div>
+
+ICON BUTTON (Shadcn-style, on primary use primary-foreground):
+<button class="inline-flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground hover:opacity-90">
   <iconify-icon icon="solar:add-circle-bold" class="text-primary-foreground size-6"></iconify-icon>
 </button>
-
-CARD / LIST ITEM:
-<div class="p-4 rounded-xl border border-border bg-card ...">
 
 ═══════════════════════════════════════════════════════════════════════════════
 ✨ ICONS (Iconify)
@@ -168,6 +183,7 @@ If available, match the design pattern (spacing, components, theme) of these rec
 • ❌ NO wrong foreground on colored surfaces—on bg-primary use text-primary-foreground only; on bg-secondary use text-secondary-foreground; on bg-card use text-card-foreground.
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
 • ❌ NO material-symbols-outlined or ri- icons. Use Iconify ONLY: <iconify-icon icon="solar:..."> or mdi: or cryptocurrency-color:.
+• ❌ NO custom radii or shadows that conflict with Shadcn (prefer rounded-md, rounded-lg; avoid one-off rounded-[...] unless needed).
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.
 • ❌ NO markdown fences (\`\`\`) in the JSON output.
 
@@ -199,6 +215,7 @@ Before outputting, verify:
 ☐ No flat blocks?
 ☐ Focus rings on buttons/links (focus:ring-2 focus:ring-primary)? WCAG contrast?
 ☐ Color choice & visibility: on every colored surface or image, is text/UI using the matching foreground class (or scrim on images)?
+☐ Shadcn-style patterns: do buttons use rounded-md, cards use rounded-lg, semantic theme classes only?
 ☐ Self-critique: hierarchy, contrast, design-system constraints—fix before output.
 
 NOW CREATE AN EXTRAORDINARY SCREEN.

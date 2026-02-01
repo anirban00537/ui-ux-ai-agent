@@ -2,10 +2,10 @@ import { PromptTemplate } from '@langchain/core/prompts';
 
 export const designSystemInstructions = `
 ═══════════════════════════════════════════════════════════════════════════════
-                     PRESENTATION DESIGN SYSTEM (16:9 SLIDES)
+                     PRESENTATION DESIGN SYSTEM (16:9 SLIDES, Shadcn-style)
 ═══════════════════════════════════════════════════════════════════════════════
 
-🎨 THEME SYSTEM (11 colors - use ONLY these semantic classes):
+🎨 THEME SYSTEM (use ONLY these semantic classes — Shadcn design tokens):
 ───────────────────────────────────────────────────────────────────────────────
 • Background: bg-background (slide/surface) | Foreground: text-foreground (default text)
 • Primary: bg-primary | Primary Foreground: text-primary-foreground (text/icons on primary)
@@ -23,6 +23,12 @@ VISUAL STYLE: Use outline style (borders or dividers for depth; avoid flat block
 Shadows: Use layered or colored shadows where they support hierarchy. Active/lifted elements need shadow-lg or shadow-xl; avoid flat blocks. Optionally use shadow-primary/20 for accent.
 
 Depth: Use border-border or dividers; ensure primary elements stand out with color and shadow.
+
+RADIUS (Shadcn-style): Use rounded-md for buttons and inputs, rounded-lg for cards and panels. Keep presentation-appropriate sizing (e.g. larger padding p-8, p-12 for slide elements).
+
+COMPONENT PATTERNS (Shadcn-style, slide-appropriate):
+• Primary button: inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-primary-foreground text-lg font-medium shadow
+• Card: rounded-lg border border-border bg-card p-8 shadow-sm; card title font-semibold leading-none tracking-tight, description text-muted-foreground
 
 COLOR CHOICE & VISIBILITY (ALL AREAS):
    • On bg-primary use text-primary-foreground only. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. On bg-background use text-foreground. For hints/captions use text-muted-foreground.
