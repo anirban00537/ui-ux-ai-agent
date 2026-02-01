@@ -127,6 +127,13 @@ SCREEN PURPOSE: {description}
 DETAILED REQUIREMENTS: {prompt}
 
 ═══════════════════════════════════════════════════════════════════════════════
+              LAST SCREENS AS CONTEXT (DESIGN PATTERN — MAX 3)
+═══════════════════════════════════════════════════════════════════════════════
+If available, match the design pattern (spacing, components, theme) of these recent screens. Max 3 screens.
+
+{previousScreensContext}
+
+═══════════════════════════════════════════════════════════════════════════════
                            ❌ DO NOT DO LIST
 ═══════════════════════════════════════════════════════════════════════════════
 • ❌ NO Lorem Ipsum. Use REAL, realistic data (e.g., "Sarah James", "$1,240.50", "Meeting at 2 PM").
@@ -254,6 +261,13 @@ MY RULES:
 {colorPaletteInstructions}
 
 ` + designSystemInstructions + `
+
+═══════════════════════════════════════════════════════════════════════════════
+              LAST SCREENS AS CONTEXT (DESIGN PATTERN — MAX 3)
+═══════════════════════════════════════════════════════════════════════════════
+If available, match the design pattern of these recent screens. Max 3.
+
+{previousScreensContext}
 
 ═══════════════════════════════════════════════════════════════════════════════
                         UPDATE METHODOLOGY

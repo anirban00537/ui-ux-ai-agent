@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
-import { StreamUpdate, ExistingArtboard } from './schemas';
+import { StreamUpdate, ExistingArtboard, PreviousScreenContext } from './schemas';
 import { ColorPaletteGenerator } from './tools/agents-tools/color-pallette-generator';
 import IntentAnalyzer from './tools/agents-tools/intent-analyzer';
 import ArtboardCreator from './tools/agents-tools/artboard-creator';
@@ -116,6 +116,16 @@ export class DesignsChatService {
             where: { designId },
             orderBy: { createdAt: 'asc' },
           })) as ExistingArtboard[];
+
+          const maxContext = coreConstant.DESIGN_CONTEXT.MAX_PREVIOUS_SCREENS;
+          const getLastScreensForDesignPattern = (
+            artboards: Array<{ title: string; description: string | null; html: string }>,
+          ): PreviousScreenContext[] =>
+            artboards.slice(-maxContext).map((a) => ({
+              title: a.title,
+              description: a.description ?? null,
+              html: a.html,
+            }));
 
           await messenger.emit(
             {
@@ -253,6 +263,11 @@ export class DesignsChatService {
                 `Updating screen "${s.title ?? dbArtboard.title}"...`,
               );
 
+              const otherArtboards = existingArtboards.filter(
+                (a) => a.id !== dbArtboard.id,
+              );
+              const previousScreens = getLastScreensForDesignPattern(otherArtboards);
+
               const updatedScreen = await artboardUpdater.updateArtboard(
                 dbArtboard as ExistingArtboard,
                 prompt,
@@ -261,6 +276,7 @@ export class DesignsChatService {
                 userId,
                 designId,
                 design.type,
+                previousScreens,
               );
 
               const saved = await artboardUpdater.saveUpdatedArtboard(
@@ -325,9 +341,20 @@ export class DesignsChatService {
               `Planning complete: ${plan.totalScreens} screen(s).`,
             );
 
+            let screensForContext: Array<{
+              title: string;
+              description: string | null;
+              html: string;
+            }> = existingArtboards.map((a) => ({
+              title: a.title,
+              description: a.description ?? null,
+              html: a.html,
+            }));
+
             for (let i = 0; i < plan.screenPrompts.length; i += 1) {
               const sp = plan.screenPrompts[i];
-              
+              const previousScreens = getLastScreensForDesignPattern(screensForContext);
+
               await messenger.emit(
                 {
                   type: coreConstant.STREAM_EVENT.SCREEN_START,
@@ -347,6 +374,7 @@ export class DesignsChatService {
                 userId,
                 designId,
                 design.type,
+                previousScreens,
               );
 
               for await (const streamEvent of streamGenerator) {
@@ -374,6 +402,11 @@ export class DesignsChatService {
               }
 
               const saved = await artboardCreator.saveArtboard(screen, designId);
+              screensForContext.push({
+                title: saved.title,
+                description: saved.description ?? null,
+                html: saved.html,
+              });
 
               await messenger.emit(
                 {

@@ -89,3 +89,10 @@ export interface ArtboardToUpdate {
   description: string;
   html: string;
 }
+
+/** Last N screens/slides passed as context for design-pattern consistency (max 3). */
+export interface PreviousScreenContext {
+  title: string;
+  description: string | null;
+  html: string;
+}

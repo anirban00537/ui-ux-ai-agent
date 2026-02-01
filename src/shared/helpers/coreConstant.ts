@@ -67,6 +67,11 @@ export const coreConstant = {
     NOT_VERIFIED: 0,
   },
 
+  /** Max number of previous screens/slides passed as context for design-pattern consistency (if available). */
+  DESIGN_CONTEXT: {
+    MAX_PREVIOUS_SCREENS: 3,
+  } as const,
+
   AI_MODELS: {
     OUTLINE: {
       NAME: 'x-ai/grok-4.1-fast',

@@ -6,6 +6,7 @@ import {
   type ScreenPromptData,
   type ExistingArtboard,
   type ColorPalette,
+  type PreviousScreenContext,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
@@ -92,6 +93,21 @@ Use layered or colored shadows (e.g. shadow-primary/20) for depth; avoid flat bl
 
 DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme.`;
 };
+
+const MAX_HTML_LENGTH_PER_SCREEN = 2500;
+
+function formatPreviousScreensForDesignPattern(
+  screens: PreviousScreenContext[],
+): string {
+  if (screens.length === 0)
+    return '(First screen(s) — establish the design pattern. Later screens will match this.)';
+  return screens
+    .map(
+      (s) =>
+        `--- "${s.title}" ---\n${(s.description || '').slice(0, 200)}\nHTML (match design pattern):\n${s.html.slice(0, MAX_HTML_LENGTH_PER_SCREEN)}${s.html.length > MAX_HTML_LENGTH_PER_SCREEN ? '\n...[truncated]' : ''}`,
+    )
+    .join('\n\n');
+}
 
 export class ArtboardCreator {
   private openrouter = new OpenRouter({
@@ -205,9 +221,11 @@ export class ArtboardCreator {
     userId: string,
     designId: string,
     designType: string,
+    previousScreens: PreviousScreenContext[] = [],
   ): AsyncGenerator<{ type: 'chunk' | 'complete'; data: any }, void, unknown> {
     const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
-    
+    const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
+
     const prompts = PromptManager.getPrompts(designType);
     const systemPrompt = await prompts.generationTemplate.format({
       colorPaletteInstructions,
@@ -215,6 +233,7 @@ export class ArtboardCreator {
       title: promptData.title,
       description: designType + ' design ' + promptData.title,
       prompt: promptData.prompt,
+      previousScreensContext,
     });
 
     const userContent = `Original request: ${message}\n\nSpecific artboard prompt: ${promptData.prompt}`;

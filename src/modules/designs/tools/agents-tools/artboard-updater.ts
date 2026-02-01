@@ -26,6 +26,7 @@ import {
   type SingleScreen,
   type ExistingArtboard,
   type ColorPalette,
+  type PreviousScreenContext,
 } from '../../schemas';
 import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
@@ -53,6 +54,21 @@ const singleArtboardJsonSchema = {
   additionalProperties: false,
 };
 
+const MAX_HTML_LENGTH_PER_SCREEN = 2500;
+
+function formatPreviousScreensForDesignPattern(
+  screens: PreviousScreenContext[],
+): string {
+  if (screens.length === 0)
+    return '(No other screens — maintain design pattern consistency.)';
+  return screens
+    .map(
+      (s) =>
+        `--- "${s.title}" ---\n${(s.description || '').slice(0, 200)}\nHTML (match design pattern):\n${s.html.slice(0, MAX_HTML_LENGTH_PER_SCREEN)}${s.html.length > MAX_HTML_LENGTH_PER_SCREEN ? '\n...[truncated]' : ''}`,
+    )
+    .join('\n\n');
+}
+
 export class ArtboardUpdater {
   private openrouter = new OpenRouter({
     apiKey: process.env.OPENROUTER_API_KEY!,
@@ -75,12 +91,15 @@ export class ArtboardUpdater {
     userId: string,
     designId: string,
     designType: string,
+    previousScreens: PreviousScreenContext[] = [],
   ): Promise<SingleScreen> {
     const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
-    
+    const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
+
     const prompts = PromptManager.getPrompts(designType);
     const systemPrompt = await prompts.updateTemplate.format({
       colorPaletteInstructions,
+      previousScreensContext,
     });
 
     const userContent = `Current artboard:\nTitle: ${artboard.title}\nDescription: ${artboard.description}\nHTML: ${artboard.html}\n***Update request***: ${message}`;

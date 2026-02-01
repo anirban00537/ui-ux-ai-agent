@@ -87,6 +87,13 @@ SLIDE PURPOSE: {description}
 DETAILED REQUIREMENTS: {prompt}
 
 ═══════════════════════════════════════════════════════════════════════════════
+              LAST SLIDES AS CONTEXT (DESIGN PATTERN — MAX 3)
+═══════════════════════════════════════════════════════════════════════════════
+If available, match the design pattern (spacing, layout, theme) of these recent slides. Max 3.
+
+{previousScreensContext}
+
+═══════════════════════════════════════════════════════════════════════════════
                            ❌ DO NOT DO LIST
 ═══════════════════════════════════════════════════════════════════════════════
 • ❌ NO Lorem Ipsum. Use realistic mock content (e.g. "Q4 Revenue Growth: +25%").
@@ -180,6 +187,13 @@ RULES:
 {colorPaletteInstructions}
 
 ` + designSystemInstructions + `
+
+═══════════════════════════════════════════════════════════════════════════════
+              LAST SLIDES AS CONTEXT (DESIGN PATTERN — MAX 3)
+═══════════════════════════════════════════════════════════════════════════════
+If available, match the design pattern of these recent slides. Max 3.
+
+{previousScreensContext}
 
 ═══════════════════════════════════════════════════════════════════════════════
                         UPDATE METHODOLOGY
