@@ -10,11 +10,10 @@ export const designSystemInstructions = `
 • background: bg-background (page/surface)
 • primary: bg-primary, text-primary (CTAs, links, key UI)
 • secondary: bg-secondary, text-secondary (supporting accent)
-• text: text-foreground (main text on background)
 
-NEUTRALS (only where needed for borders/cards): Use standard Tailwind (e.g. border-slate-200, border-white/10). Main background and text MUST come from theme classes above.
+For main body text use standard Tailwind (e.g. text-slate-900, text-white). NEUTRALS (only where needed): border-slate-200, border-white/10. Main background MUST come from theme classes above.
 
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary.
 
 ═══════════════════════════════════════════════════════════════════════════════
 📱 LAYOUT & DIMENSIONS (MOBILE FRAME — CRITICAL)
@@ -54,7 +53,7 @@ STANDARD LIST ITEM HTML (Use this structure):
     <span class="material-symbols-outlined">schedule</span>
   </div>
   <div class="flex-1">
-     <p class="text-foreground font-medium text-base">Meeting with Team</p>
+     <p class="text-slate-900 font-medium text-base">Meeting with Team</p>
      <p class="text-secondary text-sm">10:00 AM • Conference Room</p>
   </div>
   <button class="size-8 flex items-center justify-center rounded-full text-secondary hover:text-primary hover:bg-white/10 transition">
@@ -63,13 +62,13 @@ STANDARD LIST ITEM HTML (Use this structure):
 </div>
 
 PRIMARY BUTTON:
-<button class="w-full bg-primary text-foreground font-bold h-12 px-6 rounded-full shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center justify-center gap-2">
+<button class="w-full bg-primary text-white font-bold h-12 px-6 rounded-full shadow-lg shadow-primary/20 active:scale-95 transition-transform flex items-center justify-center gap-2">
   <span>Confirm Action</span>
   <span class="material-symbols-outlined text-lg">arrow_forward</span>
 </button>
 
 ICON BUTTON:
-<button class="size-10 flex items-center justify-center rounded-full bg-secondary text-foreground hover:bg-white/20 transition-colors">
+<button class="size-10 flex items-center justify-center rounded-full bg-secondary text-slate-900 hover:bg-white/20 transition-colors">
   <span class="material-symbols-outlined">add</span>
 </button>
 
@@ -127,7 +126,7 @@ DETAILED REQUIREMENTS: {prompt}
 ═══════════════════════════════════════════════════════════════════════════════
 • ❌ NO Lorem Ipsum. Use REAL, realistic data (e.g., "Sarah James", "$1,240.50", "Meeting at 2 PM").
 • ❌ NO fixed width or height (no min-height: 800px, no w-[400px], no style="width:..." or "height:..."). Root must use w-full h-full so the screen fills the full height (no empty space at bottom).
-• ❌ NO arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY semantic theme classes: bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
+• ❌ NO arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY semantic theme classes: bg-background, bg-primary, bg-secondary, text-primary, text-secondary. Use standard Tailwind for body text (e.g. text-slate-900, text-white).
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
 • ❌ NO \`ri-{{name}}\` icons. Use \`<span class="material-symbols-outlined">name</span>\` ONLY.
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.

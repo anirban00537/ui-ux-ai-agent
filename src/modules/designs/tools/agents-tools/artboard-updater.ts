@@ -2,19 +2,18 @@ const generateColorPaletteInstructions = (
   colorPalette?: ColorPalette | null,
 ): string => {
   if (!colorPalette) {
-    return `COLOR PALETTE: Use Tailwind classes "bg-background", "bg-primary", "bg-secondary", "text-primary", "text-secondary", "text-foreground" (they map to CSS vars).
+    return `COLOR PALETTE: Use Tailwind classes "bg-background", "bg-primary", "bg-secondary", "text-primary", "text-secondary" (they map to CSS vars). For main body text use standard Tailwind (e.g. text-slate-900, text-white).
 DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY these semantic classes so every screen shares the same theme.`;
   }
 
-  return `DESIGN SYSTEM (4-color theme) - SAME FOR EVERY SCREEN:
+  return `DESIGN SYSTEM (3-color theme) - SAME FOR EVERY SCREEN:
 
 STRICT VARIABLE MAPPINGS - Use ONLY these Tailwind classes (they map to CSS vars):
 - background: "bg-background"
 - primary: "bg-primary", "text-primary"
 - secondary: "bg-secondary", "text-secondary"
-- text: "text-foreground" (main text on background)
 
-For neutrals use standard Tailwind: border-slate-200, border-white/10, etc. where needed.
+For main body text use standard Tailwind (e.g. text-slate-900, text-white). For neutrals use standard Tailwind: border-slate-200, border-white/10, etc. where needed.
 
 DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ONLY the semantic class names above so every screen shares the same theme.`;
 };

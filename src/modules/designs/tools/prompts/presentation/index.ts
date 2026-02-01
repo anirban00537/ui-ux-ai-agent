@@ -10,11 +10,10 @@ export const designSystemInstructions = `
 • background: bg-background (slide/surface)
 • primary: bg-primary, text-primary (CTAs, key visuals)
 • secondary: bg-secondary, text-secondary (supporting accent)
-• text: text-foreground (main text on background)
 
-NEUTRALS (only where needed): border-slate-200, border-white/10, bg-white/5. Main background and text MUST come from theme classes above.
+For main body text use standard Tailwind (e.g. text-slate-900, text-white). NEUTRALS (only where needed): border-slate-200, border-white/10, bg-white/5. Main background MUST come from theme classes above.
 
-DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary, text-foreground.
+DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]). Use ONLY bg-background, bg-primary, bg-secondary, text-primary, text-secondary.
 
 Shadows: active/lifted elements need "shadow-lg" or "shadow-xl".
 
