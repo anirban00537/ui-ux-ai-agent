@@ -34,10 +34,12 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
 ═══════════════════════════════════════════════════════════════════════════════
 📱 LAYOUT & DIMENSIONS (MOBILE FRAME — CRITICAL)
 ───────────────────────────────────────────────────────────────────────────────
+• VIEWPORT WIDTH: The frame is exactly 440px wide. Design for this width only—assume no more horizontal space. Layouts must fit 440px without horizontal overflow or broken/cramped layout.
 • Do NOT use any fixed width or height. No min-height, max-height, width, or height in px/rem (e.g. no min-height: 800px, no w-[400px], no style="width:..." or "height:...").
 • Use FULL WIDTH and FULL HEIGHT only: the root (outermost) element MUST have w-full h-full (full height, not just min-h-full) so the screen fills the ENTIRE frame with no empty space at the bottom. Example: <div class="w-full h-full bg-background overflow-hidden flex flex-col">
 • Give the main content section (the area between header and bottom nav) flex-1 so it expands to fill the screen. The root must use flex flex-col; one child should have flex-1 so content fills all vertical space.
 • Never add fixed dimensions. The screen must fill the full height—no half-empty screen.
+• WIDTH-AWARE LAYOUT: Use min-w-0 on flex children that need to shrink (e.g. text containers, middle columns). Avoid more than 2–3 items in a single row unless they wrap (flex-wrap). For long text use truncate or line-clamp-2 so content does not overflow. Keep horizontal padding modest (p-4 = 16px each side; content area ~408px). Ensure cards/rows fit within 440px—no content spilling or breaking.
 
 ═══════════════════════════════════════════════════════════════════════════════
 🔤 TYPOGRAPHY (Space Grotesk, Playfair Display, JetBrains Mono)
@@ -186,6 +188,7 @@ If available, match the design pattern (spacing, components, theme) of these rec
 • ❌ NO custom radii or shadows that conflict with Shadcn (prefer rounded-md, rounded-lg; avoid one-off rounded-[...] unless needed).
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.
 • ❌ NO markdown fences (\`\`\`) in the JSON output.
+• ❌ NO layouts that assume a wider screen than 440px—no horizontal overflow, no cramped or broken rows. Design for 440px viewport only.
 
 ═══════════════════════════════════════════════════════════════════════════════
                            OUTPUT REQUIREMENTS
@@ -216,6 +219,7 @@ Before outputting, verify:
 ☐ Focus rings on buttons/links (focus:ring-2 focus:ring-primary)? WCAG contrast?
 ☐ Color choice & visibility: on every colored surface or image, is text/UI using the matching foreground class (or scrim on images)?
 ☐ Shadcn-style patterns: do buttons use rounded-md, cards use rounded-lg, semantic theme classes only?
+☐ Frame width: does the layout fit a 440px-wide viewport with no horizontal overflow or broken/cramped layout?
 ☐ Self-critique: hierarchy, contrast, design-system constraints—fix before output.
 
 NOW CREATE AN EXTRAORDINARY SCREEN.
