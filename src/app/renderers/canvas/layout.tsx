@@ -4,7 +4,7 @@ export default function CanvasLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full w-full overflow-hidden antialiased">
+    <html lang="en" className="dark h-full w-full overflow-hidden antialiased">
       <head>
         <meta charSet="utf-8" />
         <meta

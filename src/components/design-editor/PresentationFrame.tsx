@@ -85,7 +85,7 @@ export function PresentationFrame({
         {isGenerating && (
           <>
             <div
-              className="absolute -inset-1 rounded-lg opacity-75 blur-md"
+              className="absolute -inset-1 rounded-none opacity-75 blur-md"
               style={{
                 background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
                 backgroundSize: "300% 100%",
@@ -93,7 +93,7 @@ export function PresentationFrame({
               }}
             />
             <div
-              className="absolute -inset-[3px] rounded-lg"
+              className="absolute -inset-[3px] rounded-none"
               style={{
                 background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
                 backgroundSize: "300% 100%",
@@ -103,10 +103,14 @@ export function PresentationFrame({
           </>
         )}
 
-        {/* Inner Frame Container */}
+        {/* Inner Frame Container - no rounded corners (anti-aliasing at rounded clip caused thin light border) */}
         <div
-          className="relative overflow-hidden isolate bg-white rounded-lg shadow-2xl ring-1 ring-gray-900/5"
-          style={{ width: `${width}px`, height: `${height}px` }}
+          className="relative overflow-hidden isolate rounded-none"
+          style={{
+            width: `${width}px`,
+            height: `${height}px`,
+            backgroundColor: colorPalette?.backgroundDark ?? "#0f172a",
+          }}
         >
           <iframe
             ref={iframeRef}

@@ -109,6 +109,8 @@ export default function CanvasPage() {
         if (p.primary) docRoot.style.setProperty("--primary", p.primary);
         if (p.backgroundLight) docRoot.style.setProperty("--background-light", p.backgroundLight);
         if (p.backgroundDark) docRoot.style.setProperty("--background-dark", p.backgroundDark);
+        // Match body to slide background so no light border shows at edges/corners
+        docRoot.classList.add("dark");
       }
     };
 
