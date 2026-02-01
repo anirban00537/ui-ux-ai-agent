@@ -50,9 +50,9 @@ COLOR CHOICE & VISIBILITY (ALL AREAS):
    • Body: text-xl or text-2xl (readable from distance)
    • Note: Use bold/uppercase for section kickers (text-sm font-bold uppercase tracking-widest)
 
-5. ICONS (Iconify):
-   • Use: <iconify-icon icon="solar:..."></iconify-icon> or mdi: (e.g. mdi:chart-bar, mdi:image)
-   • Examples: solar:slideshow-bold, solar:gallery-bold, solar:chart-2-bold, mdi:account-group, mdi:check-circle
+5. ICONS (Remix Icon):
+   • Use: <i class="ri-{{name}}-line"></i> or <i class="ri-{{name}}-fill"></i> (e.g. ri-line-chart-line, ri-image-line)
+   • Examples: ri-slideshow-line, ri-gallery-line, ri-line-chart-line, ri-team-line, ri-check-line
 
 6. IMAGES (UNSPLASH ONLY — DO NOT DRAW):
    • Use ONLY real Unsplash image URLs. Example: https://images.unsplash.com/photo-XXXXX?auto=format&fit=crop&w=1200&q=80
@@ -133,7 +133,7 @@ Return a SINGLE JSON object with this exact structure:
 HTML REQUIREMENTS:
 • Valid, complete <div>...</div> structure
 • TailwindCSS classes ONLY
-• Iconify for icons (<iconify-icon icon="...">)
+• Remix Icon for icons (<i class="ri-...-line"> or ri-...-fill)
 • NO markdown, NO code blocks
 
 QUALITY CHECKLIST:
@@ -198,7 +198,7 @@ RULES:
 • Preserve the core layout.
 • Ensure readability (contrast & size).
 • Fix broken visual hierarchy.
-• ONLY use Iconify for icons (<iconify-icon icon="solar:..."> or mdi:, etc.).
+• ONLY use Remix Icon for icons (<i class="ri-...-line"> or ri-...-fill).
 • ONLY use Unsplash URLs (https://images.unsplash.com/...) for images; do NOT draw or generate images.
 
 ═══════════════════════════════════════════════════════════════════════════════

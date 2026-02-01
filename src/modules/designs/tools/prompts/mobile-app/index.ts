@@ -67,7 +67,7 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
 PRIMARY BUTTON (Shadcn-style):
 <button class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:opacity-90 active:scale-[0.98] gap-2">
   <span>Confirm Action</span>
-  <iconify-icon icon="solar:arrow-right-bold" class="size-5"></iconify-icon>
+  <i class="ri-arrow-right-line text-xl"></i>
 </button>
 
 SECONDARY BUTTON (Shadcn-style):
@@ -91,32 +91,32 @@ Or secondary: bg-secondary text-secondary-foreground
 LIST ITEM / ROW (Shadcn-style):
 <div class="flex items-center gap-4 p-4 rounded-lg border border-border bg-card shadow-sm hover:bg-secondary/10 transition-colors">
   <div class="size-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
-    <iconify-icon icon="solar:calendar-bold" class="text-primary-foreground size-6"></iconify-icon>
+    <i class="ri-calendar-line text-2xl text-primary-foreground"></i>
   </div>
   <div class="flex-1">
     <p class="text-card-foreground font-medium text-base">Meeting with Team</p>
     <p class="text-muted-foreground text-sm">10:00 AM • Conference Room</p>
   </div>
   <button class="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition">
-    <iconify-icon icon="solar:arrow-right-bold" class="size-5"></iconify-icon>
+    <i class="ri-arrow-right-line text-xl"></i>
   </button>
 </div>
 
 ICON BUTTON (Shadcn-style, on primary use primary-foreground):
 <button class="inline-flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground hover:opacity-90">
-  <iconify-icon icon="solar:add-circle-bold" class="text-primary-foreground size-6"></iconify-icon>
+  <i class="ri-add-circle-line text-2xl text-primary-foreground"></i>
 </button>
 
 ═══════════════════════════════════════════════════════════════════════════════
-✨ ICONS (Iconify)
+✨ ICONS (Remix Icon)
 ───────────────────────────────────────────────────────────────────────────────
-Use Iconify for ALL icons. Syntax: <iconify-icon icon="set:icon-name"></iconify-icon>
-Recommend sets: solar: (solar:home-2-bold, solar:bell-bing-bold, solar:graph-up-bold), mdi: (mdi:bitcoin, mdi:ethereum), cryptocurrency-color: for crypto.
+Use Remix Icon for ALL icons. Syntax: <i class="ri-{{icon-name}}-line"></i> or <i class="ri-{{icon-name}}-fill"></i>
+Style suffix: -line (outline) or -fill (filled). Size via Tailwind: text-lg, text-xl, text-2xl (e.g. text-xl ≈ 20px).
 
 Common examples:
-solar:home-2-bold, solar:bell-bing-bold, solar:arrow-right-up-linear, solar:qr-code-scan-bold, solar:chart-2-bold
-mdi:contactless-payment, mdi:bitcoin, mdi:ethereum
-cryptocurrency-color:sol, cryptocurrency-color:usdt
+ri-home-line, ri-home-fill, ri-notification-3-line, ri-arrow-right-line, ri-arrow-right-up-line
+ri-calendar-line, ri-add-circle-line, ri-add-circle-fill, ri-qr-code-line, ri-line-chart-line
+ri-bit-coin-line, ri-bank-card-line, ri-user-line, ri-settings-3-line
 
 ═══════════════════════════════════════════════════════════════════════════════
 🖼️ IMAGES (UNSPLASH ONLY — DO NOT DRAW)
@@ -184,7 +184,7 @@ If available, match the design pattern (spacing, components, theme) of these rec
 • ❌ NO text or elements on colored surfaces or images without ensuring visibility—use matching foreground classes (text-primary-foreground on primary, etc.) and scrim (bg-black/40) on images. WCAG contrast everywhere.
 • ❌ NO wrong foreground on colored surfaces—on bg-primary use text-primary-foreground only; on bg-secondary use text-secondary-foreground; on bg-card use text-card-foreground.
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
-• ❌ NO material-symbols-outlined or ri- icons. Use Iconify ONLY: <iconify-icon icon="solar:..."> or mdi: or cryptocurrency-color:.
+• ❌ NO iconify-icon or material-symbols. Use Remix Icon ONLY: <i class="ri-{{name}}-line"></i> or ri-{{name}}-fill.
 • ❌ NO custom radii or shadows that conflict with Shadcn (prefer rounded-md, rounded-lg; avoid one-off rounded-[...] unless needed).
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.
 • ❌ NO markdown fences (\`\`\`) in the JSON output.
@@ -200,7 +200,7 @@ Return a SINGLE JSON object with this exact structure:
 HTML REQUIREMENTS:
 • Must be a complete <div>...</div> structure. Root div MUST have w-full h-full and flex flex-col; main content area must have flex-1 so the screen fills full height with no empty space at bottom. Do NOT use any fixed width or height.
 • Use ONLY TailwindCSS classes
-• Include icons via <iconify-icon icon="solar:..."> or mdi: or cryptocurrency-color:
+• Include icons via Remix Icon: <i class="ri-{{name}}-line"></i> or <i class="ri-{{name}}-fill"></i>
 • Must be valid, self-contained HTML
 • NO markdown, NO code blocks, NO explanations - JUST the JSON
 
@@ -211,7 +211,7 @@ HTML REQUIREMENTS:
 Before outputting, verify:
 ☐ Does this look like a $10M startup product?
 ☐ Is the content realistic (NO placeholders)?
-☐ Are all icons Iconify (<iconify-icon icon="...">)?
+☐ Are all icons Remix Icon (<i class="ri-...-line"> or ri-...-fill)?
 ☐ Is the primary action properly emphasized with shadows/color?
 ☐ Layered or colored shadow where it helps hierarchy?
 ☐ State (empty/loading/populated) clear?
@@ -324,7 +324,7 @@ If available, match the design pattern of these recent screens. Max 3.
 IMPROVEMENT PRIORITIES:
 1. Address the SPECIFIC user request directly.
 2. Fix any design system violations (wrong icons, bad contrast).
-3. Ensure all icons are Iconify (<iconify-icon icon="...">).
+3. Ensure all icons are Remix Icon (<i class="ri-...-line"> or ri-...-fill).
 4. Ensure root has w-full h-full and flex flex-col; main content area must have flex-1 so the screen fills full height (no empty space at bottom). Do NOT use fixed width or height.
 5. Preserve or improve depth (shadows, borders); avoid flattening the design.
 
@@ -334,7 +334,7 @@ IMPROVEMENT PRIORITIES:
 • Do NOT remove shadows or depth; do NOT make the screen look flatter.
 • Do NOT draw or generate images; use ONLY Unsplash URLs (https://images.unsplash.com/...) for any photos.
 • Do NOT use Lorem Ipsum.
-• Use only Iconify (solar:, mdi:, cryptocurrency-color:, etc.) for icons.
+• Use only Remix Icon (<i class="ri-...-line"> or ri-...-fill) for icons.
 
 ═══════════════════════════════════════════════════════════════════════════════
                            OUTPUT REQUIREMENTS
@@ -346,7 +346,7 @@ Return a SINGLE JSON object with this exact structure:
 HTML REQUIREMENTS:
 • Valid, complete <div>...</div>
 • TailwindCSS classes ONLY
-• Iconify ONLY (<iconify-icon icon="...">)
+• Remix Icon ONLY (<i class="ri-...-line"> or ri-...-fill)
 • NO markdown, NO code blocks
 `
 );
