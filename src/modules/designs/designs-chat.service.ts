@@ -27,6 +27,13 @@ export class DesignsChatService {
     designId: string,
   ): Promise<Observable<StreamUpdate>> {
     return new Observable<StreamUpdate>((subscriber) => {
+      // Create abort controller for cancellation support
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+
+      // Track if operation is running
+      let isRunning = true;
+
       (async () => {
         try {
           const messenger = new StreamMessenger(
@@ -72,6 +79,13 @@ export class DesignsChatService {
             });
             designId = design.id;
             messenger.setDesignId(designId);
+          }
+
+          // Check for cancellation after initial setup
+          if (signal.aborted) {
+            console.log('[DesignsChatService] Cancelled during setup');
+            subscriber.complete();
+            return;
           }
 
           // Initialize tools with ImagesService for smart image fetching
@@ -173,6 +187,13 @@ export class DesignsChatService {
             return;
           }
 
+          // Check for cancellation before intent analysis
+          if (signal.aborted) {
+            console.log('[DesignsChatService] Cancelled before intent analysis');
+            subscriber.complete();
+            return;
+          }
+
           await messenger.emit(
             {
               type: coreConstant.STREAM_EVENT.INTENT_ANALYSIS,
@@ -197,8 +218,14 @@ export class DesignsChatService {
                 prompt,
                 userId,
                 designId,
+                signal,
               );
             } catch (error) {
+              if (signal.aborted) {
+                console.log('[DesignsChatService] Cancelled during color palette generation');
+                subscriber.complete();
+                return;
+              }
               console.warn('[ColorPalette] Generation failed, using default');
               colorPalette =
                 colorPaletteGenerator.generateDefaultColorPalette();
@@ -222,12 +249,20 @@ export class DesignsChatService {
             );
           }
 
+          // Check for cancellation before intent analysis
+          if (signal.aborted) {
+            console.log('[DesignsChatService] Cancelled before intent analysis');
+            subscriber.complete();
+            return;
+          }
+
           const intent = await intentAnalyzer.analyzeIntent(
             prompt,
             existingArtboards,
             contextMessages,
             userId,
             designId,
+            signal,
           );
 
           await messenger.emit(
@@ -245,7 +280,13 @@ export class DesignsChatService {
             intent.screensToUpdate &&
             intent.screensToUpdate.length > 0
           ) {
+            // Update screens - can be parallelized for multiple updates
             for (const s of intent.screensToUpdate) {
+              if (signal.aborted) {
+                console.log('[DesignsChatService] Cancelled during screen updates');
+                break;
+              }
+
               const dbArtboard = await this.prisma.artboard.findUnique({
                 where: { id: s.id },
               });
@@ -277,6 +318,7 @@ export class DesignsChatService {
                 designId,
                 design.type,
                 previousScreens,
+                signal,
               );
 
               const saved = await artboardUpdater.saveUpdatedArtboard(
@@ -298,6 +340,11 @@ export class DesignsChatService {
             intent.screensToUpdate.length > 0
           ) {
             for (const s of intent.screensToUpdate) {
+              if (signal.aborted) {
+                console.log('[DesignsChatService] Cancelled during screen deletion');
+                break;
+              }
+
               await messenger.emit(
                 {
                   type: coreConstant.STREAM_EVENT.SCREEN_DELETE,
@@ -317,6 +364,7 @@ export class DesignsChatService {
               );
             }
           } else {
+            // CREATE NEW SCREENS
             await messenger.emit(
               { type: coreConstant.STREAM_EVENT.PLANNING },
               'Planning screens to create...',
@@ -328,7 +376,14 @@ export class DesignsChatService {
               userId,
               designId,
               design.type,
+              signal,
             );
+
+            if (signal.aborted) {
+              console.log('[DesignsChatService] Cancelled after planning');
+              subscriber.complete();
+              return;
+            }
 
             await messenger.emit(
               {
@@ -341,6 +396,7 @@ export class DesignsChatService {
               `Planning complete: ${plan.totalScreens} screen(s).`,
             );
 
+            // Prepare context for generation
             let screensForContext: Array<{
               title: string;
               description: string | null;
@@ -351,7 +407,16 @@ export class DesignsChatService {
               html: a.html,
             }));
 
+            // SEQUENTIAL GENERATION WITH STREAMING
+            // Always use streaming for real-time UI feedback
+            console.log(`[DesignsChatService] Generating ${plan.screenPrompts.length} screens sequentially with streaming`);
+            
             for (let i = 0; i < plan.screenPrompts.length; i += 1) {
+              if (signal.aborted) {
+                console.log('[DesignsChatService] Cancelled during screen generation');
+                break;
+              }
+
               const sp = plan.screenPrompts[i];
               const previousScreens = getLastScreensForDesignPattern(screensForContext);
 
@@ -375,27 +440,32 @@ export class DesignsChatService {
                 designId,
                 design.type,
                 previousScreens,
+                signal,
               );
 
               for await (const streamEvent of streamGenerator) {
+                if (signal.aborted) {
+                  console.log('[DesignsChatService] Cancelled during streaming');
+                  break;
+                }
+
                 if (streamEvent.type === 'chunk') {
-                  // Forward streaming chunk to frontend
-                  await messenger.emit(
-                    {
-                      type: coreConstant.STREAM_EVENT.SCREEN_STREAMING,
-                      progress: { current: i, total: plan.totalScreens },
-                      data: {
-                        title: sp.title,
-                        rawChunk: streamEvent.data.rawChunk,
-                        accumulatedText: streamEvent.data.accumulatedText,
-                      },
+                  // Forward streaming chunk to frontend - use fast emit (no DB persistence)
+                  messenger.emitFast({
+                    type: coreConstant.STREAM_EVENT.SCREEN_STREAMING,
+                    progress: { current: i, total: plan.totalScreens },
+                    data: {
+                      title: sp.title,
+                      rawChunk: streamEvent.data.rawChunk,
+                      accumulatedText: streamEvent.data.accumulatedText,
                     },
-                    '', // No console message for chunks
-                  );
+                  });
                 } else if (streamEvent.type === 'complete') {
                   screen = streamEvent.data;
                 }
               }
+
+              if (signal.aborted) break;
 
               if (!screen) {
                 throw new Error(`Failed to generate screen "${sp.title}"`);
@@ -419,13 +489,22 @@ export class DesignsChatService {
             }
           }
 
-          await messenger.emit(
-            { type: coreConstant.STREAM_EVENT.ALL_COMPLETE },
-            'All tasks completed.',
-          );
+          if (!signal.aborted) {
+            await messenger.emit(
+              { type: coreConstant.STREAM_EVENT.ALL_COMPLETE },
+              'All tasks completed.',
+            );
+          }
 
           subscriber.complete();
         } catch (error) {
+          // Check if this was a cancellation
+          if (signal.aborted) {
+            console.log('[DesignsChatService] Operation was cancelled');
+            subscriber.complete();
+            return;
+          }
+
           const errMsg =
             error instanceof Error ? error.message : 'Unknown error occurred';
           console.error('[DesignsChatService] Error:', error);
@@ -448,8 +527,18 @@ export class DesignsChatService {
           }
 
           subscriber.complete();
+        } finally {
+          isRunning = false;
         }
       })();
+
+      // Return teardown function for Observable cancellation
+      return () => {
+        if (isRunning) {
+          console.log('[DesignsChatService] Teardown called - aborting operation');
+          abortController.abort();
+        }
+      };
     });
   }
 }

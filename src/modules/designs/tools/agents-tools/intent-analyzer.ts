@@ -1,9 +1,9 @@
-import { OpenRouter } from '@openrouter/sdk';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { type Intent, type ExistingArtboard } from '../../schemas';
 import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
+import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
 
 // JSON Schema for Intent (replaces Zod schema)
 const intentJsonSchema = {
@@ -70,9 +70,7 @@ CRITICAL for delete_existing:
 User message: "{message}"`);
 
 export class IntentAnalyzer {
-  private openrouter = new OpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY!,
-  });
+  private openrouter = getOpenRouterClient();
 
   constructor(
     private creditManager: CreditManager,
@@ -88,7 +86,11 @@ export class IntentAnalyzer {
     }>,
     userId: string,
     designId: string,
+    signal?: AbortSignal,
   ): Promise<Intent> {
+    // Check for cancellation before starting
+    checkAborted(signal, 'intent_analysis');
+
     const existingScreensText = existingScreens
       .map(
         (screen) =>
@@ -109,20 +111,28 @@ export class IntentAnalyzer {
       { role: 'user' as const, content: message },
     ];
 
-    const response = await this.openrouter.chat.send({
-      model: coreConstant.AI_MODELS.DESIGN.NAME,
-      messages: allMessages,
-      responseFormat: {
-        type: 'json_schema',
-        jsonSchema: {
-          name: 'intent',
-          strict: true,
-          schema: intentJsonSchema,
+    // Check for cancellation before LLM call
+    checkAborted(signal, 'intent_analysis');
+
+    const response = await withTimeout(
+      this.openrouter.chat.send({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: allMessages,
+        responseFormat: {
+          type: 'json_schema',
+          jsonSchema: {
+            name: 'intent',
+            strict: true,
+            schema: intentJsonSchema,
+          },
         },
-      },
-      temperature: 0.3,
-      stream: false,
-    });
+        temperature: 0.3,
+        stream: false,
+      }),
+      LLM_CONFIG.REQUEST_TIMEOUT_MS,
+      'Intent Analysis LLM Call',
+      signal,
+    );
 
     const content = response.choices[0]?.message?.content;
     const intent = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as Intent;
@@ -142,17 +152,17 @@ export class IntentAnalyzer {
 
     console.log('[IntentAnalyzer] Deducting credits:', tokenUsage);
 
-    // Filter through AiUsageService for cost logging
-    await this.aiUsageService.logUsage({
+    // Fire-and-forget for non-critical operations (don't block on these)
+    this.aiUsageService.logUsage({
       userId,
       modelName: coreConstant.AI_MODELS.DESIGN.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'intent_analysis',
       designId,
-    } as any);
+    } as any).catch(err => console.error('[IntentAnalyzer] Usage log error:', err));
 
-    // Deduct credits immediately after analysis
+    // Credits must be deducted (but we don't need to block the main flow)
     await this.creditManager.deductCredits(
       userId,
       designId,

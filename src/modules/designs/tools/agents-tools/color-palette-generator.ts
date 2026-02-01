@@ -1,9 +1,9 @@
-import { OpenRouter } from '@openrouter/sdk';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { type ColorPalette } from '../../schemas';
 import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
+import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
 
 // JSON Schema for ColorPalette - 11 theme tokens (shadcn-style theming)
 const colorPaletteJsonSchema = {
@@ -54,9 +54,7 @@ CONSIDERATIONS:
 Return JSON with keys: background, foreground, primary, primaryForeground, secondary, secondaryForeground, mutedForeground, card, cardForeground, border, input.`);
 
 export class ColorPaletteGenerator {
-  private openrouter = new OpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY!,
-  });
+  private openrouter = getOpenRouterClient();
 
   constructor(
     private creditManager: CreditManager,
@@ -67,28 +65,40 @@ export class ColorPaletteGenerator {
     message: string,
     userId: string,
     designId: string,
+    signal?: AbortSignal,
   ): Promise<ColorPalette> {
+    // Check for cancellation before starting
+    checkAborted(signal, 'color_palette_generation');
+
     const colorPrompt = await colorPaletteTemplate.format({
       message: message,
     });
 
-    const response = await this.openrouter.chat.send({
-      model: coreConstant.AI_MODELS.DESIGN.NAME,
-      messages: [
-        { role: 'system', content: colorPrompt },
-        { role: 'user', content: message },
-      ],
-      responseFormat: {
-        type: 'json_schema',
-        jsonSchema: {
-          name: 'colorPalette',
-          strict: true,
-          schema: colorPaletteJsonSchema,
+    // Check for cancellation before LLM call
+    checkAborted(signal, 'color_palette_generation');
+
+    const response = await withTimeout(
+      this.openrouter.chat.send({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: [
+          { role: 'system', content: colorPrompt },
+          { role: 'user', content: message },
+        ],
+        responseFormat: {
+          type: 'json_schema',
+          jsonSchema: {
+            name: 'colorPalette',
+            strict: true,
+            schema: colorPaletteJsonSchema,
+          },
         },
-      },
-      temperature: 0.5,
-      stream: false,
-    });
+        temperature: 0.5,
+        stream: false,
+      }),
+      LLM_CONFIG.REQUEST_TIMEOUT_MS,
+      'Color Palette LLM Call',
+      signal,
+    );
 
     const content = response.choices[0]?.message?.content;
     const colorPalette = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ColorPalette;
@@ -107,14 +117,15 @@ export class ColorPaletteGenerator {
 
     console.log('[ColorPaletteGenerator] Deducting credits:', tokenUsage);
 
-    await this.aiUsageService.logUsage({
+    // Fire-and-forget for non-critical logging
+    this.aiUsageService.logUsage({
       userId,
       modelName: coreConstant.AI_MODELS.DESIGN.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'color_palette',
       designId,
-    } as any);
+    } as any).catch(err => console.error('[ColorPaletteGenerator] Usage log error:', err));
 
     await this.creditManager.deductCredits(
       userId,

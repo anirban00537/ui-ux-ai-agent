@@ -1,3 +1,16 @@
+import { PrismaService } from '../../../prisma/prisma.service';
+import {
+  type SingleScreen,
+  type ExistingArtboard,
+  type ColorPalette,
+  type PreviousScreenContext,
+} from '../../schemas';
+import { CreditManager } from '../credit-manager';
+import { coreConstant } from '../../../../shared/helpers/coreConstant';
+import { AiUsageService } from '../../../subscription/services/ai-usage.service';
+import { PromptManager } from '../prompts/prompt-manager';
+import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
+
 const THEME_CLASSES_BLOCK = `
 STRICT THEME MAPPINGS (use ONLY these Tailwind classes; they map to CSS vars):
 - Background: bg-background | Foreground: text-foreground
@@ -19,19 +32,6 @@ const generateColorPaletteInstructions = (
   }
   return `DESIGN SYSTEM (11-color theme) - SAME FOR EVERY SCREEN:${THEME_CLASSES_BLOCK}`;
 };
-
-import { OpenRouter } from '@openrouter/sdk';
-import { PrismaService } from '../../../prisma/prisma.service';
-import {
-  type SingleScreen,
-  type ExistingArtboard,
-  type ColorPalette,
-  type PreviousScreenContext,
-} from '../../schemas';
-import { CreditManager } from '../credit-manager';
-import { coreConstant } from '../../../../shared/helpers/coreConstant';
-import { AiUsageService } from '../../../subscription/services/ai-usage.service';
-import { PromptManager } from '../prompts/prompt-manager';
 
 // Simple schema for the artboard output
 const singleArtboardJsonSchema = {
@@ -70,9 +70,7 @@ function formatPreviousScreensForDesignPattern(
 }
 
 export class ArtboardUpdater {
-  private openrouter = new OpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY!,
-  });
+  private openrouter = getOpenRouterClient();
 
   constructor(
     private prisma: PrismaService,
@@ -92,7 +90,10 @@ export class ArtboardUpdater {
     designId: string,
     designType: string,
     previousScreens: PreviousScreenContext[] = [],
+    signal?: AbortSignal,
   ): Promise<SingleScreen> {
+    checkAborted(signal, `screen_update:${artboard.title}`);
+
     const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
     const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
 
@@ -109,20 +110,27 @@ export class ArtboardUpdater {
       { role: 'user' as const, content: userContent },
     ];
 
-    const response = await this.openrouter.chat.send({
-      model: coreConstant.AI_MODELS.DESIGN.NAME,
-      messages: allMessages,
-      responseFormat: {
-        type: 'json_schema',
-        jsonSchema: {
-          name: 'artboard',
-          strict: true,
-          schema: singleArtboardJsonSchema,
+    checkAborted(signal, `screen_update:${artboard.title}`);
+
+    const response = await withTimeout(
+      this.openrouter.chat.send({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: allMessages,
+        responseFormat: {
+          type: 'json_schema',
+          jsonSchema: {
+            name: 'artboard',
+            strict: true,
+            schema: singleArtboardJsonSchema,
+          },
         },
-      },
-      temperature: 0.5,
-      stream: false,
-    });
+        temperature: 0.5,
+        stream: false,
+      }),
+      LLM_CONFIG.REQUEST_TIMEOUT_MS,
+      `Screen Update: ${artboard.title}`,
+      signal,
+    );
 
     const content = response.choices[0]?.message?.content;
     const updatedArtboard = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
@@ -142,17 +150,16 @@ export class ArtboardUpdater {
 
     console.log('[ArtboardUpdater] Deducting credits for artboard update:', tokenUsage);
 
-    // Cost logging
-    await this.aiUsageService.logUsage({
+    // Fire-and-forget for non-critical logging
+    this.aiUsageService.logUsage({
       userId,
       modelName: coreConstant.AI_MODELS.DESIGN.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'screen_update',
       designId,
-    } as any);
+    } as any).catch(err => console.error('[ArtboardUpdater] Usage log error:', err));
 
-    // Deduct credits immediately after update
     await this.creditManager.deductCredits(
       userId,
       designId,

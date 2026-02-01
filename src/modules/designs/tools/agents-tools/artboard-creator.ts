@@ -1,4 +1,3 @@
-import { OpenRouter } from '@openrouter/sdk';
 import { PrismaService } from '../../../prisma/prisma.service';
 import {
   type ScreenPlan,
@@ -12,6 +11,7 @@ import { CreditManager } from '../credit-manager';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 import { PromptManager } from '../prompts/prompt-manager';
+import { getOpenRouterClient, getOpenAIClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
 
 // JSON Schema for ScreenPlan
 const artboardPlanJsonSchema = {
@@ -109,10 +109,18 @@ function formatPreviousScreensForDesignPattern(
     .join('\n\n');
 }
 
+/**
+ * Result from a single screen generation
+ */
+export interface ScreenGenerationResult {
+  screen: SingleScreen;
+  promptData: ScreenPromptData;
+  index: number;
+}
+
 export class ArtboardCreator {
-  private openrouter = new OpenRouter({
-    apiKey: process.env.OPENROUTER_API_KEY!,
-  });
+  private openrouter = getOpenRouterClient();
+  private openai = getOpenAIClient();
 
   constructor(
     private prisma: PrismaService,
@@ -132,7 +140,10 @@ export class ArtboardCreator {
     userId: string,
     designId: string,
     designType: string,
+    signal?: AbortSignal,
   ): Promise<ScreenPlan> {
+    checkAborted(signal, 'screen_planning');
+
     const prompts = PromptManager.getPrompts(designType);
     const planningPrompt = await prompts.planningTemplate.format({
       message,
@@ -144,20 +155,27 @@ export class ArtboardCreator {
       { role: 'user' as const, content: message },
     ];
 
-    const response = await this.openrouter.chat.send({
-      model: coreConstant.AI_MODELS.DESIGN.NAME,
-      messages: allMessages,
-      responseFormat: {
-        type: 'json_schema',
-        jsonSchema: {
-          name: 'artboardPlan',
-          strict: true,
-          schema: artboardPlanJsonSchema,
+    checkAborted(signal, 'screen_planning');
+
+    const response = await withTimeout(
+      this.openrouter.chat.send({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: allMessages,
+        responseFormat: {
+          type: 'json_schema',
+          jsonSchema: {
+            name: 'artboardPlan',
+            strict: true,
+            schema: artboardPlanJsonSchema,
+          },
         },
-      },
-      temperature: 0.5,
-      stream: false,
-    });
+        temperature: 0.5,
+        stream: false,
+      }),
+      LLM_CONFIG.REQUEST_TIMEOUT_MS,
+      'Screen Planning LLM Call',
+      signal,
+    );
 
     const content = response.choices[0]?.message?.content;
     const plan = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ScreenPlan;
@@ -185,17 +203,16 @@ export class ArtboardCreator {
 
     console.log('[ArtboardCreator] Deducting credits for planning:', tokenUsage);
 
-    // Cost logging
-    await this.aiUsageService.logUsage({
+    // Fire-and-forget for non-critical logging
+    this.aiUsageService.logUsage({
       userId,
       modelName: coreConstant.AI_MODELS.DESIGN.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'screen_planning',
       designId,
-    } as any);
+    } as any).catch(err => console.error('[ArtboardCreator] Planning usage log error:', err));
 
-    // Deduct credits immediately after planning
     await this.creditManager.deductCredits(
       userId,
       designId,
@@ -222,7 +239,10 @@ export class ArtboardCreator {
     designId: string,
     designType: string,
     previousScreens: PreviousScreenContext[] = [],
+    signal?: AbortSignal,
   ): AsyncGenerator<{ type: 'chunk' | 'complete'; data: any }, void, unknown> {
+    checkAborted(signal, `screen_generation:${promptData.title}`);
+
     const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
     const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
 
@@ -243,18 +263,10 @@ export class ArtboardCreator {
       { role: 'user' as const, content: userContent },
     ];
 
-    // Use OpenAI SDK for streaming (OpenRouter compatible)
-    const { OpenAI } = await import('openai');
-    const openai = new OpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: process.env.OPENROUTER_API_KEY!,
-      defaultHeaders: {
-        'HTTP-Referer': 'https://butterfast.app',
-        'X-Title': 'Butterfast',
-      },
-    });
+    checkAborted(signal, `screen_generation:${promptData.title}`);
 
-    const stream = await openai.chat.completions.create({
+    // Use the singleton OpenAI client for streaming
+    const stream = await this.openai.chat.completions.create({
       model: coreConstant.AI_MODELS.DESIGN.NAME,
       messages: allMessages,
       response_format: {
@@ -275,8 +287,22 @@ export class ArtboardCreator {
     let accumulatedContent = '';
     let usageData: any = null;
     let chunkCount = 0;
+    let lastChunkTime = Date.now();
 
     for await (const chunk of stream) {
+      // Check for cancellation during streaming
+      if (signal?.aborted) {
+        console.log(`[ArtboardCreator] Stream cancelled for "${promptData.title}"`);
+        throw new Error(`Operation cancelled: screen_generation:${promptData.title}`);
+      }
+
+      // Check for chunk timeout
+      const now = Date.now();
+      if (now - lastChunkTime > LLM_CONFIG.STREAM_CHUNK_TIMEOUT_MS) {
+        throw new Error(`Stream timeout: no chunk received for ${LLM_CONFIG.STREAM_CHUNK_TIMEOUT_MS}ms`);
+      }
+      lastChunkTime = now;
+
       const delta = chunk.choices[0]?.delta?.content;
       
       if (delta) {
@@ -331,15 +357,15 @@ export class ArtboardCreator {
 
     console.log('[ArtboardCreator] Deducting credits for artboard generation:', tokenUsage);
 
-    // Cost logging
-    await this.aiUsageService.logUsage({
+    // Fire-and-forget for non-critical logging
+    this.aiUsageService.logUsage({
       userId,
       modelName: coreConstant.AI_MODELS.DESIGN.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'screen_creation',
       designId,
-    } as any);
+    } as any).catch(err => console.error('[ArtboardCreator] Screen creation usage log error:', err));
 
     // Deduct credits
     await this.creditManager.deductCredits(
@@ -354,6 +380,104 @@ export class ArtboardCreator {
       type: 'complete',
       data: artboard,
     };
+  }
+
+  /**
+   * Generate a single artboard without streaming (for parallel generation)
+   */
+  async generateArtboardNonStreaming(
+    promptData: ScreenPromptData,
+    message: string,
+    contextMessages: Array<{
+      role: 'system' | 'user' | 'assistant';
+      content: string;
+    }>,
+    colorPalette: ColorPalette | null | undefined,
+    userId: string,
+    designId: string,
+    designType: string,
+    previousScreens: PreviousScreenContext[] = [],
+    signal?: AbortSignal,
+  ): Promise<SingleScreen> {
+    checkAborted(signal, `screen_generation:${promptData.title}`);
+
+    const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
+    const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
+
+    const prompts = PromptManager.getPrompts(designType);
+    const systemPrompt = await prompts.generationTemplate.format({
+      colorPaletteInstructions,
+      message,
+      title: promptData.title,
+      description: designType + ' design ' + promptData.title,
+      prompt: promptData.prompt,
+      previousScreensContext,
+    });
+
+    const userContent = `Original request: ${message}\n\nSpecific artboard prompt: ${promptData.prompt}`;
+    const allMessages = [
+      { role: 'system' as const, content: systemPrompt },
+      ...contextMessages,
+      { role: 'user' as const, content: userContent },
+    ];
+
+    checkAborted(signal, `screen_generation:${promptData.title}`);
+
+    const response = await withTimeout(
+      this.openrouter.chat.send({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: allMessages,
+        responseFormat: {
+          type: 'json_schema',
+          jsonSchema: {
+            name: 'artboard',
+            strict: true,
+            schema: singleArtboardJsonSchema,
+          },
+        },
+        temperature: 0.5,
+        stream: false,
+      }),
+      LLM_CONFIG.REQUEST_TIMEOUT_MS,
+      `Screen Generation: ${promptData.title}`,
+      signal,
+    );
+
+    const content = response.choices[0]?.message?.content;
+    const artboard = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
+
+    const usage = response.usage as any || {
+      promptTokens: 0,
+      completionTokens: 0,
+      totalTokens: 0,
+    };
+
+    const tokenUsage = {
+      inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
+      outputTokens: usage.completionTokens || usage.completion_tokens || 0,
+      totalTokens: usage.totalTokens || usage.total_tokens || 0,
+    };
+
+    console.log(`[ArtboardCreator] Deducting credits for "${promptData.title}":`, tokenUsage);
+
+    // Fire-and-forget for non-critical logging
+    this.aiUsageService.logUsage({
+      userId,
+      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      inputTokens: tokenUsage.inputTokens,
+      outputTokens: tokenUsage.outputTokens,
+      type: 'screen_creation',
+      designId,
+    } as any).catch(err => console.error('[ArtboardCreator] Screen creation usage log error:', err));
+
+    await this.creditManager.deductCredits(
+      userId,
+      designId,
+      'screen_creation',
+      tokenUsage,
+    );
+
+    return artboard;
   }
 
   async saveArtboard(
