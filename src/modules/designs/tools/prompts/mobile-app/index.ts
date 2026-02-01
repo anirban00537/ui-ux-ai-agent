@@ -5,14 +5,15 @@ export const designSystemInstructions = `
                         MINIMALIST DESIGN SYSTEM (COMPETITOR STYLE)
 ═══════════════════════════════════════════════════════════════════════════════
 
-🎨 THEME SYSTEM (11 colors - use ONLY these semantic classes):
+🎨 THEME SYSTEM (use ONLY these semantic classes):
 ───────────────────────────────────────────────────────────────────────────────
 • Background: bg-background (page/surface) | Foreground: text-foreground (default text)
 • Primary: bg-primary | Primary Foreground: text-primary-foreground (text/icons on primary)
 • Secondary: bg-secondary | Secondary Foreground: text-secondary-foreground
-• Muted Foreground: text-muted-foreground (hints, captions, placeholders)
+• Muted: bg-muted, text-muted-foreground (hints, captions, placeholders)
 • Card: bg-card | Card Foreground: text-card-foreground
 • Border: border-border | Input: bg-input, border-input
+• Also available: bg-accent, text-destructive, bg-popover, border-ring, text-chart-1 … text-chart-5 (use where appropriate).
 
 On bg-primary use text-primary-foreground and primary-foreground icons. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. Use text-foreground for default body text on bg-background. Use text-muted-foreground for subtle text. Use border-border for borders, bg-input for input fields.
 
@@ -20,7 +21,7 @@ DO NOT use arbitrary Tailwind color values (e.g. bg-[#...], text-[#...]). Use ON
 
 VISUAL STYLE: Use outline style (borders or dividers for depth; avoid flat blocks with no separation). Prefer minimal (generous spacing, clear hierarchy). When the brief mentions a trend, use: glassmorphism → backdrop-blur, bg-white/10; bento grid → asymmetric grid layouts; Swiss style → grid-based minimal; neumorphism → soft shadows; neobrutalism → bold borders. Modifiers like "deep shadows" (shadow-xl, shadow-2xl) or "massive typography" (text-3xl, text-4xl) are allowed where they fit the vibe.
 
-VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrained palette. Playful → vibrant accents, hover:scale-105 or hover:translate-y-[-2px], rounded-full. Luxury → glassmorphism, generous whitespace, font-display for headings, shadow-primary/20.
+VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrained palette. Playful → vibrant accents, hover:scale-105 or hover:translate-y-[-2px], rounded-full. Luxury → glassmorphism, generous whitespace, font-heading for headings, shadow-primary/20.
 
 ═══════════════════════════════════════════════════════════════════════════════
 🎨 COLOR CHOICE & VISIBILITY (ALL AREAS)
@@ -39,11 +40,11 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
 • Never add fixed dimensions. The screen must fill the full height—no half-empty screen.
 
 ═══════════════════════════════════════════════════════════════════════════════
-🔤 TYPOGRAPHY (Lexend)
+🔤 TYPOGRAPHY (Space Grotesk, Playfair Display, JetBrains Mono)
 ───────────────────────────────────────────────────────────────────────────────
-  • Font pairing: font-display for headings, font-sans for body.
+  • Font pairing: font-heading for headings, font-sans for body (Space Grotesk). font-serif (Playfair Display) for emphasis; font-mono (JetBrains Mono) for code/numbers.
   • Letter-spacing: tracking-tight or tracking-tighter for large titles.
-  • Headings: class="font-display font-bold tracking-tight"
+  • Headings: class="font-heading font-bold tracking-tight"
   • Body: class="font-sans"
   • Sizes: hero/title = text-xl or text-2xl; cards/sections = text-sm or text-base. Avoid walls of text.
   • Section Header: text-sm font-bold uppercase tracking-wider text-muted-foreground
@@ -64,41 +65,41 @@ VIBE TO TAILWIND: Trustworthy → clean sans, subtle rounded-md shadows, restrai
 STANDARD LIST ITEM HTML (Use this structure):
 <div class="flex items-center gap-4 p-4 rounded-xl border border-border bg-card hover:bg-secondary/10 transition-colors">
   <div class="size-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground">
-    <span class="material-symbols-outlined text-primary-foreground">schedule</span>
+    <iconify-icon icon="solar:calendar-bold" class="text-primary-foreground size-6"></iconify-icon>
   </div>
   <div class="flex-1">
      <p class="text-card-foreground font-medium text-base">Meeting with Team</p>
      <p class="text-muted-foreground text-sm">10:00 AM • Conference Room</p>
   </div>
   <button class="size-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary/10 transition">
-    <span class="material-symbols-outlined text-xl">chevron_right</span>
+    <iconify-icon icon="solar:arrow-right-bold" class="size-5"></iconify-icon>
   </button>
 </div>
 
 PRIMARY BUTTON:
 <button class="w-full bg-primary text-primary-foreground font-bold h-12 px-6 rounded-full shadow-lg active:scale-95 transition-transform flex items-center justify-center gap-2">
   <span>Confirm Action</span>
-  <span class="material-symbols-outlined text-lg">arrow_forward</span>
+  <iconify-icon icon="solar:arrow-right-bold" class="size-5"></iconify-icon>
 </button>
 
 ICON BUTTON (on primary — use primary-foreground):
 <button class="size-10 flex items-center justify-center rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
-  <span class="material-symbols-outlined text-primary-foreground">add</span>
+  <iconify-icon icon="solar:add-circle-bold" class="text-primary-foreground size-6"></iconify-icon>
 </button>
 
 CARD / LIST ITEM:
 <div class="p-4 rounded-xl border border-border bg-card ...">
 
 ═══════════════════════════════════════════════════════════════════════════════
-✨ ICONS (MATERIAL SYMBOLS)
+✨ ICONS (Iconify)
 ───────────────────────────────────────────────────────────────────────────────
-Use Google Material Symbols for ALL icons.
-Syntax: <span class="material-symbols-outlined">home</span>
+Use Iconify for ALL icons. Syntax: <iconify-icon icon="set:icon-name"></iconify-icon>
+Recommend sets: solar: (solar:home-2-bold, solar:bell-bing-bold, solar:graph-up-bold), mdi: (mdi:bitcoin, mdi:ethereum), cryptocurrency-color: for crypto.
 
-Common names: 
-arrow_back_ios, search, close, add, check, person, settings, calendar_today, 
-fitness_center, restaurant, local_fire_department, bar_chart, notifications,
-favorite, share, more_vert, mail, lock, visibility
+Common examples:
+solar:home-2-bold, solar:bell-bing-bold, solar:arrow-right-up-linear, solar:qr-code-scan-bold, solar:chart-2-bold
+mdi:contactless-payment, mdi:bitcoin, mdi:ethereum
+cryptocurrency-color:sol, cryptocurrency-color:usdt
 
 ═══════════════════════════════════════════════════════════════════════════════
 🖼️ IMAGES (UNSPLASH ONLY — DO NOT DRAW)
@@ -166,7 +167,7 @@ If available, match the design pattern (spacing, components, theme) of these rec
 • ❌ NO text or elements on colored surfaces or images without ensuring visibility—use matching foreground classes (text-primary-foreground on primary, etc.) and scrim (bg-black/40) on images. WCAG contrast everywhere.
 • ❌ NO wrong foreground on colored surfaces—on bg-primary use text-primary-foreground only; on bg-secondary use text-secondary-foreground; on bg-card use text-card-foreground.
 • ❌ NO inline \`style="..."\` attributes. Use Tailwind classes ONLY.
-• ❌ NO \`ri-{{name}}\` icons. Use \`<span class="material-symbols-outlined">name</span>\` ONLY.
+• ❌ NO material-symbols-outlined or ri- icons. Use Iconify ONLY: <iconify-icon icon="solar:..."> or mdi: or cryptocurrency-color:.
 • ❌ NO broken or partial HTML. Output MUST be a complete, self-contained set of tags.
 • ❌ NO markdown fences (\`\`\`) in the JSON output.
 
@@ -180,7 +181,7 @@ Return a SINGLE JSON object with this exact structure:
 HTML REQUIREMENTS:
 • Must be a complete <div>...</div> structure. Root div MUST have w-full h-full and flex flex-col; main content area must have flex-1 so the screen fills full height with no empty space at bottom. Do NOT use any fixed width or height.
 • Use ONLY TailwindCSS classes
-• Include Material Symbols via <span class="material-symbols-outlined">{{name}}</span>
+• Include icons via <iconify-icon icon="solar:..."> or mdi: or cryptocurrency-color:
 • Must be valid, self-contained HTML
 • NO markdown, NO code blocks, NO explanations - JUST the JSON
 
@@ -191,7 +192,7 @@ HTML REQUIREMENTS:
 Before outputting, verify:
 ☐ Does this look like a $10M startup product?
 ☐ Is the content realistic (NO placeholders)?
-☐ Are all icons Material Symbols?
+☐ Are all icons Iconify (<iconify-icon icon="...">)?
 ☐ Is the primary action properly emphasized with shadows/color?
 ☐ Layered or colored shadow where it helps hierarchy?
 ☐ State (empty/loading/populated) clear?
@@ -302,7 +303,7 @@ If available, match the design pattern of these recent screens. Max 3.
 IMPROVEMENT PRIORITIES:
 1. Address the SPECIFIC user request directly.
 2. Fix any design system violations (wrong icons, bad contrast).
-3. Ensure all icons are Material Symbols (<span class="material-symbols-outlined">...</span>).
+3. Ensure all icons are Iconify (<iconify-icon icon="...">).
 4. Ensure root has w-full h-full and flex flex-col; main content area must have flex-1 so the screen fills full height (no empty space at bottom). Do NOT use fixed width or height.
 5. Preserve or improve depth (shadows, borders); avoid flattening the design.
 
@@ -312,7 +313,7 @@ IMPROVEMENT PRIORITIES:
 • Do NOT remove shadows or depth; do NOT make the screen look flatter.
 • Do NOT draw or generate images; use ONLY Unsplash URLs (https://images.unsplash.com/...) for any photos.
 • Do NOT use Lorem Ipsum.
-• Do NOT use Remix Icons.
+• Use only Iconify (solar:, mdi:, cryptocurrency-color:, etc.) for icons.
 
 ═══════════════════════════════════════════════════════════════════════════════
                            OUTPUT REQUIREMENTS
@@ -324,7 +325,7 @@ Return a SINGLE JSON object with this exact structure:
 HTML REQUIREMENTS:
 • Valid, complete <div>...</div>
 • TailwindCSS classes ONLY
-• Material Symbols ONLY
+• Iconify ONLY (<iconify-icon icon="...">)
 • NO markdown, NO code blocks
 `
 );

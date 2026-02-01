@@ -37,16 +37,16 @@ COLOR CHOICE & VISIBILITY (ALL AREAS):
    • Generous padding (p-8, p-12, p-16)
 
 4. TYPOGRAPHY (Presentation Readable):
-   • Font pairing: font-display for headings, font-sans for body (Lexend).
+   • Font pairing: font-heading for headings, font-sans for body (Space Grotesk). font-serif (Playfair Display) for emphasis; font-mono (JetBrains Mono) for code/numbers.
    • Letter-spacing: tracking-tight or tracking-tighter for titles.
    • H1: text-5xl or text-6xl font-bold tracking-tight
    • H2: text-3xl or text-4xl font-semibold opacity-90
    • Body: text-xl or text-2xl (readable from distance)
    • Note: Use bold/uppercase for section kickers (text-sm font-bold uppercase tracking-widest)
 
-5. ICONS (Material Symbols):
-   • Use: <span class="material-symbols-outlined">icon_name</span>
-   • Common: slideshow, image, bar_chart, group, check_circle
+5. ICONS (Iconify):
+   • Use: <iconify-icon icon="solar:..."></iconify-icon> or mdi: (e.g. mdi:chart-bar, mdi:image)
+   • Examples: solar:slideshow-bold, solar:gallery-bold, solar:chart-2-bold, mdi:account-group, mdi:check-circle
 
 6. IMAGES (UNSPLASH ONLY — DO NOT DRAW):
    • Use ONLY real Unsplash image URLs. Example: https://images.unsplash.com/photo-XXXXX?auto=format&fit=crop&w=1200&q=80
@@ -127,7 +127,7 @@ Return a SINGLE JSON object with this exact structure:
 HTML REQUIREMENTS:
 • Valid, complete <div>...</div> structure
 • TailwindCSS classes ONLY
-• Material Symbols for icons
+• Iconify for icons (<iconify-icon icon="...">)
 • NO markdown, NO code blocks
 
 QUALITY CHECKLIST:
@@ -192,7 +192,7 @@ RULES:
 • Preserve the core layout.
 • Ensure readability (contrast & size).
 • Fix broken visual hierarchy.
-• ONLY use Material Symbols (<span class="material-symbols-outlined">...</span>).
+• ONLY use Iconify for icons (<iconify-icon icon="solar:..."> or mdi:, etc.).
 • ONLY use Unsplash URLs (https://images.unsplash.com/...) for images; do NOT draw or generate images.
 
 ═══════════════════════════════════════════════════════════════════════════════

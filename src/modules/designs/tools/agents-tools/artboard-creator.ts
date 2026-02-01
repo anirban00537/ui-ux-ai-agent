@@ -80,6 +80,7 @@ STRICT THEME MAPPINGS (use ONLY these Tailwind classes; they map to CSS vars):
 - Muted Foreground: text-muted-foreground (hints, captions)
 - Card: bg-card | Card Foreground: text-card-foreground
 - Border: border-border | Input: bg-input, border-input
+- Also available: muted (bg-muted, text-muted), accent, destructive, popover, ring, chart-1…chart-5. Use Iconify for icons: <iconify-icon icon="solar:..."> or mdi: or cryptocurrency-color:.
 
 On bg-primary use text-primary-foreground and primary-foreground icons. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. On images use scrim (bg-black/40) + text-foreground. DO NOT use arbitrary colors (e.g. bg-[#...]). WCAG contrast everywhere.`;
 

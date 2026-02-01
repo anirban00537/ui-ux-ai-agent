@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { StreamUpdate, ExistingArtboard, PreviousScreenContext } from './schemas';
-import { ColorPaletteGenerator } from './tools/agents-tools/color-pallette-generator';
+import { ColorPaletteGenerator } from './tools/agents-tools/color-palette-generator';
 import IntentAnalyzer from './tools/agents-tools/intent-analyzer';
 import ArtboardCreator from './tools/agents-tools/artboard-creator';
 import ArtboardUpdater from './tools/agents-tools/artboard-updater';
