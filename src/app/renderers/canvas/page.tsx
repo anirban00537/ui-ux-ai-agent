@@ -109,7 +109,6 @@ export default function CanvasPage() {
         if (p.background != null) docRoot.style.setProperty("--background", p.background);
         if (p.primary != null) docRoot.style.setProperty("--primary", p.primary);
         if (p.secondary != null) docRoot.style.setProperty("--secondary", p.secondary);
-        if (p.text != null) docRoot.style.setProperty("--text", p.text);
       }
     };
 

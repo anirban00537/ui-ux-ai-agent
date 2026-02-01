@@ -40,7 +40,6 @@ export default function CanvasLayout({
                   "background": "var(--background)",
                   "primary": "var(--primary)",
                   "secondary": "var(--secondary)",
-                  "foreground": "var(--text)",
                 },
                 fontFamily: {
                   "display": ["Lexend", "sans-serif"],
@@ -77,7 +76,6 @@ export default function CanvasLayout({
             overflow: hidden;
             background-color: var(--background);
             font-family: "Lexend", sans-serif;
-            color: var(--text);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
           }
@@ -94,7 +92,6 @@ export default function CanvasLayout({
           .bg-secondary { background-color: var(--secondary) !important; }
           .text-primary { color: var(--primary) !important; }
           .text-secondary { color: var(--secondary) !important; }
-          .text-foreground { color: var(--text) !important; }
 
           /* GlobalScrollbar Hide */
           ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
