@@ -303,13 +303,28 @@ export class ArtboardCreator {
       }
     }
 
-    // Parse final JSON
+    // Parse final JSON - with fallback for truncated/unterminated stream output
     let artboard: SingleScreen;
     try {
       artboard = JSON.parse(accumulatedContent) as SingleScreen;
-    } catch (e) {
-      console.error('[ArtboardCreator] Failed to parse streamed JSON:', e);
-      throw new Error('Failed to parse generated artboard content');
+    } catch {
+      // Fallback: extract fields from partial JSON (e.g. unterminated html string)
+      const unescapeJsonStr = (s: string) =>
+        (s ?? '')
+          .replace(/\\n/g, '\n')
+          .replace(/\\"/g, '"')
+          .replace(/\\\\/g, '\\');
+      const titleMatch = accumulatedContent.match(/"title"\s*:\s*"((?:\\.|[^"\\])*?)"/);
+      const descMatch = accumulatedContent.match(/"description"\s*:\s*"((?:\\.|[^"\\])*?)"/);
+      const htmlMatch = accumulatedContent.match(/"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"\s*[,}]|$)/);
+      const title = titleMatch?.[1] ? unescapeJsonStr(titleMatch[1]) : promptData.title;
+      const description = descMatch?.[1] ? unescapeJsonStr(descMatch[1]) : '';
+      const html = htmlMatch?.[1] ? unescapeJsonStr(htmlMatch[1]) : '';
+      if (!html) {
+        console.error('[ArtboardCreator] Failed to parse streamed JSON and could not extract html');
+        throw new Error('Failed to parse generated artboard content');
+      }
+      artboard = { title, description, html };
     }
 
     // Handle token usage and credits

@@ -379,7 +379,7 @@ export class DesignsChatService {
                 {
                   type: coreConstant.STREAM_EVENT.SCREEN_COMPLETE,
                   progress: { current: i + 1, total: plan.totalScreens },
-                  data: saved,
+                  data: { ...saved, planTitle: sp.title },
                 },
                 `Generated screen "${saved.title}".`,
               );
