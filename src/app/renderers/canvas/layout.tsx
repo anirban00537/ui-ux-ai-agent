@@ -23,6 +23,11 @@ export default function CanvasLayout({
           href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:opsz,wght@9..40,100..900&display=swap"
           rel="stylesheet"
         />
+        {/* Material Symbols for Icons */}
+        <link 
+          rel="stylesheet" 
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" 
+        />
 
         {/* Tailwind Config - Minimal & Robust */}
         <script
