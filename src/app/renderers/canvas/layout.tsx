@@ -12,7 +12,7 @@ export default function CanvasLayout({
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
         />
 
-        {/* Fonts: Lexend (Competitor), Plus Bricolage & DM Sans (Premium) */}
+        {/* Fonts: Space Grotesk, Playfair Display, JetBrains Mono (competitor set) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -20,45 +20,93 @@ export default function CanvasLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=DM+Sans:opsz,wght@9..40,100..900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
-        {/* Material Symbols for Icons */}
         <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
         />
 
-        {/* Tailwind v4.1.18 - Play CDN / browser build */}
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.18" defer />
+        {/* Tailwind v4 - Play CDN / browser build */}
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer />
+        {/* Iconify icons */}
+        <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js" defer />
 
-        {/* v4 @theme: map runtime CSS vars (set by UPDATE_THEME) to Tailwind utilities */}
+        {/* v4 @theme inline: map runtime CSS vars (set by UPDATE_THEME) to Tailwind utilities; :root defaults from competitor */}
         <style type="text/tailwindcss">{`
-          @theme {
+          @theme inline {
             --color-background: var(--background);
             --color-foreground: var(--foreground);
             --color-primary: var(--primary);
             --color-primary-foreground: var(--primary-foreground);
             --color-secondary: var(--secondary);
             --color-secondary-foreground: var(--secondary-foreground);
+            --color-muted: var(--muted);
             --color-muted-foreground: var(--muted-foreground);
+            --color-accent: var(--accent);
+            --color-accent-foreground: var(--accent-foreground);
+            --color-destructive: var(--destructive);
             --color-card: var(--card);
             --color-card-foreground: var(--card-foreground);
+            --color-popover: var(--popover);
+            --color-popover-foreground: var(--popover-foreground);
             --color-border: var(--border);
             --color-input: var(--input);
-            --font-display: "Lexend", sans-serif;
-            --font-sans: "Lexend", sans-serif;
-            --radius: 0.5rem;
-            --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
-            --radius-2xl: 2rem;
-            --radius-3xl: 2.5rem;
-            --radius-full: 9999px;
+            --color-ring: var(--ring);
+            --color-chart-1: var(--chart-1);
+            --color-chart-2: var(--chart-2);
+            --color-chart-3: var(--chart-3);
+            --color-chart-4: var(--chart-4);
+            --color-chart-5: var(--chart-5);
+            --font-font-sans: var(--font-sans);
+            --font-font-heading: var(--font-heading);
+            --font-font-serif: var(--font-serif);
+            --font-font-mono: var(--font-mono);
+            --radius-sm: calc(var(--radius) - 4px);
+            --radius-md: calc(var(--radius) - 2px);
+            --radius-lg: var(--radius);
+            --radius-xl: calc(var(--radius) + 4px);
+          }
+
+          :root {
+            --background: #0f0c29;
+            --foreground: #ffffff;
+            --primary: #6366f1;
+            --primary-foreground: #ffffff;
+            --secondary: rgba(255, 255, 255, 0.1);
+            --secondary-foreground: #ffffff;
+            --muted: rgba(255, 255, 255, 0.05);
+            --muted-foreground: #a1a1aa;
+            --accent: rgba(99, 102, 241, 0.2);
+            --accent-foreground: #ffffff;
+            --destructive: #ef4444;
+            --card: rgba(255, 255, 255, 0.03);
+            --card-foreground: #ffffff;
+            --popover: #1a1b2e;
+            --popover-foreground: #ffffff;
+            --border: rgba(255, 255, 255, 0.15);
+            --input: rgba(255, 255, 255, 0.05);
+            --ring: #6366f1;
+            --chart-1: #8b5cf6;
+            --chart-2: #ec4899;
+            --chart-3: #06b6d4;
+            --chart-4: #10b981;
+            --chart-5: #f59e0b;
+            --font-sans: "Space Grotesk", sans-serif;
+            --font-heading: "Space Grotesk", sans-serif;
+            --font-serif: "Playfair Display", serif;
+            --font-mono: "JetBrains Mono", monospace;
+            --radius: 1rem;
           }
         `}</style>
 
         <style>{`
-          /* Single theme only: no dark/light mode. Whatever palette is sent via UPDATE_THEME is shown. */
+          /* Single theme only: whatever palette is sent via UPDATE_THEME is shown. */
           html, body {
             margin: 0;
             padding: 0;
@@ -66,7 +114,7 @@ export default function CanvasLayout({
             height: 100%;
             overflow: hidden;
             background-color: var(--background);
-            font-family: "Lexend", sans-serif;
+            font-family: var(--font-sans), "Space Grotesk", sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
           }
@@ -77,30 +125,55 @@ export default function CanvasLayout({
             min-height: 100%;
           }
 
-          /* Theme utilities - must exist for dynamically injected content before Tailwind JIT */
+          /* Theme utilities - must exist for dynamically injected content */
           .bg-background { background-color: var(--background) !important; }
           .bg-foreground { background-color: var(--foreground) !important; }
           .bg-primary { background-color: var(--primary) !important; }
           .bg-primary-foreground { background-color: var(--primary-foreground) !important; }
           .bg-secondary { background-color: var(--secondary) !important; }
           .bg-secondary-foreground { background-color: var(--secondary-foreground) !important; }
+          .bg-muted { background-color: var(--muted) !important; }
           .bg-muted-foreground { background-color: var(--muted-foreground) !important; }
+          .bg-accent { background-color: var(--accent) !important; }
+          .bg-accent-foreground { background-color: var(--accent-foreground) !important; }
+          .bg-destructive { background-color: var(--destructive) !important; }
           .bg-card { background-color: var(--card) !important; }
           .bg-card-foreground { background-color: var(--card-foreground) !important; }
+          .bg-popover { background-color: var(--popover) !important; }
+          .bg-popover-foreground { background-color: var(--popover-foreground) !important; }
           .bg-border { background-color: var(--border) !important; }
           .bg-input { background-color: var(--input) !important; }
+          .bg-ring { background-color: var(--ring) !important; }
+          .bg-chart-1 { background-color: var(--chart-1) !important; }
+          .bg-chart-2 { background-color: var(--chart-2) !important; }
+          .bg-chart-3 { background-color: var(--chart-3) !important; }
+          .bg-chart-4 { background-color: var(--chart-4) !important; }
+          .bg-chart-5 { background-color: var(--chart-5) !important; }
           .text-foreground { color: var(--foreground) !important; }
           .text-primary { color: var(--primary) !important; }
           .text-primary-foreground { color: var(--primary-foreground) !important; }
           .text-secondary { color: var(--secondary) !important; }
           .text-secondary-foreground { color: var(--secondary-foreground) !important; }
+          .text-muted { color: var(--muted) !important; }
           .text-muted-foreground { color: var(--muted-foreground) !important; }
+          .text-accent { color: var(--accent) !important; }
+          .text-accent-foreground { color: var(--accent-foreground) !important; }
+          .text-destructive { color: var(--destructive) !important; }
           .text-card { color: var(--card) !important; }
           .text-card-foreground { color: var(--card-foreground) !important; }
+          .text-popover { color: var(--popover) !important; }
+          .text-popover-foreground { color: var(--popover-foreground) !important; }
           .text-border { color: var(--border) !important; }
           .text-input { color: var(--input) !important; }
+          .text-ring { color: var(--ring) !important; }
+          .text-chart-1 { color: var(--chart-1) !important; }
+          .text-chart-2 { color: var(--chart-2) !important; }
+          .text-chart-3 { color: var(--chart-3) !important; }
+          .text-chart-4 { color: var(--chart-4) !important; }
+          .text-chart-5 { color: var(--chart-5) !important; }
           .border-border { border-color: var(--border) !important; }
           .border-input { border-color: var(--input) !important; }
+          .border-ring { border-color: var(--ring) !important; }
 
           /* GlobalScrollbar Hide */
           ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
