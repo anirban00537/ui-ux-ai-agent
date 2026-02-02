@@ -418,43 +418,16 @@ export function SidebarContent({
 
       {/* Input */}
       <div className="p-4 border-t border-zinc-800/60">
-        <SidebarPromptInput
-          prompt={prompt}
-          setPrompt={setPrompt}
-          onSubmit={handleSubmit}
-          loading={loading}
-        />
-        {loading && progress && (
-          <div className="mt-3">
-            <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono mb-1.5">
-              <span className="truncate">
-                {progress.currentScreen || "Processing..."}
-              </span>
-              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                <span>{progress.current}/{progress.total}</span>
-                {onCancel && (
-                  <button
-                    onClick={onCancel}
-                    className="text-red-400/70 hover:text-red-400 transition-colors"
-                    title="Cancel"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            </div>
-            <div className="w-full bg-zinc-800/50 rounded-full h-0.5 overflow-hidden">
-              <div
-                className="h-full bg-emerald-500/70 transition-all duration-300 ease-out"
-                style={{
-                  width: progress.total > 0
-                    ? `${(progress.current / progress.total) * 100}%`
-                    : "0%",
-                }}
-              />
-            </div>
-          </div>
-        )}
+        <div className="relative group">
+          <SidebarPromptInput
+            prompt={prompt}
+            setPrompt={setPrompt}
+            onSubmit={handleSubmit}
+            loading={loading}
+            onCancel={onCancel}
+          />
+        </div>
+
       </div>
     </div>
   );

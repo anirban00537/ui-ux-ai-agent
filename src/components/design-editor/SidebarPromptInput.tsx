@@ -11,6 +11,7 @@ interface SidebarPromptInputProps {
   onSubmit: () => Promise<void> | void;
   loading?: boolean;
   placeholder?: string;
+  onCancel?: () => void;
 }
 
 export function SidebarPromptInput({
@@ -19,6 +20,7 @@ export function SidebarPromptInput({
   onSubmit,
   loading = false,
   placeholder = "Ask to design something...",
+  onCancel,
 }: SidebarPromptInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -86,9 +88,24 @@ export function SidebarPromptInput({
           </div>
         )}
       </div>
-      <div className="mt-2 text-[10px] text-white/30 text-center">
-        Press <kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px]">Enter</kbd> to send,{" "}
-        <kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px]">Shift + Enter</kbd> for new line
+      
+      {/* Footer / Cancel Button */}
+      <div className="flex items-center justify-between mt-2">
+        <div className="text-[10px] text-white/30">
+          Press <kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px]">Enter</kbd> to send
+        </div>
+        
+        {loading && onCancel && (
+          <button
+            onClick={onCancel}
+            className="flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium text-red-400/90 hover:text-red-300 hover:bg-red-400/10 rounded transition-all ml-auto"
+          >
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Cancel
+          </button>
+        )}
       </div>
     </div>
   );
