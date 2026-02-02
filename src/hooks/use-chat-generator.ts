@@ -23,6 +23,7 @@ interface Message {
   type?: "stream" | "final";
   eventType?: string;
   status?: string;
+  data?: Record<string, unknown>;
 }
 
 interface ColorPalette {
@@ -51,8 +52,10 @@ interface Conversation {
 interface GenerationProgress {
   current: number;
   total: number;
-  phase: "analyzing" | "planning" | "generating" | "complete";
+  phase: "analyzing" | "theme_generating" | "analyzed" | "planning" | "generating" | "complete";
   currentScreen?: string;
+  screenTitles?: string[];
+  steps?: Array<{ label: string; status: "loading" | "completed" }>;
 }
 
 interface UseChatGeneratorResult {
@@ -90,8 +93,6 @@ export function useChatGenerator(): UseChatGeneratorResult {
   }, []);
 
   const cancelGeneration = useCallback(() => {
-    console.log('[useChatGenerator] Cancelling generation...');
-    
     // Abort the fetch request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -208,7 +209,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
           }
         };
 
-        const addStreamMessage = (content: string, type: string) => {
+        const addStreamMessage = (content: string, type: string, data?: Record<string, unknown>) => {
           if (!content) return;
           const streamMessage: Message = {
             id: `stream-${Date.now()}-${Math.random()}`,
@@ -217,6 +218,8 @@ export function useChatGenerator(): UseChatGeneratorResult {
             createdAt: new Date().toISOString(),
             type: "stream",
             eventType: type,
+            status: type, // Also set status for card filtering
+            data,
           };
           setConversation((prev) =>
             prev ? { ...prev, messages: [...prev.messages, streamMessage] } : prev
@@ -286,23 +289,45 @@ export function useChatGenerator(): UseChatGeneratorResult {
                     currentScreen: `Planning complete: ${eventData?.totalScreens ?? 0} screens`,
                   });
                   break;
-                case "screen_start":
-                  addStreamMessage(
-                    eventData?.message || `Starting: ${eventData?.title}`,
-                    "screen_start"
-                  );
+                case "screen_start": {
+                  const messageId = eventData?.messageId;
+                  const title = eventData?.title ?? "Screen";
+                  const kind = eventData?.kind ?? "create";
+                  if (messageId) {
+                    const cardMessage: Message = {
+                      id: messageId,
+                      content: kind === "update" ? `Updating: ${title}` : `Generating: ${title}`,
+                      role: "assistant",
+                      createdAt: new Date().toISOString(),
+                      type: "stream",
+                      status: "screen_start",
+                      data: { title, kind, screenId: eventData?.screenId },
+                    };
+                    setConversation((prev) =>
+                      prev ? { ...prev, messages: [...prev.messages, cardMessage] } : prev
+                    );
+                  } else {
+                    addStreamMessage(
+                      eventData?.message || `Starting: ${title}`,
+                      "screen_start"
+                    );
+                  }
                   if (raw?.progress || eventData?.progress) {
                     const pg = raw?.progress ?? eventData?.progress;
-                    setProgress({
+                    setProgress((prev) => ({
+                      ...prev,
                       current: pg.current,
                       total: pg.total,
                       phase: "generating",
-                      currentScreen: eventData?.title,
-                    });
+                      currentScreen: title,
+                      screenTitles: prev?.screenTitles ?? [],
+                    }));
                   }
                   break;
+                }
                 case "screen_complete": {
                   const screenPayload = eventData?.screen ?? eventData;
+                  const messageId = eventData?.messageId;
                   if (screenPayload) {
                     const planTitle = screenPayload.planTitle;
                     const newScreen: Screen = {
@@ -311,12 +336,31 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       description: screenPayload.description,
                       html: screenPayload.html,
                       createdAt: new Date().toISOString(),
-                      status: 'complete',
+                      status: "complete",
                     };
                     generatedScreens.push(newScreen);
-                    addStreamMessage(`Completed: ${screenPayload.title}`, "screen_complete");
+                    if (!messageId) {
+                      addStreamMessage(`Completed: ${screenPayload.title}`, "screen_complete");
+                    }
                     setConversation((prev) => {
                       if (!prev) return prev;
+                      const messages = messageId
+                        ? prev.messages.map((m) =>
+                            m.id === messageId
+                              ? {
+                                  ...m,
+                                  content: `Generated: ${screenPayload.title}`,
+                                  status: "screen_complete",
+                                  data: {
+                                    ...m.data,
+                                    title: screenPayload.title,
+                                    screenId: screenPayload.id,
+                                    screen: screenPayload,
+                                  },
+                                }
+                              : m
+                          )
+                        : prev.messages;
                       const matchesBy = (s: Screen) =>
                         s.id === newScreen.id ||
                         s.title === newScreen.title ||
@@ -325,16 +369,23 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       const nextScreens = prev.screens
                         .map((s) => (matchesBy(s) ? newScreen : s))
                         .concat(matched.length ? [] : [newScreen]);
-                      return { ...prev, id: responseDesignId || prev.id, screens: nextScreens };
+                      return {
+                        ...prev,
+                        id: responseDesignId || prev.id,
+                        messages,
+                        screens: nextScreens,
+                      };
                     });
                     if (raw?.progress || eventData?.progress) {
                       const pg = raw?.progress ?? eventData?.progress;
-                      setProgress({
+                      setProgress((prev) => ({
+                        ...prev,
                         current: pg.current,
                         total: pg.total,
                         phase: "generating",
                         currentScreen: `Completed: ${screenPayload.title}`,
-                      });
+                        screenTitles: prev?.screenTitles ?? [],
+                      }));
                     }
                   }
                   break;
@@ -398,6 +449,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
                 }
                 case "screen_update": {
                   const screenPayload = eventData?.screen ?? eventData;
+                  const messageId = eventData?.messageId;
                   if (screenPayload) {
                     const updatedScreen: Screen = {
                       id: screenPayload.id,
@@ -406,18 +458,37 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       html: screenPayload.html,
                       createdAt: new Date().toISOString(),
                     };
-                    addStreamMessage(`Updated: ${screenPayload.title}`, "screen_update");
-                    setConversation((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            id: responseDesignId || prev.id,
-                            screens: prev.screens.map((s) =>
-                              s.id === updatedScreen.id ? updatedScreen : s
-                            ),
-                          }
-                        : prev
-                    );
+                    if (!messageId) {
+                      addStreamMessage(`Updated: ${screenPayload.title}`, "screen_update");
+                    }
+                    setConversation((prev) => {
+                      if (!prev) return prev;
+                      const messages = messageId
+                        ? prev.messages.map((m) =>
+                            m.id === messageId
+                              ? {
+                                  ...m,
+                                  content: `Updated: ${screenPayload.title}`,
+                                  status: "screen_update",
+                                  data: {
+                                    ...m.data,
+                                    title: screenPayload.title,
+                                    screenId: screenPayload.id,
+                                    screen: screenPayload,
+                                  },
+                                }
+                              : m
+                          )
+                        : prev.messages;
+                      return {
+                        ...prev,
+                        id: responseDesignId || prev.id,
+                        messages,
+                        screens: prev.screens.map((s) =>
+                          s.id === updatedScreen.id ? updatedScreen : s
+                        ),
+                      };
+                    });
                   }
                   break;
                 }
@@ -470,10 +541,18 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   });
                   break;
                 case "phase_analyzed":
-                  // Just update progress state, no message
+                  setProgress((prev) =>
+                    prev
+                      ? { ...prev, phase: "analyzed", screenTitles: prev.screenTitles ?? [] }
+                      : null
+                  );
                   break;
                 case "phase_theme_generating":
-                  // Silent - shown via phase badge
+                  setProgress((prev) =>
+                    prev
+                      ? { ...prev, phase: "theme_generating", screenTitles: prev.screenTitles ?? [] }
+                      : null
+                  );
                   break;
                 case "phase_theme_complete":
                   if (eventData) {
@@ -481,6 +560,11 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       prev ? { ...prev, colorPalette: eventData } : prev
                     );
                   }
+                  setProgress((prev) =>
+                    prev
+                      ? { ...prev, phase: "analyzed", screenTitles: prev.screenTitles ?? [] }
+                      : null
+                  );
                   break;
                 case "phase_planning":
                   setProgress({
@@ -491,13 +575,59 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   });
                   break;
                 case "phase_planned":
-                  setProgress({
+                  setProgress((prev) => ({
+                    ...prev,
                     current: 0,
                     total: eventData?.totalScreens ?? 0,
                     phase: "generating",
                     currentScreen: "Starting generation...",
-                  });
+                    screenTitles: eventData?.screenTitles ?? [],
+                    steps: prev?.steps ?? [],
+                  }));
                   break;
+                case "phase_step": {
+                  const label = eventData?.label;
+                  const stepStatus = eventData?.status;
+                  if (label && (stepStatus === "started" || stepStatus === "completed")) {
+                    const stepMessage: Message = {
+                      id: `phase-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                      content: `${label}: ${stepStatus}`,
+                      role: "assistant",
+                      createdAt: new Date().toISOString(),
+                      type: "stream",
+                      status: "phase_step",
+                      data: { label, status: stepStatus },
+                    };
+                    setConversation((prev) =>
+                      prev ? { ...prev, messages: [...prev.messages, stepMessage] } : prev
+                    );
+                    setProgress((prev) => {
+                      const base = prev ?? {
+                        current: 0,
+                        total: 0,
+                        phase: "analyzing",
+                        currentScreen: "",
+                        screenTitles: [],
+                      };
+                      const currentSteps = base.steps ?? [];
+                      let nextSteps: Array<{ label: string; status: "loading" | "completed" }>;
+                      if (stepStatus === "started") {
+                        nextSteps = [...currentSteps, { label, status: "loading" }];
+                      } else {
+                        const copy = currentSteps.slice();
+                        const lastIdx = copy.map((s, i) => ({ s, i })).filter(({ s }) => s.label === label).pop()?.i ?? -1;
+                        if (lastIdx >= 0) {
+                          copy[lastIdx] = { ...copy[lastIdx], status: "completed" };
+                        } else {
+                          copy.push({ label, status: "completed" });
+                        }
+                        nextSteps = copy;
+                      }
+                      return { ...base, steps: nextSteps, screenTitles: base.screenTitles ?? [] };
+                    });
+                  }
+                  break;
+                }
                 case "ai_response":
                   // This is the persisted AI response message
                   if (eventData?.message) {
@@ -594,18 +724,20 @@ export function useChatGenerator(): UseChatGeneratorResult {
         throw new Error(resp?.message || "Failed to load design");
       }
       const designData = resp.data;
+      const messages = (designData.messages || []).map((msg: any) => ({
+        id: msg.id,
+        content: msg.content,
+        role: msg.role,
+        createdAt: msg.createdAt,
+        status: msg.status,
+        data: msg.data ?? undefined,
+        type: msg.role === "assistant" ? "final" : undefined,
+      }));
       const conv: Conversation = {
         id: designData.id,
         title: designData.title || "Untitled Design",
         designType: designData.type || "mobile_app",
-        messages: (designData.messages || []).map((msg: any) => ({
-          id: msg.id,
-          content: msg.content,
-          role: msg.role,
-          createdAt: msg.createdAt,
-          status: msg.status,
-          type: msg.role === 'assistant' ? 'final' : undefined,
-        })),
+        messages,
         screens: (designData.artboards || []).map((artboard: any) => ({
           id: artboard.id,
           title: artboard.title,
