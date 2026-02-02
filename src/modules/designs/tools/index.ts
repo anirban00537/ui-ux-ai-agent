@@ -12,6 +12,7 @@ export {
   ArtboardDeleter,
   IntentAnalyzer,
   ColorPaletteGenerator,
+  PromptEnhancer,
 } from './agents';
 export type { ScreenGenerationResult } from './agents';
 export { PromptManager } from './prompts/prompt-manager';

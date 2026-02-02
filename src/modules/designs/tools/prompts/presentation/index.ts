@@ -170,12 +170,15 @@ Plan a deck of 3-8 slides.
 
 FOR EACH SLIDE:
 1. **TITLE**: Specific & descriptive (e.g., "The Problem: Inefficiency in Q1")
-2. **PROMPT (Detailed Brief)** — include so generation has a clear target:
+2. **PROMPT (Enhanced, Detailed Brief)** — ENHANCE each slide prompt so it is rich and specific. Include:
    • **Slide Goal**: Verifiable outcome for the audience.
    • **Key state or focus**: e.g. "Title slide", "Data with 3 metrics", "Full-bleed quote", "Image-led hero".
-   • **Key Elements**: "Big Number metric", "3-column comparison", etc.
+   • **Theme & Visual Style**: Aesthetic and mood (e.g. "Bold & clean", "Data-heavy but organized", "Image-led") so the slide matches the deck theme.
+   • **Key Elements**: Concrete components (e.g. "Big Number metric with gradient background", "3-column comparison with dividers", "Floating quote card with shadow").
    • **Content**: Specific data points or copy to use.
-   • **Visual Style**: "Bold & clean", "Data-heavy but organized", "Image-led".
+   • **Layout**: Brief layout direction (e.g. "Centered hero", "Grid of cards", "Full-bleed image with overlay text").
+
+ENHANCE EACH SLIDE PROMPT: Write each prompt as a full, detailed brief — not a one-liner. The more concrete the description (specific elements, layout, and content), the better the generated slide. Avoid vague or short prompts.
 
 OUTPUT FORMAT (JSON):
 {{
@@ -184,6 +187,10 @@ OUTPUT FORMAT (JSON):
     {{ "title": "string", "prompt": "detailed design instructions", "order": number }}
   ]
 }}
+
+ENSURE:
+• Each slide prompt is ENHANCED and detailed — no one-line or vague prompts; a designer should be able to execute without questions.
+• Order reflects a logical narrative (beginning, middle, end).
 `
 );
 

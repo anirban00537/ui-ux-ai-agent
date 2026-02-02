@@ -2,11 +2,12 @@ import { PrismaService } from '../../../prisma/prisma.service';
 
 // Token estimation constants for different operations
 const TOKEN_ESTIMATES = {
-  COLOR_PALETTE: 500,
+  PROMPT_ENHANCEMENT: 800,
+  COLOR_PALETTE: 800,
   INTENT_ANALYSIS: 800,
   SCREEN_PLANNING: 1000,
-  SCREEN_GENERATION: 2500,
-  SCREEN_UPDATE: 2000,
+  SCREEN_GENERATION: 4500,
+  SCREEN_UPDATE: 4500,
   BUFFER_MULTIPLIER: 1.1,
 } as const;
 
@@ -59,6 +60,7 @@ export class CreditManager {
   ): number {
     let estimateTokens = 0;
 
+    estimateTokens += TOKEN_ESTIMATES.PROMPT_ENHANCEMENT;
     estimateTokens += TOKEN_ESTIMATES.INTENT_ANALYSIS;
 
     if (!data.hasColorPalette) {

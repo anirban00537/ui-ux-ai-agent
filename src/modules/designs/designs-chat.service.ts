@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { StreamUpdate } from './schemas';
 import { ColorPaletteGenerator } from './tools/agents/color-palette-generator';
+import { PromptEnhancer } from './tools/agents/prompt-enhancer';
 import IntentAnalyzer from './tools/agents/intent-analyzer';
 import ArtboardCreator from './tools/agents/artboard-creator';
 import ArtboardUpdater from './tools/agents/artboard-updater';
@@ -14,6 +15,7 @@ import { AiUsageService } from '../subscription/services/ai-usage.service';
 import {
   buildChatContext,
   checkCredits,
+  runPromptEnhancementPhase,
   runThemePhase,
   runIntentPhase,
   runCreatePhase,
@@ -111,6 +113,38 @@ export class DesignsChatService {
             creditManager,
             this.aiUsageService,
           );
+          const promptEnhancer = new PromptEnhancer(
+            creditManager,
+            this.aiUsageService,
+          );
+
+          let effectivePrompt = prompt;
+          try {
+            effectivePrompt = await runPromptEnhancementPhase(
+              messenger,
+              promptEnhancer,
+              prompt,
+              context.design.type,
+              userId,
+              context.designId,
+              signal,
+            );
+          } catch (err) {
+            if (signal.aborted) {
+              console.log(
+                '[DesignsChatService] Cancelled during prompt enhancement',
+              );
+              subscriber.complete();
+              return;
+            }
+            effectivePrompt = prompt;
+          }
+
+          if (signal.aborted) {
+            console.log('[DesignsChatService] Cancelled before theme phase');
+            subscriber.complete();
+            return;
+          }
 
           await messenger.emit(
             {
@@ -129,7 +163,7 @@ export class DesignsChatService {
               messenger,
               context.design,
               context.designId,
-              prompt,
+              effectivePrompt,
               userId,
               colorPaletteGenerator,
               signal,
@@ -154,7 +188,7 @@ export class DesignsChatService {
           const intent = await runIntentPhase(
             messenger,
             intentAnalyzer,
-            prompt,
+            effectivePrompt,
             context,
             userId,
             context.designId,
@@ -172,7 +206,7 @@ export class DesignsChatService {
               artboardUpdater,
               intent,
               context,
-              prompt,
+              effectivePrompt,
               colorPalette as import('./schemas').ColorPalette | null,
               userId,
               context.designId,
@@ -197,7 +231,7 @@ export class DesignsChatService {
               messenger,
               artboardCreator,
               context,
-              prompt,
+              effectivePrompt,
               colorPalette as import('./schemas').ColorPalette | null,
               userId,
               context.designId,

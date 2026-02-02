@@ -254,13 +254,16 @@ Analyze the request and plan 1-5 mobile screens.
 
 FOR EACH SCREEN, PROVIDE:
 1. **TITLE**: Specific & descriptive (e.g., "Dashboard - User Overview")
-2. **PROMPT (Detailed Design Brief)** — include ALL of the following so generation knows exactly what to draw:
+2. **PROMPT (Enhanced, Detailed Design Brief)** — ENHANCE each screen prompt so it is rich and specific. Include ALL of the following so generation knows exactly what to draw:
    • **Target User Goal**: One sentence — what is the user trying to achieve on this screen?
    • **Key State** (explicit): "Empty state", "Loading state", "Populated / success", or "Error state".
-   • **UI Elements**: Specific components (Hero, Cards, Lists, Charts, etc.).
-   • **Content**: Types of data to show (BE SPECIFIC, realistic).
+   • **Theme & Visual Style**: Describe the aesthetic (e.g. glassmorphism, minimal, neobrutalism), typography, and mood so the screen matches the app theme.
+   • **UI Elements**: Specific components with concrete details (e.g. "Frosted glass cards with backdrop blur", "Token list with glowing logos and frosted row backgrounds", "Circular progress ring", "Hero with scrim overlay").
+   • **Content**: Types of data to show — BE SPECIFIC and realistic (e.g. "Total balance in large, luminous digits", "3 upcoming tasks with time labels").
    • **Tone**: "Playful", "Serious", "Calm", "Motivating", etc.
-   • **Design direction** (optional): One of "minimal (more whitespace, less clutter)", "outline (borders/dividers for depth)", or "glass (translucency where appropriate)".
+   • **Design direction**: One of "minimal (more whitespace, less clutter)", "outline (borders/dividers for depth)", or "glass (translucency, frosted cards)".
+
+ENHANCE EACH SCREEN PROMPT: Write each prompt as a full, detailed design brief — not a one-liner. The more concrete the description (specific UI elements, layout, and content), the better the generated screen. Avoid vague or short prompts.
 
 EXAMPLE PROMPT:
 "Design a populated Dashboard screen.
@@ -284,8 +287,8 @@ Return JSON with this exact structure:
 }}
 
 ENSURE:
-• Each prompt string is rich enough to drive generation (goal + state + tone + direction).
-• Prompts are detailed enough for a designer to execute without questions.
+• Each prompt string is ENHANCED and rich enough to drive generation (goal + state + theme/style + concrete UI + tone + direction).
+• Every screen prompt is detailed — no one-line or vague prompts; a designer should be able to execute without questions.
 • Order reflects a logical user journey.
 `
 );
