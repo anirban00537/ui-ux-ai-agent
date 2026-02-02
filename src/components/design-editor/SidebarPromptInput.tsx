@@ -2,7 +2,7 @@
 
 import React, { useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { SendHorizontal } from "lucide-react";
+import { SendHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarPromptInputProps {
@@ -26,6 +26,7 @@ export function SidebarPromptInput({
 
   const handleKeyDown = useCallback(
     async (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // Allow Shift+Enter for new lines
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         await onSubmit();
@@ -48,65 +49,75 @@ export function SidebarPromptInput({
   }, [prompt]);
 
   return (
-    <div className="relative">
-      <div className="relative bg-card border border-white/10 rounded-xl overflow-hidden transition-all duration-200 hover:border-white/20 focus-within:border-white/30 focus-within:ring-1 focus-within:ring-white/10">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent pointer-events-none" />
-        <div className="relative flex items-end gap-3 p-3">
+    <div className="relative group">
+      <div 
+        className={cn(
+          "relative bg-zinc-900 border transition-all duration-300 rounded-xl overflow-hidden",
+          loading 
+            ? "border-emerald-500/30 ring-1 ring-emerald-500/10" 
+            : "border-zinc-800 hover:border-zinc-700 focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-800"
+        )}
+      >
+        {/* Subtle Gradient for Loading State */}
+        {loading && (
+           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent pointer-events-none animate-gradient-flow bg-[length:200%_auto]" />
+        )}
+
+        <div className="relative flex items-end gap-2 p-3">
           <div className="flex-1 min-w-0">
             <textarea
               ref={textareaRef}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={placeholder}
+              placeholder={loading ? "Agent is working..." : placeholder}
               className={cn(
-                "w-full resize-none border-0 bg-transparent p-0 text-sm leading-6 text-white placeholder:text-white/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-sans overflow-hidden"
+                "w-full resize-none border-0 bg-transparent p-0 text-[13px] leading-5 text-zinc-100 placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-sans custom-scrollbar disabled:opacity-50",
+                loading && "text-zinc-400 cursor-not-allowed"
               )}
               rows={1}
               disabled={loading}
-              style={{ minHeight: "40px", maxHeight: "200px" }}
+              style={{ minHeight: "20px", maxHeight: "200px" }}
             />
           </div>
-          <div className="flex items-center flex-shrink-0">
-            <Button
-              size="icon"
-              aria-label="Send prompt"
-              onClick={handleSubmit}
-              disabled={!prompt.trim() || loading}
-              className="h-7 w-7 rounded-md bg-white text-black transition-all duration-150 hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
-            >
-              <SendHorizontal className="h-3.5 w-3.5" />
-            </Button>
+          
+          <div className="flex items-center gap-1 flex-shrink-0 mb-0.5">
+             {loading && onCancel ? (
+               <Button
+                 size="icon"
+                 variant="ghost"
+                 onClick={onCancel}
+                 className="h-6 w-6 rounded-lg text-red-400/80 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                 title="Stop generation"
+               >
+                 <span className="sr-only">Stop</span>
+                 <div className="w-2 h-2 rounded-sm bg-current" />
+               </Button>
+             ) : (
+                <Button
+                  size="icon"
+                  onClick={handleSubmit}
+                  disabled={!prompt.trim() || loading}
+                  className={cn(
+                    "h-6 w-6 rounded-lg transition-all duration-200",
+                    prompt.trim() 
+                      ? "bg-zinc-100 text-black hover:bg-white" 
+                      : "bg-zinc-800 text-zinc-500 hover:bg-zinc-700"
+                  )}
+                >
+                  <SendHorizontal className="h-3 w-3" />
+                </Button>
+             )}
           </div>
         </div>
-        {loading && (
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center">
-            <div className="flex items-center gap-2 text-white/60 text-xs">
-              <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Generating...</span>
-            </div>
-          </div>
-        )}
       </div>
       
-      {/* Footer / Cancel Button */}
-      <div className="flex items-center justify-between mt-2">
-        <div className="text-[10px] text-white/30">
-          Press <kbd className="px-1 py-0.5 bg-white/10 rounded text-[9px]">Enter</kbd> to send
+      {/* Footer hint */}
+      {!loading && (
+        <div className="absolute -bottom-5 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+           <span className="text-[10px] text-zinc-600/60 font-medium">Return to send</span>
         </div>
-        
-        {loading && onCancel && (
-          <button
-            onClick={onCancel}
-            className="flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-medium text-red-400/90 hover:text-red-300 hover:bg-red-400/10 rounded transition-all ml-auto"
-          >
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Cancel
-          </button>
-        )}
-      </div>
+      )}
     </div>
   );
 }

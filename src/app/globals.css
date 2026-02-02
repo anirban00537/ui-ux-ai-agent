@@ -314,6 +314,10 @@
   }
 }
 
+.animate-gradient-flow {
+  animation: gradient-flow 3s linear infinite;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;

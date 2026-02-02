@@ -4,6 +4,10 @@ import React, { useCallback, useState, useRef, useEffect, useMemo } from "react"
 import { SidebarPromptInput } from "@/components/design-editor/SidebarPromptInput";
 import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+
+// Card statuses that trigger screen cards
+const SCREEN_CARD_STATUSES = ["screen_start", "screen_complete", "screen_update"] as const;
 
 interface ColorPalette {
   background: string;
@@ -68,10 +72,7 @@ interface SidebarContentProps {
   onFontChange?: (fontFamily: string) => void;
 }
 
-// Card statuses that trigger screen cards
-const SCREEN_CARD_STATUSES = ["screen_start", "screen_complete", "screen_update"] as const;
-
-// Agent activity line - minimal terminal-like log entry
+// Agent activity line - minimal terminal-like log entry with shimmer effect
 function AgentActivityLine({
   label,
   status,
@@ -82,18 +83,30 @@ function AgentActivityLine({
   isLast: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2 text-[11px] font-mono">
-      <span className="text-zinc-600 select-none">→</span>
-      <span className={status === "completed" ? "text-zinc-400" : "text-zinc-500"}>
+    <div className="flex items-center gap-3 text-[13px] font-medium tracking-wide">
+      {status === "loading" ? (
+        <div className="flex-shrink-0 flex items-center justify-center w-3 h-3">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+        </div>
+      ) : (
+        <div className="flex-shrink-0 text-emerald-500/50">
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        </div>
+      )}
+      
+      <span 
+        className={cn(
+          "transition-all duration-300",
+          status === "completed" ? "text-white/30 font-normal" : "text-transparent bg-clip-text bg-gradient-to-r from-white/80 via-white to-white/80 bg-[length:200%_auto] animate-gradient-flow"
+        )}
+        style={{
+          animation: status === "loading" ? "gradient-flow 2s linear infinite" : "none"
+        }}
+      >
         {label}
       </span>
-      {status === "loading" ? (
-        <span className="inline-flex items-center gap-1 text-amber-500/80">
-          <span className="w-1 h-1 rounded-full bg-amber-500 animate-pulse" />
-        </span>
-      ) : (
-        <span className="text-emerald-500/70">✓</span>
-      )}
     </div>
   );
 }
@@ -108,65 +121,62 @@ function ScreenCard({
   status: "pending" | "generating" | "completed";
   index: number;
 }) {
+  const isGenerating = status === "generating";
+  const isCompleted = status === "completed";
+  const isPending = status === "pending";
+
   return (
-    <div className={`
-      group relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
-      ${status === "generating" 
-        ? "bg-zinc-800/60 border border-zinc-700/60" 
-        : status === "completed"
-          ? "bg-zinc-800/40 border border-zinc-700/40"
-          : "bg-zinc-800/20 border border-zinc-800/40"
-      }
-    `}>
-      {/* Index indicator */}
-      <div className={`
-        flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-medium
-        ${status === "generating"
-          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-          : status === "completed"
-            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
-            : "bg-zinc-700/30 text-zinc-500 border border-zinc-700/40"
-        }
-      `}>
-        {status === "generating" ? (
-          <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-        ) : status === "completed" ? (
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
+    <div 
+      className={cn(
+        "group relative flex items-center gap-3 px-3 py-3 rounded-lg border transition-all duration-300",
+        isGenerating && "bg-zinc-800/40 border-emerald-500/20 shadow-[0_0_15px_-5px_rgba(16,185,129,0.1)]",
+        isCompleted && "bg-zinc-900/40 border-white/5",
+        isPending && "bg-transparent border-transparent opacity-50"
+      )}
+    >
+      {/* Index/Status Indicator */}
+      <div 
+        className={cn(
+          "flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-medium transition-colors duration-300",
+          isGenerating && "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20",
+          isCompleted && "bg-zinc-800 text-zinc-400",
+          isPending && "bg-zinc-800/50 text-zinc-600"
+        )}
+      >
+        {isGenerating ? (
+          <div className="relative w-2.5 h-2.5">
+             <div className="absolute inset-0 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
+          </div>
+        ) : isCompleted ? (
+          <span className="text-xs">
+             {index + 1}
+          </span>
         ) : (
           <span>{index + 1}</span>
         )}
       </div>
 
-      {/* Title */}
-      <div className="flex-1 min-w-0">
-        <span className={`
-          text-[12px] font-medium truncate block
-          ${status === "generating" 
-            ? "text-white/90" 
-            : status === "completed"
-              ? "text-white/70"
-              : "text-white/40"
-          }
-        `}>
+      {/* Content */}
+      <div className="flex-1 min-w-0 flex flex-col justify-center">
+        <span 
+          className={cn(
+            "text-[13px] font-medium truncate transition-colors duration-300",
+            isGenerating ? "text-white" : "text-white/60"
+          )}
+        >
           {title}
         </span>
-        <span className={`
-          text-[10px] mt-0.5 block
-          ${status === "generating"
-            ? "text-amber-400/80"
-            : status === "completed"
-              ? "text-emerald-400/60"
-              : "text-zinc-500"
-          }
-        `}>
-          {status === "generating" ? "Building..." : status === "completed" ? "Done" : "Queued"}
-        </span>
+        {isGenerating && (
+          <span className="text-[10px] text-emerald-500/70 font-medium tracking-wide animate-pulse mt-0.5">
+            Building UI...
+          </span>
+        )}
       </div>
+      
+      {/* Active Glow for Generating State */}
+      {isGenerating && (
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent opacity-50 pointer-events-none" />
+      )}
     </div>
   );
 }
@@ -370,7 +380,7 @@ export function SidebarContent({
 
                   {/* Agent Activity Log - clean terminal style */}
                   {displaySteps && displaySteps.length > 0 && (
-                    <div className="ml-7 pl-3 border-l border-zinc-800/60 space-y-1">
+                    <div className="pl-1 space-y-2 mt-4 mb-4">
                       {displaySteps.map((step, idx) => (
                         <AgentActivityLine
                           key={step.label + idx}
@@ -384,7 +394,7 @@ export function SidebarContent({
 
                   {/* Screen Cards */}
                   {turn.isActive && loading && progress && progress.total > 0 ? (
-                    <div className="ml-7 space-y-2">
+                    <div className="space-y-2 mt-2">
                       {Array.from({ length: progress.total }, (_, i) => {
                         const title = progress.screenTitles?.[i] ?? `Screen ${i + 1}`;
                         const status: "pending" | "generating" | "completed" =
@@ -393,7 +403,7 @@ export function SidebarContent({
                       })}
                     </div>
                   ) : turn.cardMessages.length > 0 ? (
-                    <div className="ml-7 space-y-2">
+                    <div className="space-y-2 mt-2">
                       {turn.cardMessages.map((msg, idx) => {
                         const title = (msg.data?.title as string) || msg.content.replace(/^(Generating|Generated|Updating|Updated):\s*/i, "");
                         const status = msg.status === "screen_start" && turn.isActive ? "generating" : "completed";
