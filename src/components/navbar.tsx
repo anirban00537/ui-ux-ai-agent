@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { trackEvent } from "@/components/analytics/trackEvent";
+import { useAppSelector } from "@/store/hooks";
+import { selectUser } from "@/store/slices/userSlice";
 
 const menuItems = [
   { name: "Blog", href: "/blog" },
@@ -17,6 +19,7 @@ const menuItems = [
 export function Navbar() {
   const { scrollY } = useScroll();
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const user = useAppSelector(selectUser);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (latest > 50) setIsScrolled(true);
@@ -67,25 +70,39 @@ export function Navbar() {
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
-          <Link href="/login">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => trackEvent('button_click', 'engagement', 'nav_login')}
-              className="hidden sm:inline-flex text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-full px-5"
-            >
-              Log in
-            </Button>
-          </Link>
-          <Link href="/home">
-            <Button
-              size="sm"
-              onClick={() => trackEvent('button_click', 'engagement', 'nav_get_started')}
-              className="rounded-full bg-primary hover:bg-primary/90 text-white px-5 shadow-coral-glow transition-all hover:scale-105"
-            >
-              Get Started
-            </Button>
-          </Link>
+          {user ? (
+            <Link href="/home">
+              <Button
+                size="sm"
+                onClick={() => trackEvent("button_click", "engagement", "nav_dashboard")}
+                className="rounded-full bg-primary hover:bg-primary/90 text-white px-5 shadow-coral-glow transition-all hover:scale-105"
+              >
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => trackEvent("button_click", "engagement", "nav_login")}
+                  className="hidden sm:inline-flex text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-full px-5"
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/home">
+                <Button
+                  size="sm"
+                  onClick={() => trackEvent("button_click", "engagement", "nav_get_started")}
+                  className="rounded-full bg-primary hover:bg-primary/90 text-white px-5 shadow-coral-glow transition-all hover:scale-105"
+                >
+                  Get Started
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </motion.header>
