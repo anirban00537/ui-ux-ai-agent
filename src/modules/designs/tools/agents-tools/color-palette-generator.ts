@@ -79,7 +79,7 @@ export class ColorPaletteGenerator {
 
     const response = await withTimeout(
       this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        model: coreConstant.AI_MODELS.AGENT.NAME,
         messages: [
           { role: 'system', content: colorPrompt },
           { role: 'user', content: message },
@@ -119,7 +119,7 @@ export class ColorPaletteGenerator {
     // Fire-and-forget for non-critical logging
     this.aiUsageService.logUsage({
       userId,
-      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      modelName: coreConstant.AI_MODELS.AGENT.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'color_palette',

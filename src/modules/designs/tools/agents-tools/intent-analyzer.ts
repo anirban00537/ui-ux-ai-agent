@@ -116,7 +116,7 @@ export class IntentAnalyzer {
 
     const response = await withTimeout(
       this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        model: coreConstant.AI_MODELS.AGENT.NAME,
         messages: allMessages,
         response_format: {
           type: 'json_schema',
@@ -154,7 +154,7 @@ export class IntentAnalyzer {
     // Fire-and-forget for non-critical operations (don't block on these)
     this.aiUsageService.logUsage({
       userId,
-      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      modelName: coreConstant.AI_MODELS.AGENT.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'intent_analysis',

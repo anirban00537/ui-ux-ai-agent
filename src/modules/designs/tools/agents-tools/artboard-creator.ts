@@ -159,7 +159,7 @@ export class ArtboardCreator {
 
     const response = await withTimeout(
       this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        model: coreConstant.AI_MODELS.AGENT.NAME,
         messages: allMessages,
         response_format: {
           type: 'json_schema',
@@ -205,7 +205,7 @@ export class ArtboardCreator {
     // Fire-and-forget for non-critical logging
     this.aiUsageService.logUsage({
       userId,
-      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+      modelName: coreConstant.AI_MODELS.AGENT.NAME,
       inputTokens: tokenUsage.inputTokens,
       outputTokens: tokenUsage.outputTokens,
       type: 'screen_planning',
