@@ -103,9 +103,9 @@ SLIDE PURPOSE: {description}
 DETAILED REQUIREMENTS: {prompt}
 
 ═══════════════════════════════════════════════════════════════════════════════
-              LAST SLIDES AS CONTEXT (DESIGN PATTERN — MAX 3)
+              DESIGN PATTERN CONTEXT (MATCH FOR CONSISTENCY)
 ═══════════════════════════════════════════════════════════════════════════════
-If available, match the design pattern (spacing, layout, theme) of these recent slides. Max 3.
+The FIRST slide below is the design anchor — match its spacing, layout, theme, typography, and visual style so the whole deck looks cohesive. Then recent slides for flow. Keep design CONSISTENT across every slide.
 
 {previousScreensContext}
 
@@ -217,9 +217,9 @@ RULES:
 ` + designSystemInstructions + `
 
 ═══════════════════════════════════════════════════════════════════════════════
-              LAST SLIDES AS CONTEXT (DESIGN PATTERN — MAX 3)
+              DESIGN PATTERN CONTEXT (MATCH FOR CONSISTENCY)
 ═══════════════════════════════════════════════════════════════════════════════
-If available, match the design pattern of these recent slides. Max 3.
+The FIRST slide below is the design anchor — match its spacing, layout, theme, and typography. Keep design CONSISTENT.
 
 {previousScreensContext}
 

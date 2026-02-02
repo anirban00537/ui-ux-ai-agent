@@ -21,15 +21,34 @@ export interface ChatContext {
 
 const maxContext = coreConstant.DESIGN_CONTEXT.MAX_PREVIOUS_SCREENS;
 
+/**
+ * Returns previous screens for design-pattern context. Always includes the FIRST screen
+ * (design anchor) so later screens stay consistent with the original design; plus the
+ * most recent screens up to maxContext total. This prevents design drift as screen count grows.
+ */
 function buildGetLastScreensForDesignPattern(): (
   artboards: Array<{ title: string; description: string | null; html: string }>,
 ) => PreviousScreenContext[] {
-  return (artboards) =>
-    artboards.slice(-maxContext).map((a) => ({
-      title: a.title,
-      description: a.description ?? null,
-      html: a.html,
-    }));
+  return (artboards) => {
+    if (artboards.length === 0) return [];
+    if (artboards.length <= maxContext)
+      return artboards.map((a) => ({
+        title: a.title,
+        description: a.description ?? null,
+        html: a.html,
+      }));
+    const first = artboards[0];
+    const lastNMinusOne = artboards.slice(-(maxContext - 1));
+    const combined = [
+      { title: first.title, description: first.description ?? null, html: first.html },
+      ...lastNMinusOne.map((a) => ({
+        title: a.title,
+        description: a.description ?? null,
+        html: a.html,
+      })),
+    ];
+    return combined;
+  };
 }
 
 /**

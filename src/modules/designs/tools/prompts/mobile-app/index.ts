@@ -167,9 +167,9 @@ SCREEN PURPOSE: {description}
 DETAILED REQUIREMENTS: {prompt}
 
 ═══════════════════════════════════════════════════════════════════════════════
-              LAST SCREENS AS CONTEXT (DESIGN PATTERN — MAX 3)
+              DESIGN PATTERN CONTEXT (MATCH FOR CONSISTENCY)
 ═══════════════════════════════════════════════════════════════════════════════
-If available, match the design pattern (spacing, components, theme) of these recent screens. Max 3 screens.
+The FIRST screen below is the design anchor — match its spacing, components, theme, radii, shadows, and typography so ALL screens look like one app. Then recent screens for flow. Keep design CONSISTENT across every screen.
 
 {previousScreensContext}
 
@@ -314,9 +314,9 @@ MY RULES:
 ` + designSystemInstructions + `
 
 ═══════════════════════════════════════════════════════════════════════════════
-              LAST SCREENS AS CONTEXT (DESIGN PATTERN — MAX 3)
+              DESIGN PATTERN CONTEXT (MATCH FOR CONSISTENCY)
 ═══════════════════════════════════════════════════════════════════════════════
-If available, match the design pattern of these recent screens. Max 3.
+The FIRST screen below is the design anchor — match its spacing, components, theme, radii, and typography. Keep design CONSISTENT.
 
 {previousScreensContext}
 
