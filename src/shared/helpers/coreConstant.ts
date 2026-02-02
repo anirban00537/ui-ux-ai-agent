@@ -94,11 +94,11 @@ export const coreConstant = {
       }
     },
     AGENT: {
-      NAME: 'minimax/minimax-m2.1',
+      NAME: 'google/gemini-2.5-flash-lite-preview-09-2025',
       PRICING: { prompt: 0.40, completion: 1.5 },
       PROVIDER: {
         ENABLED: true,
-        ORDER: ['friendli', 'deepinfra/fp8'] as any,
+        ORDER: ['google-ai-studio', 'deepinfra/fp8'] as any,
         ALLOW_FALLBACKS: true,
       }
     },
