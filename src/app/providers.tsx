@@ -7,6 +7,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { store } from "@/store";
 import { queryClient } from "@/lib/query-client";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { PromptProvider } from "@/contexts/PromptContext";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { Toaster } from "@/components/ui/sonner";
 import { CONFIG } from "@/lib/config";
@@ -29,10 +30,12 @@ const Providers: React.FC<ProvidersProps> = ({ children }) => {
     <Provider store={store}>
       <ErrorBoundary>
         <AuthProvider>
-          <PlanTiersPreloader>
-            <div className="h-full">{children}</div>
-            <Toaster richColors position="top-right" />
-          </PlanTiersPreloader>
+          <PromptProvider>
+            <PlanTiersPreloader>
+              <div className="h-full">{children}</div>
+              <Toaster richColors position="top-right" />
+            </PlanTiersPreloader>
+          </PromptProvider>
         </AuthProvider>
       </ErrorBoundary>
     </Provider>

@@ -9,6 +9,8 @@ import {
   BackgroundGrid,
 } from "@/components/design-editor";
 import { useChatGenerator } from "@/hooks/use-chat-generator";
+import { usePrompt } from "@/contexts/PromptContext";
+import { createDesignConversation } from "@/services/designs";
 
 export default function DesignEditorPage() {
   const params = useParams();
@@ -27,6 +29,7 @@ export default function DesignEditorPage() {
     updateColorPalette,
   } = useChatGenerator();
 
+  const { prompt: promptContext, type: typeContext, clearPrompt } = usePrompt();
   const hasSentInitialPrompt = useRef(false);
 
   useEffect(() => {
@@ -35,10 +38,49 @@ export default function DesignEditorPage() {
     }
   }, [designId, loadConversation]);
 
+  // Handle initialization from Context (New Flow)
+  useEffect(() => {
+    const initFromContext = async () => {
+      if (
+        designId === "new" &&
+        promptContext &&
+        !hasSentInitialPrompt.current &&
+        !isGenerating
+      ) {
+        hasSentInitialPrompt.current = true;
+        try {
+          // 1. Create Design
+          const title = promptContext.trim().slice(0, 50) + (promptContext.length > 50 ? "..." : "");
+          const resp = await createDesignConversation(title, typeContext);
+          
+          if (resp?.success && resp?.data?.id) {
+            const newId = resp.data.id;
+            
+            // 2. Update URL immediately
+            window.history.replaceState(null, "", `/designs/${newId}`);
+            
+            // 3. Start Stream
+            await sendMessage(promptContext, newId);
+            
+            // 4. Clear Context
+            clearPrompt();
+          }
+        } catch (err) {
+          console.error("Failed to initialize design:", err);
+          // Optional: Show error
+        }
+      }
+    };
+
+    initFromContext();
+  }, [designId, promptContext, typeContext, isGenerating, sendMessage, clearPrompt]);
+
+  // Handle initialization from URL (Legacy/Direct Link)
   useEffect(() => {
     if (
       promptFromUrl &&
       designId &&
+      designId !== "new" && 
       !hasSentInitialPrompt.current &&
       !isGenerating
     ) {

@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { useMutation } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -14,7 +13,8 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { trackEvent } from "@/components/analytics/trackEvent";
-import { createDesignConversation, DesignType } from "@/services/designs";
+import { DesignType } from "@/services/designs";
+import { usePrompt } from "@/contexts/PromptContext";
 
 // --- Utility Function & Radix Primitives ---
 const TooltipProvider = TooltipPrimitive.Provider;
@@ -59,6 +59,7 @@ const SendIcon = (props: React.SVGProps<SVGSVGElement>) => (
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      
     />
     <path
       d="M18.75 12L12 5.25L5.25 12"
@@ -87,35 +88,13 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
     const router = useRouter();
     const internalTextareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = React.useState(defaultValue);
+    const { setPrompt, setType } = usePrompt();
+    const [isPending, setIsPending] = React.useState(false);
 
     // Map mode to design type
     const getDesignType = (): DesignType => {
       return mode === "mobile-app" ? "mobile_app" : "presentation";
     };
-
-    const createDesignMutation = useMutation({
-      mutationFn: async ({ title, type }: { title: string; type: DesignType }) => {
-        const resp = await createDesignConversation(title, type);
-        if (!resp?.success || !resp?.data?.id) {
-          throw new Error(resp?.message || "Failed to create design");
-        }
-        return resp.data;
-      },
-      onSuccess: (data) => {
-        trackEvent("design_create_success", "engagement", data.id);
-        const prompt = value.trim();
-        router.push(
-          `/designs/${data.id}${prompt ? `?prompt=${encodeURIComponent(prompt)}` : ""}`
-        );
-      },
-      onError: (err: any) => {
-        const msg =
-          err?.response?.data?.message || err?.message || "Failed to create design";
-        trackEvent("design_create_error", "engagement", msg);
-        toast.error(msg, { duration: 5000 });
-        onError?.(msg);
-      },
-    });
 
     // Update value when defaultValue prop changes
     React.useEffect(() => {
@@ -156,14 +135,15 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
         return;
       }
 
-      // Otherwise, create design and redirect
-      if (createDesignMutation.isPending) return;
-      const title = value.trim().slice(0, 50) + (value.trim().length > 50 ? "..." : "");
-      createDesignMutation.mutate({ title, type: designType });
+      // Otherwise, store in context and redirect
+      if (isPending) return;
+      setIsPending(true);
+      setPrompt(value.trim());
+      setType(designType);
+      router.push("/designs/new");
     };
 
     const hasValue = value.trim().length > 0;
-    const isPending = createDesignMutation.isPending;
 
     // --- Dynamic Placeholder Logic ---
     const placeholders = React.useMemo(
@@ -180,6 +160,7 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
               "Design a pitch for a Sustainable Fashion startup...",
               "Explain Quantum Physics to a fifth grader...",
               "Develop a marketing plan for a boutique coffee shop...",
+              "Creates a sales deck for a B2B SaaS product...",
             ],
       [mode]
     );
