@@ -7,7 +7,7 @@ import { ArrowRight } from "lucide-react";
 
 export function CTASection() {
   return (
-    <section className="relative py-32 bg-[#1a1a1a] overflow-hidden text-center text-white">
+    <section className="relative py-32 bg-background overflow-hidden text-center text-white">
       {/* Dark Texture */}
       <div className="absolute inset-0 bg-noise opacity-10 pointer-events-none mix-blend-overlay" />
       
