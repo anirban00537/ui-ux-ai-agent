@@ -181,17 +181,29 @@ export class DesignsChatService {
           }
 
           // === PHASE 1: ANALYZING REQUEST ===
-          messenger.emitFast({
-            type: coreConstant.STREAM_EVENT.PHASE_ANALYZING,
-          });
+          await messenger.emit(
+            {
+              type: coreConstant.STREAM_EVENT.PHASE_STEP,
+              data: { label: 'Analyzing request', status: 'started' },
+            },
+            'Analyzing request: started',
+            true,
+            { label: 'Analyzing request', status: 'started' },
+          );
 
           let colorPalette = design.colorPalette ?? null;
 
           // Generate color palette if needed (part of analyzing phase)
           if (!colorPalette) {
-            messenger.emitFast({
-              type: coreConstant.STREAM_EVENT.PHASE_THEME_GENERATING,
-            });
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Generating theme', status: 'started' },
+              },
+              'Generating theme: started',
+              true,
+              { label: 'Generating theme', status: 'started' },
+            );
 
             try {
               colorPalette = await colorPaletteGenerator.generateColorPalette(
@@ -216,13 +228,20 @@ export class DesignsChatService {
               data: { colorPalette },
             });
 
-            // Emit theme complete event (silent, just for UI badge)
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Generating theme', status: 'completed' },
+              },
+              'Generating theme: completed',
+              true,
+              { label: 'Generating theme', status: 'completed' },
+            );
             messenger.emitFast({
               type: coreConstant.STREAM_EVENT.PHASE_THEME_COMPLETE,
               data: colorPalette,
             });
           } else {
-            // Already have theme - emit complete immediately
             messenger.emitFast({
               type: coreConstant.STREAM_EVENT.PHASE_THEME_COMPLETE,
               data: colorPalette,
@@ -246,7 +265,15 @@ export class DesignsChatService {
             signal,
           );
 
-          // === PHASE 1 COMPLETE: ANALYZED REQUEST ===
+          await messenger.emit(
+            {
+              type: coreConstant.STREAM_EVENT.PHASE_STEP,
+              data: { label: 'Analyzing request', status: 'completed' },
+            },
+            'Analyzing request: completed',
+            true,
+            { label: 'Analyzing request', status: 'completed' },
+          );
           messenger.emitFast({
             type: coreConstant.STREAM_EVENT.PHASE_ANALYZED,
             data: { intent: intent.intent },
@@ -257,7 +284,15 @@ export class DesignsChatService {
             intent.screensToUpdate &&
             intent.screensToUpdate.length > 0
           ) {
-            // === PHASE 2 COMPLETE: PLANNED ACTIONS ===
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Planning actions', status: 'started' },
+              },
+              'Planning actions: started',
+              true,
+              { label: 'Planning actions', status: 'started' },
+            );
             messenger.emitFast({
               type: coreConstant.STREAM_EVENT.PHASE_PLANNED,
               data: {
@@ -265,6 +300,15 @@ export class DesignsChatService {
                 screenTitles: intent.screensToUpdate.map(s => s.title),
               },
             });
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Planning actions', status: 'completed' },
+              },
+              'Planning actions: completed',
+              true,
+              { label: 'Planning actions', status: 'completed' },
+            );
 
             // AI Response describing updates
             const updateDescription = intent.screensToUpdate
@@ -281,8 +325,18 @@ export class DesignsChatService {
               true,
             );
 
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Generating screens', status: 'started' },
+              },
+              'Generating screens: started',
+              true,
+              { label: 'Generating screens', status: 'started' },
+            );
             // Update screens - can be parallelized for multiple updates
-            for (const s of intent.screensToUpdate) {
+            for (let idx = 0; idx < intent.screensToUpdate.length; idx += 1) {
+              const s = intent.screensToUpdate[idx];
               if (signal.aborted) {
                 console.log('[DesignsChatService] Cancelled during screen updates');
                 break;
@@ -293,11 +347,17 @@ export class DesignsChatService {
               });
               if (!dbArtboard) continue;
 
-              // Emit start update (silent, for UI state)
+              const title = s.title ?? dbArtboard.title;
+              // Persist screen_start message so this turn has a unique card; emit with messageId
+              const screenStartMessageId = await messenger.createMessageAndGetId(
+                `Updating: ${title}`,
+                coreConstant.STREAM_EVENT.SCREEN_START,
+                { title, kind: 'update', screenId: s.id },
+              );
               messenger.emitFast({
                 type: coreConstant.STREAM_EVENT.SCREEN_START,
-                progress: { current: 0, total: intent.screensToUpdate.length },
-                data: { title: s.title ?? dbArtboard.title },
+                progress: { current: idx, total: intent.screensToUpdate.length },
+                data: { messageId: screenStartMessageId, title, kind: 'update', screenId: s.id },
               });
 
               const otherArtboards = existingArtboards.filter(
@@ -324,15 +384,26 @@ export class DesignsChatService {
 
               // Embed plan title context for UI grouping
               const completeData = { ...saved, planTitle: saved.title };
-
-              await messenger.emit(
-                {
-                  type: coreConstant.STREAM_EVENT.SCREEN_UPDATE,
-                  data: { status: 'complete', screen: completeData },
-                },
-                `Updated screen "${saved.title}".`,
+              await messenger.updateMessage(
+                screenStartMessageId,
+                `Updated: ${saved.title}`,
+                coreConstant.STREAM_EVENT.SCREEN_UPDATE,
+                { screen: completeData, title: saved.title, screenId: saved.id },
               );
+              messenger.emitFast({
+                type: coreConstant.STREAM_EVENT.SCREEN_UPDATE,
+                data: { messageId: screenStartMessageId, status: 'complete', screen: completeData },
+              });
             }
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Generating screens', status: 'completed' },
+              },
+              'Generating screens: completed',
+              true,
+              { label: 'Generating screens', status: 'completed' },
+            );
           } else if (
             intent.intent === 'delete_existing' &&
             intent.screensToUpdate &&
@@ -364,7 +435,15 @@ export class DesignsChatService {
             }
           } else {
             // CREATE NEW SCREENS
-            // === PHASE 2: PLANNING ===
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Planning actions', status: 'started' },
+              },
+              'Planning actions: started',
+              true,
+              { label: 'Planning actions', status: 'started' },
+            );
             messenger.emitFast({
               type: coreConstant.STREAM_EVENT.PHASE_PLANNING,
             });
@@ -384,7 +463,6 @@ export class DesignsChatService {
               return;
             }
 
-            // === PHASE 2 COMPLETE: PLANNED ACTIONS ===
             messenger.emitFast({
               type: coreConstant.STREAM_EVENT.PHASE_PLANNED,
               data: {
@@ -392,6 +470,15 @@ export class DesignsChatService {
                 screenTitles: plan.screenPrompts.map(s => s.title),
               },
             });
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Planning actions', status: 'completed' },
+              },
+              'Planning actions: completed',
+              true,
+              { label: 'Planning actions', status: 'completed' },
+            );
 
             // Create AI response message describing what we're building (persisted)
             const screenDescriptions = plan.screenPrompts
@@ -419,6 +506,15 @@ export class DesignsChatService {
               html: a.html,
             }));
 
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Generating screens', status: 'started' },
+              },
+              'Generating screens: started',
+              true,
+              { label: 'Generating screens', status: 'started' },
+            );
             // SEQUENTIAL GENERATION WITH STREAMING
             // Always use streaming for real-time UI feedback
             console.log(`[DesignsChatService] Generating ${plan.screenPrompts.length} screens sequentially with streaming`);
@@ -432,11 +528,16 @@ export class DesignsChatService {
               const sp = plan.screenPrompts[i];
               const previousScreens = getLastScreensForDesignPattern(screensForContext);
 
-              // Emit screen start (no verbose message, just UI update)
+              // Persist screen_start message so this turn has a unique card; emit with messageId
+              const screenStartMessageId = await messenger.createMessageAndGetId(
+                `Generating: ${sp.title}`,
+                coreConstant.STREAM_EVENT.SCREEN_START,
+                { title: sp.title, kind: 'create' },
+              );
               messenger.emitFast({
                 type: coreConstant.STREAM_EVENT.SCREEN_START,
                 progress: { current: i, total: plan.totalScreens },
-                data: { title: sp.title },
+                data: { messageId: screenStartMessageId, title: sp.title, kind: 'create' },
               });
 
               // Use the streaming generator for real-time UI updates
@@ -488,15 +589,28 @@ export class DesignsChatService {
                 html: saved.html,
               });
 
-              await messenger.emit(
-                {
-                  type: coreConstant.STREAM_EVENT.SCREEN_COMPLETE,
-                  progress: { current: i + 1, total: plan.totalScreens },
-                  data: { ...saved, planTitle: sp.title },
-                },
-                `Generated screen "${saved.title}".`,
+              const completeData = { ...saved, planTitle: sp.title };
+              await messenger.updateMessage(
+                screenStartMessageId,
+                `Generated: ${saved.title}`,
+                coreConstant.STREAM_EVENT.SCREEN_COMPLETE,
+                { title: saved.title, screenId: saved.id, screen: completeData },
               );
+              messenger.emitFast({
+                type: coreConstant.STREAM_EVENT.SCREEN_COMPLETE,
+                progress: { current: i + 1, total: plan.totalScreens },
+                data: { messageId: screenStartMessageId, ...completeData },
+              });
             }
+            await messenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.PHASE_STEP,
+                data: { label: 'Generating screens', status: 'completed' },
+              },
+              'Generating screens: completed',
+              true,
+              { label: 'Generating screens', status: 'completed' },
+            );
           }
 
           if (!signal.aborted) {

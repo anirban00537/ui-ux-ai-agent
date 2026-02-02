@@ -626,6 +626,7 @@ model Message {
   role      String // "user" or "assistant" or "system"
   content   String   @db.Text
   status    String? // For system messages: "intent_analysis", "planning", "screen_start", etc.
+  data      Json?   // Optional payload for status messages (title, screenId, kind, etc.)
   createdAt DateTime @default(now())
 
   design Design @relation(fields: [designId], references: [id], onDelete: Cascade)

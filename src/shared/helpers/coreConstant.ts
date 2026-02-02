@@ -59,6 +59,8 @@ export const coreConstant = {
     PHASE_PLANNED: 'phase_planned',
     PHASE_THEME_GENERATING: 'phase_theme_generating',
     PHASE_THEME_COMPLETE: 'phase_theme_complete',
+    // Backend-driven step (label + status); persisted as message for DB load
+    PHASE_STEP: 'phase_step',
     // AI response message (persisted to chat)
     AI_RESPONSE: 'ai_response',
   } as const,
@@ -88,8 +90,7 @@ export const coreConstant = {
     },
     CARDS: {
       NAME: 'meta-llama/llama-4-scout',
-      PRICING: { prompt: 0.08, completion: 0.30 },
-
+      PRICING: { prompt: 0.08, completion: 0.3 },
     },
     IMAGE: {
       NAME: 'black-forest-labs/flux-1.1-pro',
@@ -99,8 +100,8 @@ export const coreConstant = {
       PRICING: { prompt: 10.0, completion: 30.0 },
     },
     DESIGN: {
-      NAME: 'minimax/minimax-m2.1',
-      PRICING: { prompt: 0.27, completion: 1.10 },
+      NAME: 'google/gemini-2.0-flash-001',
+      PRICING: { prompt: 0.27, completion: 1.1 },
     },
   },
 

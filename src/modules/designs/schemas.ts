@@ -64,6 +64,7 @@ export interface StreamUpdate {
     | 'phase_planned'
     | 'phase_theme_generating'
     | 'phase_theme_complete'
+    | 'phase_step'
     | 'ai_response';
   data?: any;
   progress?: {
