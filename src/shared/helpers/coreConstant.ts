@@ -89,8 +89,8 @@ export const coreConstant = {
       PRICING: { prompt: 0.27, completion: 1.1 },
     },
     AGENT: {
-      NAME: 'google/gemini-2.5-flash-lite-preview-09-2025',
-      PRICING: { prompt: 0.1, completion: 0.4 }, // Aprx pricing for Gemini Flash
+      NAME: 'minimax/minimax-m2.1',
+      PRICING: { prompt: 0.27, completion: 1.1 }, 
     },
   },
 
