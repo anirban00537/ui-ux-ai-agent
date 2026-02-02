@@ -87,18 +87,22 @@ export const coreConstant = {
     DESIGN: {
       NAME: 'minimax/minimax-m2.1',
       PRICING: { prompt: 0.40, completion: 1.5 },
+      PROVIDER: {
+        ENABLED: true,
+        ORDER: ['friendli', 'deepinfra/fp8'] as any,
+        ALLOW_FALLBACKS: true,
+      }
     },
     AGENT: {
       NAME: 'minimax/minimax-m2.1',
-      PRICING: { prompt: 0.40, completion: 1.5 }, 
+      PRICING: { prompt: 0.40, completion: 1.5 },
+      PROVIDER: {
+        ENABLED: true,
+        ORDER: ['friendli', 'deepinfra/fp8'] as any,
+        ALLOW_FALLBACKS: true,
+      }
     },
   },
-
-  AI_PROVIDER_CONFIG: {
-    ENABLED: true,
-    ORDER: ['friendli','deepinfra/fp8'],
-    ALLOW_FALLBACKS: true,
-  } as const,
 
   // Subscription Status Constants
   SUBSCRIPTION_STATUS: {

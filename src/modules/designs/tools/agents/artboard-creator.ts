@@ -172,11 +172,11 @@ export class ArtboardCreator {
             },
           },
           temperature: 0.5,
-          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+          ...(coreConstant.AI_MODELS.AGENT.PROVIDER.ENABLED
             ? {
                 provider: {
-                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
-                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                  order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
+                  allowFallbacks: coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
                 },
               }
             : {}),
@@ -294,11 +294,11 @@ export class ArtboardCreator {
         streamOptions: {
           includeUsage: true,
         },
-        ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+        ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
           ? {
               provider: {
-                order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
-                allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
+                allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
               },
             }
           : {}),
@@ -463,11 +463,11 @@ export class ArtboardCreator {
             },
           },
           temperature: 0.5,
-          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+          ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
             ? {
                 provider: {
-                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
-                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                  order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
+                  allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
                 },
               }
             : {}),
