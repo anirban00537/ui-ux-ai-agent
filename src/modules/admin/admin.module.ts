@@ -13,6 +13,7 @@ import { AdminMediaController } from './controllers/admin-media.controller';
 import { AdminSystemController } from './controllers/admin-system.controller';
 import { AdminProductsController } from './controllers/admin-products.controller';
 import { AdminLayoutsController } from './controllers/admin-layouts.controller';
+import { OpenRouterController } from './controllers/openrouter.controller';
 
 // Services
 import { AdminAnalyticsService } from './services/admin-analytics.service';
@@ -25,6 +26,7 @@ import { AdminMediaService } from './services/admin-media.service';
 import { AdminSystemService } from './services/admin-system.service';
 import { AdminProductsService } from './services/admin-products.service';
 import { AdminLayoutsService } from './services/admin-layouts.service';
+import { OpenRouterService } from './services/openrouter.service';
 
 @Module({
   imports: [PrismaModule, SubscriptionModule],
@@ -39,6 +41,7 @@ import { AdminLayoutsService } from './services/admin-layouts.service';
     AdminSystemController,
     AdminProductsController,
     AdminLayoutsController,
+    OpenRouterController,
   ],
   providers: [
     AdminAnalyticsService,
@@ -51,6 +54,7 @@ import { AdminLayoutsService } from './services/admin-layouts.service';
     AdminSystemService,
     AdminProductsService,
     AdminLayoutsService,
+    OpenRouterService,
   ],
   exports: [
     AdminAnalyticsService,

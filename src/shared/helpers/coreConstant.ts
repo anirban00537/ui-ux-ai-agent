@@ -85,11 +85,11 @@ export const coreConstant = {
 
   AI_MODELS: {
     DESIGN: {
-      NAME: 'mistralai/devstral-2512',
+      NAME: 'minimax/minimax-m2.1',
       PRICING: { prompt: 0.27, completion: 1.1 },
     },
     AGENT: {
-      NAME: 'mistralai/devstral-2512',
+      NAME: 'minimax/minimax-m2.1',
       PRICING: { prompt: 0.27, completion: 1.1 }, 
     },
   },
