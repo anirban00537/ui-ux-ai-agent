@@ -7,7 +7,7 @@ import { AdminAnalyticsController } from './controllers/admin-analytics.controll
 import { AdminUsersController } from './controllers/admin-users.controller';
 import { AdminAiController } from './controllers/admin-ai.controller';
 import { AdminActivityController } from './controllers/admin-activity.controller';
-import { AdminDocsController } from './controllers/admin-docs.controller';
+import { AdminArtifactsController } from './controllers/admin-artifacts.controller';
 import { AdminFinanceController } from './controllers/admin-finance.controller';
 import { AdminMediaController } from './controllers/admin-media.controller';
 import { AdminSystemController } from './controllers/admin-system.controller';
@@ -19,7 +19,7 @@ import { AdminAnalyticsService } from './services/admin-analytics.service';
 import { AdminUsersService } from './services/admin-users.service';
 import { AdminAiService } from './services/admin-ai.service';
 import { AdminActivityService } from './services/admin-activity.service';
-import { AdminDocsService } from './services/admin-docs.service';
+import { AdminArtifactsService } from './services/admin-artifacts.service';
 import { AdminFinanceService } from './services/admin-finance.service';
 import { AdminMediaService } from './services/admin-media.service';
 import { AdminSystemService } from './services/admin-system.service';
@@ -33,7 +33,7 @@ import { AdminLayoutsService } from './services/admin-layouts.service';
     AdminUsersController,
     AdminAiController,
     AdminActivityController,
-    AdminDocsController,
+    AdminArtifactsController,
     AdminFinanceController,
     AdminMediaController,
     AdminSystemController,
@@ -45,7 +45,7 @@ import { AdminLayoutsService } from './services/admin-layouts.service';
     AdminUsersService,
     AdminAiService,
     AdminActivityService,
-    AdminDocsService,
+    AdminArtifactsService,
     AdminFinanceService,
     AdminMediaService,
     AdminSystemService,
@@ -57,7 +57,7 @@ import { AdminLayoutsService } from './services/admin-layouts.service';
     AdminUsersService,
     AdminAiService,
     AdminActivityService,
-    AdminDocsService,
+    AdminArtifactsService,
     AdminFinanceService,
     AdminMediaService,
     AdminSystemService,

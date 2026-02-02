@@ -21,10 +21,22 @@ export class AiUsageService {
     outputTokens: number;
     type: string;
     docId?: string;
+    designId?: string;
     provider?: string;
   }) {
     try {
-      const { userId, modelName, inputTokens, outputTokens, type, docId, provider = 'openrouter' } = params;
+      const { 
+        userId, 
+        modelName, 
+        inputTokens, 
+        outputTokens, 
+        type, 
+        docId, 
+        designId,
+        provider = 'openrouter' 
+      } = params;
+
+      const effectiveDocId = docId || designId;
 
       // Calculate cost
       const rates = this.pricing[modelName] || this.pricing['default'];
@@ -38,7 +50,7 @@ export class AiUsageService {
           outputTokens,
           cost,
           type,
-          docId,
+          docId: effectiveDocId,
           provider
         }
       });

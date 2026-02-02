@@ -9,9 +9,9 @@ import { Polar } from '@polar-sh/sdk';
 export class AdminAnalyticsService {
   private readonly logger = new Logger(AdminAnalyticsService.name);
   
-  // Pricing constants from minimax model
-  private readonly INPUT_TOKEN_COST = 0.28 / 1_000_000;  // per token
-  private readonly OUTPUT_TOKEN_COST = 1.20 / 1_000_000; // per token
+  // Pricing constants from glm-4.7 model
+  private readonly INPUT_TOKEN_COST = 0.27 / 1_000_000;  // per token
+  private readonly OUTPUT_TOKEN_COST = 1.10 / 1_000_000; // per token
 
   private readonly polar: Polar;
 
@@ -82,7 +82,11 @@ export class AdminAnalyticsService {
         aiUsage: aiUsageData,
         costs: costBreakdown,
         profitability: profitability,
-        engagement: engagement,
+        engagement: {
+          ...engagement,
+          averageCostPerDesign: engagement.totalDesigns > 0 ? aiUsageData.totalCost / engagement.totalDesigns : 0,
+          averageCostPerArtboard: engagement.totalArtboards > 0 ? aiUsageData.totalCost / engagement.totalArtboards : 0,
+        },
       });
     } catch (error) {
       return processException(error);
@@ -227,26 +231,19 @@ export class AdminAnalyticsService {
 
   private async calculateEngagement() {
     const [
-      totalDocs,
-      totalOutlines,
-      cardsAggregate
+      totalDesigns,
+      totalArtboards
     ] = await Promise.all([
-      this.prisma.doc.count(),
-      this.prisma.doc.count({
-        where: {
-          outlineStatus: { not: 'none' }
-        }
-      }),
-      this.prisma.card.count(),
+      this.prisma.design.count(),
+      this.prisma.artboard.count(),
     ]);
 
     return {
-      totalDocs,
-      totalOutlines,
-      totalCards: cardsAggregate,
-      averageDocsPerUser: 0,
-      averageCardsPerDoc: totalDocs > 0
-        ? cardsAggregate / totalDocs
+      totalDesigns,
+      totalArtboards,
+      averageDesignsPerUser: 0,
+      averageArtboardsPerDesign: totalDesigns > 0
+        ? totalArtboards / totalDesigns
         : 0,
     };
   }
@@ -291,7 +288,8 @@ export class AdminAnalyticsService {
       const [
         totalUsers,
         activeSubscriptionsCount,
-        totalDocs,
+        totalDesigns,
+        totalArtboards,
         totalMedia,
         totalTokensInput,
         totalTokensOutput,
@@ -302,14 +300,14 @@ export class AdminAnalyticsService {
         aiModelDistribution,
         subscriptionBreakdown,
         geoDistribution,
-        typeDistribution,
         statusDistribution,
         activeSubscriptionsList // NEW: For MRR calculation
       ] = await Promise.all([
         // Totals
         this.prisma.user.count(),
         this.prisma.subscription.count({ where: { status: 'active' } }),
-        this.prisma.doc.count(),
+        this.prisma.design.count(),
+        this.prisma.artboard.count(),
         this.prisma.media.count(),
         this.prisma.aiUsage.aggregate({ _sum: { inputTokens: true } }),
         this.prisma.aiUsage.aggregate({ _sum: { outputTokens: true } }),
@@ -361,12 +359,6 @@ export class AdminAnalyticsService {
           take: 10
         }),
 
-        // Doc Type
-        this.prisma.doc.groupBy({
-          by: ['isPublic', 'isTemplate'],
-          _count: { _all: true },
-        }),
-
         // User Role Distribution
         this.prisma.user.groupBy({
           by: ['role'],
@@ -400,8 +392,7 @@ export class AdminAnalyticsService {
       // Generate Insights
       const insights = [];
       
-      // 1. Churn Risk / Payment Failures (Mock logic for now, or real if available)
-      // In a real app, we'd check for 'past_due' subscriptions
+      // 1. Churn Risk / Payment Failures
       const failedPayments = subscriptionBreakdown.find(s => s.status === 'past_due')?._count._all || 0;
       if (failedPayments > 0) {
         insights.push({
@@ -444,7 +435,8 @@ export class AdminAnalyticsService {
         summary: {
           totalUsers,
           activeSubscriptions: activeSubscriptionsCount,
-          totalDocs: totalDocs,
+          totalDesigns: totalDesigns,
+          totalArtboards: totalArtboards,
           totalMedia,
           totalTokens: (totalTokensInput._sum.inputTokens || 0) + (totalTokensOutput._sum.outputTokens || 0),
           totalCost: totalCost._sum.cost || 0,
@@ -478,11 +470,6 @@ export class AdminAnalyticsService {
           geo: geoDistribution.map(g => ({
             country: g.country,
             count: g._count._all
-          })),
-          docTypes: typeDistribution.map(t => ({
-            isPublic: t.isPublic,
-            isTemplate: t.isTemplate,
-            count: t._count._all
           })),
           roles: statusDistribution.map(r => ({
             role: r.role,
