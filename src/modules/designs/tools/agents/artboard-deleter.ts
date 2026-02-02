@@ -1,5 +1,5 @@
 import { PrismaService } from '../../../prisma/prisma.service';
-import { CreditManager } from '../credit-manager';
+import { CreditManager } from '../credits';
 
 export class ArtboardDeleter {
   constructor(

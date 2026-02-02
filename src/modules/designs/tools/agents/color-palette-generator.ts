@@ -1,9 +1,9 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { type ColorPalette } from '../../schemas';
-import { CreditManager } from '../credit-manager';
+import { CreditManager } from '../credits';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
-import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
+import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm';
 
 // JSON Schema for ColorPalette - 11 theme tokens (shadcn-style theming)
 const colorPaletteJsonSchema = {

@@ -1,12 +1,12 @@
 import { Observer } from 'rxjs';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../prisma/prisma.service';
-import { StreamUpdate } from '../schemas';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { StreamUpdate } from '../../schemas';
 
 /**
  * StreamMessenger handles emitting stream updates to the client
  * and optionally persisting messages to the database.
- * 
+ *
  * Optimized with fire-and-forget for non-critical DB writes to avoid blocking the stream.
  */
 export class StreamMessenger {
@@ -47,7 +47,8 @@ export class StreamMessenger {
 
     // Persist message asynchronously (fire-and-forget) if needed
     if (msg && persist) {
-      const payloadData = data ?? (update.data as Record<string, unknown> | undefined);
+      const payloadData =
+        data ?? (update.data as Record<string, unknown> | undefined);
       this.persistMessage(msg, update.type, payloadData).catch((err) => {
         console.error('[StreamMessenger] Failed to persist message:', err);
       });
@@ -133,7 +134,11 @@ export class StreamMessenger {
    * Batch persist multiple messages (for efficiency at end of operation)
    */
   async persistMessageBatch(
-    messages: Array<{ content: string; status: string; data?: Record<string, unknown> }>,
+    messages: Array<{
+      content: string;
+      status: string;
+      data?: Record<string, unknown>;
+    }>,
   ): Promise<void> {
     if (messages.length === 0) return;
 

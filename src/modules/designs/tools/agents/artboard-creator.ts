@@ -7,11 +7,11 @@ import {
   type ColorPalette,
   type PreviousScreenContext,
 } from '../../schemas';
-import { CreditManager } from '../credit-manager';
+import { CreditManager } from '../credits';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 import { PromptManager } from '../prompts/prompt-manager';
-import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm-client';
+import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm';
 
 // JSON Schema for ScreenPlan
 const artboardPlanJsonSchema = {

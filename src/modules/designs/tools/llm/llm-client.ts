@@ -2,14 +2,14 @@ import { OpenAI } from 'openai';
 
 /**
  * Singleton OpenRouter client for all LLM operations.
- * 
+ *
  * WHY WE USE THE OPENAI SDK:
  * OpenRouter is 100% OpenAI-compatible. Using the OpenAI SDK with OpenRouter's
  * base URL is the OFFICIAL recommended way to interact with OpenRouter, especially
  * for streaming which requires proper async iteration support.
- * 
+ *
  * The native @openrouter/sdk doesn't provide the same streaming API capabilities.
- * 
+ *
  * This is NOT calling OpenAI directly - it's calling OpenRouter via the OpenAI SDK.
  */
 
@@ -18,13 +18,13 @@ let openrouterClientInstance: OpenAI | null = null;
 
 /**
  * Get the singleton OpenRouter client.
- * 
+ *
  * Uses OpenAI SDK pointed at OpenRouter's API for:
  * - Full streaming support with async iteration
  * - JSON schema structured outputs
  * - Proper timeout/retry handling
  * - Connection pooling
- * 
+ *
  * @returns OpenAI client configured for OpenRouter
  */
 export function getOpenRouterClient(): OpenAI {
@@ -49,16 +49,16 @@ export function getOpenRouterClient(): OpenAI {
 export const LLM_CONFIG = {
   /** Maximum time to wait for a non-streaming LLM response (ms) */
   REQUEST_TIMEOUT_MS: 120000, // 2 minutes
-  
+
   /** Maximum time to wait for first chunk in streaming response (ms) */
   STREAM_FIRST_CHUNK_TIMEOUT_MS: 30000, // 30 seconds
-  
+
   /** Maximum time to wait between streaming chunks (ms) */
   STREAM_CHUNK_TIMEOUT_MS: 15000, // 15 seconds
-  
+
   /** Maximum concurrent screen generations */
   MAX_CONCURRENT_SCREENS: 3,
-  
+
   /** Retry configuration */
   MAX_RETRIES: 2,
 } as const;
@@ -87,7 +87,7 @@ export async function withTimeout<T>(
       clearTimeout(timeoutId);
       reject(new Error(`Operation cancelled: ${operationName}`));
     };
-    
+
     signal?.addEventListener('abort', abortHandler, { once: true });
 
     promise
@@ -109,6 +109,8 @@ export async function withTimeout<T>(
  */
 export function checkAborted(signal?: AbortSignal, operationName?: string): void {
   if (signal?.aborted) {
-    throw new Error(`Operation cancelled${operationName ? `: ${operationName}` : ''}`);
+    throw new Error(
+      `Operation cancelled${operationName ? `: ${operationName}` : ''}`,
+    );
   }
 }

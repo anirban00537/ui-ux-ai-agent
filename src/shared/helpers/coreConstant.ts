@@ -85,11 +85,11 @@ export const coreConstant = {
 
   AI_MODELS: {
     DESIGN: {
-      NAME: 'deepseek/deepseek-v3.2',
+      NAME: 'google/gemini-2.5-flash-lite-preview-09-2025',
       PRICING: { prompt: 0.27, completion: 1.1 },
     },
     AGENT: {
-      NAME: 'google/gemini-2.5-flash-lite',
+      NAME: 'google/gemini-2.5-flash-lite-preview-09-2025',
       PRICING: { prompt: 0.1, completion: 0.4 }, // Aprx pricing for Gemini Flash
     },
   },

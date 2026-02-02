@@ -1,4 +1,4 @@
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 // Token estimation constants for different operations
 const TOKEN_ESTIMATES = {
