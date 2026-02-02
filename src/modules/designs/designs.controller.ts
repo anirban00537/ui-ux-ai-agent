@@ -55,6 +55,15 @@ export class DesignsController {
     return this.designsService.createDesignConversation(body.title, user.id, body.type);
   }
 
+  @Patch('artboards/:id')
+  async updateArtboard(
+    @Param('id') id: string,
+    @Body() body: { x?: number; y?: number; width?: number; height?: number },
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.designsService.updateArtboard(id, user.id, body);
+  }
+
   @Patch(':id')
   async updateDesign(
     @Param('id') id: string,

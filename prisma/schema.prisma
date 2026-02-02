@@ -641,6 +641,12 @@ model Artboard {
   description String?
   html        String   @db.Text
   createdAt   DateTime @default(now())
+  
+  // Position and Size
+  x           Int      @default(0)
+  y           Int      @default(0)
+  width       Int      @default(440)
+  height      Int      @default(800)
 
   design Design @relation(fields: [designId], references: [id], onDelete: Cascade)
 

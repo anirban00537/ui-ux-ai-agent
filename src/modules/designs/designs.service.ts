@@ -131,4 +131,30 @@ export class DesignsService {
       return errorResponse(error.message);
     }
   }
+
+  async updateArtboard(
+    id: string,
+    userId: string,
+    data: { x?: number; y?: number; width?: number; height?: number },
+  ): Promise<ResponseModel> {
+    try {
+      const artboard = await this.prisma.artboard.findUnique({
+        where: { id },
+        include: { design: true },
+      });
+
+      if (!artboard || artboard.design.userId !== userId) {
+        return errorResponse('User does not have permission to update this artboard');
+      }
+
+      const updated = await this.prisma.artboard.update({
+        where: { id },
+        data,
+      });
+
+      return successResponse('Artboard updated successfully', updated);
+    } catch (error) {
+      return errorResponse(error.message);
+    }
+  }
 }
