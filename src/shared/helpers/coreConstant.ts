@@ -96,7 +96,7 @@ export const coreConstant = {
 
   AI_PROVIDER_CONFIG: {
     ENABLED: true,
-    ORDER: ['DeepInfra', 'Together', 'Friendli'],
+    ORDER: ['friendli','deepinfra/fp8'],
     ALLOW_FALLBACKS: true,
   } as const,
 
