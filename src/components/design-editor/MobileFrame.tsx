@@ -31,8 +31,10 @@ interface MobileFrameProps {
   isGenerating?: boolean;
   onCopy?: () => void;
   onDelete?: () => void;
+  onSave?: (data: { x: number; y: number; width: number; height: number }) => void;
   isCopied?: boolean;
   scale?: number;
+  autoSave?: boolean;
 }
 
 export function MobileFrame({
@@ -47,8 +49,10 @@ export function MobileFrame({
   isGenerating = false,
   onCopy,
   onDelete,
+  onSave,
   isCopied = false,
   scale = 1,
+  autoSave = false,
 }: MobileFrameProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -60,6 +64,15 @@ export function MobileFrame({
   // Initialize size and position
   const [size, setSize] = useState({ width: width, height: standardHeight });
   const [position, setPosition] = useState({ x: initialX, y: initialY });
+  
+  // Auto-save initial position if requested (for smart placement persistence)
+  useEffect(() => {
+    if (autoSave && onSave) {
+      onSave({ x: initialX, y: initialY, width, height: standardHeight });
+    }
+    // Only run once on mount/init when autoSave is true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const [isSelected, setIsSelected] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -160,6 +173,7 @@ export function MobileFrame({
       onDragStop={(e, d) => {
         setIsDragging(false);
         setPosition({ x: d.x, y: d.y });
+        onSave?.({ x: d.x, y: d.y, width: size.width, height: size.height });
       }}
       onResizeStart={() => {
         setIsResizing(true);
@@ -167,11 +181,13 @@ export function MobileFrame({
       }}
       onResizeStop={(e, direction, ref, delta, position) => {
         setIsResizing(false);
-        setSize({ 
+        const newSize = { 
           width: parseInt(ref.style.width), 
           height: parseInt(ref.style.height) 
-        });
+        };
+        setSize(newSize);
         setPosition(position);
+        onSave?.({ x: position.x, y: position.y, width: newSize.width, height: newSize.height });
       }}
       lockAspectRatio={false}
       minWidth={200}

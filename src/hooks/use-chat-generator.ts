@@ -13,6 +13,10 @@ interface Screen {
   html: string;
   createdAt: string;
   status?: 'generating' | 'complete';
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 }
 
 interface Message {
@@ -744,6 +748,10 @@ export function useChatGenerator(): UseChatGeneratorResult {
           description: artboard.description,
           html: artboard.html,
           createdAt: artboard.createdAt,
+          x: artboard.x,
+          y: artboard.y,
+          width: artboard.width,
+          height: artboard.height,
         })),
         colorPalette: designData.colorPalette,
       };

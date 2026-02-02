@@ -10,7 +10,16 @@ export interface Design {
   colorPalette: any;
   createdAt: string;
   updatedAt: string;
-  artboards?: { id: string; title: string; description?: string | null; html: string }[];
+  artboards?: { 
+    id: string; 
+    title: string; 
+    description?: string | null; 
+    html: string;
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+  }[];
 }
 
 export interface DesignListResponse {
@@ -68,5 +77,13 @@ export async function updateDesign(
   data: { title?: string; colorPalette?: Record<string, string> }
 ) {
   const response = await request.patch(`/designs/${designId}`, data);
+  return response.data;
+}
+
+export async function updateArtboard(
+  artboardId: string,
+  data: { x?: number; y?: number; width?: number; height?: number }
+) {
+  const response = await request.patch(`/designs/artboards/${artboardId}`, data);
   return response.data;
 }

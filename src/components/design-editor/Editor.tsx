@@ -6,7 +6,7 @@ import { MobileFrame } from "@/components/design-editor/MobileFrame";
 import { Trash2, Copy, Check } from "lucide-react";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
-import { DesignType } from "@/services/designs";
+import { DesignType, updateArtboard } from "@/services/designs";
 
 interface Artboard {
   id: string;
@@ -15,6 +15,10 @@ interface Artboard {
   html: string;
   createdAt: string;
   status?: 'generating' | 'complete';
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
 }
 
 interface ColorPalette {
@@ -49,6 +53,20 @@ export function Editor({
   onDeleteArtboard,
 }: EditorProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  
+  // Debounce save requests to avoid spamming the API
+  const saveTimeouts = React.useRef<Record<string, NodeJS.Timeout>>({});
+
+  const handleSave = useCallback((id: string, data: { x?: number; y?: number; width?: number; height?: number }) => {
+    if (saveTimeouts.current[id]) {
+      clearTimeout(saveTimeouts.current[id]);
+    }
+
+    saveTimeouts.current[id] = setTimeout(() => {
+      updateArtboard(id, data);
+      delete saveTimeouts.current[id];
+    }, 1000);
+  }, []);
 
   const handleCopy = useCallback(async (html: string, id: string) => {
     try {
@@ -161,21 +179,60 @@ export function Editor({
                 }}
               >
                 {artboards.map((artboard, index) => {
-                  // Single row layout calculation
                   const gapX = 120;
                   const itemWidth = 440;
+                  const startY = 1200;
                   
-                  // Calculate total width of the row
-                  const totalRowWidth = (artboards.length * itemWidth) + ((artboards.length - 1) * gapX);
+                  // Smart Placement Logic
+                  // 1. If the artboard has a saved position, use it.
+                  if (artboard.x !== undefined && artboard.y !== undefined) {
+                    return (
+                      <MobileFrame
+                        key={artboard.id}
+                        title={artboard.title}
+                        subtitle={loading ? "Generating..." : artboard.description}
+                        htmlContent={artboard.html}
+                        width={artboard.width ?? itemWidth}
+                        initialX={artboard.x}
+                        initialY={artboard.y}
+                        colorPalette={colorPalette}
+                        isGenerating={artboard.status === 'generating'}
+                        onCopy={() => handleCopy(artboard.html, artboard.id)}
+                        onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : undefined}
+                        onSave={(data) => handleSave(artboard.id, data)}
+                        isCopied={copiedId === artboard.id}
+                        scale={instance?.transformState?.scale || 1}
+                      />
+                    );
+                  }
+
+                  // 2. If it's a NEW artboard (no saved position), place it at the end of the line.
+                  // Calculate the right-most edge of ALL *other* artboards that have positions.
+                  // But wait, what if multiple are new? We need a stable index for new ones.
                   
-                  // Center the grid roughly on the 6000x3200 canvas
-                  // Canvas center is 3000, 1600.
-                  const startX = 3000 - (totalRowWidth / 2);
-                  const startY = 1200; // Start a bit higher than center vertically
+                  // Filter out undefined x/y artboards to get the "anchors"
+                  const placedArtboards = artboards.filter(a => a.x !== undefined && a.id !== artboard.id);
                   
-                  // Position in single row
-                  const x = startX + index * (itemWidth + gapX);
-                  const y = startY;
+                  // Find the max X extent
+                  let rightMostEdge = 3000 - (itemWidth / 2); // Default center start if nothing exists
+                  
+                  if (placedArtboards.length > 0) {
+                     rightMostEdge = Math.max(...placedArtboards.map(a => (a.x || 0) + (a.width || itemWidth)));
+                  }
+
+                  // If there are multiple NEW artboards, they naturally come in order in the array.
+                  // We need to offset them relative to each other.
+                  // Let's count how many *new* artboards came before this one.
+                  const newArtboardsBefore = artboards
+                    .slice(0, index)
+                    .filter(a => a.x === undefined)
+                    .length;
+                  
+                  const smartX = placedArtboards.length === 0 && index === 0 
+                    ? 3000 - (itemWidth / 2) // Very first screen ever: Center it
+                    : rightMostEdge + gapX + (newArtboardsBefore * (itemWidth + gapX));
+                  
+                  const smartY = startY;
 
                   return (
                     <MobileFrame
@@ -183,15 +240,17 @@ export function Editor({
                       title={artboard.title}
                       subtitle={loading ? "Generating..." : artboard.description}
                       htmlContent={artboard.html}
-                      width={440}
-                      initialX={x}
-                      initialY={y}
+                      width={itemWidth}
+                      initialX={smartX}
+                      initialY={smartY}
                       colorPalette={colorPalette}
                       isGenerating={artboard.status === 'generating'}
                       onCopy={() => handleCopy(artboard.html, artboard.id)}
                       onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : undefined}
+                      onSave={(data) => handleSave(artboard.id, data)}
                       isCopied={copiedId === artboard.id}
                       scale={instance?.transformState?.scale || 1}
+                      autoSave={artboard.x === undefined || artboard.y === undefined}
                     />
                   );
                 })}
