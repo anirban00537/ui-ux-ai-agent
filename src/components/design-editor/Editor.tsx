@@ -68,12 +68,29 @@ export function Editor({
   }, []);
 
   return (
-    <div className="w-full h-full bg-background relative overflow-hidden">
+    <div className="w-full h-full bg-background relative overflow-hidden isolate">
+      {/* Grid Pattern */}
+      <div 
+        className="absolute inset-0 -z-20 opacity-[0.03] pointer-events-none" 
+        style={{ 
+          backgroundImage: `linear-gradient(to right, #64748b 1px, transparent 1px), linear-gradient(to bottom, #64748b 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }} 
+      />
+      
+      {/* Dot Pattern with better fade */}
       <DotPattern
         className={cn(
-          "[mask-image:linear-gradient(to_bottom,white_0%,white_100%)] opacity-40"
+          "[mask-image:radial-gradient(ellipse_at_center,white_20%,transparent_90%)] opacity-30"
         )}
+        width={24}
+        height={24}
+        cr={0.8}
       />
+      
+      {/* Radial Glow */}
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03)_0%,transparent_70%)] pointer-events-none" />
+
       <TransformWrapper
         initialScale={0.6}
         minScale={0.1}
@@ -88,32 +105,34 @@ export function Editor({
         {({ zoomIn, zoomOut, resetTransform, instance }) => (
           <>
             <div className="absolute top-6 right-6 z-20">
-              <div className="flex items-center gap-2 bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
+              <div className="flex items-center gap-1.5 bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-1.5 shadow-2xl ring-1 ring-white/5">
                 <button
                   onClick={() => zoomOut()}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all duration-300 text-white/80 hover:text-white hover:scale-105"
+                  className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
                   title="Zoom Out"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
                   </svg>
                 </button>
-                <span className="text-sm font-medium min-w-[3rem] text-center text-white/90 px-2">
-                  {Math.round((instance?.transformState?.scale ?? 1) * 100)}%
-                </span>
+                <div className="flex flex-col items-center justify-center min-w-[3.5rem] px-1 group cursor-default">
+                  <span className="text-[11px] font-bold text-foreground/90 tracking-tight">
+                    {Math.round((instance?.transformState?.scale ?? 1) * 100)}%
+                  </span>
+                </div>
                 <button
                   onClick={() => zoomIn()}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all duration-300 text-white/80 hover:text-white hover:scale-105"
+                  className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
                   title="Zoom In"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
                 </button>
-                <div className="w-px h-4 bg-white/20 mx-2" />
+                <div className="w-px h-4 bg-border/50 mx-1" />
                 <button
                   onClick={() => resetTransform()}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all duration-300 text-white/80 hover:text-white hover:scale-105"
+                  className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
                   title="Reset View"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,22 +151,22 @@ export function Editor({
               >
                 {artboards.map((artboard) => (
                   <div key={artboard.id} className="relative group">
-                    <div className="absolute -top-2 -right-2 z-30 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="absolute -top-3 -right-3 z-30 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
                       <button
                         onClick={() => handleCopy(artboard.html, artboard.id)}
-                        className="rounded-full p-2.5 bg-zinc-800/90 hover:bg-zinc-700 backdrop-blur-sm text-white shadow-xl ring-1 ring-white/10 hover:scale-110 transition-all"
+                        className="rounded-full p-3 bg-card/90 hover:bg-card backdrop-blur-md text-foreground border border-border shadow-depth-2 hover:scale-110 transition-all active:scale-95"
                         title={`Copy HTML`}
                       >
                         {copiedId === artboard.id ? (
-                          <Check className="w-4 h-4 text-green-400" />
+                          <Check className="w-4 h-4 text-green-500" />
                         ) : (
-                          <Copy className="w-4 h-4" />
+                          <Copy className="w-4 h-4 text-muted-foreground hover:text-foreground" />
                         )}
                       </button>
                       {onDeleteArtboard && (
                         <button
                           onClick={() => onDeleteArtboard(artboard.id, artboard.title)}
-                          className="rounded-full p-2.5 bg-red-500/90 hover:bg-red-500 backdrop-blur-sm text-white shadow-xl ring-1 ring-red-400/20 hover:scale-110 transition-all"
+                          className="rounded-full p-3 bg-red-500/10 hover:bg-red-500/20 backdrop-blur-md text-red-500 border border-red-500/20 shadow-depth-2 hover:scale-110 transition-all active:scale-95"
                           title={`Delete ${artboard.title}`}
                         >
                           <Trash2 className="w-4 h-4" />

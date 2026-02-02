@@ -215,10 +215,6 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
           <div className="mt-0.5 p-1 pt-0">
             <TooltipProvider delayDuration={100}>
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
-                  <i className="ri-smartphone-line"></i>
-                  <span>Mobile App</span>
-                </div>
 
                 {/* Right-aligned buttons container */}
                 <div className="ml-auto flex items-center gap-2">

@@ -33,7 +33,7 @@ export function Navbar() {
       <div
         className={cn(
           "pointer-events-auto flex items-center justify-between gap-8 h-14 pl-6 pr-2 rounded-full transition-all duration-300",
-          "bg-zinc-900/80 backdrop-blur-xl border border-zinc-700/50 shadow-sm",
+          "bg-card/80 backdrop-blur-xl border border-card/50 shadow-sm",
           isScrolled ? "w-full max-w-4xl shadow-depth-2" : "w-full max-w-5xl"
         )}
       >

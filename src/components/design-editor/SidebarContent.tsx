@@ -290,7 +290,7 @@ export function SidebarContent({
   };
 
   return (
-    <div className="relative flex flex-col h-full font-sans bg-zinc-900/30">
+    <div className="relative flex flex-col h-full font-sans bg-background">
       {/* Header */}
       <div className="px-4 py-3 border-b border-zinc-800/60">
         <div className="flex items-center justify-between mb-2">
