@@ -63,7 +63,7 @@ interface UseChatGeneratorResult {
   isGenerating: boolean;
   progress: GenerationProgress | null;
   error: string | null;
-  sendMessage: (message: string, designId?: string) => Promise<void>;
+  sendMessage: (message: string, designId?: string, designType?: DesignType) => Promise<void>;
   cancelGeneration: () => void;
   clearConversation: () => void;
   loadConversation: (designId: string) => Promise<void>;
@@ -124,7 +124,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
   }, []);
 
   const sendMessage = useCallback(
-    async (message: string, designId?: string) => {
+    async (message: string, designId?: string, designType?: DesignType) => {
       // Cancel any existing generation
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -152,7 +152,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
           return {
             id: designId || "temp",
             title: message.slice(0, 50) + (message.length > 50 ? "..." : ""),
-            designType: "mobile_app",
+            designType: designType || "mobile_app",
             messages: [userMessage],
             screens: [],
           };

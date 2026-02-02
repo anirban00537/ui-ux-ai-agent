@@ -60,7 +60,7 @@ export default function DesignEditorPage() {
             window.history.replaceState(null, "", `/designs/${newId}`);
             
             // 3. Start Stream
-            await sendMessage(promptContext, newId);
+            await sendMessage(promptContext, newId, typeContext);
             
             // 4. Clear Context
             clearPrompt();
