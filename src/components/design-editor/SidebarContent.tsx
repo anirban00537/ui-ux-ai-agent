@@ -98,11 +98,12 @@ function AgentActivityLine({
       
       <span 
         className={cn(
-          "transition-all duration-300",
-          status === "completed" ? "text-white/30 font-normal" : "text-transparent bg-clip-text bg-gradient-to-r from-white/80 via-white to-white/80 bg-[length:200%_auto] animate-gradient-flow"
+          "transition-all duration-500",
+          status === "completed" ? "text-zinc-500 font-normal" : "text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 via-white to-zinc-500 bg-[length:200%_auto] animate-gradient-flow"
         )}
         style={{
-          animation: status === "loading" ? "gradient-flow 2s linear infinite" : "none"
+          animation: status === "loading" ? "gradient-flow 1.5s linear infinite" : "none",
+          backgroundSize: "200% auto"
         }}
       >
         {label}

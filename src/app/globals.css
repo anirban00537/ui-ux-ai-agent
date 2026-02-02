@@ -307,15 +307,15 @@
 
 @keyframes gradient-flow {
   0% {
-    background-position: 0% 50%;
+    background-position: 100% 50%;
   }
   100% {
-    background-position: 300% 50%;
+    background-position: -100% 50%;
   }
 }
 
 .animate-gradient-flow {
-  animation: gradient-flow 3s linear infinite;
+  animation: gradient-flow 1.5s linear infinite;
 }
 
 @keyframes fadeInUp {
