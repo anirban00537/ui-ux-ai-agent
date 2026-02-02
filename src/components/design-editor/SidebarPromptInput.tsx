@@ -54,13 +54,13 @@ export function SidebarPromptInput({
         className={cn(
           "relative bg-zinc-900 border transition-all duration-300 rounded-xl overflow-hidden",
           loading 
-            ? "border-emerald-500/30 ring-1 ring-emerald-500/10" 
+            ? "border-primary/30 ring-1 ring-primary/10" 
             : "border-zinc-800 hover:border-zinc-700 focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-800"
         )}
       >
         {/* Subtle Gradient for Loading State */}
         {loading && (
-           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent pointer-events-none animate-gradient-flow bg-[length:200%_auto]" />
+           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent pointer-events-none animate-gradient-flow bg-[length:200%_auto]" />
         )}
 
         <div className="relative flex items-end gap-2 p-3">

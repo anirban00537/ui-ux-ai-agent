@@ -86,10 +86,10 @@ function AgentActivityLine({
     <div className="flex items-center gap-3 text-[13px] font-medium tracking-wide">
       {status === "loading" ? (
         <div className="flex-shrink-0 flex items-center justify-center w-3 h-3">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--primary)]" />
         </div>
       ) : (
-        <div className="flex-shrink-0 text-emerald-500/50">
+        <div className="flex-shrink-0 text-primary/50">
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
           </svg>
@@ -130,7 +130,7 @@ function ScreenCard({
     <div 
       className={cn(
         "group relative flex items-center gap-3 px-3 py-3 rounded-lg border transition-all duration-300",
-        isGenerating && "bg-zinc-800/40 border-emerald-500/20 shadow-[0_0_15px_-5px_rgba(16,185,129,0.1)]",
+        isGenerating && "bg-zinc-800/40 border-primary/20 shadow-[0_0_15px_-5px_var(--primary)]",
         isCompleted && "bg-zinc-900/40 border-white/5",
         isPending && "bg-transparent border-transparent opacity-50"
       )}
@@ -139,14 +139,14 @@ function ScreenCard({
       <div 
         className={cn(
           "flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-medium transition-colors duration-300",
-          isGenerating && "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20",
+          isGenerating && "bg-primary/10 text-primary ring-1 ring-primary/20",
           isCompleted && "bg-zinc-800 text-zinc-400",
           isPending && "bg-zinc-800/50 text-zinc-600"
         )}
       >
         {isGenerating ? (
           <div className="relative w-2.5 h-2.5">
-             <div className="absolute inset-0 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
+             <div className="absolute inset-0 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
           </div>
         ) : isCompleted ? (
           <span className="text-xs">
@@ -168,7 +168,7 @@ function ScreenCard({
           {title}
         </span>
         {isGenerating && (
-          <span className="text-[10px] text-emerald-500/70 font-medium tracking-wide animate-pulse mt-0.5">
+          <span className="text-[10px] text-primary/70 font-medium tracking-wide animate-pulse mt-0.5">
             Building UI...
           </span>
         )}
@@ -176,7 +176,7 @@ function ScreenCard({
       
       {/* Active Glow for Generating State */}
       {isGenerating && (
-        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-emerald-500/5 via-transparent to-transparent opacity-50 pointer-events-none" />
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
       )}
     </div>
   );
@@ -285,8 +285,8 @@ export function SidebarContent({
     if (!balance) return "text-white/70";
     const pct = balance.usagePercentage;
     if (pct >= 80) return "text-red-400";
-    if (pct >= 50) return "text-yellow-400";
-    return "text-emerald-400";
+    if (pct >= 50) return "text-primary";
+    return "text-primary";
   };
 
   return (
@@ -295,7 +295,7 @@ export function SidebarContent({
       <div className="px-4 py-3 border-b border-zinc-800/60">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
             <h2 className="text-sm font-medium text-white/90">Chat</h2>
           </div>
           <Link href="/home">
