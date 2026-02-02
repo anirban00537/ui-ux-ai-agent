@@ -77,8 +77,8 @@ export default function CanvasPage() {
       if (data.type === "UPDATE_CONTENT") {
         const html = data.html || "";
         if (root) {
-          // 1. Set HTML wrapped so background applies
-          root.innerHTML = `<div class="canvas-content-wrapper w-full h-full min-h-full">${html}</div>`;
+          // 1. Set HTML - Remove h-full so it grows with content
+          root.innerHTML = `<div id="canvas-wrapper" class="w-full">${html}</div>`;
 
           // 2. Attach fallback for images that fail to load
           root.querySelectorAll("img").forEach((img) => {
@@ -99,6 +99,12 @@ export default function CanvasPage() {
           // 4. Apply fallback for background images that fail to load
           requestAnimationFrame(() => {
             applyBackgroundFallbacks(root).catch(() => {});
+            
+            // Send height after content update
+            window.parent.postMessage({ 
+              type: "UPDATE_HEIGHT", 
+              height: document.body.scrollHeight 
+            }, "*");
           });
         }
       }
@@ -120,16 +126,25 @@ export default function CanvasPage() {
       }
     };
 
+    // Watch for size changes to report back to parent
+    const resizeObserver = new ResizeObserver(() => {
+      window.parent.postMessage({ 
+        type: "UPDATE_HEIGHT", 
+        height: document.body.scrollHeight 
+      }, "*");
+    });
+    // Observe body for any content changes
+    resizeObserver.observe(document.body);
+
     window.addEventListener("message", handleMessage);
 
     // Notify parent that the renderer is ready to receive content
-    // Use a small timeout to ensure the listener is bound in parent? 
-    // Usually parent waits or sends repeatedly, but let's just send 'READY'
     window.parent.postMessage({ type: "CANVAS_READY" }, "*");
 
     return () => {
       root.removeEventListener("error", handleImageError, true);
       window.removeEventListener("message", handleMessage);
+      resizeObserver.disconnect();
     };
   }, []);
 
@@ -138,7 +153,7 @@ export default function CanvasPage() {
       <div
         id="root"
         ref={rootRef}
-        className="w-full h-full overflow-y-auto overflow-x-hidden bg-transparent relative"
+        className="w-full bg-transparent relative"
       />
     </>
   );

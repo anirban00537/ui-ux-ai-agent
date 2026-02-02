@@ -97,7 +97,9 @@ export function Editor({
         maxScale={3}
         centerOnInit={true}
         limitToBounds={false}
-        panning={{ excluded: ["input", "textarea", "button", "select"] }}
+        panning={{ 
+          excluded: ["input", "textarea", "button", "select", "mobile-frame-container", "drag-target"] 
+        }}
         wheel={{ step: 0.1 }}
         doubleClick={{ disabled: true }}
         pinch={{ step: 5 }}
@@ -142,47 +144,57 @@ export function Editor({
               </div>
             </div>
             <TransformComponent
-              wrapperStyle={{ width: "100%", height: "100%" }}
+              wrapperStyle={{ 
+                width: "100%", 
+                height: "calc(100svh - var(--header-height, 3.5rem))", 
+                flex: 1,
+                overflow: "hidden" 
+              }}
               contentStyle={{ width: "max-content", height: "max-content" }}
             >
               <div
-                className="flex items-center justify-center p-20 gap-12"
-                style={{ minWidth: "800px", minHeight: "800px" }}
+                className="relative bg-dot-pattern"
+                style={{ 
+                  width: "6000px", 
+                  height: "3200px",
+                  // Center the initial view roughly if possible, or just start top-left
+                }}
               >
-                {artboards.map((artboard) => (
-                  <div key={artboard.id} className="relative group">
-                    <div className="absolute -top-3 -right-3 z-30 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <button
-                        onClick={() => handleCopy(artboard.html, artboard.id)}
-                        className="rounded-full p-3 bg-card/90 hover:bg-card backdrop-blur-md text-foreground border border-border shadow-depth-2 hover:scale-110 transition-all active:scale-95"
-                        title={`Copy HTML`}
-                      >
-                        {copiedId === artboard.id ? (
-                          <Check className="w-4 h-4 text-green-500" />
-                        ) : (
-                          <Copy className="w-4 h-4 text-muted-foreground hover:text-foreground" />
-                        )}
-                      </button>
-                      {onDeleteArtboard && (
-                        <button
-                          onClick={() => onDeleteArtboard(artboard.id, artboard.title)}
-                          className="rounded-full p-3 bg-red-500/10 hover:bg-red-500/20 backdrop-blur-md text-red-500 border border-red-500/20 shadow-depth-2 hover:scale-110 transition-all active:scale-95"
-                          title={`Delete ${artboard.title}`}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
+                {artboards.map((artboard, index) => {
+                  // Single row layout calculation
+                  const gapX = 120;
+                  const itemWidth = 440;
+                  
+                  // Calculate total width of the row
+                  const totalRowWidth = (artboards.length * itemWidth) + ((artboards.length - 1) * gapX);
+                  
+                  // Center the grid roughly on the 6000x3200 canvas
+                  // Canvas center is 3000, 1600.
+                  const startX = 3000 - (totalRowWidth / 2);
+                  const startY = 1200; // Start a bit higher than center vertically
+                  
+                  // Position in single row
+                  const x = startX + index * (itemWidth + gapX);
+                  const y = startY;
+
+                  return (
                     <MobileFrame
+                      key={artboard.id}
                       title={artboard.title}
                       subtitle={loading ? "Generating..." : artboard.description}
                       htmlContent={artboard.html}
                       width={440}
+                      initialX={x}
+                      initialY={y}
                       colorPalette={colorPalette}
                       isGenerating={artboard.status === 'generating'}
+                      onCopy={() => handleCopy(artboard.html, artboard.id)}
+                      onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : undefined}
+                      isCopied={copiedId === artboard.id}
+                      scale={instance?.transformState?.scale || 1}
                     />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </TransformComponent>
             <div className="absolute bottom-6 left-6 z-20">
