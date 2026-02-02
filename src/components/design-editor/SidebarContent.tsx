@@ -318,7 +318,7 @@ export function SidebarContent({
       {/* Messages */}
       <div
         ref={chatContainerRef}
-        className="flex-1 p-4 space-y-5 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700/50 scrollbar-track-transparent"
+        className="flex-1 p-4 space-y-5 overflow-y-auto custom-scrollbar"
       >
         {conversationTurns.length > 0 ? (
           <>
