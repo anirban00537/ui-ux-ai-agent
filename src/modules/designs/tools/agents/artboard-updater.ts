@@ -113,25 +113,37 @@ export class ArtboardUpdater {
     checkAborted(signal, `screen_update:${artboard.title}`);
 
     const response = await withTimeout(
-      this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.DESIGN.NAME,
-        messages: allMessages,
-        response_format: {
-          type: 'json_schema',
-          json_schema: {
-            name: 'artboard',
-            strict: true,
-            schema: singleArtboardJsonSchema,
+      // @ts-ignore - OpenRouter SDK 'chat.send'
+      this.openrouter.chat.send(
+        {
+          model: coreConstant.AI_MODELS.DESIGN.NAME,
+          messages: allMessages,
+          responseFormat: {
+            type: 'json_schema',
+            jsonSchema: {
+              name: 'artboard',
+              strict: true,
+              schema: singleArtboardJsonSchema,
+            },
           },
+          temperature: 0.5,
+          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+            ? {
+                provider: {
+                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
+                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                },
+              }
+            : {}),
         },
-        temperature: 0.5,
-      }),
+        {}, // Options
+      ),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       `Screen Update: ${artboard.title}`,
       signal,
-    );
+    ) as any;
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     const updatedArtboard = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
 
     // Extract token usage from completion

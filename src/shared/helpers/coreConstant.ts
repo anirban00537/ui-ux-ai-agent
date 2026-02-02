@@ -94,6 +94,12 @@ export const coreConstant = {
     },
   },
 
+  AI_PROVIDER_CONFIG: {
+    ENABLED: true,
+    ORDER: ['DeepInfra', 'Together', 'Friendli'],
+    ALLOW_FALLBACKS: true,
+  } as const,
+
   // Subscription Status Constants
   SUBSCRIPTION_STATUS: {
     ACTIVE: 'active',

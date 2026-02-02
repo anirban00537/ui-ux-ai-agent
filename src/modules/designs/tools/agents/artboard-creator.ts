@@ -158,23 +158,35 @@ export class ArtboardCreator {
     checkAborted(signal, 'screen_planning');
 
     const response = await withTimeout(
-      this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.AGENT.NAME,
-        messages: allMessages,
-        response_format: {
-          type: 'json_schema',
-          json_schema: {
-            name: 'artboardPlan',
-            strict: true,
-            schema: artboardPlanJsonSchema,
+      // @ts-ignore - OpenRouter SDK 'send'
+      this.openrouter.chat.send(
+        {
+          model: coreConstant.AI_MODELS.AGENT.NAME,
+          messages: allMessages,
+          responseFormat: {
+            type: 'json_schema',
+            jsonSchema: {
+              name: 'artboardPlan',
+              strict: true,
+              schema: artboardPlanJsonSchema,
+            },
           },
+          temperature: 0.5,
+          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+            ? {
+                provider: {
+                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
+                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                },
+              }
+            : {}),
         },
-        temperature: 0.5,
-      }),
+        {}, // Options
+      ),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Screen Planning LLM Call',
       signal,
-    );
+    ) as any;
 
     const content = response.choices[0]?.message?.content;
     const plan = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ScreenPlan;
@@ -265,23 +277,34 @@ export class ArtboardCreator {
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
     // Use the singleton OpenRouter client for streaming
-    const stream = await this.openrouter.chat.completions.create({
-      model: coreConstant.AI_MODELS.DESIGN.NAME,
-      messages: allMessages,
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: 'artboard',
-          strict: true,
-          schema: singleArtboardJsonSchema,
+    const stream = await this.openrouter.chat.send(
+      {
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: allMessages,
+        responseFormat: {
+          type: 'json_schema',
+          jsonSchema: {
+            name: 'artboard',
+            strict: true,
+            schema: singleArtboardJsonSchema,
+          },
         },
+        temperature: 0.5,
+        stream: true,
+        streamOptions: {
+          includeUsage: true,
+        },
+        ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+          ? {
+              provider: {
+                order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
+                allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+              },
+            }
+          : {}),
       },
-      temperature: 0.5,
-      stream: true,
-      stream_options: {
-        include_usage: true,
-      },
-    });
+      {}, // Options
+    ) as any;
 
     let accumulatedContent = '';
     let usageData: any = null;
@@ -289,6 +312,8 @@ export class ArtboardCreator {
     let lastChunkTime = Date.now();
 
     for await (const chunk of stream) {
+      // Chunk must be cast to any to access choices/delta
+      const c = chunk as any;
       // Check for cancellation during streaming
       if (signal?.aborted) {
         console.log(`[ArtboardCreator] Stream cancelled for "${promptData.title}"`);
@@ -302,7 +327,7 @@ export class ArtboardCreator {
       }
       lastChunkTime = now;
 
-      const delta = chunk.choices[0]?.delta?.content;
+      const delta = c.choices?.[0]?.delta?.content;
       
       if (delta) {
         chunkCount++;
@@ -320,11 +345,12 @@ export class ArtboardCreator {
       }
 
       // Capture usage data
-      if (chunk.usage) {
-        usageData = chunk.usage;
+      if (c.usage) {
+        usageData = c.usage;
       }
     }
-
+    
+    // Start artboard parsing (Clean clean-up)
     let artboard: SingleScreen;
     try {
       artboard = JSON.parse(accumulatedContent) as SingleScreen;
@@ -423,23 +449,35 @@ export class ArtboardCreator {
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
     const response = await withTimeout(
-      this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.DESIGN.NAME,
-        messages: allMessages,
-        response_format: {
-          type: 'json_schema',
-          json_schema: {
-            name: 'artboard',
-            strict: true,
-            schema: singleArtboardJsonSchema,
+      // @ts-ignore - OpenRouter SDK 'chat.send'
+      this.openrouter.chat.send(
+        {
+          model: coreConstant.AI_MODELS.DESIGN.NAME,
+          messages: allMessages,
+          responseFormat: {
+            type: 'json_schema',
+            jsonSchema: {
+              name: 'artboard',
+              strict: true,
+              schema: singleArtboardJsonSchema,
+            },
           },
+          temperature: 0.5,
+          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+            ? {
+                provider: {
+                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
+                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                },
+              }
+            : {}),
         },
-        temperature: 0.5,
-      }),
+        {}, // Options
+      ),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       `Screen Generation: ${promptData.title}`,
       signal,
-    );
+    ) as any;
 
     const content = response.choices[0]?.message?.content;
     const artboard = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;

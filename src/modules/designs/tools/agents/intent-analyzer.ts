@@ -115,25 +115,37 @@ export class IntentAnalyzer {
     checkAborted(signal, 'intent_analysis');
 
     const response = await withTimeout(
-      this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.AGENT.NAME,
-        messages: allMessages,
-        response_format: {
-          type: 'json_schema',
-          json_schema: {
-            name: 'intent',
-            strict: true,
-            schema: intentJsonSchema,
+      // @ts-ignore - OpenRouter SDK 'chat.send'
+      this.openrouter.chat.send(
+        {
+          model: coreConstant.AI_MODELS.AGENT.NAME,
+          messages: allMessages,
+          responseFormat: {
+            type: 'json_schema',
+            jsonSchema: {
+              name: 'intent',
+              strict: true,
+              schema: intentJsonSchema,
+            },
           },
+          temperature: 0.3,
+          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+            ? {
+                provider: {
+                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
+                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                },
+              }
+            : {}),
         },
-        temperature: 0.3,
-      }),
+        {}, // Options
+      ),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Intent Analysis LLM Call',
       signal,
-    );
+    ) as any;
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     const intent = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as Intent;
 
     // Extract token usage from completion

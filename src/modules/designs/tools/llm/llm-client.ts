@@ -1,43 +1,22 @@
-import { OpenAI } from 'openai';
+import { OpenRouter } from '@openrouter/sdk';
+
 
 /**
  * Singleton OpenRouter client for all LLM operations.
- *
- * WHY WE USE THE OPENAI SDK:
- * OpenRouter is 100% OpenAI-compatible. Using the OpenAI SDK with OpenRouter's
- * base URL is the OFFICIAL recommended way to interact with OpenRouter, especially
- * for streaming which requires proper async iteration support.
- *
- * The native @openrouter/sdk doesn't provide the same streaming API capabilities.
- *
- * This is NOT calling OpenAI directly - it's calling OpenRouter via the OpenAI SDK.
  */
 
-// Singleton OpenRouter client (via OpenAI SDK for full streaming support)
-let openrouterClientInstance: OpenAI | null = null;
+// Singleton OpenRouter client instance
+let openrouterClientInstance: OpenRouter | null = null;
 
 /**
  * Get the singleton OpenRouter client.
- *
- * Uses OpenAI SDK pointed at OpenRouter's API for:
- * - Full streaming support with async iteration
- * - JSON schema structured outputs
- * - Proper timeout/retry handling
- * - Connection pooling
- *
- * @returns OpenAI client configured for OpenRouter
+ * 
+ * @returns OpenRouter client
  */
-export function getOpenRouterClient(): OpenAI {
+export function getOpenRouterClient(): OpenRouter {
   if (!openrouterClientInstance) {
-    openrouterClientInstance = new OpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: process.env.OPENROUTER_API_KEY!,
-      timeout: 600000, // 10 minute timeout
-      maxRetries: 2,
-      defaultHeaders: {
-        'HTTP-Referer': 'https://butterfast.app',
-        'X-Title': 'Butterfast',
-      },
+    openrouterClientInstance = new OpenRouter({
+      apiKey: process.env.OPENROUTER_API_KEY,
     });
   }
   return openrouterClientInstance;

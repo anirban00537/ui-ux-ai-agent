@@ -27,18 +27,30 @@ export class PromptEnhancer {
     checkAborted(signal, 'prompt_enhancement');
 
     const response = await withTimeout(
-      this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.AGENT.NAME,
-        messages: [
-          { role: 'system', content: systemContent },
-          { role: 'user', content: originalPrompt },
-        ],
-        temperature: 0.5,
-      }),
+      // @ts-ignore - OpenRouter SDK 'chat.send'
+      this.openrouter.chat.send(
+        {
+          model: coreConstant.AI_MODELS.AGENT.NAME,
+          messages: [
+            { role: 'system', content: systemContent },
+            { role: 'user', content: originalPrompt },
+          ],
+          temperature: 0.5,
+          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+            ? {
+                provider: {
+                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
+                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                },
+              }
+            : {}),
+        },
+        {}, // Options
+      ),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Prompt Enhancement',
       signal,
-    );
+    ) as any;
 
     const content = response.choices[0]?.message?.content;
     const raw = content != null ? String(content) : '';

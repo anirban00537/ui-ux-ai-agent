@@ -78,28 +78,40 @@ export class ColorPaletteGenerator {
     checkAborted(signal, 'color_palette_generation');
 
     const response = await withTimeout(
-      this.openrouter.chat.completions.create({
-        model: coreConstant.AI_MODELS.AGENT.NAME,
-        messages: [
-          { role: 'system', content: colorPrompt },
-          { role: 'user', content: message },
-        ],
-        response_format: {
-          type: 'json_schema',
-          json_schema: {
-            name: 'colorPalette',
-            strict: true,
-            schema: colorPaletteJsonSchema,
+      // @ts-ignore - OpenRouter SDK 'chat.send'
+      this.openrouter.chat.send(
+        {
+          model: coreConstant.AI_MODELS.AGENT.NAME,
+          messages: [
+            { role: 'system', content: colorPrompt },
+            { role: 'user', content: message },
+          ],
+          responseFormat: {
+            type: 'json_schema',
+            jsonSchema: {
+              name: 'colorPalette',
+              strict: true,
+              schema: colorPaletteJsonSchema,
+            },
           },
+          temperature: 0.5,
+          ...(coreConstant.AI_PROVIDER_CONFIG.ENABLED
+            ? {
+                provider: {
+                  order: coreConstant.AI_PROVIDER_CONFIG.ORDER as any,
+                  allowFallbacks: coreConstant.AI_PROVIDER_CONFIG.ALLOW_FALLBACKS,
+                },
+              }
+            : {}),
         },
-        temperature: 0.5,
-      }),
+        {}, // Options
+      ),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Color Palette LLM Call',
       signal,
-    );
+    ) as any;
 
-    const content = response.choices[0]?.message?.content;
+    const content = response.choices?.[0]?.message?.content;
     const colorPalette = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ColorPalette;
 
     const usage = response.usage as any || {
