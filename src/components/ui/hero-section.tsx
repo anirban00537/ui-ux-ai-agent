@@ -6,19 +6,10 @@ import { PromptBox, type PromptMode } from "@/components/ui";
 import { trackEvent } from "@/components/analytics/trackEvent";
 import { cn } from "@/lib/utils";
 
-const spinningWords = ["Presentation", "Mobile App"];
+const spinningWord = "Mobile App";
 
 export default function HeroSection() {
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<PromptMode>("presentation");
-  const [wordIndex, setWordIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setWordIndex((prev) => (prev + 1) % spinningWords.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center bg-background">
@@ -36,67 +27,29 @@ export default function HeroSection() {
               <span className="relative inline-block text-left">
                 <AnimatePresence mode="wait">
                   <motion.span
-                    key={wordIndex}
+                    key={spinningWord}
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -20, opacity: 0 }}
                     transition={{ duration: 0.4, ease: "easeInOut" }}
                     className="absolute left-0 bottom-0 italic text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 whitespace-nowrap"
                   >
-                    {spinningWords[wordIndex]}
+                    {spinningWord}
                   </motion.span>
                 </AnimatePresence>
                 {/* Invisible spacer to maintain layout height/width based on longest word */}
                 <span className="opacity-0 invisible pointer-events-none italic whitespace-nowrap">
-                  {spinningWords[wordIndex]}
+                  {spinningWord}
                 </span>
               </span>{" "}
               in Seconds
             </h1>
             <p className="text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Transform your prompts into stunning presentations and mobile app
+              Transform your prompts into stunning mobile app
               designs. No design skills needed.
             </p>
           </motion.div>
 
-          {/* Mode Tabs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="flex justify-center gap-1 w-full max-w-2xl mx-auto"
-          >
-            <button
-              type="button"
-              onClick={() => {
-                setMode("presentation");
-                trackEvent("prompt_mode_switch", "engagement", "presentation");
-              }}
-              className={cn(
-                "rounded-full px-5 py-2 text-sm font-medium transition-colors",
-                mode === "presentation"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              Presentation
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setMode("mobile-app");
-                trackEvent("prompt_mode_switch", "engagement", "mobile-app");
-              }}
-              className={cn(
-                "rounded-full px-5 py-2 text-sm font-medium transition-colors",
-                mode === "mobile-app"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              Mobile App
-            </button>
-          </motion.div>
 
           {/* Prompt Box */}
           <motion.div
@@ -107,8 +60,7 @@ export default function HeroSection() {
           >
             <PromptBox
               name="message"
-              mode={mode}
-              onError={(errorMessage) => setError(errorMessage)}
+              onError={(errorMessage: string) => setError(errorMessage)}
               className="border border-border bg-card shadow-none"
             />
 

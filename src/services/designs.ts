@@ -1,6 +1,6 @@
 import request from "@/lib/request";
 
-export type DesignType = "mobile_app" | "presentation";
+export type DesignType = "mobile_app";
 
 export interface Design {
   id: string;

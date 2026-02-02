@@ -21,20 +21,20 @@ const libre = Libre_Baskerville({
 
 export const metadata: Metadata = {
   title: {
-    default: "Butterfast - AI Presentation Application",
+    default: "Butterfast - AI Mobile App Design Generator",
     template: "%s | Butterfast",
   },
   description:
-    "Create stunning presentations effortlessly with Butterfast, an AI-powered presentation application. Design, customize, and share professional presentations in minutes.",
+    "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator. Design, customize, and iterate on professional mobile screens in minutes.",
   keywords: [
-    "AI presentation",
-    "presentation builder",
-    "AI presentations",
-    "presentation maker",
-    "presentation creator",
-    "AI-powered presentations",
-    "presentation software",
-    "presentation design",
+    "AI mobile app design",
+    "UI generator",
+    "mobile app UI builder",
+    "AI design tool",
+    "UX design generator",
+    "mobile prototype builder",
+    "AI-powered UI design",
+    "mobile app design software",
   ],
   authors: [{ name: "Butterfast" }],
   creator: "Butterfast",
@@ -48,23 +48,23 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "/",
     siteName: "Butterfast",
-    title: "Butterfast - AI Presentation Application",
+    title: "Butterfast - AI Mobile App Design Generator",
     description:
-      "Create stunning presentations effortlessly with Butterfast, an AI-powered presentation application.",
+      "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Butterfast - AI Presentation Application",
+        alt: "Butterfast - AI Mobile App Design Generator",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Butterfast - AI Presentation Application",
+    title: "Butterfast - AI Mobile App Design Generator",
     description:
-      "Create stunning presentations effortlessly with Butterfast, an AI-powered presentation application.",
+      "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator.",
     creator: "@butterfast",
     images: ["/og-image.png"],
   },

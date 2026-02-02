@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [promptValue, setPromptValue] = useState("");
-  const [mode, setMode] = useState<PromptMode>("presentation");
 
   const handleSuggestionClick = (prompt: string) => {
     trackEvent('home_suggestion_click', 'engagement', prompt);
@@ -24,44 +23,6 @@ export default function HomePage() {
       <div className="relative w-full max-w-4xl flex flex-col gap-4 z-10">
         <HomeHeader />
 
-        {/* Mode Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="flex justify-center gap-1 w-full max-w-2xl mx-auto"
-        >
-          <button
-            type="button"
-            onClick={() => {
-              setMode("presentation");
-              trackEvent("prompt_mode_switch", "engagement", "presentation");
-            }}
-            className={cn(
-              "rounded-full px-5 py-2 text-sm font-medium transition-colors",
-              mode === "presentation"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-            )}
-          >
-            Presentation
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode("mobile-app");
-              trackEvent("prompt_mode_switch", "engagement", "mobile-app");
-            }}
-            className={cn(
-              "rounded-full px-5 py-2 text-sm font-medium transition-colors",
-              mode === "mobile-app"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-            )}
-          >
-            Mobile App
-          </button>
-        </motion.div>
 
         {/* Prompt Box */}
         <motion.div
@@ -73,8 +34,7 @@ export default function HomePage() {
           <PromptBox
             name="message"
             defaultValue={promptValue}
-            mode={mode}
-            onError={(errorMessage) => setError(errorMessage)}
+            onError={(errorMessage: string) => setError(errorMessage)}
             className="border border-border bg-card shadow-none"
           />
 

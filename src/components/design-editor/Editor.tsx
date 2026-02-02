@@ -3,7 +3,6 @@
 import React, { useCallback, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MobileFrame } from "@/components/design-editor/MobileFrame";
-import { PresentationFrame } from "@/components/design-editor/PresentationFrame";
 import { Trash2, Copy, Check } from "lucide-react";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
@@ -49,7 +48,6 @@ export function Editor({
   colorPalette,
   onDeleteArtboard,
 }: EditorProps) {
-  const isPresentationMode = designType === "presentation";
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopy = useCallback(async (html: string, id: string) => {
@@ -77,7 +75,7 @@ export function Editor({
         )}
       />
       <TransformWrapper
-        initialScale={isPresentationMode ? 0.5 : 0.6}
+        initialScale={0.6}
         minScale={0.1}
         maxScale={3}
         centerOnInit={true}
@@ -129,10 +127,7 @@ export function Editor({
               contentStyle={{ width: "max-content", height: "max-content" }}
             >
               <div
-                className={cn(
-                  "flex items-center justify-center p-20",
-                  isPresentationMode ? "flex-col gap-8" : "gap-12"
-                )}
+                className="flex items-center justify-center p-20 gap-12"
                 style={{ minWidth: "800px", minHeight: "800px" }}
               >
                 {artboards.map((artboard) => (
@@ -159,25 +154,14 @@ export function Editor({
                         </button>
                       )}
                     </div>
-                    {isPresentationMode ? (
-                      <PresentationFrame
-                        title={artboard.title}
-                        subtitle={loading ? "Generating..." : artboard.description}
-                        htmlContent={artboard.html}
-                        width={1640}
-                        colorPalette={colorPalette}
-                        isGenerating={artboard.status === 'generating'}
-                      />
-                    ) : (
-                      <MobileFrame
-                        title={artboard.title}
-                        subtitle={loading ? "Generating..." : artboard.description}
-                        htmlContent={artboard.html}
-                        width={440}
-                        colorPalette={colorPalette}
-                        isGenerating={artboard.status === 'generating'}
-                      />
-                    )}
+                    <MobileFrame
+                      title={artboard.title}
+                      subtitle={loading ? "Generating..." : artboard.description}
+                      htmlContent={artboard.html}
+                      width={440}
+                      colorPalette={colorPalette}
+                      isGenerating={artboard.status === 'generating'}
+                    />
                   </div>
                 ))}
               </div>
@@ -185,7 +169,7 @@ export function Editor({
             <div className="absolute bottom-6 left-6 z-20">
               <div className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
                 <p className="text-sm text-white/80 font-medium">
-                  {artboards.length} {isPresentationMode ? "slide" : "screen"}{artboards.length !== 1 ? "s" : ""}
+                  {artboards.length} screen{artboards.length !== 1 ? "s" : ""}
                 </p>
               </div>
             </div>

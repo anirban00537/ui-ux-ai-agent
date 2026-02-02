@@ -72,19 +72,18 @@ const SendIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 // --- The Final, Self-Contained PromptBox Component ---
-export type PromptMode = "presentation" | "mobile-app";
+export type PromptMode = "mobile-app";
 
 interface PromptBoxProps {
   className?: string;
   name?: string;
   defaultValue?: string;
-  mode?: PromptMode;
   onError?: (error: string) => void;
   onSubmit?: (value: string, designType: DesignType) => void;
 }
 
 export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
-  ({ className, onError, onSubmit, defaultValue = "", mode = "presentation", ...props }, ref) => {
+  ({ className, onError, onSubmit, defaultValue = "", ...props }, ref) => {
     const router = useRouter();
     const internalTextareaRef = React.useRef<HTMLTextAreaElement>(null);
     const [value, setValue] = React.useState(defaultValue);
@@ -93,7 +92,7 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
 
     // Map mode to design type
     const getDesignType = (): DesignType => {
-      return mode === "mobile-app" ? "mobile_app" : "presentation";
+      return "mobile_app";
     };
 
     // Update value when defaultValue prop changes
@@ -130,7 +129,7 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
 
       // If custom onSubmit is provided, use it
       if (onSubmit) {
-        trackEvent("prompt_submit_custom", "engagement", mode);
+        trackEvent("prompt_submit_custom", "engagement", "mobile-app");
         onSubmit(value.trim(), designType);
         return;
       }
@@ -147,22 +146,13 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
 
     // --- Dynamic Placeholder Logic ---
     const placeholders = React.useMemo(
-      () =>
-        mode === "mobile-app"
-          ? [
-              "Create a dating app",
-              "Design a finance tracker with charts",
-              "Generate a workout planner UI",
-              "Build a recipe sharing app",
-            ]
-          : [
-              "Create a deck about AI in Modern Healthcare...",
-              "Design a pitch for a Sustainable Fashion startup...",
-              "Explain Quantum Physics to a fifth grader...",
-              "Develop a marketing plan for a boutique coffee shop...",
-              "Creates a sales deck for a B2B SaaS product...",
-            ],
-      [mode]
+      () => [
+        "Create a dating app",
+        "Design a finance tracker with charts",
+        "Generate a workout planner UI",
+        "Build a recipe sharing app",
+      ],
+      []
     );
 
     const [currentPlaceholderIndex, setCurrentPlaceholderIndex] =
@@ -225,19 +215,9 @@ export const PromptBox = React.forwardRef<HTMLTextAreaElement, PromptBoxProps>(
           <div className="mt-0.5 p-1 pt-0">
             <TooltipProvider delayDuration={100}>
               <div className="flex items-center gap-2 flex-wrap">
-                {/* Mode indicator */}
                 <div className="flex items-center gap-1.5 px-2 py-1 text-xs text-muted-foreground">
-                  {mode === "mobile-app" ? (
-                    <>
-                      <i className="ri-smartphone-line"></i>
-                      <span>Mobile App</span>
-                    </>
-                  ) : (
-                    <>
-                      <i className="ri-slideshow-line"></i>
-                      <span>Presentation</span>
-                    </>
-                  )}
+                  <i className="ri-smartphone-line"></i>
+                  <span>Mobile App</span>
                 </div>
 
                 {/* Right-aligned buttons container */}

@@ -28,7 +28,7 @@ export default function LoginPage() {
                 Welcome back
              </h1>
              <p className="text-muted-foreground text-sm max-w-[280px]">
-                Enter your details to access your presentations and start creating.
+                Enter your details to access your designs and start creating.
              </p>
           </div>
 
@@ -61,12 +61,12 @@ export default function LoginPage() {
 
              <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
+                   <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-[10px] uppercase">
-                  <span className="bg-background px-2 text-muted-foreground tracking-wider font-medium">
-                    Secure Authentication
-                  </span>
+                   <span className="bg-background px-2 text-muted-foreground tracking-wider font-medium">
+                     Secure Authentication
+                   </span>
                 </div>
             </div>
           </div>
@@ -82,7 +82,7 @@ export default function LoginPage() {
       <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-muted">
         <div className="relative z-10 w-full max-w-[480px] p-8">
            <h2 className="text-4xl font-bold tracking-tight text-foreground mb-12 font-serif text-center drop-shadow-sm leading-tight">
-              From prompt<br/>to presentation.
+              From prompt<br/>to mobile app.
            </h2>
 
            <div className="space-y-6 relative">
@@ -96,9 +96,9 @@ export default function LoginPage() {
                        <span className="text-2xl filter drop-shadow-sm">💡</span>
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-foreground mb-1">Describe your idea</h3>
+                       <h3 className="text-lg font-bold text-foreground mb-1">Describe your app</h3>
                        <p className="text-muted-foreground text-sm leading-relaxed font-medium">
-                          Simply type a topic or paste your notes. Our AI understands context and structure instantly.
+                          Simply type a topic or paste your requirements. Our AI understands context and structure instantly.
                        </p>
                     </div>
                  </div>
@@ -111,9 +111,9 @@ export default function LoginPage() {
                        <Sparkles className="w-6 h-6 text-indigo-500" />
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-foreground mb-1">AI generates the deck</h3>
+                       <h3 className="text-lg font-bold text-foreground mb-1">AI generates UI</h3>
                        <p className="text-muted-foreground text-sm leading-relaxed font-medium">
-                          Watch as layouts, images, and text are generated automatically in our premium design system.
+                          Watch as layouts, images, and components are generated automatically in our premium design system.
                        </p>
                     </div>
                  </div>
@@ -126,9 +126,9 @@ export default function LoginPage() {
                        <Zap className="w-6 h-6 text-teal-500" />
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-foreground mb-1">Export & Present</h3>
+                       <h3 className="text-lg font-bold text-foreground mb-1">Export & Share</h3>
                        <p className="text-muted-foreground text-sm leading-relaxed font-medium">
-                          Download as an editable PowerPoint, PDF, or share a live link with your audience immediately.
+                          Get production-ready code, export to design tools, or share a live prototype with your team.
                        </p>
                     </div>
                  </div>
