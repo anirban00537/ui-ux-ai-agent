@@ -8,10 +8,8 @@ export class AiUsageService {
 
   // Use pricing from coreConstant
   private readonly pricing = {
-    [coreConstant.AI_MODELS.OUTLINE.NAME]: coreConstant.AI_MODELS.OUTLINE.PRICING,
-    [coreConstant.AI_MODELS.CARDS.NAME]: coreConstant.AI_MODELS.CARDS.PRICING,
     [coreConstant.AI_MODELS.DESIGN.NAME]: coreConstant.AI_MODELS.DESIGN.PRICING,
-    'default': coreConstant.AI_MODELS.DEFAULT.PRICING
+    'default': coreConstant.AI_MODELS.AGENT.PRICING
   };
 
   constructor(private readonly prisma: PrismaService) {}

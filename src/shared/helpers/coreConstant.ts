@@ -84,24 +84,8 @@ export const coreConstant = {
   } as const,
 
   AI_MODELS: {
-    OUTLINE: {
-      NAME: 'x-ai/grok-4.1-fast',
-      PRICING: { prompt: 0.2, completion: 0.5 },
-    },
-    CARDS: {
-      NAME: 'meta-llama/llama-4-scout',
-      PRICING: { prompt: 0.08, completion: 0.3 },
-    },
-    IMAGE: {
-      NAME: 'black-forest-labs/flux-1.1-pro',
-      COST_PER_IMAGE: 0.04, // Actual USD cost
-    },
-    DEFAULT: {
-      PRICING: { prompt: 10.0, completion: 30.0 },
-    },
-    
     DESIGN: {
-      NAME: 'minimax/minimax-m2.1',
+      NAME: 'deepseek/deepseek-v3.2',
       PRICING: { prompt: 0.27, completion: 1.1 },
     },
     AGENT: {
@@ -131,7 +115,7 @@ export const coreConstant = {
 
   // Credit System Constants
   CREDITS: {
-    FREE_TIER: 15,
-    DEFAULT_NEW_USER: 100,
+    FREE_TIER: 500,
+    DEFAULT_NEW_USER: 500,
   } as const,
 };

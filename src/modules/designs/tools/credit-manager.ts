@@ -10,7 +10,7 @@ const TOKEN_ESTIMATES = {
   BUFFER_MULTIPLIER: 1.1,
 } as const;
 
-const TOKENS_PER_CREDIT = 1000;
+const TOKENS_PER_CREDIT = 200;
 
 interface TokenUsage {
   inputTokens: number;

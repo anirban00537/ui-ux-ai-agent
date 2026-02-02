@@ -63,7 +63,7 @@ export class BlogAiService implements OnModuleInit {
       `;
 
       const response = await this.openRouter.chat.send({
-        model: coreConstant.AI_MODELS.OUTLINE.NAME,
+        model: coreConstant.AI_MODELS.AGENT.NAME,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: prompt }
@@ -79,7 +79,7 @@ export class BlogAiService implements OnModuleInit {
       if (usage) {
         await this.aiUsageService.logUsage({
           userId: user.id,
-          modelName: coreConstant.AI_MODELS.OUTLINE.NAME,
+          modelName: coreConstant.AI_MODELS.AGENT.NAME,
           type: 'blog_generation',
           inputTokens: usage.prompt_tokens || usage.promptTokens || usage.total_tokens || 0,
           outputTokens: usage.completion_tokens || usage.completionTokens || 0,
