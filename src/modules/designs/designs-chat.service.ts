@@ -40,18 +40,16 @@ export class DesignsChatService {
       const signal = abortController.signal;
       let isRunning = true;
 
+      let activeMessenger: StreamMessenger | null = null;
+
       (async () => {
         try {
-          const messenger = new StreamMessenger(
-            this.prisma,
-            subscriber,
-            designId,
-          );
+          activeMessenger = new StreamMessenger(this.prisma, subscriber, designId);
           const creditManager = new CreditManager(this.prisma);
 
           const context = await buildChatContext(
             this.prisma,
-            messenger,
+            activeMessenger,
             prompt,
             userId,
             designId,
@@ -59,6 +57,11 @@ export class DesignsChatService {
           if (!context) {
             subscriber.complete();
             return;
+          }
+
+          // Update messenger with the resolved design ID (in case it was new)
+          if (context.designId) {
+            activeMessenger.setDesignId(context.designId);
           }
 
           if (signal.aborted) {
@@ -74,7 +77,7 @@ export class DesignsChatService {
             context.existingArtboards.length,
           );
           if (creditOutcome.ok === false) {
-            await messenger.emit(
+            await activeMessenger.emit(
               {
                 type: creditOutcome.errorPayload.type,
                 data: creditOutcome.errorPayload.data,
@@ -86,7 +89,7 @@ export class DesignsChatService {
           }
 
           if (signal.aborted) {
-            console.log('[DesignsChatService] Cancelled before intent analysis');
+            console.log('[DesignsChatService] Cancelled before agents init');
             subscriber.complete();
             return;
           }
@@ -101,10 +104,7 @@ export class DesignsChatService {
             creditManager,
             this.aiUsageService,
           );
-          const artboardDeleter = new ArtboardDeleter(
-            this.prisma,
-            creditManager,
-          );
+          const artboardDeleter = new ArtboardDeleter(this.prisma, creditManager);
           const intentAnalyzer = new IntentAnalyzer(
             creditManager,
             this.aiUsageService,
@@ -121,7 +121,7 @@ export class DesignsChatService {
           let effectivePrompt = prompt;
           try {
             effectivePrompt = await runPromptEnhancementPhase(
-              messenger,
+              activeMessenger,
               promptEnhancer,
               prompt,
               context.design.type,
@@ -146,7 +146,7 @@ export class DesignsChatService {
             return;
           }
 
-          await messenger.emit(
+          await activeMessenger.emit(
             {
               type: coreConstant.STREAM_EVENT.PHASE_STEP,
               data: { label: 'Analyzing request', status: 'started' },
@@ -160,7 +160,7 @@ export class DesignsChatService {
           try {
             colorPalette = await runThemePhase(
               this.prisma,
-              messenger,
+              activeMessenger,
               context.design,
               context.designId,
               effectivePrompt,
@@ -186,7 +186,7 @@ export class DesignsChatService {
           }
 
           const intent = await runIntentPhase(
-            messenger,
+            activeMessenger,
             intentAnalyzer,
             effectivePrompt,
             context,
@@ -202,7 +202,7 @@ export class DesignsChatService {
           ) {
             await runUpdatePhase(
               this.prisma,
-              messenger,
+              activeMessenger,
               artboardUpdater,
               intent,
               context,
@@ -219,7 +219,7 @@ export class DesignsChatService {
             intent.screensToUpdate.length > 0
           ) {
             await runDeletePhase(
-              messenger,
+              activeMessenger,
               artboardDeleter,
               intent,
               userId,
@@ -228,7 +228,7 @@ export class DesignsChatService {
             );
           } else {
             await runCreatePhase(
-              messenger,
+              activeMessenger,
               artboardCreator,
               context,
               effectivePrompt,
@@ -241,7 +241,7 @@ export class DesignsChatService {
           }
 
           if (!signal.aborted) {
-            await messenger.emit(
+            await activeMessenger.emit(
               { type: coreConstant.STREAM_EVENT.ALL_COMPLETE },
               'All tasks completed.',
             );
@@ -260,14 +260,14 @@ export class DesignsChatService {
           console.error('[DesignsChatService] Error:', error);
 
           try {
-            const messenger = new StreamMessenger(
-              this.prisma,
-              subscriber,
-              designId,
-            );
-            await messenger.emit(
+            const errorMessenger =
+              activeMessenger ||
+              new StreamMessenger(this.prisma, subscriber, designId);
+
+            await errorMessenger.emit(
               { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
               `Error: ${errMsg}`,
+              false, // Don't persist error statuses to DB to avoid potential FK issues
             );
           } catch (emitError) {
             console.error(

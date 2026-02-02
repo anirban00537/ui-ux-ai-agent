@@ -70,6 +70,17 @@ export class StreamMessenger {
     status: string,
     data?: Record<string, unknown>,
   ): Promise<void> {
+    // Safety check: Don't attempt to persist if we have a temporary or missing designId.
+    // This prevents Foreign Key constraint violations (Prisma error P2003).
+    if (
+      !this.designId ||
+      this.designId === 'temp' ||
+      this.designId === 'new' ||
+      this.designId.length < 5 // Basic check for non-UUID strings
+    ) {
+      return;
+    }
+
     const payload =
       data != null && Object.keys(data).length > 0
         ? { data: data as Prisma.InputJsonValue }
@@ -94,6 +105,18 @@ export class StreamMessenger {
     status: string,
     data?: Record<string, unknown>,
   ): Promise<string> {
+    if (
+      !this.designId ||
+      this.designId === 'temp' ||
+      this.designId === 'new' ||
+      this.designId.length < 5
+    ) {
+      console.warn(
+        `[StreamMessenger] Attempted to createMessageAndGetId with invalid designId: ${this.designId}`,
+      );
+      return `temp-msg-${Date.now()}`;
+    }
+
     const payload =
       data != null && Object.keys(data).length > 0
         ? { data: data as Prisma.InputJsonValue }

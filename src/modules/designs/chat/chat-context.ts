@@ -67,6 +67,7 @@ export async function buildChatContext(
     await messenger.emit(
       { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
       'Prompt is required',
+      false,
     );
     return null;
   }
@@ -74,6 +75,7 @@ export async function buildChatContext(
     await messenger.emit(
       { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
       'User ID is required',
+      false,
     );
     return null;
   }
@@ -81,7 +83,7 @@ export async function buildChatContext(
   let design: ChatDesign | null = null;
   let resolvedDesignId = designId;
 
-  if (designId) {
+  if (designId && designId !== 'temp' && designId !== 'new') {
     const found = await prisma.design.findUnique({
       where: { id: designId, userId },
     });
@@ -89,6 +91,7 @@ export async function buildChatContext(
       await messenger.emit(
         { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
         'Design not found',
+        false,
       );
       return null;
     }

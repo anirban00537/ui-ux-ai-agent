@@ -32,7 +32,7 @@ export function getOpenRouterClient(): OpenAI {
     openrouterClientInstance = new OpenAI({
       baseURL: 'https://openrouter.ai/api/v1',
       apiKey: process.env.OPENROUTER_API_KEY!,
-      timeout: 120000, // 2 minute timeout
+      timeout: 600000, // 10 minute timeout
       maxRetries: 2,
       defaultHeaders: {
         'HTTP-Referer': 'https://butterfast.app',
@@ -48,10 +48,10 @@ export function getOpenRouterClient(): OpenAI {
  */
 export const LLM_CONFIG = {
   /** Maximum time to wait for a non-streaming LLM response (ms) */
-  REQUEST_TIMEOUT_MS: 120000, // 2 minutes
+  REQUEST_TIMEOUT_MS: 600000, // 10 minutes
 
   /** Maximum time to wait for first chunk in streaming response (ms) */
-  STREAM_FIRST_CHUNK_TIMEOUT_MS: 30000, // 30 seconds
+  STREAM_FIRST_CHUNK_TIMEOUT_MS: 60000, // 60 seconds
 
   /** Maximum time to wait between streaming chunks (ms) */
   STREAM_CHUNK_TIMEOUT_MS: 15000, // 15 seconds
