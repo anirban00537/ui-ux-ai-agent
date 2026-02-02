@@ -12,7 +12,7 @@ export const PricingFooter = () => {
       className="text-center space-y-4 pt-4"
     >
       <p className="text-sm text-muted-foreground font-medium">
-        Join thousands of creators building amazing presentations with
+        Join thousands of creators building amazing mobile app designs with
         Butterfast.
       </p>
       <div className="flex items-center justify-center gap-6">

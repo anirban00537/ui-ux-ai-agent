@@ -202,8 +202,8 @@ export default function ContactPage() {
                                 <h2 className="font-serif text-3xl md:text-4xl font-medium mb-12">Frequently Asked Questions</h2>
                                 <div className="space-y-4 text-left">
                                     {[
-                                        { q: "Is there a free trial?", a: "Yes! You can start for free and create up to 3 presentations without a credit card." },
-                                        { q: "Can I export my presentations?", a: "Absolutely. You can export to PDF, PNG, and Powerpoint (coming soon)." },
+                                        { q: "Is there a free trial?", a: "Yes! You can start for free and create up to 3 designs without a credit card." },
+                                        { q: "Can I export my designs?", a: "Absolutely. You can export to clean React code, HTML/CSS, or high-res PNG." },
                                         { q: "Do you offer team billing?", a: "Yes, we have enterprise and team plans with centralized billing and collaborative features." }
                                     ].map((faq, i) => (
                                         <div key={i} className="p-6 rounded-2xl bg-white border border-slate-100 shadow-sm">

@@ -34,7 +34,7 @@ export default function TermsPage() {
                                         <section>
                                             <h2 className="text-2xl font-bold text-foreground mb-4">2. Description of Service</h2>
                                             <p className="text-muted-foreground leading-relaxed">
-                                                Butterfast provides an AI-powered presentation creation platform. 
+                                                Butterfast provides an AI-powered mobile app design platform. 
                                                 We reserve the right to modify or discontinue any part of the service at any time.
                                             </p>
                                         </section>

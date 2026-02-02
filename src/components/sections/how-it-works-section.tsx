@@ -7,7 +7,7 @@ const steps = [
   {
     id: "01",
     title: "Input",
-    description: "Type a topic, paste a presentation, or enter a URL. Our engine reads it all.",
+    description: "Type a concept, paste requirements, or enter a URL. Our engine reads it all.",
     align: "left",
   },
   {
@@ -19,7 +19,7 @@ const steps = [
   {
     id: "03",
     title: "Refine",
-    description: "Make quick edits with our drag-and-drop tools, then present instantly.",
+    description: "Make quick edits with our intuition tools, then share your design instantly.",
     align: "right",
   },
 ];
@@ -40,11 +40,11 @@ export function HowItWorksSection() {
             </span>
           </motion.div>
           <h2 className="font-serif text-5xl md:text-7xl text-foreground mb-6 tracking-tight leading-[1]">
-            From idea to presentation <br />
+            From idea to design <br />
             <span className="italic text-secondary-foreground/60">in seconds.</span>
           </h2>
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Three simple steps to generate professional presentations.
+            Three simple steps to generate professional mobile app UI.
           </p>
         </div>
 

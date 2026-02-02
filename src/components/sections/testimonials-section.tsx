@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 const testimonials = [
   {
-    quote: "Butterfast transformed our pitch deck workflow. What took days now takes minutes.",
+    quote: "Butterfast transformed our mobile app design workflow. What took days now takes minutes.",
     author: "Sarah Chen",
     role: "Marketing Director @ TechCorp",
   },
@@ -15,7 +15,7 @@ const testimonials = [
     role: "Founder, ScaleAI",
   },
   {
-    quote: "Finally, an AI presentation tool that understands clean design principles.",
+    quote: "Finally, an AI design tool that understands clean mobile UI/UX principles.",
     author: "Elena Rodriguez",
     role: "Creative Lead",
   },

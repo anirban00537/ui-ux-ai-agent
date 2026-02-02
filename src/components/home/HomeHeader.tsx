@@ -9,7 +9,7 @@ interface HomeHeaderProps {
 }
 
 export const HomeHeader: React.FC<HomeHeaderProps> = ({
-  title = <>What Presentation to <span className="text-primary/80 font-normal italic">build</span> today?</>,
+  title = <>What design to <span className="text-primary/80 font-normal italic">build</span> today?</>,
   subtitle
 }) => {
   return (

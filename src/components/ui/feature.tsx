@@ -5,22 +5,22 @@ import { IconLayoutDashboard, IconWand, IconFileText, IconPalette, IconTypograph
 const features = [
   {
     title: "Smart Layouts",
-    description: "Don't stress about where to put things. Our AI arranges your presentations perfectly, every time.",
+    description: "Don't stress about where to put things. Our AI arranges your interface perfectly, every time.",
     icon: <IconLayoutDashboard className="w-6 h-6 text-primary" />,
   },
   {
     title: "Instant Transformation",
-    description: "Turn your notes or old presentations into a fresh presentation in just one click.",
+    description: "Turn your concepts or sketches into a fresh mobile design in just one click.",
     icon: <IconWand className="w-6 h-6 text-primary" />,
   },
   {
-    title: "Instant Present",
-    description: "Present seamlessly right from your browser. Your audience sees exactly what you see.",
+    title: "Instant Prototype",
+    description: "Preview your app seamlessly right from your browser. Your audience sees the flow instantly.",
     icon: <IconFileText className="w-6 h-6 text-primary" />,
   },
   {
     title: "Your Brand",
-    description: "Upload your logo and colors once. We'll make sure every presentation looks like you.",
+    description: "Upload your logo and colors once. We'll make sure every design looks like you.",
     icon: <IconPalette className="w-6 h-6 text-primary" />,
   },
   {
@@ -56,7 +56,7 @@ export function FeaturesSection() {
             <span className="italic text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">nothing you don't.</span>
           </h2>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            A complete suite of storytelling tools designed to eliminate the friction between your ideas and a finished presentation.
+            A complete suite of design tools designed to eliminate the friction between your ideas and a finished mobile app design.
           </p>
         </div>
 

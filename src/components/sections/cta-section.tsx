@@ -22,10 +22,10 @@ export function CTASection() {
             transition={{ duration: 0.6 }}
         >
             <h2 className="font-serif text-5xl md:text-7xl mb-8 tracking-tight">
-                Ready to <span className="text-primary italic">wow</span> them?
+                Ready to <span className="text-primary italic">launch</span>?
             </h2>
             <p className="text-xl md:text-2xl text-white/60 max-w-2xl mx-auto mb-12 font-light">
-                Join thousands of storytellers who have switched to the effortless way of presenting.
+                Join thousands of designers who have switched to the effortless way of building UI.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">

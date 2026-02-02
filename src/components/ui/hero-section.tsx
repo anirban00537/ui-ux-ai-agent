@@ -12,7 +12,20 @@ export default function HeroSection() {
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center bg-background">
+    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center isolate">
+      {/* Background Image Layer */}
+      <div 
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage: "url('/background.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 -z-10 bg-background/40 backdrop-blur-[2px]" />
+
       <div className="container relative z-10 px-4 flex flex-col items-center">
         <div className="w-full max-w-4xl flex flex-col gap-3">
           {/* Headline */}

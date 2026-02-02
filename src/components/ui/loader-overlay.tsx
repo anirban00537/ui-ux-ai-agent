@@ -26,7 +26,7 @@ const getStageDisplay = (stage?: string): string => {
     'initializing': 'Initializing',
     'analyzing-layout': 'Analyzing layout',
     'generating-content': 'AI creating content',
-    'saving-card': 'Saving presentation',
+    'saving-card': 'Finalizing design',
   };
   return stage ? stageMap[stage] || stage : '';
 };

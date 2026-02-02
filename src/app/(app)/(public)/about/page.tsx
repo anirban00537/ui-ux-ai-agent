@@ -20,7 +20,7 @@ export default function AboutPage() {
         {
             icon: IconBolt,
             title: "Ready in Seconds",
-            description: "No more all-nighters. Just type your topic, and our AI builds a complete deck for you instantly.",
+            description: "No more all-nighters. Just type your idea, and our AI builds a complete mobile app UI for you instantly.",
             gradient: "from-amber-500 to-orange-500"
         },
         {
@@ -32,13 +32,13 @@ export default function AboutPage() {
         {
             icon: IconPalette,
             title: "Beautiful Designs",
-            description: "Say goodbye to ugly presentations. Everything is automatically formatted to look stunning and consistent.",
+            description: "Say goodbye to ugly UI. Everything is automatically formatted to look stunning and consistent.",
             gradient: "from-pink-500 to-rose-500"
         },
         {
             icon: IconSparkles,
             title: "Easy Editing",
-            description: "Want to change something? Just click and type. It's as simple as using a text presentation.",
+            description: "Want to change something? Just click and type. It's as simple as describing your vision.",
             gradient: "from-violet-500 to-purple-500"
         }
     ];
@@ -139,7 +139,7 @@ export default function AboutPage() {
                                     className="relative order-2 lg:order-1"
                                 >
                                     <div className="relative aspect-square max-w-md mx-auto">
-                                        {/* Floating presentations */}
+                                        {/* Floating mobile screens */}
                                         <motion.div 
                                             animate={{ y: [0, -10, 0] }}
                                             transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -189,21 +189,21 @@ export default function AboutPage() {
                                     <div>
                                         <span className="text-primary font-semibold text-sm uppercase tracking-wider">Our Mission</span>
                                         <h2 className="font-serif text-4xl md:text-5xl font-medium leading-tight text-foreground mt-4">
-                                            Making beautiful presentations accessible to everyone
+                                            Making beautiful mobile app designs accessible to everyone
                                         </h2>
                                     </div>
                                     
                                     <div className="space-y-6 text-lg text-muted-foreground leading-relaxed">
                                         <p>
-                                            We started Butterfast because we were tired of spending hours formatting presentations 
-                                            instead of focusing on what really matters — the ideas.
+                                            We started Butterfast because we were tired of spending hours designing screens 
+                                            instead of focusing on what really matters — the user experience.
                                         </p>
                                         <p>
                                             Our AI-powered platform transforms your raw thoughts into polished, professional 
-                                            presentations in seconds. No design skills needed. No formatting headaches.
+                                            mobile app designs in seconds. No design skills needed. No formatting headaches.
                                         </p>
                                         <p className="font-medium text-foreground">
-                                            Just brilliant presentations, effortlessly created.
+                                            Just brilliant mobile designs, effortlessly created.
                                         </p>
                                     </div>
                                 </motion.div>
@@ -329,7 +329,7 @@ export default function AboutPage() {
                                     Ready to create something amazing?
                                 </h2>
                                 <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-                                    Join thousands of creators who are already making beautiful presentations with Butterfast.
+                                    Join thousands of creators who are already making beautiful mobile app designs with Butterfast.
                                 </p>
                                 <a 
                                     href="/login"

@@ -38,7 +38,7 @@ export default function PrivacyPage() {
                                             </p>
                                             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
                                                 <li>Create an account or profile</li>
-                                                <li>Use our AI presentation generation services</li>
+                                                <li>Use our AI design generation services</li>
                                                 <li>Communicate with us via email or support</li>
                                                 <li>Subscribe to our newsletters or premium plans</li>
                                             </ul>
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
                                             <h2 className="text-2xl font-bold text-foreground mb-4">3. How We Use AI</h2>
                                             <p className="text-muted-foreground leading-relaxed">
                                                 Butterfast uses artificial intelligence to help generate and structure content. 
-                                                Your input data is used to process your requests. We do not use your private presentations 
+                                                Your input data is used to process your requests. We do not use your private designs 
                                                  to train public models without your explicit consent.
                                             </p>
                                         </section>
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
                                             <h2 className="text-2xl font-bold text-foreground mb-4">4. Data Security</h2>
                                             <p className="text-muted-foreground leading-relaxed">
                                                 We implement industry-standard security measures to protect your data. 
-                                                All presentations are encrypted at rest and during transmission.
+                                                All designs are encrypted at rest and during transmission.
                                             </p>
                                         </section>
 

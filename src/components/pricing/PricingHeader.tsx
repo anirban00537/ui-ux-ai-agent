@@ -18,8 +18,8 @@ export const PricingHeader = () => {
         pricing
       </h1>
       <p className="text-base md:text-lg text-muted-foreground/80 max-w-xl mx-auto leading-relaxed">
-        Choose the perfect plan to supercharge your presentation workflow
-        with AI. No hidden fees, just pure creativity.
+      Choose the perfect plan to supercharge your mobile app design workflow
+      with AI. No hidden fees, just pure creativity.
       </p>
     </motion.div>
   );

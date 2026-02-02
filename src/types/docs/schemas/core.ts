@@ -23,7 +23,7 @@ export const BLOCK_TYPES = {
 
 // Supported document types
 export const DOC_TYPES = {
-  PRESENTATION: "presentation",
+  MOBILE_APP: "mobile_app",
   CAROUSEL: "carousel",
   RESUME: "resume",
   INFOGRAPHIC: "infographic",
@@ -31,7 +31,7 @@ export const DOC_TYPES = {
 } as const;
 
 export const DocTypeSchema = z.enum([
-  DOC_TYPES.PRESENTATION,
+  DOC_TYPES.MOBILE_APP,
   DOC_TYPES.CAROUSEL,
   DOC_TYPES.RESUME,
   DOC_TYPES.INFOGRAPHIC,
@@ -74,7 +74,7 @@ export const DocInfoSchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   thumbnail: z.string().nullable(),
-  docType: DocTypeSchema.default(DOC_TYPES.PRESENTATION),
+  docType: DocTypeSchema.default(DOC_TYPES.MOBILE_APP),
   isPublic: z.boolean(),
   isTemplate: z.boolean(),
   tags: z.array(z.string()),
