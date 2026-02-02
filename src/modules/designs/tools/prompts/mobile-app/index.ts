@@ -1,4 +1,5 @@
 import { PromptTemplate } from '@langchain/core/prompts';
+export { enhancementTemplate } from './enhancer';
 
 export const designSystemInstructions = `
 ═══════════════════════════════════════════════════════════════════════════════

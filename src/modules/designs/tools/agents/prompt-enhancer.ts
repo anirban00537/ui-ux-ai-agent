@@ -1,26 +1,8 @@
-import { PromptTemplate } from '@langchain/core/prompts';
 import { CreditManager } from '../credits';
 import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm';
-
-const promptEnhancementSystemTemplate = PromptTemplate.fromTemplate(
-  `You are a prompt engineer for {designType} UI design. Your task is to enhance the user's raw request into a single, detailed design brief that will be used to generate screens.
-
-RULES:
-1. Output ONLY the enhanced prompt. No preamble, no "Here is...", no explanation.
-2. If the user's prompt is SHORT or VAGUE (e.g. one line, few words like "make a todo app" or "make a crypto wallet"):
-   - Expand it into a rich design brief that includes:
-     - App/screen theme and purpose (e.g. "Cryptocurrency wallet dashboard", "Todo list mobile app")
-     - Concrete screen descriptions with specific UI elements (e.g. "A holographic virtual credit card tilting in 3D space. Line graph visualizing asset growth on a translucent floating sheet. Token list with glowing logos and frosted row backgrounds. Total balance in large, luminous digits.")
-     - Add: "Create also the other screens." or similar when multiple screens are implied
-     - A style line describing visual aesthetic: "Mobile UI, [aesthetic] aesthetic. [Concrete UI details: frosted glass cards, background blur, typography, borders, depth effects.]" (e.g. Glassmorphism, Neobrutalism, Minimal, Swiss style)
-     - Include theme, typography, colors, cards, borders, depth so the design system has clear direction
-3. If the user's prompt is ALREADY DETAILED (multiple sentences, specific UI descriptions, style mentioned):
-   - Make light refinements for clarity and consistency only. Preserve the user's original instructions and intent. Do not rewrite or expand unnecessarily.
-
-Design type context: {designType}.`,
-);
+import { PromptManager } from '../prompts/prompt-manager';
 
 export class PromptEnhancer {
   private openrouter = getOpenRouterClient();
@@ -39,10 +21,8 @@ export class PromptEnhancer {
   ): Promise<string> {
     checkAborted(signal, 'prompt_enhancement');
 
-    const designTypeLabel = designType || 'mobile app';
-    const systemContent = await promptEnhancementSystemTemplate.format({
-      designType: designTypeLabel,
-    });
+    const prompts = PromptManager.getPrompts(designType || 'mobile_app');
+    const systemContent = await prompts.enhancementTemplate.format({});
 
     checkAborted(signal, 'prompt_enhancement');
 
