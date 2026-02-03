@@ -25,6 +25,7 @@ interface MobileFrameProps {
   subtitle?: string;
   className?: string;
   width?: number;
+  height?: number;
   initialX?: number;
   initialY?: number;
   colorPalette?: ColorPalette;
@@ -44,6 +45,7 @@ export function MobileFrame({
   subtitle,
   className = "",
   width = 440,
+  height,
   initialX = 0,
   initialY = 0,
   colorPalette,
@@ -64,28 +66,56 @@ export function MobileFrame({
   const standardHeight = Math.floor(width * aspectRatio);
 
   // Initialize size and position
-  const [size, setSize] = useState({ width: width, height: standardHeight });
+  const [size, setSize] = useState({ width: width, height: height || standardHeight });
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   
-  // Auto-save initial position if requested (for smart placement persistence)
-  useEffect(() => {
-    if (autoSave && onSave) {
-      onSave({ x: initialX, y: initialY, width, height: standardHeight });
-    }
-    // Only run once on mount/init when autoSave is true
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  
+  // Refs to track prop changes exclusively for syncing
+  const lastWidthProp = useRef(width);
+  const lastHeightProp = useRef(height);
+  const lastXProp = useRef(initialX);
+  const lastYProp = useRef(initialY);
+
   const [isSelected, setIsSelected] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Sync with prop updates if they change externally (and not resizing/dragging)
+  // Sync with prop updates IF the props themselves changed (ignoring local state differences)
   useEffect(() => {
-    if (!isResizing && !isDragging && width !== size.width) {
-       setSize(prev => ({ ...prev, width }));
+    // If we're interacting, just update the "last seen" to the current props 
+    // to avoid snapping back immediately after we stop.
+    if (isResizing || isDragging) {
+      lastWidthProp.current = width;
+      lastHeightProp.current = height;
+      lastXProp.current = initialX;
+      lastYProp.current = initialY;
+      return;
     }
-  }, [width, isResizing, isDragging]);
+
+    if (width !== lastWidthProp.current) {
+        setSize(prev => ({ ...prev, width }));
+        lastWidthProp.current = width;
+    }
+    if (height !== undefined && height !== lastHeightProp.current) {
+        setSize(prev => ({ ...prev, height }));
+        lastHeightProp.current = height;
+    }
+    if (initialX !== lastXProp.current || initialY !== lastYProp.current) {
+        setPosition({ x: initialX, y: initialY });
+        lastXProp.current = initialX;
+        lastYProp.current = initialY;
+    }
+  }, [width, height, initialX, initialY, isResizing, isDragging]);
+
+  // Auto-save initial position if requested (for smart placement persistence)
+  useEffect(() => {
+    if (autoSave && onSave) {
+      onSave({ x: initialX, y: initialY, width, height: height || standardHeight });
+    }
+    // Only run once on mount/init when autoSave is true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Removed the simple sync useEffect in favor of the more robust one above
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -98,7 +128,9 @@ export function MobileFrame({
             if (newHeight && !isResizing && !isDragging) {
               // Ensure we don't shrink below standard mobile height automatically, 
               // but allow growing for longer content.
-              setSize(prev => ({ ...prev, height: Math.max(newHeight, standardHeight) }));
+              // Note: Only do this if height wasn't manually set? 
+              // For now, keep the auto-grow logic but make it aware of current size.
+              setSize(prev => ({ ...prev, height: Math.max(newHeight, prev.height) }));
             }
           }
         }
@@ -127,7 +159,7 @@ export function MobileFrame({
     }
   }, [colorPalette, isLoaded]);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const rndRef = useRef<any>(null);
 
   // Handle Click Outside to Deselect
   useEffect(() => {
@@ -136,11 +168,14 @@ export function MobileFrame({
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       
-      // If we have a container and the click was outside it
-      if (containerRef.current && !containerRef.current.contains(target)) {
+      // If we have an Rnd element and the click was outside it
+      if (rndRef.current) {
+        const rndElement = rndRef.current.getSelfElement();
+        if (rndElement && !rndElement.contains(target)) {
           // Additional check: maybe it's a drag handle or portal?
           // For now, simple outside check is best.
           setIsSelected(false);
+        }
       }
     };
 
@@ -182,6 +217,7 @@ export function MobileFrame({
 
   return (
     <Rnd
+      ref={rndRef}
       className={`mobile-frame-container z-10 ${isSelected ? 'z-50' : ''} ${className}`}
       size={{ width: size.width, height: size.height }}
       position={{ x: position.x, y: position.y }}
@@ -191,6 +227,9 @@ export function MobileFrame({
         setIsDragging(true);
         setIsSelected(true);
       }}
+      onDrag={(e, d) => {
+        setPosition({ x: d.x, y: d.y });
+      }}
       onDragStop={(e, d) => {
         setIsDragging(false);
         setPosition({ x: d.x, y: d.y });
@@ -199,6 +238,13 @@ export function MobileFrame({
       onResizeStart={() => {
         setIsResizing(true);
         setIsSelected(true);
+      }}
+      onResize={(e, direction, ref, delta, position) => {
+        setSize({ 
+          width: parseInt(ref.style.width), 
+          height: parseInt(ref.style.height) 
+        });
+        setPosition(position);
       }}
       onResizeStop={(e, direction, ref, delta, position) => {
         setIsResizing(false);
@@ -245,7 +291,6 @@ export function MobileFrame({
       }}
     >
       <div 
-        ref={containerRef}
         className="relative w-full h-full flex flex-col items-center select-none"
       >
         
@@ -254,7 +299,6 @@ export function MobileFrame({
           <div 
             className="absolute -top-24 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-xl border-2 border-border bg-background px-3 py-2 shadow-2xl z-[60] drag-target cursor-grab active:cursor-grabbing animate-in fade-in slide-in-from-bottom-2 duration-200"
             style={{ minWidth: 'max-content' }}
-            onMouseDown={(e) => e.stopPropagation()} 
           >
              {showUpdateInput ? (
                 // UPDATE INPUT MODE

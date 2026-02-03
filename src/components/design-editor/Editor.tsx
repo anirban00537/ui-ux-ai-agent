@@ -195,6 +195,7 @@ export function Editor({
                         subtitle={loading ? "Generating..." : artboard.description}
                         htmlContent={artboard.html}
                         width={artboard.width ?? itemWidth}
+                        height={artboard.height}
                         initialX={artboard.x}
                         initialY={artboard.y}
                         colorPalette={colorPalette}
@@ -244,6 +245,7 @@ export function Editor({
                       subtitle={loading ? "Generating..." : artboard.description}
                       htmlContent={artboard.html}
                       width={itemWidth}
+                      height={artboard.height}
                       initialX={smartX}
                       initialY={smartY}
                       colorPalette={colorPalette}
