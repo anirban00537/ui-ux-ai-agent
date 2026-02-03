@@ -267,14 +267,16 @@ export function MobileFrame({
       >
         {/* Toolbar (Floating Top) */}
         {isSelected && (
-          <FrameToolbar
-            title={title}
-            onDelete={onDelete}
-            onViewCode={() => setShowCodeModal(true)}
-            onUpdate={onUpdate}
-            showUpdateInput={showUpdateInput}
-            setShowUpdateInput={setShowUpdateInput}
-          />
+          <div className="absolute -top-14 left-0 w-full flex justify-center z-[60]">
+             <FrameToolbar
+                title={title}
+                onDelete={onDelete}
+                onViewCode={() => setShowCodeModal(true)}
+                onUpdate={onUpdate}
+                showUpdateInput={showUpdateInput}
+                setShowUpdateInput={setShowUpdateInput}
+              />
+          </div>
         )}
 
         {/* Unselected Title (Legacy/Hover) */}
