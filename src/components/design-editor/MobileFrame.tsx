@@ -2,6 +2,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
+import { cn } from "@/lib/utils";
+import { CodeViewerModal } from "./CodeViewerModal";
 
 interface ColorPalette {
   background: string;
@@ -17,7 +19,7 @@ interface ColorPalette {
   input: string;
 }
 
-import { Trash2, Copy, Check, RotateCcw, ExternalLink, Download, MoreHorizontal, Monitor, GripVertical, Sparkles, X } from "lucide-react";
+import { Trash2, Copy, Check, RotateCcw, ExternalLink, Download, MoreHorizontal, Monitor, GripVertical, Sparkles, X, Code } from "lucide-react";
 
 interface MobileFrameProps {
   htmlContent: string;
@@ -60,6 +62,7 @@ export function MobileFrame({
 }: MobileFrameProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showCodeModal, setShowCodeModal] = useState(false);
 
   // State for dimensions
   const aspectRatio = 932 / 430;
@@ -216,6 +219,7 @@ export function MobileFrame({
   };
 
   return (
+    <>
     <Rnd
       ref={rndRef}
       className={`mobile-frame-container z-10 ${isSelected ? 'z-50' : ''} ${className}`}
@@ -360,27 +364,37 @@ export function MobileFrame({
                           <span className="text-xs font-semibold">Tidy Up</span>
                         </button>
                     )}
+     
+                     {/* Refresh/Regenerate */}
+                     <button 
+                       onMouseDown={(e) => e.stopPropagation()}
+                       className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
+                       title="Regenerate"
+                     >
+                       <RotateCcw className="w-4.5 h-4.5" />
+                     </button>
 
-                    {/* Refresh/Regenerate */}
-                    <button 
-                      onMouseDown={(e) => e.stopPropagation()}
-                      className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
-                      title="Regenerate"
-                    >
-                      <RotateCcw className="w-4.5 h-4.5" />
-                    </button>
-    
-                     {/* Copy Code */}
-                     {onCopy && (
-                      <button 
+                     {/* View Code Modal */}
+                     <button 
                         onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => { e.stopPropagation(); onCopy(); }}
+                        onClick={(e) => { e.stopPropagation(); setShowCodeModal(true); }}
                         className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
-                        title="Copy Code"
+                        title="View Code"
                       >
-                        {isCopied ? <Check className="w-4.5 h-4.5 text-green-500" /> : <Copy className="w-4.5 h-4.5" />}
+                        <Code className="w-5 h-5 text-primary" />
                       </button>
-                     )}
+     
+                      {/* Copy Code */}
+                      {onCopy && (
+                       <button 
+                         onMouseDown={(e) => e.stopPropagation()}
+                         onClick={(e) => { e.stopPropagation(); onCopy(); }}
+                         className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
+                         title="Copy Iframe Content"
+                       >
+                         {isCopied ? <Check className="w-4.5 h-4.5 text-green-500" /> : <Copy className="w-4.5 h-4.5" />}
+                       </button>
+                      )}
     
                      {/* Delete */}
                      {onDelete && (
@@ -494,5 +508,14 @@ export function MobileFrame({
         )}
       </div>
     </Rnd>
+    
+    <CodeViewerModal 
+      isOpen={showCodeModal}
+      onClose={() => setShowCodeModal(false)}
+      htmlContent={htmlContent}
+      title={title}
+      colorPalette={colorPalette}
+    />
+    </>
   );
 }
