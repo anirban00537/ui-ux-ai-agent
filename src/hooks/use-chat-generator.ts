@@ -947,9 +947,33 @@ export function useChatGenerator(): UseChatGeneratorResult {
               const eventType = raw?.type ?? eventData?.type;
 
               switch (eventType) {
-                case "phase_step":
-                  // Skip phase steps for updates - only show screen-specific messages
+                case "phase_step": {
+                  // Handle phase steps for updates
+                  const label = eventData?.label;
+                  const stepStatus = eventData?.status;
+                  if (
+                    label &&
+                    (stepStatus === "started" || stepStatus === "completed")
+                  ) {
+                    const stepMessage: Message = {
+                      id: `phase-${Date.now()}-${Math.random()
+                        .toString(36)
+                        .slice(2)}`,
+                      content: `${label}: ${stepStatus}`,
+                      role: "assistant",
+                      createdAt: new Date().toISOString(),
+                      type: "stream",
+                      status: "phase_step",
+                      data: { label, status: stepStatus },
+                    };
+                    setConversation((prev) =>
+                      prev
+                        ? { ...prev, messages: [...prev.messages, stepMessage] }
+                        : prev
+                    );
+                  }
                   break;
+                }
 
                 case "screen_start": {
                   const messageId = eventData?.messageId;

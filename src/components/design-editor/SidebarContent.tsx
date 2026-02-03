@@ -381,10 +381,15 @@ export function SidebarContent({
               const isComplete = !turn.isActive && turn.cardMessages.length > 0;
 
               // Build display steps from step messages
+              // For updates, also include phase_step messages from the update flow
+              const allStepMessages = [
+                ...turn.stepMessages,
+                ...turn.cardMessages.filter((m) => m.status === "phase_step"),
+              ];
               const displaySteps =
-                turn.stepMessages.length > 0
+                allStepMessages.length > 0
                   ? (() => {
-                      const sorted = [...turn.stepMessages].sort(
+                      const sorted = [...allStepMessages].sort(
                         (a, b) =>
                           new Date(a.createdAt).getTime() -
                           new Date(b.createdAt).getTime()
