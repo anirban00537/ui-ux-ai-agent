@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import { cn } from "@/lib/utils";
 import { CodeViewerModal } from "./CodeViewerModal";
+import { FrameToolbar } from "./FrameToolbar";
+import { Monitor } from "lucide-react";
 
 interface ColorPalette {
   background: string;
@@ -18,8 +20,6 @@ interface ColorPalette {
   border: string;
   input: string;
 }
-
-import { Trash2, Copy, Check, RotateCcw, ExternalLink, Download, MoreHorizontal, Monitor, GripVertical, Sparkles, X, Code } from "lucide-react";
 
 interface MobileFrameProps {
   htmlContent: string;
@@ -63,24 +63,22 @@ export function MobileFrame({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
+  const [showUpdateInput, setShowUpdateInput] = useState(false);
 
   // State for dimensions
   const aspectRatio = 932 / 430;
   const standardHeight = Math.floor(width * aspectRatio);
 
-  // Initialize size and position
   const [size, setSize] = useState({ width: width, height: height || standardHeight });
   const [position, setPosition] = useState({ x: initialX, y: initialY });
-  
-  // Refs to track prop changes exclusively for syncing
+  const [isSelected, setIsSelected] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
   const lastWidthProp = useRef(width);
   const lastHeightProp = useRef(height);
   const lastXProp = useRef(initialX);
   const lastYProp = useRef(initialY);
-
-  const [isSelected, setIsSelected] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
 
   // Sync with prop updates IF the props themselves changed (ignoring local state differences)
   useEffect(() => {
@@ -118,8 +116,6 @@ export function MobileFrame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Removed the simple sync useEffect in favor of the more robust one above
-
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (iframeRef.current && event.source === iframeRef.current.contentWindow) {
@@ -129,10 +125,6 @@ export function MobileFrame({
           } else if (event.data.type === 'UPDATE_HEIGHT') {
             const newHeight = event.data.height;
             if (newHeight && !isResizing && !isDragging) {
-              // Ensure we don't shrink below standard mobile height automatically, 
-              // but allow growing for longer content.
-              // Note: Only do this if height wasn't manually set? 
-              // For now, keep the auto-grow logic but make it aware of current size.
               setSize(prev => ({ ...prev, height: Math.max(newHeight, prev.height) }));
             }
           }
@@ -145,7 +137,7 @@ export function MobileFrame({
   }, [isResizing, isDragging]);
 
   useEffect(() => {
-    if (isLoaded && iframeRef.current?.contentWindow) {
+    if (isLoaded && htmlContent && iframeRef.current?.contentWindow) {
       iframeRef.current.contentWindow.postMessage(
         { type: "UPDATE_CONTENT", html: htmlContent },
         "*"
@@ -170,19 +162,15 @@ export function MobileFrame({
 
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      
-      // If we have an Rnd element and the click was outside it
       if (rndRef.current) {
         const rndElement = rndRef.current.getSelfElement();
         if (rndElement && !rndElement.contains(target)) {
-          // Additional check: maybe it's a drag handle or portal?
-          // For now, simple outside check is best.
           setIsSelected(false);
+          setShowUpdateInput(false);
         }
       }
     };
 
-    // Use a slight delay or check to ensure we don't catch the SAME click that selected us
     const timer = setTimeout(() => {
         window.addEventListener('mousedown', handleClickOutside);
     }, 10);
@@ -199,25 +187,6 @@ export function MobileFrame({
     }
   }, [isSelected]);
 
-  const [showUpdateInput, setShowUpdateInput] = useState(false);
-  const updateInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (showUpdateInput) {
-       // Small delay to ensure render
-       setTimeout(() => updateInputRef.current?.focus(), 50);
-    }
-  }, [showUpdateInput]);
-
-  const handleUpdateSubmit = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const val = updateInputRef.current?.value.trim();
-    if (val && onUpdate) {
-        onUpdate(val);
-        setShowUpdateInput(false);
-    }
-  };
-
   return (
     <>
     <Rnd
@@ -226,7 +195,7 @@ export function MobileFrame({
       size={{ width: size.width, height: size.height }}
       position={{ x: position.x, y: position.y }}
       scale={scale}
-      onMouseDown={handleSelect}
+      dragHandleClassName="drag-target"
       onDragStart={() => {
         setIsDragging(true);
         setIsSelected(true);
@@ -260,168 +229,50 @@ export function MobileFrame({
         setPosition(position);
         onSave?.({ x: position.x, y: position.y, width: newSize.width, height: newSize.height });
       }}
-      lockAspectRatio={false}
-      minWidth={200}
-      maxWidth={800}
-      minHeight={200}
-      dragHandleClassName="drag-target"
-      enableResizing={isSelected ? { 
-        bottomRight: true, 
-        topLeft: true, 
-        topRight: true, 
+      enableResizing={{
+        bottomRight: true,
         bottomLeft: true,
-        left: true,
-        right: true, 
-        top: true,
-        bottom: true 
-      } : false}
-      resizeHandleComponent={{
+        topRight: true,
+        topLeft: true,
+        bottom: false,
+        top: false,
+        left: false,
+        right: false,
+      }}
+      resizeHandleComponent={isSelected ? {
         bottomRight: (
-           <div className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-white border border-primary shadow-sm z-50 cursor-nwse-resize" />
+          <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nwse-resize z-[70] transition-all hover:scale-125" />
         ),
         bottomLeft: (
-           <div className="absolute -bottom-1.5 -left-1.5 w-3.5 h-3.5 bg-white border border-primary shadow-sm z-50 cursor-nesw-resize" />
+          <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nesw-resize z-[70] transition-all hover:scale-125" />
         ),
         topRight: (
-           <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-white border border-primary shadow-sm z-50 cursor-nesw-resize" />
+          <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nesw-resize z-[70] transition-all hover:scale-125" />
         ),
         topLeft: (
-           <div className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 bg-white border border-primary shadow-sm z-50 cursor-nwse-resize" />
+          <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nwse-resize z-[70] transition-all hover:scale-125" />
         ),
-        top: <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white border border-primary shadow-sm z-50 cursor-ns-resize hidden" />,
-        bottom: <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-white border-primary shadow-sm z-50 cursor-ns-resize hidden" />,
-        left: <div className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3.5 h-3.5 bg-white border-primary shadow-sm z-50 cursor-ew-resize hidden" />,
-        right: <div className="absolute top-1/2 -right-1.5 -translate-y-1/2 w-3.5 h-3.5 bg-white border-primary shadow-sm z-50 cursor-ew-resize hidden" />,
-      }}
+      } : {}}
     >
       <div 
         className="relative w-full h-full flex flex-col items-center select-none"
       >
-        
-        {/* Figma-like Floating Toolbar (Visible on Selected) - BIGGER VERSION */}
+        {/* Toolbar (Floating Top) */}
         {isSelected && (
-          <div 
-            className="absolute -top-24 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-xl border-2 border-border bg-background px-3 py-2 shadow-2xl z-[60] drag-target cursor-grab active:cursor-grabbing animate-in fade-in slide-in-from-bottom-2 duration-200"
-            style={{ minWidth: 'max-content' }}
-          >
-             {showUpdateInput ? (
-                // UPDATE INPUT MODE
-                <div className="flex items-center gap-2">
-                   <div className="flex items-center gap-2 px-2 py-1.5 bg-accent/50 rounded-lg border border-border">
-                      <Sparkles className="w-4 h-4 text-primary shrink-0 animate-pulse" />
-                      <input
-                        ref={updateInputRef}
-                        type="text"
-                        placeholder="Describe changes (e.g. 'Make title bigger')..."
-                        className="bg-transparent border-none outline-none text-sm w-[280px] text-foreground placeholder:text-muted-foreground"
-                        onKeyDown={(e) => {
-                           if (e.key === 'Enter') handleUpdateSubmit();
-                           if (e.key === 'Escape') setShowUpdateInput(false);
-                           e.stopPropagation(); 
-                        }}
-                      />
-                   </div>
-                   <button 
-                      onClick={handleUpdateSubmit} 
-                      className="p-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
-                   >
-                     <Check className="w-4 h-4" />
-                   </button>
-                   <button 
-                      onClick={() => setShowUpdateInput(false)} 
-                      className="p-2 hover:bg-muted text-muted-foreground rounded-lg transition-colors"
-                   >
-                     <X className="w-4 h-4" />
-                   </button>
-                </div>
-             ) : (
-                // STANDARD TOOLBAR
-                <>
-                 {/* Drag Handle */}
-                 <div className="text-foreground-muted/40 hover:text-foreground-muted transition-colors cursor-grab">
-                    <GripVertical className="w-5 h-5 shrink-0" />
-                 </div>
-    
-                 {/* Icon + Title */}
-                 <div className="flex items-center gap-2 text-foreground-muted">
-                    <Monitor className="w-5 h-5 shrink-0" />
-                    <span className="text-base font-semibold select-text max-w-[160px] truncate">{title || 'Mobile Frame'}</span>
-                 </div>
-    
-                 {/* Separator */}
-                 <div className="h-6 w-px bg-border mx-1" />
-    
-                 {/* Actions Group */}
-                 <div className="flex items-center gap-1.5">
-                    {/* Update / Tidy Up Button */}
-                    {onUpdate && (
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); setShowUpdateInput(true); }}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-all active:scale-95 border border-primary/20"
-                          title="Update with AI"
-                        >
-                          <Sparkles className="w-4 h-4" />
-                          <span className="text-xs font-semibold">Tidy Up</span>
-                        </button>
-                    )}
-     
-                     {/* Refresh/Regenerate */}
-                     <button 
-                       onMouseDown={(e) => e.stopPropagation()}
-                       className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
-                       title="Regenerate"
-                     >
-                       <RotateCcw className="w-4.5 h-4.5" />
-                     </button>
-
-                     {/* View Code Modal */}
-                     <button 
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => { e.stopPropagation(); setShowCodeModal(true); }}
-                        className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
-                        title="View Code"
-                      >
-                        <Code className="w-5 h-5 text-primary" />
-                      </button>
-     
-                      {/* Copy Code */}
-                      {onCopy && (
-                       <button 
-                         onMouseDown={(e) => e.stopPropagation()}
-                         onClick={(e) => { e.stopPropagation(); onCopy(); }}
-                         className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
-                         title="Copy Iframe Content"
-                       >
-                         {isCopied ? <Check className="w-4.5 h-4.5 text-green-500" /> : <Copy className="w-4.5 h-4.5" />}
-                       </button>
-                      )}
-    
-                     {/* Delete */}
-                     {onDelete && (
-                       <button 
-                         onMouseDown={(e) => e.stopPropagation()}
-                         onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                         className="p-1.5 hover:bg-red-500/10 rounded-lg text-foreground-muted hover:text-red-500 transition-all active:scale-90"
-                         title="Delete"
-                       >
-                         <Trash2 className="w-4.5 h-4.5" />
-                       </button>
-                     )}
-                     
-                     {/* More Options */}
-                     <button 
-                       onMouseDown={(e) => e.stopPropagation()}
-                       className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90">
-                        <MoreHorizontal className="w-4.5 h-4.5" />
-                     </button>
-                 </div>
-               </>
-             )}
-          </div>
+          <FrameToolbar
+            title={title}
+            isCopied={isCopied}
+            onCopy={onCopy}
+            onDelete={onDelete}
+            onViewCode={() => setShowCodeModal(true)}
+            onUpdate={onUpdate}
+            showUpdateInput={showUpdateInput}
+            setShowUpdateInput={setShowUpdateInput}
+          />
         )}
 
         {/* Unselected Title (Legacy/Hover) */}
-        {!isSelected && (title || subtitle) && (
+        {!isSelected && title && (
           <div className="absolute -top-10 w-full text-center opacity-0 group-hover:opacity-100 transition-opacity drag-target cursor-grab">
              <span className="text-xs font-medium text-gray-400 uppercase tracking-wider bg-background/80 px-2 py-1 rounded shadow-sm border border-border">
                 {title}
@@ -432,12 +283,8 @@ export function MobileFrame({
         {/* Frame Wrapper */}
         <div 
            className="relative w-full h-full group"
-           onClick={(e) => {
-             e.stopPropagation();
-             setIsSelected(true);
-           }}
         >
-             {/* Selection Border - Matches SVG Concept */}
+             {/* Selection Border */}
             {isSelected && (
               <div className="absolute -inset-[1px] border-[2px] border-primary rounded-[33px] z-20 pointer-events-none" />
             )}
@@ -477,7 +324,6 @@ export function MobileFrame({
                    className="absolute inset-0 z-40 drag-target cursor-grab active:cursor-grabbing"
                    title="Click to select or drag"
                    onClick={(e) => {
-                     // e.stopPropagation(); 
                      setIsSelected(true);
                    }}
                  />
