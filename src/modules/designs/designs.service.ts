@@ -157,4 +157,25 @@ export class DesignsService {
       return errorResponse(error.message);
     }
   }
+
+  async deleteArtboard(id: string, userId: string): Promise<ResponseModel> {
+    try {
+      const artboard = await this.prisma.artboard.findUnique({
+        where: { id },
+        include: { design: true },
+      });
+
+      if (!artboard || artboard.design.userId !== userId) {
+        return errorResponse('User does not have permission to delete this artboard');
+      }
+
+      await this.prisma.artboard.delete({
+        where: { id },
+      });
+
+      return successResponse('Artboard deleted successfully');
+    } catch (error) {
+      return errorResponse(error.message);
+    }
+  }
 }

@@ -64,6 +64,14 @@ export class DesignsController {
     return this.designsService.updateArtboard(id, user.id, body);
   }
 
+  @Delete('artboards/:id')
+  async deleteArtboard(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.designsService.deleteArtboard(id, user.id);
+  }
+
   @Patch(':id')
   async updateDesign(
     @Param('id') id: string,
