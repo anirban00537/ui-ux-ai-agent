@@ -111,8 +111,7 @@ export default function CanvasLayout({
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            overflow: hidden;
+            min-height: 100vh;
             background-color: var(--background);
             font-family: var(--font-sans), "Space Grotesk", sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -121,8 +120,9 @@ export default function CanvasLayout({
 
           #root, .canvas-content-wrapper {
             background-color: var(--background);
-            height: 100%;
-            min-height: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
           }
 
           /* Theme utilities - must exist for dynamically injected content */
