@@ -126,11 +126,17 @@ export function MobileFrame({
               );
             }
           } else if (event.data.type === 'UPDATE_HEIGHT') {
-            // Disabled auto-resize to allow scrolling within the frame
-            // const newHeight = event.data.height;
-            // if (newHeight && !isResizing && !isDragging) {
-            //   setSize(prev => ({ ...prev, height: Math.max(newHeight, prev.height) }));
-            // }
+            const newHeight = event.data.height;
+            // Auto-grow with dampening and caps to prevent infinite loops with vh units
+            if (newHeight && !isResizing && !isDragging) {
+              setSize(prev => {
+                // Only grow if significantly larger (dampening) and under safety cap (2400px)
+                if (newHeight > prev.height + 10 && newHeight < 2400) {
+                   return { ...prev, height: newHeight };
+                }
+                return prev;
+              });
+            }
           }
         }
       }
