@@ -9,19 +9,25 @@ import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../l
 const colorPaletteJsonSchema = {
   type: 'object',
   properties: {
-    background: { type: 'string', description: 'Page/surface background (hex)' },
-    foreground: { type: 'string', description: 'Default text color on background (hex)' },
-    primary: { type: 'string', description: 'Primary brand/CTA color (hex)' },
-    primaryForeground: { type: 'string', description: 'Text on primary (hex)' },
-    secondary: { type: 'string', description: 'Secondary accent/surface (hex)' },
-    secondaryForeground: { type: 'string', description: 'Text on secondary (hex)' },
-    mutedForeground: { type: 'string', description: 'Muted/subtle text (hex)' },
-    card: { type: 'string', description: 'Card/panel background (hex)' },
-    cardForeground: { type: 'string', description: 'Text on card (hex)' },
-    border: { type: 'string', description: 'Border color (hex)' },
-    input: { type: 'string', description: 'Input background/border (hex)' },
+    themeMode: {
+       type: 'string', 
+       enum: ['light', 'dark'],
+       description: 'The detected or chosen theme mode best suited for the user request.' 
+    },
+    background: { type: 'string', description: 'Page background. Dark mode: #020617 (Slate-950). Light mode: #ffffff.' },
+    foreground: { type: 'string', description: 'Body text. Dark mode: #f8fafc (Slate-50). Light mode: #0f172a (Slate-900).' },
+    primary: { type: 'string', description: 'Main Brand Color. Vibrant, high saturation.' },
+    primaryForeground: { type: 'string', description: 'Text on primary. Must pass WCAG AA contrast against primary.' },
+    secondary: { type: 'string', description: 'Secondary/Surface color.' },
+    secondaryForeground: { type: 'string', description: 'Text on secondary.' },
+    mutedForeground: { type: 'string', description: 'Subtle text (captions).' },
+    card: { type: 'string', description: 'Card background. Slightly lighter/darker than bg to create depth.' },
+    cardForeground: { type: 'string', description: 'Text on card.' },
+    border: { type: 'string', description: 'Border color.' },
+    input: { type: 'string', description: 'Input background.' },
   },
   required: [
+    'themeMode',
     'background', 'foreground', 'primary', 'primaryForeground',
     'secondary', 'secondaryForeground', 'mutedForeground',
     'card', 'cardForeground', 'border', 'input',
@@ -29,29 +35,46 @@ const colorPaletteJsonSchema = {
   additionalProperties: false,
 };
 
-const colorPaletteTemplate =
-  PromptTemplate.fromTemplate(`You are a Design System Architect. Generate a full theme color palette for a mobile app defined by this request: "{message}"
+const colorPaletteTemplate = PromptTemplate.fromTemplate(
+  `IDENTIY: World-Class Color Architect.
+MISSION: Generate the *perfect* color palette for a mobile app request.
 
-THEME ROLES (output all 11 as hex codes):
-1. background - Page/surface background
-2. foreground - Default text on background (must contrast with background, WCAG AA)
-3. primary - Brand anchor, main CTAs, key interactive elements
-4. primaryForeground - Text/icons on primary (must contrast with primary)
-5. secondary - Secondary accent, alternate surfaces (e.g. hover states, badges)
-6. secondaryForeground - Text on secondary
-7. mutedForeground - Muted/subtle text (hints, captions, placeholders)
-8. card - Card/panel/list item background (distinct from page background)
-9. cardForeground - Text on card
-10. border - Borders and dividers
-11. input - Input field background and border
+USER REQUEST: "{message}"
 
-CONSIDERATIONS:
-• Mood: trustworthy (finance), energetic (fitness), calm (wellness). Ensure primary contrasts with background (WCAG AA).
-• primaryForeground must contrast with primary (e.g. white on dark primary). Same for secondary/secondaryForeground, card/cardForeground.
-• mutedForeground should be readable but subordinate (e.g. gray one step lighter/darker than foreground).
-• border and input can be subtle (e.g. same hue as background at lower opacity or neutral gray).
+═══════════════════════════════════════════════════════════════════════════════
+LOGIC: DETERMINE THEME MODE
+═══════════════════════════════════════════════════════════════════════════════
+1. Does the user ask for "dark", "night", "cyberpunk", "midnight"? -> 'dark'
+2. Does the user ask for "clean", "white", "paper", "medical"? -> 'light'
+3. Default (if unspecified): 'light' for SaaS/Medical, 'dark' for Media/Gaming.
+(Explicitly set "themeMode" in output).
 
-Return JSON with keys: background, foreground, primary, primaryForeground, secondary, secondaryForeground, mutedForeground, card, cardForeground, border, input.`);
+═══════════════════════════════════════════════════════════════════════════════
+RULES: COLOR HARMONY (HEX CODES ONLY)
+═══════════════════════════════════════════════════════════════════════════════
+
+[IF DARK MODE]:
+- background: #020617 (Slate 950) or #09090b (Zinc 950). NEVER PURE BLACK (#000000).
+- foreground: #f8fafc (Slate 50).
+- card: #0f172a (Slate 900) or #18181b (Zinc 900). Must be visible against background.
+- primary: VIBRANT & SATURATED (e.g., #3b82f6 Blue, #10b981 Emerald).
+- border: #1e293b (Slate 800).
+
+[IF LIGHT MODE]:
+- background: #ffffff (White) or #f8fafc (Slate 50).
+- foreground: #0f172a (Slate 900).
+- card: #ffffff (White) with shadow.
+- primary: TRUSTWORTHY & CLEAR (e.g., #2563eb Blue, #059669 Green).
+- border: #e2e8f0 (Slate 200).
+
+[CONTRAST MANDATES]:
+- primaryForeground: IF primary is dark, use #ffffff. IF primary is light/neon, use #000000.
+- mutedForeground: Must be readable. Slate-500 (#64748b) usually works well.
+
+[OUTPUT STRUCTURE]:
+Return a single JSON object with all 11 keys + themeMode.
+`
+);
 
 export class ColorPaletteGenerator {
   private openrouter = getOpenRouterClient();
@@ -150,17 +173,18 @@ export class ColorPaletteGenerator {
 
   generateDefaultColorPalette(): ColorPalette {
     return {
-      background: '#0f172a',
-      foreground: '#f8fafc',
-      primary: '#3b82f6',
+      themeMode: 'dark',
+      background: '#020617', // Slate 950
+      foreground: '#f8fafc', // Slate 50
+      primary: '#3b82f6',    // Blue 500
       primaryForeground: '#ffffff',
-      secondary: '#1e293b',
+      secondary: '#1e293b',  // Slate 800
       secondaryForeground: '#f8fafc',
-      mutedForeground: '#94a3b8',
-      card: '#1e293b',
+      mutedForeground: '#94a3b8', // Slate 400
+      card: '#0f172a',       // Slate 900
       cardForeground: '#f8fafc',
-      border: '#334155',
-      input: '#1e293b',
+      border: '#1e293b',     // Slate 800
+      input: '#0f172a',
     };
   }
 }

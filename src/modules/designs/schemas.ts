@@ -14,6 +14,7 @@ export interface ColorPalette {
   cardForeground: string;
   border: string;
   input: string;
+  themeMode?: 'light' | 'dark';
 }
 
 export interface ScreenPromptItem {
