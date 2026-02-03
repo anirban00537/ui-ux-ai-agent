@@ -12,6 +12,7 @@ import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 import { PromptManager } from '../prompts/prompt-manager';
 import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm';
+import { v4 as uuidv4 } from 'uuid';
 
 // JSON Schema for ScreenPlan
 const artboardPlanJsonSchema = {
@@ -191,6 +192,12 @@ export class ArtboardCreator {
     const content = response.choices[0]?.message?.content;
     const plan = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ScreenPlan;
 
+    // Add stable IDs for streaming
+    plan.screenPrompts = plan.screenPrompts.map(sp => ({
+      ...sp,
+      id: sp.id || uuidv4(),
+    }));
+
     // Fix inconsistency: ensure totalScreens matches screenPrompts.length
     if (plan.totalScreens !== plan.screenPrompts.length) {
       console.warn(
@@ -337,6 +344,7 @@ export class ArtboardCreator {
         yield {
           type: 'chunk',
           data: {
+            id: promptData.id,
             rawChunk: delta,
             accumulatedText: accumulatedContent,
             title: promptData.title,

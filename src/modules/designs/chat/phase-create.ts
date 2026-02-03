@@ -47,6 +47,7 @@ export async function runCreatePhase(
     data: {
       totalScreens: plan.totalScreens,
       screenTitles: plan.screenPrompts.map((s) => s.title),
+      screenIds: plan.screenPrompts.map((s) => s.id),
     },
   });
   await messenger.emit(
@@ -107,7 +108,12 @@ export async function runCreatePhase(
     messenger.emitFast({
       type: coreConstant.STREAM_EVENT.SCREEN_START,
       progress: { current: i, total: plan.totalScreens },
-      data: { messageId: screenStartMessageId, title: sp.title, kind: 'create' },
+      data: { 
+        messageId: screenStartMessageId, 
+        title: sp.title, 
+        kind: 'create',
+        screenId: sp.id, // Pass the stable temp ID
+      },
     });
 
     let screen: { title: string; description: string; html: string } | null =
@@ -131,6 +137,7 @@ export async function runCreatePhase(
           type: coreConstant.STREAM_EVENT.SCREEN_STREAMING,
           progress: { current: i, total: plan.totalScreens },
           data: {
+            id: sp.id, // Use the stable ID
             title: sp.title,
             rawChunk: streamEvent.data.rawChunk,
             accumulatedText: streamEvent.data.accumulatedText,
@@ -163,7 +170,11 @@ export async function runCreatePhase(
     messenger.emitFast({
       type: coreConstant.STREAM_EVENT.SCREEN_COMPLETE,
       progress: { current: i + 1, total: plan.totalScreens },
-      data: { messageId: screenStartMessageId, ...completeData },
+      data: { 
+        messageId: screenStartMessageId, 
+        ...completeData,
+        tempId: sp.id, // Let frontend know which temp ID this real ID replaces
+      },
     });
   }
 

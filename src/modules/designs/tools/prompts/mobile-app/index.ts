@@ -173,7 +173,9 @@ TASK:
 Plan 1-6 mobile screens that cover this request.
 
 SCREEN PLANNING GUIDE (for each screen):
-1. **Title**: Concise (e.g. "Profile Settings").
+1. **Title**: Descriptive & Unique (e.g. "Asset Overview", "Transaction History"). 
+   - NEVER use generic titles like "Screen 1", "Screen 2", or "New Screen".
+   - Be specific to the app's purpose.
 2. **Prompt (Design Brief)**: This prompt goes to the Designer AI. It MUST BE DETAILED.
    - Include **Goal** (What user does).
    - Include **Components** (Specific UI elements: "Floating Fab", "Glass Card").

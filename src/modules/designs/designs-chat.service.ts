@@ -168,6 +168,16 @@ export class DesignsChatService {
             throw err;
           }
 
+          await activeMessenger.emit(
+            {
+              type: coreConstant.STREAM_EVENT.PHASE_STEP,
+              data: { label: 'Analyzing request', status: 'completed' },
+            },
+            'Analyzing request: completed',
+            true,
+            { label: 'Analyzing request', status: 'completed' },
+          );
+
           if (signal.aborted) {
             console.log(
               '[DesignsChatService] Cancelled before screen generation',

@@ -17,6 +17,7 @@ export interface ColorPalette {
 }
 
 export interface ScreenPromptItem {
+  id?: string;
   title: string;
   prompt: string;
   order: number;
@@ -96,6 +97,7 @@ export interface MessageData {
 }
 
 export interface ScreenPromptData {
+  id?: string;
   title: string;
   prompt: string;
 }
