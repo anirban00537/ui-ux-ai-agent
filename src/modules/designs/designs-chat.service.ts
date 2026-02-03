@@ -39,7 +39,11 @@ export class DesignsChatService {
 
       (async () => {
         try {
-          activeMessenger = new StreamMessenger(this.prisma, subscriber, designId);
+          activeMessenger = new StreamMessenger(
+            this.prisma,
+            subscriber,
+            designId,
+          );
           const creditManager = new CreditManager(this.prisma);
 
           const context = await buildChatContext(
@@ -165,7 +169,9 @@ export class DesignsChatService {
           }
 
           if (signal.aborted) {
-            console.log('[DesignsChatService] Cancelled before screen generation');
+            console.log(
+              '[DesignsChatService] Cancelled before screen generation',
+            );
             subscriber.complete();
             return;
           }
@@ -250,7 +256,11 @@ export class DesignsChatService {
       (async () => {
         let activeMessenger: StreamMessenger | null = null;
         try {
-          activeMessenger = new StreamMessenger(this.prisma, subscriber, designId);
+          activeMessenger = new StreamMessenger(
+            this.prisma,
+            subscriber,
+            designId,
+          );
 
           // 1. Fetch Artboard
           const artboard = await this.prisma.artboard.findUnique({
@@ -258,7 +268,11 @@ export class DesignsChatService {
             include: { design: true },
           });
 
-          if (!artboard || artboard.designId !== designId || artboard.design.userId !== userId) {
+          if (
+            !artboard ||
+            artboard.designId !== designId ||
+            artboard.design.userId !== userId
+          ) {
             throw new Error('Artboard not found or permission denied');
           }
 
@@ -267,36 +281,39 @@ export class DesignsChatService {
             return;
           }
 
-          await activeMessenger.emit(
-            {
-              type: coreConstant.STREAM_EVENT.PHASE_STEP,
-              data: { label: 'Updating screen...', status: 'started' },
+          // Save the user's update prompt message to the database
+          await this.prisma.message.create({
+            data: {
+              designId,
+              role: 'user',
+              content: prompt,
             },
-            `Updating screen "${artboard.title}"...`,
-            true,
-             { label: 'Updating screen...', status: 'started' },
-          );
+          });
 
           // Emit screen_start for the specific artboard to trigger UI card
-          await activeMessenger.emit({
-             type: coreConstant.STREAM_EVENT.SCREEN_START,
-             data: {
-               messageId: `update-${Date.now()}`,
-               title: artboard.title,
-               kind: 'update',
-               screenId: artboard.id
-             }
-          }, `Updating: ${artboard.title}`);
-          
+          await activeMessenger.emit(
+            {
+              type: coreConstant.STREAM_EVENT.SCREEN_START,
+              data: {
+                messageId: `update-${Date.now()}`,
+                title: artboard.title,
+                kind: 'update',
+                screenId: artboard.id,
+              },
+            },
+            `Updating: ${artboard.title}`,
+            true,
+          );
+
           const creditManager = new CreditManager(this.prisma);
           const artboardUpdater = new ArtboardUpdater(
-             this.prisma,
-             creditManager,
-             this.aiUsageService
+            this.prisma,
+            creditManager,
+            this.aiUsageService,
           );
 
           // 2. Fetch Previous Screens for Context (Optional consistency)
-           const prevScreens = await this.prisma.artboard.findMany({
+          const prevScreens = await this.prisma.artboard.findMany({
             where: {
               designId: designId,
               id: { not: artboardId }, // Exclude current
@@ -306,6 +323,11 @@ export class DesignsChatService {
             select: { id: true, title: true, description: true, html: true },
           });
 
+          if (signal.aborted) {
+            subscriber.complete();
+            return;
+          }
+
           // 3. Run Update
           const result = await artboardUpdater.updateArtboard(
             userId,
@@ -313,16 +335,16 @@ export class DesignsChatService {
             artboard.html || '', // Existing HTML
             prompt,
             signal,
-            prevScreens.map(s => ({ 
-              title: s.title, 
+            prevScreens.map((s) => ({
+              title: s.title,
               description: s.description || '',
-              html: s.html || '' 
-            }))
+              html: s.html || '',
+            })),
           );
 
           if (signal.aborted) {
-             subscriber.complete();
-             return;
+            subscriber.complete();
+            return;
           }
 
           // 4. Save to DB
@@ -336,7 +358,7 @@ export class DesignsChatService {
           });
 
           // 5. Emit Completion
-           await activeMessenger.emit(
+          await activeMessenger.emit(
             {
               type: coreConstant.STREAM_EVENT.SCREEN_UPDATE,
               data: {
@@ -347,31 +369,33 @@ export class DesignsChatService {
               },
             },
             `Successfully updated screen: ${result.title}`,
+            true,
           );
 
           await activeMessenger.emit(
-             { type: coreConstant.STREAM_EVENT.ALL_COMPLETE },
-             'Update completed.',
+            { type: coreConstant.STREAM_EVENT.ALL_COMPLETE },
+            'Update completed.',
+            true,
           );
 
           subscriber.complete();
-
         } catch (error) {
-           if (signal.aborted) {
-             subscriber.complete();
-             return;
-           }
-           const errMsg = error instanceof Error ? error.message : 'Update failed';
-           console.error('[DesignsChatService] Update Error:', error);
+          if (signal.aborted) {
+            subscriber.complete();
+            return;
+          }
+          const errMsg =
+            error instanceof Error ? error.message : 'Update failed';
+          console.error('[DesignsChatService] Update Error:', error);
 
-            if (activeMessenger) {
-             await activeMessenger.emit(
-               { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
-               `Error: ${errMsg}`,
-               false
-             );
-           }
-           subscriber.complete();
+          if (activeMessenger) {
+            await activeMessenger.emit(
+              { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
+              `Error: ${errMsg}`,
+              false,
+            );
+          }
+          subscriber.complete();
         } finally {
           isRunning = false;
         }
