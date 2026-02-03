@@ -126,10 +126,11 @@ export function MobileFrame({
               );
             }
           } else if (event.data.type === 'UPDATE_HEIGHT') {
-            const newHeight = event.data.height;
-            if (newHeight && !isResizing && !isDragging) {
-              setSize(prev => ({ ...prev, height: Math.max(newHeight, prev.height) }));
-            }
+            // Disabled auto-resize to allow scrolling within the frame
+            // const newHeight = event.data.height;
+            // if (newHeight && !isResizing && !isDragging) {
+            //   setSize(prev => ({ ...prev, height: Math.max(newHeight, prev.height) }));
+            // }
           }
         }
       }
