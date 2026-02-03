@@ -12,6 +12,13 @@ import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+import { useAppSelector } from "@/store/hooks";
+import {
+  Message,
+  GenerationProgress,
+  ColorPalette,
+} from "@/store/slices/designEditorSlice";
+
 // Card statuses that trigger screen cards
 const SCREEN_CARD_STATUSES = [
   "screen_start",
@@ -19,71 +26,10 @@ const SCREEN_CARD_STATUSES = [
   "screen_update",
 ] as const;
 
-interface ColorPalette {
-  background: string;
-  foreground: string;
-  primary: string;
-  primaryForeground: string;
-  secondary: string;
-  secondaryForeground: string;
-  mutedForeground: string;
-  card: string;
-  cardForeground: string;
-  border: string;
-  input: string;
-}
-
-interface Screen {
-  id: string;
-  title: string;
-  description?: string;
-  html: string;
-  createdAt: string;
-  status?: "generating" | "complete";
-}
-
-interface Message {
-  id: string;
-  content: string;
-  role: "user" | "assistant" | "system";
-  createdAt: string;
-  type?: "stream" | "final";
-  eventType?: string;
-  status?: string;
-  data?: Record<string, unknown>;
-}
-
-interface Conversation {
-  id: string;
-  title: string;
-  messages: Message[];
-  screens: Screen[];
-  colorPalette?: ColorPalette;
-}
-
-interface GenerationProgress {
-  current: number;
-  total: number;
-  phase:
-    | "analyzing"
-    | "theme_generating"
-    | "analyzed"
-    | "planning"
-    | "generating"
-    | "complete";
-  currentScreen?: string;
-  screenTitles?: string[];
-  steps?: Array<{ label: string; status: "loading" | "completed" }>;
-}
-
 interface SidebarContentProps {
   onGenerate?: (prompt: string) => Promise<void> | void;
   onClear?: () => void;
   onCancel?: () => void;
-  loading?: boolean;
-  progress?: GenerationProgress | null;
-  hasScreens?: boolean;
-  conversation?: Conversation | null;
   onColorChange?: (key: keyof ColorPalette, value: string) => void;
   onFontChange?: (fontFamily: string) => void;
 }
@@ -225,11 +171,14 @@ export function SidebarContent({
   onGenerate,
   onClear,
   onCancel,
-  loading,
-  progress,
-  hasScreens = false,
-  conversation,
+  onColorChange,
 }: SidebarContentProps) {
+  const {
+    conversation,
+    isGenerating: loading,
+    progress,
+  } = useAppSelector((state) => state.designEditor);
+
   const [prompt, setPrompt] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -378,10 +327,7 @@ export function SidebarContent({
             </div>
 
             {conversationTurns.map((turn, turnIndex) => {
-              const isComplete = !turn.isActive && turn.cardMessages.length > 0;
-
               // Build display steps from step messages
-              // For updates, also include phase_step messages from the update flow
               const allStepMessages = [
                 ...turn.stepMessages,
                 ...turn.cardMessages.filter((m) => m.status === "phase_step"),
@@ -417,29 +363,10 @@ export function SidebarContent({
                     })()
                   : null;
 
-              // Get screen titles for this turn
               // For updates, only show the screen being updated
               const isUpdateTurn = turn.cardMessages.some(
                 (m) => m.data?.kind === "update"
               );
-              const screenTitles = isUpdateTurn
-                ? turn.cardMessages
-                    .filter((m) => m.data?.kind === "update")
-                    .map(
-                      (m) =>
-                        (m.data?.title as string) ||
-                        m.content.replace(/^(Updating|Updated):\s*/i, "")
-                    )
-                : turn.isActive && progress?.screenTitles
-                ? progress.screenTitles
-                : turn.cardMessages.map(
-                    (m) =>
-                      (m.data?.title as string) ||
-                      m.content.replace(
-                        /^(Generating|Generated|Updating|Updated):\s*/i,
-                        ""
-                      )
-                  );
 
               return (
                 <div key={turn.userMessage.id} className="space-y-3">

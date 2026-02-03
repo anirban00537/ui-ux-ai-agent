@@ -1,0 +1,180 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { DesignType } from "@/services/designs";
+
+export interface Artboard {
+  id: string;
+  title: string;
+  description?: string;
+  html: string;
+  createdAt: string;
+  status?: "generating" | "complete";
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+}
+
+export interface Message {
+  id: string;
+  content: string;
+  role: "user" | "assistant" | "system";
+  createdAt: string;
+  type?: "stream" | "final";
+  eventType?: string;
+  status?: string;
+  data?: Record<string, unknown>;
+}
+
+export interface ColorPalette {
+  background: string;
+  foreground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  mutedForeground: string;
+  card: string;
+  cardForeground: string;
+  border: string;
+  input: string;
+}
+
+export interface Conversation {
+  id: string;
+  title: string;
+  designType: DesignType;
+  messages: Message[];
+  artboards: Artboard[];
+  colorPalette?: ColorPalette;
+}
+
+interface DesignEditorState {
+  conversation: Conversation | null;
+  error: string | null;
+  isGenerating: boolean;
+  progress: GenerationProgress | null;
+  selectedArtboardId: string | null;
+  copiedArtboardId: string | null;
+}
+
+export interface GenerationProgress {
+  current: number;
+  total: number;
+  phase: "analyzing" | "theme_generating" | "analyzed" | "planning" | "generating" | "complete";
+  currentScreen?: string;
+  screenTitles?: string[];
+  steps?: Array<{ label: string; status: "loading" | "completed" }>;
+}
+
+const initialState: DesignEditorState = {
+  conversation: null,
+  error: null,
+  isGenerating: false,
+  progress: null,
+  selectedArtboardId: null,
+  copiedArtboardId: null,
+};
+
+const designEditorSlice = createSlice({
+  name: "designEditor",
+  initialState,
+  reducers: {
+    setConversation: (state, action: PayloadAction<any>) => {
+      if (!action.payload) {
+        state.conversation = null;
+        return;
+      }
+      
+      // Map API response to our Conversation interface
+      // The API often returns 'artboards' or 'screens'
+      // and might not have 'messages' if not fetched
+      state.conversation = {
+        id: action.payload.id,
+        title: action.payload.title,
+        designType: action.payload.type || action.payload.designType || "mobile_app",
+        messages: action.payload.messages || [],
+        artboards: action.payload.artboards || action.payload.screens || [],
+        colorPalette: action.payload.colorPalette,
+      };
+    },
+    updateConversation: (state, action: PayloadAction<Partial<Conversation>>) => {
+      if (state.conversation) {
+        state.conversation = { ...state.conversation, ...action.payload };
+      }
+    },
+    addMessage: (state, action: PayloadAction<Message>) => {
+      if (state.conversation) {
+        state.conversation.messages.push(action.payload);
+      }
+    },
+    updateMessageStatus: (state, action: PayloadAction<{ id: string; content?: string; status: string; data?: any }>) => {
+      if (state.conversation) {
+        const msg = state.conversation.messages.find(m => m.id === action.payload.id);
+        if (msg) {
+          if (action.payload.content !== undefined) msg.content = action.payload.content;
+          msg.status = action.payload.status;
+          if (action.payload.data) msg.data = { ...msg.data, ...action.payload.data };
+        }
+      }
+    },
+    updateArtboard: (state, action: PayloadAction<Artboard>) => {
+      if (state.conversation) {
+        if (!state.conversation.artboards) state.conversation.artboards = [];
+        const index = state.conversation.artboards.findIndex(s => s.id === action.payload.id || s.title === action.payload.title);
+        if (index !== -1) {
+          state.conversation.artboards[index] = { ...state.conversation.artboards[index], ...action.payload };
+        } else {
+          state.conversation.artboards.push(action.payload);
+        }
+      }
+    },
+    removeArtboard: (state, action: PayloadAction<string>) => {
+      if (state.conversation) {
+        state.conversation.artboards = state.conversation.artboards.filter(s => s.id !== action.payload);
+      }
+    },
+    setGenerating: (state, action: PayloadAction<boolean>) => {
+      state.isGenerating = action.payload;
+    },
+    setProgress: (state, action: PayloadAction<GenerationProgress | null>) => {
+      state.progress = action.payload;
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
+    setColorPalette: (state, action: PayloadAction<ColorPalette>) => {
+      if (state.conversation) {
+        state.conversation.colorPalette = action.payload;
+      }
+    },
+    updateColorValue: (state, action: PayloadAction<{ key: keyof ColorPalette; value: string }>) => {
+      if (state.conversation?.colorPalette) {
+        state.conversation.colorPalette[action.payload.key] = action.payload.value;
+      }
+    },
+    setCopiedId: (state, action: PayloadAction<string | null>) => {
+      state.copiedArtboardId = action.payload;
+    },
+    setSelectedId: (state, action: PayloadAction<string | null>) => {
+      state.selectedArtboardId = action.payload;
+    }
+  }
+});
+
+export const {
+  setConversation,
+  updateConversation,
+  addMessage,
+  updateMessageStatus,
+  updateArtboard,
+  removeArtboard,
+  setGenerating,
+  setProgress,
+  setError,
+  setColorPalette,
+  updateColorValue,
+  setCopiedId,
+  setSelectedId
+} = designEditorSlice.actions;
+
+export default designEditorSlice.reducer;

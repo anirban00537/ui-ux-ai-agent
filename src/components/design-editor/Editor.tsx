@@ -1,63 +1,42 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MobileFrame } from "@/components/design-editor/MobileFrame";
-import { Trash2, Copy, Check } from "lucide-react";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
-import { DesignType, updateArtboard } from "@/services/designs";
-
-interface Artboard {
-  id: string;
-  title: string;
-  description?: string;
-  html: string;
-  createdAt: string;
-  status?: 'generating' | 'complete';
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-}
-
-interface ColorPalette {
-  background: string;
-  foreground: string;
-  primary: string;
-  primaryForeground: string;
-  secondary: string;
-  secondaryForeground: string;
-  mutedForeground: string;
-  card: string;
-  cardForeground: string;
-  border: string;
-  input: string;
-}
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { 
+  setCopiedId, 
+  removeArtboard
+} from "@/store/slices/designEditorSlice";
 
 interface EditorProps {
-  artboards: Artboard[];
-  designType?: DesignType;
-  loading?: boolean;
-  error?: string;
-  colorPalette?: ColorPalette;
   onDeleteArtboard?: (artboardId: string, artboardTitle: string) => void;
   onUpdateArtboard?: (artboardId: string, prompt: string) => void;
+  onhandleCopy?: (html: string, id: string) => void;
+  onSaveArtboard?: (id: string, data: { x?: number; y?: number; width?: number; height?: number }) => void;
 }
 
 export function Editor({
-  artboards,
-  designType = "mobile_app",
-  loading,
-  error,
-  colorPalette,
   onDeleteArtboard,
   onUpdateArtboard,
+  onhandleCopy,
+  onSaveArtboard,
 }: EditorProps) {
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const { 
+    conversation, 
+    isGenerating, 
+    error, 
+    copiedArtboardId 
+  } = useAppSelector((state) => state.designEditor);
+
+  const artboards = conversation?.artboards ?? [];
+  const colorPalette = conversation?.colorPalette;
   
   // Debounce save requests to avoid spamming the API
-  const saveTimeouts = React.useRef<Record<string, NodeJS.Timeout>>({});
+  const saveTimeouts = useRef<Record<string, NodeJS.Timeout>>({});
 
   const handleSave = useCallback((id: string, data: { x?: number; y?: number; width?: number; height?: number }) => {
     if (saveTimeouts.current[id]) {
@@ -65,16 +44,23 @@ export function Editor({
     }
 
     saveTimeouts.current[id] = setTimeout(() => {
-      updateArtboard(id, data);
+      if (onSaveArtboard) {
+        onSaveArtboard(id, data);
+      }
       delete saveTimeouts.current[id];
     }, 1000);
-  }, []);
+  }, [onSaveArtboard]);
 
   const handleCopy = useCallback(async (html: string, id: string) => {
+    if (onhandleCopy) {
+      onhandleCopy(html, id);
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(html);
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 2000);
+      dispatch(setCopiedId(id));
+      setTimeout(() => dispatch(setCopiedId(null)), 2000);
     } catch {
       const textArea = document.createElement("textarea");
       textArea.value = html;
@@ -82,10 +68,10 @@ export function Editor({
       textArea.select();
       document.execCommand("copy");
       document.body.removeChild(textArea);
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 2000);
+      dispatch(setCopiedId(id));
+      setTimeout(() => dispatch(setCopiedId(null)), 2000);
     }
-  }, []);
+  }, [dispatch, onhandleCopy]);
 
   return (
     <div className="w-full h-full bg-background relative overflow-hidden isolate">
@@ -177,7 +163,6 @@ export function Editor({
                 style={{ 
                   width: "6000px", 
                   height: "3200px",
-                  // Center the initial view roughly if possible, or just start top-left
                 }}
               >
                 {artboards.map((artboard, index) => {
@@ -186,13 +171,12 @@ export function Editor({
                   const startY = 1200;
                   
                   // Smart Placement Logic
-                  // 1. If the artboard has a saved position, use it.
                   if (artboard.x !== undefined && artboard.y !== undefined) {
                     return (
                       <MobileFrame
                         key={artboard.id}
                         title={artboard.title}
-                        subtitle={loading ? "Generating..." : artboard.description}
+                        subtitle={isGenerating && artboard.status === 'generating' ? "Generating..." : artboard.description}
                         htmlContent={artboard.html}
                         width={artboard.width ?? itemWidth}
                         height={artboard.height}
@@ -201,39 +185,29 @@ export function Editor({
                         colorPalette={colorPalette}
                         isGenerating={artboard.status === 'generating'}
                         onCopy={() => handleCopy(artboard.html, artboard.id)}
-                        onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : undefined}
+                        onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : () => dispatch(removeArtboard(artboard.id))}
                         onSave={(data) => handleSave(artboard.id, data)}
-                        isCopied={copiedId === artboard.id}
+                        isCopied={copiedArtboardId === artboard.id}
                         scale={instance?.transformState?.scale || 1}
                         onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}
                       />
                     );
                   }
 
-                  // 2. If it's a NEW artboard (no saved position), place it at the end of the line.
-                  // Calculate the right-most edge of ALL *other* artboards that have positions.
-                  // But wait, what if multiple are new? We need a stable index for new ones.
-                  
-                  // Filter out undefined x/y artboards to get the "anchors"
                   const placedArtboards = artboards.filter(a => a.x !== undefined && a.id !== artboard.id);
-                  
-                  // Find the max X extent
-                  let rightMostEdge = 3000 - (itemWidth / 2); // Default center start if nothing exists
+                  let rightMostEdge = 3000 - (itemWidth / 2);
                   
                   if (placedArtboards.length > 0) {
                      rightMostEdge = Math.max(...placedArtboards.map(a => (a.x || 0) + (a.width || itemWidth)));
                   }
 
-                  // If there are multiple NEW artboards, they naturally come in order in the array.
-                  // We need to offset them relative to each other.
-                  // Let's count how many *new* artboards came before this one.
                   const newArtboardsBefore = artboards
                     .slice(0, index)
                     .filter(a => a.x === undefined)
                     .length;
                   
                   const smartX = placedArtboards.length === 0 && index === 0 
-                    ? 3000 - (itemWidth / 2) // Very first screen ever: Center it
+                    ? 3000 - (itemWidth / 2)
                     : rightMostEdge + gapX + (newArtboardsBefore * (itemWidth + gapX));
                   
                   const smartY = startY;
@@ -242,7 +216,7 @@ export function Editor({
                     <MobileFrame
                       key={artboard.id}
                       title={artboard.title}
-                      subtitle={loading ? "Generating..." : artboard.description}
+                      subtitle={isGenerating && artboard.status === 'generating' ? "Generating..." : artboard.description}
                       htmlContent={artboard.html}
                       width={itemWidth}
                       height={artboard.height}
@@ -251,9 +225,9 @@ export function Editor({
                       colorPalette={colorPalette}
                       isGenerating={artboard.status === 'generating'}
                       onCopy={() => handleCopy(artboard.html, artboard.id)}
-                      onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : undefined}
+                      onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : () => dispatch(removeArtboard(artboard.id))}
                       onSave={(data) => handleSave(artboard.id, data)}
-                      isCopied={copiedId === artboard.id}
+                      isCopied={copiedArtboardId === artboard.id}
                       scale={instance?.transformState?.scale || 1}
                       autoSave={artboard.x === undefined || artboard.y === undefined}
                       onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}

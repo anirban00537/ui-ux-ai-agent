@@ -11,6 +11,7 @@ import {
 import { useChatGenerator } from "@/hooks/use-chat-generator";
 import { usePrompt } from "@/contexts/PromptContext";
 import { createDesignConversation } from "@/services/designs";
+import { Loader2 } from "lucide-react";
 
 export default function DesignEditorPage() {
   const params = useParams();
@@ -20,24 +21,19 @@ export default function DesignEditorPage() {
   const {
     conversation,
     isGenerating,
+    isLoadingDesign,
     progress,
     error,
     sendMessage,
     cancelGeneration,
     clearConversation,
-    loadConversation,
     updateColorPalette,
     updateScreen,
-  } = useChatGenerator();
+    syncArtboardPosition,
+  } = useChatGenerator(designId);
 
   const { prompt: promptContext, type: typeContext, clearPrompt } = usePrompt();
   const hasSentInitialPrompt = useRef(false);
-
-  useEffect(() => {
-    if (designId && designId !== "new") {
-      loadConversation(designId);
-    }
-  }, [designId, loadConversation]);
 
   // Handle initialization from Context (New Flow)
   useEffect(() => {
@@ -102,6 +98,17 @@ export default function DesignEditorPage() {
     sendMessage,
   ]);
 
+  if (isLoadingDesign) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-sm font-medium text-muted-foreground">Loading your designs...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-30 flex overflow-hidden bg-background">
       <div className="absolute inset-0 opacity-40">
@@ -110,11 +117,6 @@ export default function DesignEditorPage() {
 
       <div className="relative flex-1 min-w-0 h-full">
         <Editor
-          artboards={conversation?.screens ?? []}
-          designType={conversation?.designType ?? "mobile_app"}
-          error={error ?? undefined}
-          loading={isGenerating}
-          colorPalette={conversation?.colorPalette}
           onDeleteArtboard={(artboardId: string, artboardTitle: string) => {
             sendMessage(
               `Delete the screen "${artboardTitle}" with ID ${artboardId}`,
@@ -123,6 +125,9 @@ export default function DesignEditorPage() {
           }}
           onUpdateArtboard={(artboardId: string, prompt: string) => {
              updateScreen(designId, artboardId, prompt);
+          }}
+          onSaveArtboard={(id, data) => {
+            syncArtboardPosition({ id, data });
           }}
         />
       </div>
@@ -138,10 +143,6 @@ export default function DesignEditorPage() {
           onGenerate={(prompt) => sendMessage(prompt, designId)}
           onClear={clearConversation}
           onCancel={cancelGeneration}
-          loading={isGenerating}
-          progress={progress}
-          hasScreens={(conversation?.screens.length ?? 0) > 0}
-          conversation={conversation}
           onColorChange={updateColorPalette}
         />
       </CustomResizableSidebar>

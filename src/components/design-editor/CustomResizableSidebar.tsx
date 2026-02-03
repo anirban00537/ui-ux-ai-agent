@@ -32,7 +32,7 @@ export function CustomResizableSidebar({
     <div
       ref={sidebarRef}
       className={cn(
-        "relative bg-zinc-900/20 backdrop-blur-sm border border-zinc-800/50 shadow-2xl flex-shrink-0 transition-none",
+        "relative bg-background backdrop-blur-sm border  shadow-2xl flex-shrink-0 transition-none",
         side === "left" ? "border-r" : "border-l",
         className
       )}
