@@ -59,6 +59,10 @@ export const designSystemInstructions = `
 • SAFE ZONES: p-5 or p-6 padding on edges (Give content room to breathe!).
 • SCROLLING: overflow-y-auto on the flex-1 container if content is long. Hide scrollbars if possible (scrollbar-hide).
 • HEADER: Fixed height Standard: "h-16 flex items-center px-6". Do NOT vary header height between screens.
+• NAVIGATION: Persistent "Bottom Tab Bar" is MANDATORY for all main screens. (e.g. Home, Search, Profile).
+   - Use <div class="h-16 border-t border-border flex items-center justify-around bg-background/80 backdrop-blur-md">...</div>
+   - Ensure the "Active Tab" is highlighted.
+   - If a FAB is present, add "mb-20" or "bottom-20" to avoid overlap with Nav.
 
 🏆 PRO LAYOUT PATTERNS (Don't just stack divs!):
 - BENTO GRIDS: grid grid-cols-2 gap-3 (Tall card left, two small right).
@@ -117,7 +121,9 @@ Glass: "rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg
 • NO Arbitrary values (w-[350px], h-[800px]). Use w-full, h-full, flex.
 • NO Broken HTML. Close all tags.
 • NO "placeholders". Build the real UI.
-• NO Hallucinated Colors. If your primary is Green, your CTA cannot be Blue. Adhere to "bg-primary".
+• NO "placeholders". Build the real UI.
+• NO Hallucinated Colors. If your primary is Blue, checkboxes/toggles MUST be Blue (bg-primary). Do NOT use green unless defined as success state.
+• NO Missing Navigation. Do not remove the Bottom Tab Bar on inner screens unless it is a full-screen Modal.
 
 👻 EMPTY STATES & LOADING:
 - Never leave a list empty without a design.
@@ -166,7 +172,8 @@ Before generating JSON, I will mentally:
 4.  **Choose Components**: Pick Shadcn-style components that fit the data.
 5.  **Refine Details**: Add 'backdrop-blur-md' to overlays? Add 'hover:scale-105' to cards? Yes.
 6.  **Consistency Check**: Are headings centered or left-aligned? STICK TO ONE.
-7.  **Navigation Check**: Active tab = filled icon. Inactive = line icon.
+7.  **Navigation Check**: Did I include the Bottom Tab Bar? (Required). Active tab = filled icon.
+8.  **Color Check**: Are my checkboxes/toggles using the Brand Color (bg-primary)?
 
 ═══════════════════════════════════════════════════════════════════════════════
                             JSON OUTPUT REQUIREMENTS
@@ -181,6 +188,7 @@ Return a SINGLE JSON object:
 CRITICAL CHECKS:
 - [ ] Root has w-full h-screen flex flex-col?
 - [ ] Main content has flex-1 (CRITICAL: prevents footer from floating mid-screen)?
+- [ ] Bottom Navigation Bar included?
 - [ ] No arbitrary colors (only bg-primary, etc.)?
 - [ ] All icons are Remix Icon (<i class="ri-...">)?
 - [ ] Images are Unsplash?
