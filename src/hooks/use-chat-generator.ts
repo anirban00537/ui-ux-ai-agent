@@ -182,6 +182,23 @@ export function useChatGenerator(designId?: string) {
                   }));
                   break;
                 
+                case "phase_step":
+                  if (eventData?.label) {
+                    dispatch(addMessage({
+                      id: `phase-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                      content: eventData.label,
+                      role: "system",
+                      createdAt: new Date().toISOString(),
+                      type: "stream",
+                      status: "phase_step",
+                      data: { 
+                        label: eventData.label, 
+                        status: eventData.status 
+                      }
+                    }));
+                  }
+                  break;
+                
                 case "planning":
                   dispatch(setProgress({
                     current: 0,
@@ -203,6 +220,8 @@ export function useChatGenerator(designId?: string) {
                 case "screen_start": {
                   const title = eventData?.title ?? "Screen";
                   const kind = eventData?.kind ?? "create";
+                  const screenId = eventData?.screenId;
+                  
                   if (eventData?.messageId) {
                     dispatch(addMessage({
                       id: eventData.messageId,
@@ -211,7 +230,25 @@ export function useChatGenerator(designId?: string) {
                       createdAt: new Date().toISOString(),
                       type: "stream",
                       status: "screen_start",
-                      data: { title, kind, screenId: eventData?.screenId },
+                      data: { title, kind, screenId },
+                    }));
+                  }
+
+                  if (screenId) {
+                    dispatch(updateArtboard({
+                      id: screenId,
+                      title,
+                      html: "",
+                      createdAt: new Date().toISOString(),
+                      status: "generating",
+                    }));
+                  }
+
+                  if (raw?.progress) {
+                    dispatch(setProgress({
+                      current: raw.progress.current,
+                      total: raw.progress.total,
+                      phase: "generating",
                     }));
                   }
                   break;
@@ -238,11 +275,19 @@ export function useChatGenerator(designId?: string) {
                       status: "generating",
                     }));
                   }
+                  if (raw?.progress) {
+                    dispatch(setProgress({
+                      current: raw.progress.current,
+                      total: raw.progress.total,
+                      phase: "generating",
+                    }));
+                  }
                   break;
                 }
 
                 case "screen_complete": {
                   const screenPayload = eventData?.screen ?? eventData;
+                  const tempId = eventData?.tempId;
                   if (screenPayload) {
                     dispatch(updateArtboard({
                       id: screenPayload.id,
@@ -251,7 +296,9 @@ export function useChatGenerator(designId?: string) {
                       html: screenPayload.html,
                       createdAt: new Date().toISOString(),
                       status: "complete",
-                    }));
+                      tempId: tempId, // Pass tempId so reducer can replace it
+                    } as any));
+
                     if (eventData?.messageId) {
                       dispatch(updateMessageStatus({
                         id: eventData.messageId,
@@ -260,6 +307,13 @@ export function useChatGenerator(designId?: string) {
                         data: { screenId: screenPayload.id, screen: screenPayload }
                       }));
                     }
+                  }
+                  if (raw?.progress) {
+                    dispatch(setProgress({
+                      current: raw.progress.current,
+                      total: raw.progress.total,
+                      phase: "generating",
+                    }));
                   }
                   break;
                 }
@@ -324,23 +378,6 @@ export function useChatGenerator(designId?: string) {
                   }
                   break;
                 }
-
-                case "phase_step":
-                  if (eventData?.label) {
-                    dispatch(addMessage({
-                      id: `phase-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                      content: eventData.label,
-                      role: "system",
-                      createdAt: new Date().toISOString(),
-                      type: "stream",
-                      status: "phase_step",
-                      data: { 
-                        label: eventData.label, 
-                        status: eventData.status 
-                      }
-                    }));
-                  }
-                  break;
 
                 case "all_complete":
                   dispatch(setProgress({

@@ -117,12 +117,25 @@ const designEditorSlice = createSlice({
         }
       }
     },
-    updateArtboard: (state, action: PayloadAction<Artboard>) => {
+    updateArtboard: (state, action: PayloadAction<Artboard & { tempId?: string }>) => {
       if (state.conversation) {
         if (!state.conversation.artboards) state.conversation.artboards = [];
-        const index = state.conversation.artboards.findIndex(s => s.id === action.payload.id || s.title === action.payload.title);
+        
+        const { tempId, id, title } = action.payload;
+        
+        // Find by current ID, or the tempId it might be replacing, or title as last resort
+        const index = state.conversation.artboards.findIndex(s => 
+          s.id === id || 
+          (tempId && s.id === tempId) || 
+          s.title === title
+        );
+
         if (index !== -1) {
           state.conversation.artboards[index] = { ...state.conversation.artboards[index], ...action.payload };
+          // If we were replacing a tempId, make sure the new ID is set correctly
+          if (tempId && state.conversation.artboards[index].id === tempId) {
+            state.conversation.artboards[index].id = id;
+          }
         } else {
           state.conversation.artboards.push(action.payload);
         }
@@ -137,7 +150,13 @@ const designEditorSlice = createSlice({
       state.isGenerating = action.payload;
     },
     setProgress: (state, action: PayloadAction<GenerationProgress | null>) => {
-      state.progress = action.payload;
+      if (action.payload === null) {
+        state.progress = null;
+      } else if (state.progress) {
+        state.progress = { ...state.progress, ...action.payload };
+      } else {
+        state.progress = action.payload;
+      }
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
