@@ -4,10 +4,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StreamUpdate } from './schemas';
 import { ColorPaletteGenerator } from './tools/agents/color-palette-generator';
 import { PromptEnhancer } from './tools/agents/prompt-enhancer';
-import IntentAnalyzer from './tools/agents/intent-analyzer';
 import ArtboardCreator from './tools/agents/artboard-creator';
 import ArtboardUpdater from './tools/agents/artboard-updater';
-import ArtboardDeleter from './tools/agents/artboard-deleter';
 import { coreConstant } from '../../shared/helpers/coreConstant';
 import { StreamMessenger } from './tools/streaming';
 import { CreditManager } from './tools/credits';
@@ -17,10 +15,7 @@ import {
   checkCredits,
   runPromptEnhancementPhase,
   runThemePhase,
-  runIntentPhase,
   runCreatePhase,
-  runUpdatePhase,
-  runDeletePhase,
 } from './chat';
 
 @Injectable()
@@ -99,16 +94,6 @@ export class DesignsChatService {
             creditManager,
             this.aiUsageService,
           );
-          const artboardUpdater = new ArtboardUpdater(
-            this.prisma,
-            creditManager,
-            this.aiUsageService,
-          );
-          const artboardDeleter = new ArtboardDeleter(this.prisma, creditManager);
-          const intentAnalyzer = new IntentAnalyzer(
-            creditManager,
-            this.aiUsageService,
-          );
           const colorPaletteGenerator = new ColorPaletteGenerator(
             creditManager,
             this.aiUsageService,
@@ -180,65 +165,23 @@ export class DesignsChatService {
           }
 
           if (signal.aborted) {
-            console.log('[DesignsChatService] Cancelled before intent analysis');
+            console.log('[DesignsChatService] Cancelled before screen generation');
             subscriber.complete();
             return;
           }
 
-          const intent = await runIntentPhase(
+          // Skip Intent Analysis/Update/Delete - Proceed directly to creation
+          await runCreatePhase(
             activeMessenger,
-            intentAnalyzer,
-            effectivePrompt,
+            artboardCreator,
             context,
+            effectivePrompt,
+            colorPalette as import('./schemas').ColorPalette | null,
             userId,
             context.designId,
+            context.design.type,
             signal,
           );
-
-          if (
-            intent.intent === 'update_existing' &&
-            intent.screensToUpdate &&
-            intent.screensToUpdate.length > 0
-          ) {
-            await runUpdatePhase(
-              this.prisma,
-              activeMessenger,
-              artboardUpdater,
-              intent,
-              context,
-              effectivePrompt,
-              colorPalette as import('./schemas').ColorPalette | null,
-              userId,
-              context.designId,
-              context.design.type,
-              signal,
-            );
-          } else if (
-            intent.intent === 'delete_existing' &&
-            intent.screensToUpdate &&
-            intent.screensToUpdate.length > 0
-          ) {
-            await runDeletePhase(
-              activeMessenger,
-              artboardDeleter,
-              intent,
-              userId,
-              context.designId,
-              signal,
-            );
-          } else {
-            await runCreatePhase(
-              activeMessenger,
-              artboardCreator,
-              context,
-              effectivePrompt,
-              colorPalette as import('./schemas').ColorPalette | null,
-              userId,
-              context.designId,
-              context.design.type,
-              signal,
-            );
-          }
 
           if (!signal.aborted) {
             await activeMessenger.emit(
@@ -287,6 +230,155 @@ export class DesignsChatService {
           console.log(
             '[DesignsChatService] Teardown called - aborting operation',
           );
+          abortController.abort();
+        }
+      };
+    });
+  }
+
+  async chatStreamUpdateArtboard(
+    prompt: string,
+    userId: string,
+    designId: string,
+    artboardId: string,
+  ): Promise<Observable<StreamUpdate>> {
+    return new Observable<StreamUpdate>((subscriber) => {
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+      let isRunning = true;
+
+      (async () => {
+        let activeMessenger: StreamMessenger | null = null;
+        try {
+          activeMessenger = new StreamMessenger(this.prisma, subscriber, designId);
+
+          // 1. Fetch Artboard
+          const artboard = await this.prisma.artboard.findUnique({
+            where: { id: artboardId },
+            include: { design: true },
+          });
+
+          if (!artboard || artboard.designId !== designId || artboard.design.userId !== userId) {
+            throw new Error('Artboard not found or permission denied');
+          }
+
+          if (signal.aborted) {
+            subscriber.complete();
+            return;
+          }
+
+          await activeMessenger.emit(
+            {
+              type: coreConstant.STREAM_EVENT.PHASE_STEP,
+              data: { label: 'Updating screen...', status: 'started' },
+            },
+            `Updating screen "${artboard.title}"...`,
+            true,
+             { label: 'Updating screen...', status: 'started' },
+          );
+
+          // Emit screen_start for the specific artboard to trigger UI card
+          await activeMessenger.emit({
+             type: coreConstant.STREAM_EVENT.SCREEN_START,
+             data: {
+               messageId: `update-${Date.now()}`,
+               title: artboard.title,
+               kind: 'update',
+               screenId: artboard.id
+             }
+          }, `Updating: ${artboard.title}`);
+          
+          const creditManager = new CreditManager(this.prisma);
+          const artboardUpdater = new ArtboardUpdater(
+             this.prisma,
+             creditManager,
+             this.aiUsageService
+          );
+
+          // 2. Fetch Previous Screens for Context (Optional consistency)
+           const prevScreens = await this.prisma.artboard.findMany({
+            where: {
+              designId: designId,
+              id: { not: artboardId }, // Exclude current
+            },
+            take: 3,
+            orderBy: { createdAt: 'asc' },
+            select: { id: true, title: true, description: true, html: true },
+          });
+
+          // 3. Run Update
+          const result = await artboardUpdater.updateArtboard(
+            userId,
+            designId,
+            artboard.html || '', // Existing HTML
+            prompt,
+            signal,
+            prevScreens.map(s => ({ 
+              title: s.title, 
+              description: s.description || '',
+              html: s.html || '' 
+            }))
+          );
+
+          if (signal.aborted) {
+             subscriber.complete();
+             return;
+          }
+
+          // 4. Save to DB
+          await this.prisma.artboard.update({
+            where: { id: artboardId },
+            data: {
+              title: result.title,
+              description: result.description,
+              html: result.html,
+            },
+          });
+
+          // 5. Emit Completion
+           await activeMessenger.emit(
+            {
+              type: coreConstant.STREAM_EVENT.SCREEN_UPDATE,
+              data: {
+                id: artboardId,
+                title: result.title,
+                description: result.description,
+                html: result.html,
+              },
+            },
+            `Successfully updated screen: ${result.title}`,
+          );
+
+          await activeMessenger.emit(
+             { type: coreConstant.STREAM_EVENT.ALL_COMPLETE },
+             'Update completed.',
+          );
+
+          subscriber.complete();
+
+        } catch (error) {
+           if (signal.aborted) {
+             subscriber.complete();
+             return;
+           }
+           const errMsg = error instanceof Error ? error.message : 'Update failed';
+           console.error('[DesignsChatService] Update Error:', error);
+
+            if (activeMessenger) {
+             await activeMessenger.emit(
+               { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
+               `Error: ${errMsg}`,
+               false
+             );
+           }
+           subscriber.complete();
+        } finally {
+          isRunning = false;
+        }
+      })();
+
+      return () => {
+        if (isRunning) {
           abortController.abort();
         }
       };

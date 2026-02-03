@@ -1,40 +1,14 @@
+
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import {
-  type SingleScreen,
-  type ExistingArtboard,
-  type ColorPalette,
-  type PreviousScreenContext,
-} from '../../schemas';
 import { CreditManager } from '../credits';
-import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
+import { coreConstant } from '../../../../shared/helpers/coreConstant';
 import { PromptManager } from '../prompts/prompt-manager';
 import { getOpenRouterClient, withTimeout, checkAborted, LLM_CONFIG } from '../llm';
+import { PreviousScreenContext } from '../../schemas';
 
-const THEME_CLASSES_BLOCK = `
-STRICT THEME MAPPINGS (use ONLY these Tailwind classes; they map to CSS vars):
-- Background: bg-background | Foreground: text-foreground
-- Primary: bg-primary | Primary Foreground: text-primary-foreground
-- Secondary: bg-secondary | Secondary Foreground: text-secondary-foreground
-- Muted Foreground: text-muted-foreground (hints, captions)
-- Card: bg-card | Card Foreground: text-card-foreground
-- Border: border-border | Input: bg-input, border-input
-- Also available: muted (bg-muted, text-muted), accent, destructive, popover, ring, chart-1…chart-5. Use Remix Icon for icons: <i class="ri-{name}-line"></i> or ri-{name}-fill (e.g. ri-arrow-right-line, ri-home-line, ri-add-circle-fill).
-- Use Shadcn-style component patterns: rounded-md for buttons/inputs, rounded-lg for cards, inline-flex for buttons, semantic theme classes only.
-
-On bg-primary use text-primary-foreground and primary-foreground icons. On bg-secondary use text-secondary-foreground. On bg-card use text-card-foreground. On images use scrim (bg-black/40) + text-foreground. DO NOT use arbitrary colors (e.g. bg-[#...]). WCAG contrast everywhere.`;
-
-const generateColorPaletteInstructions = (
-  colorPalette?: ColorPalette | null,
-): string => {
-  if (!colorPalette) {
-    return `COLOR PALETTE: Use the full theme system: bg-background, text-foreground, bg-primary, text-primary-foreground, bg-secondary, text-secondary-foreground, text-muted-foreground, bg-card, text-card-foreground, border-border, bg-input. On primary/secondary/card use the matching foreground class. On images use scrim + text-foreground. DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]).`;
-  }
-  return `DESIGN SYSTEM (11-color theme) - SAME FOR EVERY SCREEN:${THEME_CLASSES_BLOCK}`;
-};
-
-// Simple schema for the artboard output
-const singleArtboardJsonSchema = {
+const updatedArtboardJsonSchema = {
   type: 'object',
   properties: {
     title: {
@@ -54,76 +28,79 @@ const singleArtboardJsonSchema = {
   additionalProperties: false,
 };
 
-const MAX_HTML_LENGTH_PER_SCREEN = 2500;
-
-function formatPreviousScreensForDesignPattern(
-  screens: PreviousScreenContext[],
-): string {
-  if (screens.length === 0)
-    return '(No other screens — maintain design pattern consistency.)';
-  return screens
-    .map(
-      (s) =>
-        `--- "${s.title}" ---\n${(s.description || '').slice(0, 200)}\nHTML (match design pattern):\n${s.html.slice(0, MAX_HTML_LENGTH_PER_SCREEN)}${s.html.length > MAX_HTML_LENGTH_PER_SCREEN ? '\n...[truncated]' : ''}`,
-    )
-    .join('\n\n');
-}
-
-export class ArtboardUpdater {
-  private openrouter = getOpenRouterClient();
-
+@Injectable()
+export default class ArtboardUpdater {
   constructor(
     private prisma: PrismaService,
     private creditManager: CreditManager,
     private aiUsageService: AiUsageService,
   ) {}
 
+  /**
+   * Refines or updates an *existing* single artboard's HTML using the LLM.
+   * Can be used for targeted updates or re-generating a screen with feedback.
+   */
   async updateArtboard(
-    artboard: ExistingArtboard,
-    message: string,
-    contextMessages: Array<{
-      role: 'system' | 'user' | 'assistant';
-      content: string;
-    }>,
-    colorPalette: ColorPalette | null | undefined,
     userId: string,
     designId: string,
-    designType: string,
-    previousScreens: PreviousScreenContext[] = [],
+    existingHtml: string,
+    updatePrompt: string,
     signal?: AbortSignal,
-  ): Promise<SingleScreen> {
-    checkAborted(signal, `screen_update:${artboard.title}`);
+    previousScreens: PreviousScreenContext[] = [],
+  ): Promise<{ title: string; description: string; html: string }> {
+    checkAborted(signal, 'ArtboardUpdater.updateArtboard');
 
-    const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
-    const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
+    // 1. Construct prompt
+    const systemPrompt = PromptManager.getDesignSystemInstructions();
+    const userPrompt = `
+You are an expert UI/UX developer.
+Your task is to UPDATE an existing mobile screen based on the user's request.
 
-    const prompts = PromptManager.getPrompts(designType);
-    const systemPrompt = await prompts.updateTemplate.format({
-      colorPaletteInstructions,
-      previousScreensContext,
-    });
+CURRENT HTML:
+\`\`\`html
+${existingHtml}
+\`\`\`
 
-    const userContent = `Current artboard:\nTitle: ${artboard.title}\nDescription: ${artboard.description}\nHTML: ${artboard.html}\n***Update request***: ${message}`;
-    const allMessages = [
-      { role: 'system' as const, content: systemPrompt },
-      ...contextMessages,
-      { role: 'user' as const, content: userContent },
-    ];
+USER REQUEST FOR UPDATE:
+"${updatePrompt}"
 
-    checkAborted(signal, `screen_update:${artboard.title}`);
+INSTRUCTIONS:
+1.  Analyze the CURRENT HTML and the User Request.
+2.  Modify the HTML to satisfy the user's request while maintaining the existing design capability and theme consistency.
+3.  Ensure the updated HTML is fully functional, responsive, and uses Tailwind CSS utility classes.
+4.  Retain the overall structure if it doesn't conflict with the update.
+${this.formatPreviousScreens(previousScreens)}
+
+Provide the response in the following JSON format:
+{
+  "title": "Updated Title",
+  "description": "Brief description of changes",
+  "html": "<div ...>...</div>"
+}
+`;
+
+    // 2. Call LLM
+    const client = getOpenRouterClient();
+    
+    // Calculate cost (approximate)
+    const promptTokens = (systemPrompt.length + userPrompt.length) / 4;
+    const estimatedCost = 
+      (promptTokens / 1_000_000) * coreConstant.AI_MODELS.DESIGN.PRICING.prompt;
 
     const response = await withTimeout(
-      // @ts-ignore - OpenRouter SDK 'chat.send'
-      this.openrouter.chat.send(
+      client.chat.send(
         {
           model: coreConstant.AI_MODELS.DESIGN.NAME,
-          messages: allMessages,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
           responseFormat: {
             type: 'json_schema',
             jsonSchema: {
-              name: 'artboard',
+              name: 'updated_artboard',
               strict: true,
-              schema: singleArtboardJsonSchema,
+              schema: updatedArtboardJsonSchema,
             },
           },
           temperature: 0.5,
@@ -136,80 +113,58 @@ export class ArtboardUpdater {
               }
             : {}),
         },
-        {}, // Options
+        {},
       ),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
-      `Screen Update: ${artboard.title}`,
+      'Artboard Update LLM Call',
       signal,
-    ) as any;
-
-    const content = response.choices?.[0]?.message?.content;
-    const updatedArtboard = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
-
-    // Extract token usage from completion
-    const usage = response.usage as any || {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
-    };
-
-    const tokenUsage = {
-      inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-      outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-      totalTokens: usage.totalTokens || usage.total_tokens || 0,
-    };
-
-    console.log('[ArtboardUpdater] Deducting credits for artboard update:', tokenUsage);
-
-    // Fire-and-forget for non-critical logging
-    this.aiUsageService.logUsage({
-      userId,
-      modelName: coreConstant.AI_MODELS.DESIGN.NAME,
-      inputTokens: tokenUsage.inputTokens,
-      outputTokens: tokenUsage.outputTokens,
-      type: 'screen_update',
-      designId,
-    } as any).catch(err => console.error('[ArtboardUpdater] Usage log error:', err));
-
-    await this.creditManager.deductCredits(
-      userId,
-      designId,
-      'screen_update',
-      tokenUsage,
     );
 
-    return updatedArtboard;
-  }
+    // 3. Parse Response
+    const content = response.choices[0]?.message?.content;
+    if (!content || typeof content !== 'string') {
+      throw new Error('No valid content received from LLM for update');
+    }
 
-  async saveUpdatedArtboard(
-    artboardId: string,
-    updateData: SingleScreen,
-  ): Promise<ExistingArtboard> {
-    return await this.prisma.artboard.update({
-      where: { id: artboardId },
-      data: {
-        title: updateData.title,
-        description: updateData.description,
-        html: updateData.html,
-      },
-    });
-  }
+    let result;
+    try {
+      result = JSON.parse(content);
+    } catch (e) {
+      console.error('Failed to parse update JSON:', content);
+      throw new Error('Invalid JSON response from LLM');
+    }
 
-  async saveAssistantMessage(designId: string, content: string): Promise<void> {
-    await this.prisma.message.create({
-      data: {
-        designId,
-        content,
-        role: 'assistant',
-      },
-    });
-  }
+    // 4. Record Usage
+    if (response.usage) {
+      try {
+        await this.aiUsageService.logUsage({
+          userId,
+          modelName: coreConstant.AI_MODELS.DESIGN.NAME,
+          inputTokens: (response.usage as any)?.prompt_tokens || (response.usage as any)?.promptTokens || 0,
+          outputTokens: (response.usage as any)?.completion_tokens || (response.usage as any)?.completionTokens || 0,
+          type: 'artboard_update',
+          designId,
+          provider: 'openrouter',
+        });
+      } catch (error) {
+        console.warn('Failed to record AI usage:', error);
+      }
+    }
 
-  async getArtboardById(artboardId: string): Promise<ExistingArtboard | null> {
-    return await this.prisma.artboard.findUnique({
-      where: { id: artboardId },
-    });
+    return {
+      title: result.title,
+      description: result.description,
+      html: result.html,
+    };
+  }
+  
+  private formatPreviousScreens(screens: PreviousScreenContext[]): string {
+    if (!screens || screens.length === 0) return '';
+    
+    const contextStr = screens
+      .map((s, i) => `Screen ${i + 1} (${s.title}):\n${s.html.substring(0, 500)}...`) // Truncate for token efficiency
+      .join('\n\n');
+      
+    return `\nCONTEXT (Other screens in user flow - maintain consistency):\n${contextStr}\n`;
   }
 }
-
-export default ArtboardUpdater;

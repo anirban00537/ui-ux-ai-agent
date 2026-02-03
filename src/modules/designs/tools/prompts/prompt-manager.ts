@@ -5,4 +5,8 @@ export class PromptManager {
     // Only return mobile app prompts as presentation is removed
     return mobileAppPrompts;
   }
+  
+  static getDesignSystemInstructions() {
+    return mobileAppPrompts.designSystemInstructions;
+  }
 }

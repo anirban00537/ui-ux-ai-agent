@@ -94,4 +94,19 @@ export class DesignsController {
     );
     return source$.pipe(map((update: any) => ({ data: update })));
   }
+  @Sse('chat/stream-update/:designId')
+  async chatStreamUpdate(
+    @Param('designId') designId: string,
+    @Query('prompt') prompt: string,
+    @Query('artboardId') artboardId: string,
+    @UserInfo() user: User,
+  ): Promise<Observable<any>> {
+    const source$ = await this.designsChatService.chatStreamUpdateArtboard(
+      prompt,
+      user.id,
+      designId,
+      artboardId,
+    );
+    return source$.pipe(map((update: any) => ({ data: update })));
+  }
 }

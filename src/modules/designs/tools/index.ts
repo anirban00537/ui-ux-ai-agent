@@ -8,9 +8,6 @@ export { StreamMessenger } from './streaming';
 export { CreditManager } from './credits';
 export {
   ArtboardCreator,
-  ArtboardUpdater,
-  ArtboardDeleter,
-  IntentAnalyzer,
   ColorPaletteGenerator,
   PromptEnhancer,
 } from './agents';
