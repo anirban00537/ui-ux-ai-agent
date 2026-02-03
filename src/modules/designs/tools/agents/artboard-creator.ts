@@ -92,7 +92,31 @@ const generateColorPaletteInstructions = (
   if (!colorPalette) {
     return `COLOR PALETTE: Use the full theme system: bg-background, text-foreground, bg-primary, text-primary-foreground, bg-secondary, text-secondary-foreground, text-muted-foreground, bg-card, text-card-foreground, border-border, bg-input. On primary/secondary/card use the matching foreground class for text/icons. On images use scrim + text-foreground. DO NOT use arbitrary Tailwind color values (e.g. bg-[#...]).`;
   }
-  return `DESIGN SYSTEM (11-color theme) - SAME FOR EVERY SCREEN:${THEME_CLASSES_BLOCK}`;
+
+  const themeModeInstruction = colorPalette.themeMode === 'dark' 
+    ? "🌑 MODE: DARK. Backgrounds must be dark (slate-950). Text must be light."
+    : "☀️ MODE: LIGHT. Backgrounds must be white/slate-50. Text must be dark.";
+
+  return `
+${themeModeInstruction}
+
+🎨 ACTIVE COLOR PALETTE (For your visual understanding only - use semantic classes):
+- background: ${colorPalette.background}
+- foreground: ${colorPalette.foreground}
+- primary: ${colorPalette.primary} (BRAND COLOR)
+- primaryForeground: ${colorPalette.primaryForeground}
+- secondary: ${colorPalette.secondary}
+- secondaryForeground: ${colorPalette.secondaryForeground}
+- card: ${colorPalette.card}
+- cardForeground: ${colorPalette.cardForeground}
+- border: ${colorPalette.border}
+- mutedForeground: ${colorPalette.mutedForeground}
+- input: ${colorPalette.input}
+
+⚠️ CRITICAL RULE: You MUST use the semantic classes (e.g. 'bg-primary'), but knowing the hex code (${colorPalette.primary}) helps you avoid clashing colors.
+例如: Since primary is ${colorPalette.primary}, do NOT put it next to a similar color.
+
+${THEME_CLASSES_BLOCK}`;
 };
 
 const MAX_HTML_LENGTH_PER_SCREEN = 2500;
