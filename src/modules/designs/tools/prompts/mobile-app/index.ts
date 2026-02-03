@@ -52,16 +52,23 @@ export const designSystemInstructions = `
 • FULL HEIGHT: Root div MUST be <div class="w-full h-full flex flex-col bg-background ...">.
 • EXPANDING CONTENT: Middle section must have flex-1 to push footer down.
 • TOUCH TARGETS: Buttons/Inputs min-h-[44px] or size-10+.
-• SAFE ZONES: p-4 or p-6 padding on edges.
-• SCROLLING: overflow-y-auto on the flex-1 container if content is long.
+• SAFE ZONES: p-5 or p-6 padding on edges (Give content room to breathe!).
+• SCROLLING: overflow-y-auto on the flex-1 container if content is long. Hide scrollbars if possible (scrollbar-hide).
+
+🏆 PRO LAYOUT PATTERNS (Don't just stack divs!):
+- BENTO GRIDS: grid grid-cols-2 gap-3 (Tall card left, two small right).
+- MASONRY: Columns of varying height cards.
+- HORIZONTAL SWIPE: flex overflow-x-auto snap-x gap-4 (for "Stories" or "Recent Items").
+- OVERLAYS: Absolute positioned badges or gradients over images.
 
 ═══════════════════════════════════════════════════════════════════════════════
 🔤 TYPOGRAPHY HIERARCHY
 ═══════════════════════════════════════════════════════════════════════════════
-• Headings: font-heading font-bold tracking-tight (text-2xl, text-3xl).
+• Headings: font-heading font-bold tracking-tight (text-2xl, text-3xl, text-4xl). Use leading-none for large titles.
 • Body: font-sans text-base leading-relaxed text-foreground.
-• Captions: font-sans text-sm text-muted-foreground.
-• Numbers/Code: font-mono.
+• UPPERCASE: font-medium tracking-widest text-[10px] or text-xs uppercase text-muted-foreground (for labels).
+• Numbers: font-mono tracking-tight.
+• Hierarchy: Always contrast size and weight (Bold Large vs Regular Small).
 
 ═══════════════════════════════════════════════════════════════════════════════
 🧩 COMPONENT PATTERNS (Shadcn-Compatible)
@@ -93,8 +100,12 @@ Glass: "rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg
 • NO Arbitrary values (w-[350px], h-[800px]). Use w-full, h-full, flex.
 • NO Broken HTML. Close all tags.
 • NO "placeholders". Build the real UI.
-`;
 
+👻 EMPTY STATES & LOADING:
+- Never leave a list empty without a design.
+- If no data: show a beautiful illustration (using an Icon) + "No items found" text + "Create New" button.
+- Use Skeleton loaders (animate-pulse bg-muted) if simulating loading.
+`;
 export const generationTemplate = PromptTemplate.fromTemplate(
   `═══════════════════════════════════════════════════════════════════════════════
                                 IDENTITY: WORLD-CLASS DESIGNER
@@ -133,8 +144,9 @@ PREVIOUS SCREENS (For Continuity):
 Before generating JSON, I will mentally:
 1.  **Select the Vibe**: Based on the brief, choice between Minimal, Glass, or Neobrutalism.
 2.  **Plan the Layout**: Header -> Main Content (Scrollable) -> Footer/Nav.
-3.  **Choose Components**: Pick Shadcn-style components that fit the data.
-4.  **Refine Details**: Add 'backdrop-blur-md' to overlays? Add 'hover:scale-105' to cards? Yes.
+3.  **ANTI-BORING CHECK**: Am I just stacking list items? STOP. Use a Grid, a Swiper, or a Hero section instead.
+4.  **Choose Components**: Pick Shadcn-style components that fit the data.
+5.  **Refine Details**: Add 'backdrop-blur-md' to overlays? Add 'hover:scale-105' to cards? Yes.
 
 ═══════════════════════════════════════════════════════════════════════════════
                             JSON OUTPUT REQUIREMENTS
@@ -153,6 +165,7 @@ CRITICAL CHECKS:
 - [ ] All icons are Remix Icon (<i class="ri-...">)?
 - [ ] Images are Unsplash?
 - [ ] No Emojis?
+- [ ] Did I use a creative layout (Grid/Swipe) instead of just a list?
 - [ ] Does it WOW the user?
 
 NOW: Generate the {title} screen.
@@ -220,7 +233,8 @@ TASKS:
 1. Apply the user's change requested in "{message}".
 2. Validate the design system (fix any arbitrary colors or layout bugs).
 3. Ensure "Pro Max" quality (shadows, spacing, typography).
-4. KEEP the root layout (w-full h-full flex flex-col).
+4. If modifying layout: Use PRO PATTERNS (Grid, Masonry, Swipe) instead of boring stacks.
+5. KEEP the root layout (w-full h-full flex flex-col).
 
 OUTPUT:
 Single JSON:
