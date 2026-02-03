@@ -44,7 +44,7 @@ export function MobileFrame({
   title,
   subtitle,
   className = "",
-  width = 440,
+  width = 430,
   height,
   initialX = 0,
   initialY = 0,
@@ -61,9 +61,9 @@ export function MobileFrame({
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showUpdateInput, setShowUpdateInput] = useState(false);
 
-  // State for dimensions
-  const aspectRatio = 932 / 430;
-  const standardHeight = Math.floor(width * aspectRatio);
+  // State for dimensions - iPhone 14 Pro Max (430x932)
+  const standardRatio = 932 / 430;
+  const standardHeight = Math.floor(width * standardRatio);
 
   const [size, setSize] = useState({ width: width, height: height || standardHeight });
   const [position, setPosition] = useState({ x: initialX, y: initialY });
@@ -126,13 +126,20 @@ export function MobileFrame({
               );
             }
           } else if (event.data.type === 'UPDATE_HEIGHT') {
-            const newHeight = event.data.height;
-            // Auto-grow with dampening and caps to prevent infinite loops with vh units
-            if (newHeight && !isResizing && !isDragging) {
+            const contentHeight = event.data.height;
+            if (contentHeight && !isResizing && !isDragging) {
               setSize(prev => {
-                // Only grow if significantly larger (dampening) and under safety cap (2400px)
-                if (newHeight > prev.height + 10 && newHeight < 2400) {
-                   return { ...prev, height: newHeight };
+                // Max height safety cap to prevent infinite growth
+                const MAX_AUTO_HEIGHT = 2000;
+                
+                // Use content height but keep it within reasonable bounds
+                // We allow it to be shorter than standardHeight if the user wants "auto" height
+                const targetHeight = contentHeight;
+                const safeHeight = Math.min(Math.max(targetHeight, 200), MAX_AUTO_HEIGHT);
+
+                // Only update if difference is significant to avoid jitter loops
+                if (Math.abs(safeHeight - prev.height) > 10) {
+                   return { ...prev, height: safeHeight };
                 }
                 return prev;
               });
@@ -320,7 +327,7 @@ export function MobileFrame({
             <div
               className={`relative overflow-hidden isolate shadow-2xl w-full h-full ${!isSelected ? 'drag-target cursor-grab active:cursor-grabbing' : ''}`}
               style={{
-                borderRadius: "32px", 
+                borderRadius: "50px", 
                 background: colorPalette?.background || "#ffffff"
               }}
             >

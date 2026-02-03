@@ -4,7 +4,7 @@ export default function CanvasLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-full w-full overflow-hidden antialiased">
+    <html lang="en" className="w-full overflow-x-hidden antialiased">
       <head>
         <meta charSet="utf-8" />
         <meta
@@ -12,12 +12,20 @@ export default function CanvasLayout({
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
         />
 
-        {/* Fonts: Space Grotesk, Playfair Display, JetBrains Mono (competitor set) */}
+        {/* Fonts: Anek Latin, DM Sans, JetBrains Mono, Playfair Display (Competitor Stack) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100;200;300;400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
         />
         <link
           href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap"
@@ -27,15 +35,13 @@ export default function CanvasLayout({
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
 
         {/* Tailwind v4 - Play CDN / browser build */}
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer />
-        {/* Remix Icon */}
+        {/* Remix Icon (Keep as fallback) */}
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
+        {/* Compititor Script: Iconify */}
+        <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
         {/* v4 @theme inline: map runtime CSS vars (set by UPDATE_THEME) to Tailwind utilities; :root defaults from competitor */}
         <style type="text/tailwindcss">{`
@@ -97,11 +103,11 @@ export default function CanvasLayout({
             --chart-3: #06b6d4;
             --chart-4: #10b981;
             --chart-5: #f59e0b;
-            --font-sans: "Space Grotesk", sans-serif;
-            --font-heading: "Space Grotesk", sans-serif;
+            --font-sans: "DM Sans", sans-serif;
+            --font-heading: "Anek Latin", sans-serif;
             --font-serif: "Playfair Display", serif;
             --font-mono: "JetBrains Mono", monospace;
-            --radius: 1rem;
+            --radius: 0.38rem;
           }
         `}</style>
 
@@ -111,7 +117,6 @@ export default function CanvasLayout({
             margin: 0;
             padding: 0;
             width: 100%;
-            min-height: 100vh;
             background-color: var(--background);
             font-family: var(--font-sans), "Space Grotesk", sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -120,9 +125,9 @@ export default function CanvasLayout({
 
           #root, .canvas-content-wrapper {
             background-color: var(--background);
-            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            width: 100%;
           }
 
           /* Theme utilities - must exist for dynamically injected content */

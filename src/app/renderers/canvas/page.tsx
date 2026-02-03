@@ -94,7 +94,7 @@ export default function CanvasPage() {
         const html = data.html || "";
         if (root) {
           // 1. Set HTML - Use min-h-screen so it fills screen but grows if needed
-          root.innerHTML = `<div id="canvas-wrapper" class="w-full min-h-screen flex flex-col">${html}</div>`;
+          root.innerHTML = `<div id="canvas-wrapper" class="w-full h-auto flex flex-col">${html}</div>`;
 
           // 2. Attach fallback for images that fail to load
           root.querySelectorAll("img").forEach((img) => {
