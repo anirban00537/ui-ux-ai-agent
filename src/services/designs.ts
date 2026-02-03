@@ -87,3 +87,8 @@ export async function updateArtboard(
   const response = await request.patch(`/designs/artboards/${artboardId}`, data);
   return response.data;
 }
+
+export async function deleteArtboard(artboardId: string) {
+  const response = await request.delete(`/designs/artboards/${artboardId}`);
+  return response.data;
+}

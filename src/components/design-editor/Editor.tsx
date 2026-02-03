@@ -7,21 +7,18 @@ import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { 
-  setCopiedId, 
   removeArtboard
 } from "@/store/slices/designEditorSlice";
 
 interface EditorProps {
-  onDeleteArtboard?: (artboardId: string, artboardTitle: string) => void;
+  onDeleteArtboard?: (artboardId: string) => void;
   onUpdateArtboard?: (artboardId: string, prompt: string) => void;
-  onhandleCopy?: (html: string, id: string) => void;
   onSaveArtboard?: (id: string, data: { x?: number; y?: number; width?: number; height?: number }) => void;
 }
 
 export function Editor({
   onDeleteArtboard,
   onUpdateArtboard,
-  onhandleCopy,
   onSaveArtboard,
 }: EditorProps) {
   const dispatch = useAppDispatch();
@@ -29,7 +26,6 @@ export function Editor({
     conversation, 
     isGenerating, 
     error, 
-    copiedArtboardId 
   } = useAppSelector((state) => state.designEditor);
 
   const artboards = conversation?.artboards ?? [];
@@ -50,28 +46,6 @@ export function Editor({
       delete saveTimeouts.current[id];
     }, 1000);
   }, [onSaveArtboard]);
-
-  const handleCopy = useCallback(async (html: string, id: string) => {
-    if (onhandleCopy) {
-      onhandleCopy(html, id);
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(html);
-      dispatch(setCopiedId(id));
-      setTimeout(() => dispatch(setCopiedId(null)), 2000);
-    } catch {
-      const textArea = document.createElement("textarea");
-      textArea.value = html;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      dispatch(setCopiedId(id));
-      setTimeout(() => dispatch(setCopiedId(null)), 2000);
-    }
-  }, [dispatch, onhandleCopy]);
 
   return (
     <div className="w-full h-full bg-background relative overflow-hidden isolate">
@@ -184,10 +158,8 @@ export function Editor({
                         initialY={artboard.y}
                         colorPalette={colorPalette}
                         isGenerating={artboard.status === 'generating'}
-                        onCopy={() => handleCopy(artboard.html, artboard.id)}
-                        onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : () => dispatch(removeArtboard(artboard.id))}
+                        onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id) : () => dispatch(removeArtboard(artboard.id))}
                         onSave={(data) => handleSave(artboard.id, data)}
-                        isCopied={copiedArtboardId === artboard.id}
                         scale={instance?.transformState?.scale || 1}
                         onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}
                       />
@@ -224,10 +196,8 @@ export function Editor({
                       initialY={smartY}
                       colorPalette={colorPalette}
                       isGenerating={artboard.status === 'generating'}
-                      onCopy={() => handleCopy(artboard.html, artboard.id)}
-                      onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id, artboard.title) : () => dispatch(removeArtboard(artboard.id))}
+                      onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id) : () => dispatch(removeArtboard(artboard.id))}
                       onSave={(data) => handleSave(artboard.id, data)}
-                      isCopied={copiedArtboardId === artboard.id}
                       scale={instance?.transformState?.scale || 1}
                       autoSave={artboard.x === undefined || artboard.y === undefined}
                       onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}

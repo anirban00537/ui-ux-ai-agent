@@ -30,6 +30,7 @@ export default function DesignEditorPage() {
     updateColorPalette,
     updateScreen,
     syncArtboardPosition,
+    deleteArtboard,
   } = useChatGenerator(designId);
 
   const { prompt: promptContext, type: typeContext, clearPrompt } = usePrompt();
@@ -117,11 +118,8 @@ export default function DesignEditorPage() {
 
       <div className="relative flex-1 min-w-0 h-full">
         <Editor
-          onDeleteArtboard={(artboardId: string, artboardTitle: string) => {
-            sendMessage(
-              `Delete the screen "${artboardTitle}" with ID ${artboardId}`,
-              designId
-            );
+          onDeleteArtboard={(artboardId: string) => {
+            deleteArtboard(artboardId);
           }}
           onUpdateArtboard={(artboardId: string, prompt: string) => {
              updateScreen(designId, artboardId, prompt);

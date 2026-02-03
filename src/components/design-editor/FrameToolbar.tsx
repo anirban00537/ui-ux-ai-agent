@@ -3,8 +3,6 @@
 import React, { useRef, useEffect } from "react";
 import { 
   Trash2, 
-  Copy, 
-  Check, 
   RotateCcw, 
   Monitor, 
   GripVertical, 
@@ -18,8 +16,6 @@ import { cn } from "@/lib/utils";
 
 interface FrameToolbarProps {
   title?: string;
-  isCopied: boolean;
-  onCopy?: () => void;
   onDelete?: () => void;
   onRegenerate?: () => void;
   onViewCode: () => void;
@@ -30,8 +26,6 @@ interface FrameToolbarProps {
 
 export function FrameToolbar({
   title,
-  isCopied,
-  onCopy,
   onDelete,
   onRegenerate,
   onViewCode,
@@ -148,16 +142,6 @@ export function FrameToolbar({
             >
               <Code className="w-5 h-5 text-primary" />
             </button>
-
-            {onCopy && (
-              <button 
-                onClick={onCopy}
-                className="p-2 hover:bg-muted text-muted-foreground hover:text-foreground rounded-xl transition-all active:scale-90"
-                title="Copy Code"
-              >
-                {isCopied ? <Check className="w-4.5 h-4.5 text-green-500" /> : <Copy className="w-4.5 h-4.5" />}
-              </button>
-            )}
 
             {onDelete && (
               <button 

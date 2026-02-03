@@ -1,5 +1,5 @@
 import { useCallback, useRef, useEffect } from "react";
-import { getDesignById, updateDesign, updateArtboard as apiUpdateArtboard, DesignType } from "@/services/designs";
+import { getDesignById, updateDesign, updateArtboard as apiUpdateArtboard, deleteArtboard as apiDeleteArtboard, DesignType } from "@/services/designs";
 import { CONFIG } from "@/lib/config";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useDebouncedCallback } from "use-debounce";
@@ -52,6 +52,13 @@ export function useChatGenerator(designId?: string) {
   // Sync position mutation
   const { mutate: syncArtboardPosition } = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => apiUpdateArtboard(id, data),
+  });
+
+  const { mutate: deleteArtboard } = useMutation({
+    mutationFn: (id: string) => apiDeleteArtboard(id),
+    onSuccess: (_, id) => {
+      dispatch(removeArtboard(id));
+    }
   });
 
   useEffect(() => {
@@ -358,5 +365,6 @@ export function useChatGenerator(designId?: string) {
     clearConversation,
     updateColorPalette,
     syncArtboardPosition,
+    deleteArtboard,
   };
 }

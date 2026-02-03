@@ -32,11 +32,9 @@ interface MobileFrameProps {
   initialY?: number;
   colorPalette?: ColorPalette;
   isGenerating?: boolean;
-  onCopy?: () => void;
   onDelete?: () => void;
   onUpdate?: (prompt: string) => void;
   onSave?: (data: { x: number; y: number; width: number; height: number }) => void;
-  isCopied?: boolean;
   scale?: number;
   autoSave?: boolean;
 }
@@ -52,11 +50,9 @@ export function MobileFrame({
   initialY = 0,
   colorPalette,
   isGenerating = false,
-  onCopy,
   onDelete,
   onUpdate,
   onSave,
-  isCopied = false,
   scale = 1,
   autoSave = false,
 }: MobileFrameProps) {
@@ -261,8 +257,6 @@ export function MobileFrame({
         {isSelected && (
           <FrameToolbar
             title={title}
-            isCopied={isCopied}
-            onCopy={onCopy}
             onDelete={onDelete}
             onViewCode={() => setShowCodeModal(true)}
             onUpdate={onUpdate}
