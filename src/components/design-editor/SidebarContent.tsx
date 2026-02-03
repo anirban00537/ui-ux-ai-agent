@@ -1,13 +1,23 @@
 "use client";
 
-import React, { useCallback, useState, useRef, useEffect, useMemo } from "react";
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { SidebarPromptInput } from "@/components/design-editor/SidebarPromptInput";
 import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 // Card statuses that trigger screen cards
-const SCREEN_CARD_STATUSES = ["screen_start", "screen_complete", "screen_update"] as const;
+const SCREEN_CARD_STATUSES = [
+  "screen_start",
+  "screen_complete",
+  "screen_update",
+] as const;
 
 interface ColorPalette {
   background: string;
@@ -29,7 +39,7 @@ interface Screen {
   description?: string;
   html: string;
   createdAt: string;
-  status?: 'generating' | 'complete';
+  status?: "generating" | "complete";
 }
 
 interface Message {
@@ -54,7 +64,13 @@ interface Conversation {
 interface GenerationProgress {
   current: number;
   total: number;
-  phase: "analyzing" | "theme_generating" | "analyzed" | "planning" | "generating" | "complete";
+  phase:
+    | "analyzing"
+    | "theme_generating"
+    | "analyzed"
+    | "planning"
+    | "generating"
+    | "complete";
   currentScreen?: string;
   screenTitles?: string[];
   steps?: Array<{ label: string; status: "loading" | "completed" }>;
@@ -90,20 +106,35 @@ function AgentActivityLine({
         </div>
       ) : (
         <div className="flex-shrink-0 text-primary/50">
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          <svg
+            className="w-3 h-3"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.5 12.75l6 6 9-13.5"
+            />
           </svg>
         </div>
       )}
-      
-      <span 
+
+      <span
         className={cn(
           "transition-all duration-500",
-          status === "completed" ? "text-zinc-500 font-normal" : "text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 via-white to-zinc-500 bg-[length:200%_auto] animate-gradient-flow"
+          status === "completed"
+            ? "text-zinc-500 font-normal"
+            : "text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 via-white to-zinc-500 bg-[length:200%_auto] animate-gradient-flow"
         )}
         style={{
-          animation: status === "loading" ? "gradient-flow 1.5s linear infinite" : "none",
-          backgroundSize: "200% auto"
+          animation:
+            status === "loading"
+              ? "gradient-flow 1.5s linear infinite"
+              : "none",
+          backgroundSize: "200% auto",
         }}
       >
         {label}
@@ -127,16 +158,17 @@ function ScreenCard({
   const isPending = status === "pending";
 
   return (
-    <div 
+    <div
       className={cn(
         "group relative flex items-center gap-3 px-3 py-3 rounded-lg border transition-all duration-300",
-        isGenerating && "bg-zinc-800/40 border-primary/20 shadow-[0_0_15px_-5px_var(--primary)]",
+        isGenerating &&
+          "bg-zinc-800/40 border-primary/20 shadow-[0_0_15px_-5px_var(--primary)]",
         isCompleted && "bg-zinc-900/40 border-white/5",
         isPending && "bg-transparent border-transparent opacity-50"
       )}
     >
       {/* Index/Status Indicator */}
-      <div 
+      <div
         className={cn(
           "flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-medium transition-colors duration-300",
           isGenerating && "bg-primary/10 text-primary ring-1 ring-primary/20",
@@ -146,12 +178,10 @@ function ScreenCard({
       >
         {isGenerating ? (
           <div className="relative w-2.5 h-2.5">
-             <div className="absolute inset-0 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+            <div className="absolute inset-0 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
           </div>
         ) : isCompleted ? (
-          <span className="text-xs">
-             {index + 1}
-          </span>
+          <span className="text-xs">{index + 1}</span>
         ) : (
           <span>{index + 1}</span>
         )}
@@ -159,7 +189,7 @@ function ScreenCard({
 
       {/* Content */}
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <span 
+        <span
           className={cn(
             "text-[13px] font-medium truncate transition-colors duration-300",
             isGenerating ? "text-white" : "text-white/60"
@@ -173,7 +203,7 @@ function ScreenCard({
           </span>
         )}
       </div>
-      
+
       {/* Active Glow for Generating State */}
       {isGenerating && (
         <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
@@ -203,8 +233,11 @@ export function SidebarContent({
   const [prompt, setPrompt] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const { balance, loading: balanceLoading, refetch: refetchBalance } =
-    useCreditBalance();
+  const {
+    balance,
+    loading: balanceLoading,
+    refetch: refetchBalance,
+  } = useCreditBalance();
 
   // Group messages into conversation turns
   const conversationTurns = useMemo(() => {
@@ -229,7 +262,12 @@ export function SidebarContent({
         if (msg.role === "assistant" && msg.type === "final") {
           if (!aiMessage) aiMessage = msg;
         }
-        if (msg.status && SCREEN_CARD_STATUSES.includes(msg.status as typeof SCREEN_CARD_STATUSES[number])) {
+        if (
+          msg.status &&
+          SCREEN_CARD_STATUSES.includes(
+            msg.status as (typeof SCREEN_CARD_STATUSES)[number]
+          )
+        ) {
           cardMessages.push(msg);
         }
         if (msg.status === "phase_step") {
@@ -341,30 +379,62 @@ export function SidebarContent({
 
             {conversationTurns.map((turn, turnIndex) => {
               const isComplete = !turn.isActive && turn.cardMessages.length > 0;
-              
+
               // Build display steps from step messages
-              const displaySteps = turn.stepMessages.length > 0
-                ? (() => {
-                    const sorted = [...turn.stepMessages].sort(
-                      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-                    );
-                    const byLabel = new Map<string, "loading" | "completed">();
-                    for (const msg of sorted) {
-                      const label = msg.data?.label as string || "";
-                      const status = msg.data?.status === "completed" ? "completed" : "loading";
-                      if (label) byLabel.set(label, status);
-                    }
-                    return Array.from(byLabel.entries()).map(([label, status]) => ({
-                      label,
-                      status: !turn.isActive ? "completed" as const : status,
-                    }));
-                  })()
-                : null;
+              const displaySteps =
+                turn.stepMessages.length > 0
+                  ? (() => {
+                      const sorted = [...turn.stepMessages].sort(
+                        (a, b) =>
+                          new Date(a.createdAt).getTime() -
+                          new Date(b.createdAt).getTime()
+                      );
+                      const byLabel = new Map<
+                        string,
+                        "loading" | "completed"
+                      >();
+                      for (const msg of sorted) {
+                        const label = (msg.data?.label as string) || "";
+                        const status =
+                          msg.data?.status === "completed"
+                            ? "completed"
+                            : "loading";
+                        if (label) byLabel.set(label, status);
+                      }
+                      return Array.from(byLabel.entries()).map(
+                        ([label, status]) => ({
+                          label,
+                          status: !turn.isActive
+                            ? ("completed" as const)
+                            : status,
+                        })
+                      );
+                    })()
+                  : null;
 
               // Get screen titles for this turn
-              const screenTitles = turn.isActive && progress?.screenTitles
+              // For updates, only show the screen being updated
+              const isUpdateTurn = turn.cardMessages.some(
+                (m) => m.data?.kind === "update"
+              );
+              const screenTitles = isUpdateTurn
+                ? turn.cardMessages
+                    .filter((m) => m.data?.kind === "update")
+                    .map(
+                      (m) =>
+                        (m.data?.title as string) ||
+                        m.content.replace(/^(Updating|Updated):\s*/i, "")
+                    )
+                : turn.isActive && progress?.screenTitles
                 ? progress.screenTitles
-                : turn.cardMessages.map(m => (m.data?.title as string) || m.content.replace(/^(Generating|Generated|Updating|Updated):\s*/i, ""));
+                : turn.cardMessages.map(
+                    (m) =>
+                      (m.data?.title as string) ||
+                      m.content.replace(
+                        /^(Generating|Generated|Updating|Updated):\s*/i,
+                        ""
+                      )
+                  );
 
               return (
                 <div key={turn.userMessage.id} className="space-y-3">
@@ -394,22 +464,57 @@ export function SidebarContent({
                   )}
 
                   {/* Screen Cards */}
-                  {turn.isActive && loading && progress && progress.total > 0 ? (
+                  {turn.isActive &&
+                  loading &&
+                  progress &&
+                  progress.total > 0 &&
+                  !isUpdateTurn ? (
                     <div className="space-y-2 mt-2">
                       {Array.from({ length: progress.total }, (_, i) => {
-                        const title = progress.screenTitles?.[i] ?? `Screen ${i + 1}`;
+                        const title =
+                          progress.screenTitles?.[i] ?? `Screen ${i + 1}`;
                         const status: "pending" | "generating" | "completed" =
-                          i === progress.current ? "generating" : i < progress.current ? "completed" : "pending";
-                        return <ScreenCard key={i} title={title} status={status} index={i} />;
+                          i === progress.current
+                            ? "generating"
+                            : i < progress.current
+                            ? "completed"
+                            : "pending";
+                        return (
+                          <ScreenCard
+                            key={i}
+                            title={title}
+                            status={status}
+                            index={i}
+                          />
+                        );
                       })}
                     </div>
                   ) : turn.cardMessages.length > 0 ? (
                     <div className="space-y-2 mt-2">
-                      {turn.cardMessages.map((msg, idx) => {
-                        const title = (msg.data?.title as string) || msg.content.replace(/^(Generating|Generated|Updating|Updated):\s*/i, "");
-                        const status = msg.status === "screen_start" && turn.isActive ? "generating" : "completed";
-                        return <ScreenCard key={msg.id} title={title} status={status} index={idx} />;
-                      })}
+                      {turn.cardMessages
+                        .filter(
+                          (m) => !isUpdateTurn || m.data?.kind === "update"
+                        )
+                        .map((msg, idx) => {
+                          const title =
+                            (msg.data?.title as string) ||
+                            msg.content.replace(
+                              /^(Generating|Generated|Updating|Updated):\s*/i,
+                              ""
+                            );
+                          const status =
+                            msg.status === "screen_start" && turn.isActive
+                              ? "generating"
+                              : "completed";
+                          return (
+                            <ScreenCard
+                              key={msg.id}
+                              title={title}
+                              status={status}
+                              index={idx}
+                            />
+                          );
+                        })}
                     </div>
                   ) : null}
                 </div>
@@ -438,7 +543,6 @@ export function SidebarContent({
             onCancel={onCancel}
           />
         </div>
-
       </div>
     </div>
   );

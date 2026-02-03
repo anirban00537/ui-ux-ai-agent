@@ -17,7 +17,7 @@ interface ColorPalette {
   input: string;
 }
 
-import { Trash2, Copy, Check, RotateCcw, ExternalLink, Download, MoreHorizontal, Monitor, GripVertical } from "lucide-react";
+import { Trash2, Copy, Check, RotateCcw, ExternalLink, Download, MoreHorizontal, Monitor, GripVertical, Sparkles, X } from "lucide-react";
 
 interface MobileFrameProps {
   htmlContent: string;
@@ -31,6 +31,7 @@ interface MobileFrameProps {
   isGenerating?: boolean;
   onCopy?: () => void;
   onDelete?: () => void;
+  onUpdate?: (prompt: string) => void;
   onSave?: (data: { x: number; y: number; width: number; height: number }) => void;
   isCopied?: boolean;
   scale?: number;
@@ -49,6 +50,7 @@ export function MobileFrame({
   isGenerating = false,
   onCopy,
   onDelete,
+  onUpdate,
   onSave,
   isCopied = false,
   scale = 1,
@@ -159,6 +161,25 @@ export function MobileFrame({
     }
   }, [isSelected]);
 
+  const [showUpdateInput, setShowUpdateInput] = useState(false);
+  const updateInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (showUpdateInput) {
+       // Small delay to ensure render
+       setTimeout(() => updateInputRef.current?.focus(), 50);
+    }
+  }, [showUpdateInput]);
+
+  const handleUpdateSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const val = updateInputRef.current?.value.trim();
+    if (val && onUpdate) {
+        onUpdate(val);
+        setShowUpdateInput(false);
+    }
+  };
+
   return (
     <Rnd
       className={`mobile-frame-container z-10 ${isSelected ? 'z-50' : ''} ${className}`}
@@ -233,63 +254,111 @@ export function MobileFrame({
           <div 
             className="absolute -top-24 left-1/2 -translate-x-1/2 flex items-center gap-3 rounded-xl border-2 border-border bg-background px-3 py-2 shadow-2xl z-[60] drag-target cursor-grab active:cursor-grabbing animate-in fade-in slide-in-from-bottom-2 duration-200"
             style={{ minWidth: 'max-content' }}
+            onMouseDown={(e) => e.stopPropagation()} 
           >
-             {/* Drag Handle */}
-             <div className="text-foreground-muted/40 hover:text-foreground-muted transition-colors">
-                <GripVertical className="w-5 h-5 shrink-0" />
-             </div>
-
-             {/* Icon + Title */}
-             <div className="flex items-center gap-2 text-foreground-muted">
-                <Monitor className="w-5 h-5 shrink-0" />
-                <span className="text-base font-semibold select-text max-w-[160px] truncate">{title || 'Mobile Frame'}</span>
-             </div>
-
-             {/* Separator */}
-             <div className="h-6 w-px bg-border mx-1" />
-
-             {/* Actions Group */}
-             <div className="flex items-center gap-1.5">
-                {/* Refresh/Regenerate */}
-                <button 
-                  onMouseDown={(e) => e.stopPropagation()}
-                  className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
-                  title="Regenerate"
-                >
-                  <RotateCcw className="w-4.5 h-4.5" />
-                </button>
-
-                 {/* Copy Code */}
-                 {onCopy && (
-                  <button 
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onClick={(e) => { e.stopPropagation(); onCopy(); }}
-                    className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
-                    title="Copy Code"
-                  >
-                    {isCopied ? <Check className="w-4.5 h-4.5 text-green-500" /> : <Copy className="w-4.5 h-4.5" />}
-                  </button>
-                 )}
-
-                 {/* Delete */}
-                 {onDelete && (
+             {showUpdateInput ? (
+                // UPDATE INPUT MODE
+                <div className="flex items-center gap-2">
+                   <div className="flex items-center gap-2 px-2 py-1.5 bg-accent/50 rounded-lg border border-border">
+                      <Sparkles className="w-4 h-4 text-primary shrink-0 animate-pulse" />
+                      <input
+                        ref={updateInputRef}
+                        type="text"
+                        placeholder="Describe changes (e.g. 'Make title bigger')..."
+                        className="bg-transparent border-none outline-none text-sm w-[280px] text-foreground placeholder:text-muted-foreground"
+                        onKeyDown={(e) => {
+                           if (e.key === 'Enter') handleUpdateSubmit();
+                           if (e.key === 'Escape') setShowUpdateInput(false);
+                           e.stopPropagation(); 
+                        }}
+                      />
+                   </div>
                    <button 
-                     onMouseDown={(e) => e.stopPropagation()}
-                     onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                     className="p-1.5 hover:bg-red-500/10 rounded-lg text-foreground-muted hover:text-red-500 transition-all active:scale-90"
-                     title="Delete"
+                      onClick={handleUpdateSubmit} 
+                      className="p-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90 transition-opacity"
                    >
-                     <Trash2 className="w-4.5 h-4.5" />
+                     <Check className="w-4 h-4" />
                    </button>
-                 )}
-                 
-                 {/* More Options */}
-                 <button 
-                   onMouseDown={(e) => e.stopPropagation()}
-                   className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90">
-                    <MoreHorizontal className="w-4.5 h-4.5" />
-                 </button>
-             </div>
+                   <button 
+                      onClick={() => setShowUpdateInput(false)} 
+                      className="p-2 hover:bg-muted text-muted-foreground rounded-lg transition-colors"
+                   >
+                     <X className="w-4 h-4" />
+                   </button>
+                </div>
+             ) : (
+                // STANDARD TOOLBAR
+                <>
+                 {/* Drag Handle */}
+                 <div className="text-foreground-muted/40 hover:text-foreground-muted transition-colors cursor-grab">
+                    <GripVertical className="w-5 h-5 shrink-0" />
+                 </div>
+    
+                 {/* Icon + Title */}
+                 <div className="flex items-center gap-2 text-foreground-muted">
+                    <Monitor className="w-5 h-5 shrink-0" />
+                    <span className="text-base font-semibold select-text max-w-[160px] truncate">{title || 'Mobile Frame'}</span>
+                 </div>
+    
+                 {/* Separator */}
+                 <div className="h-6 w-px bg-border mx-1" />
+    
+                 {/* Actions Group */}
+                 <div className="flex items-center gap-1.5">
+                    {/* Update / Tidy Up Button */}
+                    {onUpdate && (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setShowUpdateInput(true); }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-all active:scale-95 border border-primary/20"
+                          title="Update with AI"
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          <span className="text-xs font-semibold">Tidy Up</span>
+                        </button>
+                    )}
+
+                    {/* Refresh/Regenerate */}
+                    <button 
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
+                      title="Regenerate"
+                    >
+                      <RotateCcw className="w-4.5 h-4.5" />
+                    </button>
+    
+                     {/* Copy Code */}
+                     {onCopy && (
+                      <button 
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => { e.stopPropagation(); onCopy(); }}
+                        className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90"
+                        title="Copy Code"
+                      >
+                        {isCopied ? <Check className="w-4.5 h-4.5 text-green-500" /> : <Copy className="w-4.5 h-4.5" />}
+                      </button>
+                     )}
+    
+                     {/* Delete */}
+                     {onDelete && (
+                       <button 
+                         onMouseDown={(e) => e.stopPropagation()}
+                         onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                         className="p-1.5 hover:bg-red-500/10 rounded-lg text-foreground-muted hover:text-red-500 transition-all active:scale-90"
+                         title="Delete"
+                       >
+                         <Trash2 className="w-4.5 h-4.5" />
+                       </button>
+                     )}
+                     
+                     {/* More Options */}
+                     <button 
+                       onMouseDown={(e) => e.stopPropagation()}
+                       className="p-1.5 hover:bg-accent rounded-lg text-foreground-muted hover:text-foreground transition-all active:scale-90">
+                        <MoreHorizontal className="w-4.5 h-4.5" />
+                     </button>
+                 </div>
+               </>
+             )}
           </div>
         )}
 

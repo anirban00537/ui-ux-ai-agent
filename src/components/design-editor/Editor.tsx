@@ -42,6 +42,7 @@ interface EditorProps {
   error?: string;
   colorPalette?: ColorPalette;
   onDeleteArtboard?: (artboardId: string, artboardTitle: string) => void;
+  onUpdateArtboard?: (artboardId: string, prompt: string) => void;
 }
 
 export function Editor({
@@ -51,6 +52,7 @@ export function Editor({
   error,
   colorPalette,
   onDeleteArtboard,
+  onUpdateArtboard,
 }: EditorProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   
@@ -202,6 +204,7 @@ export function Editor({
                         onSave={(data) => handleSave(artboard.id, data)}
                         isCopied={copiedId === artboard.id}
                         scale={instance?.transformState?.scale || 1}
+                        onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}
                       />
                     );
                   }
@@ -251,6 +254,7 @@ export function Editor({
                       isCopied={copiedId === artboard.id}
                       scale={instance?.transformState?.scale || 1}
                       autoSave={artboard.x === undefined || artboard.y === undefined}
+                      onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}
                     />
                   );
                 })}

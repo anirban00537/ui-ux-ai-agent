@@ -12,7 +12,7 @@ interface Screen {
   description?: string;
   html: string;
   createdAt: string;
-  status?: 'generating' | 'complete';
+  status?: "generating" | "complete";
   x?: number;
   y?: number;
   width?: number;
@@ -56,7 +56,13 @@ interface Conversation {
 interface GenerationProgress {
   current: number;
   total: number;
-  phase: "analyzing" | "theme_generating" | "analyzed" | "planning" | "generating" | "complete";
+  phase:
+    | "analyzing"
+    | "theme_generating"
+    | "analyzed"
+    | "planning"
+    | "generating"
+    | "complete";
   currentScreen?: string;
   screenTitles?: string[];
   steps?: Array<{ label: string; status: "loading" | "completed" }>;
@@ -67,7 +73,16 @@ interface UseChatGeneratorResult {
   isGenerating: boolean;
   progress: GenerationProgress | null;
   error: string | null;
-  sendMessage: (message: string, designId?: string, designType?: DesignType) => Promise<void>;
+  sendMessage: (
+    message: string,
+    designId?: string,
+    designType?: DesignType
+  ) => Promise<void>;
+  updateScreen: (
+    designId: string,
+    artboardId: string,
+    prompt: string
+  ) => Promise<void>;
   cancelGeneration: () => void;
   clearConversation: () => void;
   loadConversation: (designId: string) => Promise<void>;
@@ -79,10 +94,12 @@ export function useChatGenerator(): UseChatGeneratorResult {
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState<GenerationProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   // AbortController ref for cancellation support
   const abortControllerRef = useRef<AbortController | null>(null);
-  const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null);
+  const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(
+    null
+  );
 
   // Cleanup on unmount
   useEffect(() => {
@@ -102,16 +119,16 @@ export function useChatGenerator(): UseChatGeneratorResult {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
     }
-    
+
     // Cancel the reader
     if (readerRef.current) {
       readerRef.current.cancel().catch(() => {});
       readerRef.current = null;
     }
-    
+
     setIsGenerating(false);
     setProgress(null);
-    
+
     // Add a system message about cancellation
     setConversation((prev) => {
       if (!prev) return prev;
@@ -133,11 +150,11 @@ export function useChatGenerator(): UseChatGeneratorResult {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-      
+
       // Create new AbortController for this request
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
-      
+
       try {
         setIsGenerating(true);
         setError(null);
@@ -163,7 +180,9 @@ export function useChatGenerator(): UseChatGeneratorResult {
         });
 
         const baseUrl = CONFIG.API_URL.replace(/\/$/, "");
-        const streamUrl = `${baseUrl}/designs/chat/stream/${designId ?? ""}?prompt=${encodeURIComponent(message)}`;
+        const streamUrl = `${baseUrl}/designs/chat/stream/${
+          designId ?? ""
+        }?prompt=${encodeURIComponent(message)}`;
         const res = await fetch(streamUrl, {
           method: "GET",
           headers: {
@@ -184,7 +203,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
         const responseDesignId = designId;
         const reader = res.body?.getReader();
         if (!reader) throw new Error("No response body");
-        
+
         // Store reader ref for cancellation
         readerRef.current = reader;
 
@@ -213,7 +232,11 @@ export function useChatGenerator(): UseChatGeneratorResult {
           }
         };
 
-        const addStreamMessage = (content: string, type: string, data?: Record<string, unknown>) => {
+        const addStreamMessage = (
+          content: string,
+          type: string,
+          data?: Record<string, unknown>
+        ) => {
           if (!content) return;
           const streamMessage: Message = {
             id: `stream-${Date.now()}-${Math.random()}`,
@@ -226,17 +249,19 @@ export function useChatGenerator(): UseChatGeneratorResult {
             data,
           };
           setConversation((prev) =>
-            prev ? { ...prev, messages: [...prev.messages, streamMessage] } : prev
+            prev
+              ? { ...prev, messages: [...prev.messages, streamMessage] }
+              : prev
           );
         };
 
         while (true) {
           // Check for cancellation
           if (abortController.signal.aborted) {
-            console.log('[useChatGenerator] Request was aborted');
+            console.log("[useChatGenerator] Request was aborted");
             break;
           }
-          
+
           const { done, value } = await reader.read();
           if (done) break;
           buffer += decoder.decode(value, { stream: true });
@@ -249,7 +274,8 @@ export function useChatGenerator(): UseChatGeneratorResult {
               const raw = JSON.parse(line.slice(6));
               const eventData = raw?.data ?? raw;
               const eventType = raw?.type ?? eventData?.type;
-              const availableScreens = raw?.availableScreens ?? eventData?.availableScreens;
+              const availableScreens =
+                raw?.availableScreens ?? eventData?.availableScreens;
 
               switch (eventType) {
                 case "intent_analysis":
@@ -283,14 +309,18 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   break;
                 case "planning_complete":
                   addStreamMessage(
-                    `Planning complete: ${eventData?.totalScreens ?? 0} screens to generate`,
+                    `Planning complete: ${
+                      eventData?.totalScreens ?? 0
+                    } screens to generate`,
                     "planning_complete"
                   );
                   setProgress({
                     current: 0,
                     total: eventData?.totalScreens ?? 0,
                     phase: "planning",
-                    currentScreen: `Planning complete: ${eventData?.totalScreens ?? 0} screens`,
+                    currentScreen: `Planning complete: ${
+                      eventData?.totalScreens ?? 0
+                    } screens`,
                   });
                   break;
                 case "screen_start": {
@@ -300,7 +330,10 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   if (messageId) {
                     const cardMessage: Message = {
                       id: messageId,
-                      content: kind === "update" ? `Updating: ${title}` : `Generating: ${title}`,
+                      content:
+                        kind === "update"
+                          ? `Updating: ${title}`
+                          : `Generating: ${title}`,
                       role: "assistant",
                       createdAt: new Date().toISOString(),
                       type: "stream",
@@ -308,7 +341,9 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       data: { title, kind, screenId: eventData?.screenId },
                     };
                     setConversation((prev) =>
-                      prev ? { ...prev, messages: [...prev.messages, cardMessage] } : prev
+                      prev
+                        ? { ...prev, messages: [...prev.messages, cardMessage] }
+                        : prev
                     );
                   } else {
                     addStreamMessage(
@@ -344,7 +379,10 @@ export function useChatGenerator(): UseChatGeneratorResult {
                     };
                     generatedScreens.push(newScreen);
                     if (!messageId) {
-                      addStreamMessage(`Completed: ${screenPayload.title}`, "screen_complete");
+                      addStreamMessage(
+                        `Completed: ${screenPayload.title}`,
+                        "screen_complete"
+                      );
                     }
                     setConversation((prev) => {
                       if (!prev) return prev;
@@ -399,12 +437,14 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   const title = eventData?.title;
                   const screenId = eventData?.id || eventData?.screenId;
                   const accumulatedText = eventData?.accumulatedText || "";
-                  
+
                   // Try to extract partial HTML from the accumulated JSON
                   let partialHtml = "";
                   try {
                     // Robust regex to match partial JSON strings including escaped quotes
-                    const htmlMatch = accumulatedText.match(/"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"|$)/);
+                    const htmlMatch = accumulatedText.match(
+                      /"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"|$)/
+                    );
                     if (htmlMatch && htmlMatch[1]) {
                       // Unescape JSON string
                       partialHtml = htmlMatch[1]
@@ -415,14 +455,15 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   } catch {
                     // Ignore parse errors
                   }
-                  
+
                   if (title && partialHtml) {
                     setConversation((prev) => {
                       if (!prev) return prev;
-                      
+
                       // Find or create the streaming screen
                       const existingIndex = prev.screens.findIndex(
-                        (s) => (screenId && s.id === screenId) || s.title === title
+                        (s) =>
+                          (screenId && s.id === screenId) || s.title === title
                       );
                       if (existingIndex >= 0) {
                         // Update existing screen
@@ -430,9 +471,9 @@ export function useChatGenerator(): UseChatGeneratorResult {
                         updatedScreens[existingIndex] = {
                           ...updatedScreens[existingIndex],
                           html: partialHtml,
-                          status: 'generating',
+                          status: "generating",
                           // Update ID if we have a real one now and didn't before
-                          ...(screenId ? { id: screenId } : {}), 
+                          ...(screenId ? { id: screenId } : {}),
                         };
                         return { ...prev, screens: updatedScreens };
                       } else {
@@ -443,9 +484,12 @@ export function useChatGenerator(): UseChatGeneratorResult {
                           description: "Generating...",
                           html: partialHtml,
                           createdAt: new Date().toISOString(),
-                          status: 'generating',
+                          status: "generating",
                         };
-                        return { ...prev, screens: [...prev.screens, newScreen] };
+                        return {
+                          ...prev,
+                          screens: [...prev.screens, newScreen],
+                        };
                       }
                     });
                   }
@@ -463,7 +507,10 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       createdAt: new Date().toISOString(),
                     };
                     if (!messageId) {
-                      addStreamMessage(`Updated: ${screenPayload.title}`, "screen_update");
+                      addStreamMessage(
+                        `Updated: ${screenPayload.title}`,
+                        "screen_update"
+                      );
                     }
                     setConversation((prev) => {
                       if (!prev) return prev;
@@ -500,13 +547,18 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   const screenId = eventData?.screen?.id ?? eventData?.screenId;
                   const screenTitle = eventData?.screen?.title ?? "Screen";
                   if (screenId) {
-                    addStreamMessage(`Deleted: ${screenTitle}`, "screen_delete");
+                    addStreamMessage(
+                      `Deleted: ${screenTitle}`,
+                      "screen_delete"
+                    );
                     setConversation((prev) =>
                       prev
                         ? {
                             ...prev,
                             id: responseDesignId || prev.id,
-                            screens: prev.screens.filter((s) => s.id !== screenId),
+                            screens: prev.screens.filter(
+                              (s) => s.id !== screenId
+                            ),
                           }
                         : prev
                     );
@@ -547,14 +599,22 @@ export function useChatGenerator(): UseChatGeneratorResult {
                 case "phase_analyzed":
                   setProgress((prev) =>
                     prev
-                      ? { ...prev, phase: "analyzed", screenTitles: prev.screenTitles ?? [] }
+                      ? {
+                          ...prev,
+                          phase: "analyzed",
+                          screenTitles: prev.screenTitles ?? [],
+                        }
                       : null
                   );
                   break;
                 case "phase_theme_generating":
                   setProgress((prev) =>
                     prev
-                      ? { ...prev, phase: "theme_generating", screenTitles: prev.screenTitles ?? [] }
+                      ? {
+                          ...prev,
+                          phase: "theme_generating",
+                          screenTitles: prev.screenTitles ?? [],
+                        }
                       : null
                   );
                   break;
@@ -566,7 +626,11 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   }
                   setProgress((prev) =>
                     prev
-                      ? { ...prev, phase: "analyzed", screenTitles: prev.screenTitles ?? [] }
+                      ? {
+                          ...prev,
+                          phase: "analyzed",
+                          screenTitles: prev.screenTitles ?? [],
+                        }
                       : null
                   );
                   break;
@@ -592,9 +656,14 @@ export function useChatGenerator(): UseChatGeneratorResult {
                 case "phase_step": {
                   const label = eventData?.label;
                   const stepStatus = eventData?.status;
-                  if (label && (stepStatus === "started" || stepStatus === "completed")) {
+                  if (
+                    label &&
+                    (stepStatus === "started" || stepStatus === "completed")
+                  ) {
                     const stepMessage: Message = {
-                      id: `phase-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+                      id: `phase-${Date.now()}-${Math.random()
+                        .toString(36)
+                        .slice(2)}`,
                       content: `${label}: ${stepStatus}`,
                       role: "assistant",
                       createdAt: new Date().toISOString(),
@@ -603,7 +672,9 @@ export function useChatGenerator(): UseChatGeneratorResult {
                       data: { label, status: stepStatus },
                     };
                     setConversation((prev) =>
-                      prev ? { ...prev, messages: [...prev.messages, stepMessage] } : prev
+                      prev
+                        ? { ...prev, messages: [...prev.messages, stepMessage] }
+                        : prev
                     );
                     setProgress((prev) => {
                       const base = prev ?? {
@@ -614,20 +685,37 @@ export function useChatGenerator(): UseChatGeneratorResult {
                         screenTitles: [],
                       };
                       const currentSteps = base.steps ?? [];
-                      let nextSteps: Array<{ label: string; status: "loading" | "completed" }>;
+                      let nextSteps: Array<{
+                        label: string;
+                        status: "loading" | "completed";
+                      }>;
                       if (stepStatus === "started") {
-                        nextSteps = [...currentSteps, { label, status: "loading" }];
+                        nextSteps = [
+                          ...currentSteps,
+                          { label, status: "loading" },
+                        ];
                       } else {
                         const copy = currentSteps.slice();
-                        const lastIdx = copy.map((s, i) => ({ s, i })).filter(({ s }) => s.label === label).pop()?.i ?? -1;
+                        const lastIdx =
+                          copy
+                            .map((s, i) => ({ s, i }))
+                            .filter(({ s }) => s.label === label)
+                            .pop()?.i ?? -1;
                         if (lastIdx >= 0) {
-                          copy[lastIdx] = { ...copy[lastIdx], status: "completed" };
+                          copy[lastIdx] = {
+                            ...copy[lastIdx],
+                            status: "completed",
+                          };
                         } else {
                           copy.push({ label, status: "completed" });
                         }
                         nextSteps = copy;
                       }
-                      return { ...base, steps: nextSteps, screenTitles: base.screenTitles ?? [] };
+                      return {
+                        ...base,
+                        steps: nextSteps,
+                        screenTitles: base.screenTitles ?? [],
+                      };
                     });
                   }
                   break;
@@ -653,7 +741,10 @@ export function useChatGenerator(): UseChatGeneratorResult {
                   }
                   break;
                 default:
-                  if (eventData?.error && eventData?.code === "INSUFFICIENT_CREDITS") {
+                  if (
+                    eventData?.error &&
+                    eventData?.code === "INSUFFICIENT_CREDITS"
+                  ) {
                     setError(eventData.error);
                     throw new Error(eventData.error);
                   }
@@ -690,11 +781,11 @@ export function useChatGenerator(): UseChatGeneratorResult {
         }
       } catch (e: any) {
         // Check if this was an abort error
-        if (e.name === 'AbortError') {
-          console.log('[useChatGenerator] Request aborted by user');
+        if (e.name === "AbortError") {
+          console.log("[useChatGenerator] Request aborted by user");
           return; // Don't set error for user-initiated cancellation
         }
-        
+
         console.error("Error sending message:", e);
         setError(e?.message || "Failed to send message");
       } finally {
@@ -710,7 +801,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
   const clearConversation = useCallback(() => {
     // Cancel any in-progress generation
     cancelGeneration();
-    
+
     setConversation(null);
     setError(null);
     setIsGenerating(false);
@@ -720,7 +811,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
   const loadConversation = useCallback(async (designId: string) => {
     try {
       setError(null);
-      const resp = await getDesignById(designId) as any;
+      const resp = (await getDesignById(designId)) as any;
       if (!resp?.success) {
         if (resp?.message?.toLowerCase().includes("not found")) {
           throw new Error("Design not found");
@@ -776,14 +867,230 @@ export function useChatGenerator(): UseChatGeneratorResult {
           ...(prev.colorPalette || {}),
           [key]: value,
         } as ColorPalette;
-        
+
         // Persist to backend with debounce
         debouncedUpdate(prev.id, updatedPalette);
-        
+
         return { ...prev, colorPalette: updatedPalette };
       });
     },
     [debouncedUpdate]
+  );
+
+  const updateScreen = useCallback(
+    async (designId: string, artboardId: string, prompt: string) => {
+      // Cancel any existing generation
+      cancelGeneration();
+
+      // Create new AbortController
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
+      try {
+        setIsGenerating(true);
+        setError(null);
+
+        // Add the user's update prompt as a message to the conversation
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          content: prompt,
+          role: "user",
+          createdAt: new Date().toISOString(),
+        };
+
+        setConversation((prev) => {
+          if (!prev) return prev;
+          return { ...prev, messages: [...prev.messages, userMessage] };
+        });
+
+        const baseUrl = CONFIG.API_URL.replace(/\/$/, "");
+        const streamUrl = `${baseUrl}/designs/chat/stream-update/${designId}?prompt=${encodeURIComponent(
+          prompt
+        )}&artboardId=${artboardId}`;
+
+        const res = await fetch(streamUrl, {
+          method: "GET",
+          headers: {
+            Accept: "text/event-stream",
+            apisecretkeycheck: CONFIG.API_SECRET,
+          },
+          credentials: "include",
+          signal: abortController.signal,
+        });
+
+        if (!res.ok) {
+          throw new Error(`Request failed: ${res.status}`);
+        }
+
+        const reader = res.body?.getReader();
+        if (!reader) throw new Error("No response body");
+        readerRef.current = reader;
+
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          if (abortController.signal.aborted) break;
+
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n");
+          buffer = lines.pop() || "";
+
+          for (const line of lines) {
+            if (!line.startsWith("data: ")) continue;
+            try {
+              const raw = JSON.parse(line.slice(6));
+              const eventData = raw?.data ?? raw;
+              const eventType = raw?.type ?? eventData?.type;
+
+              switch (eventType) {
+                case "phase_step":
+                  // Skip phase steps for updates - only show screen-specific messages
+                  break;
+
+                case "screen_start": {
+                  const messageId = eventData?.messageId;
+                  const title = eventData?.title ?? "Screen";
+                  const kind = eventData?.kind ?? "update";
+                  const screenId = eventData?.screenId;
+
+                  // Always create a card message for updates
+                  const cardMessage: Message = {
+                    id: messageId || `update-${Date.now()}`,
+                    content: `Updating: ${title}`,
+                    role: "assistant",
+                    createdAt: new Date().toISOString(),
+                    type: "stream",
+                    status: "screen_start",
+                    data: { title, kind, screenId },
+                  };
+
+                  setConversation((prev) =>
+                    prev
+                      ? { ...prev, messages: [...prev.messages, cardMessage] }
+                      : prev
+                  );
+                  break;
+                }
+
+                case "screen_update": {
+                  const screenPayload = eventData?.screen ?? eventData;
+                  const messageId = eventData?.messageId;
+                  if (screenPayload) {
+                    const updatedScreen: Screen = {
+                      id: screenPayload.id,
+                      title: screenPayload.title,
+                      description: screenPayload.description,
+                      html: screenPayload.html,
+                      createdAt: new Date().toISOString(),
+                    };
+
+                    setConversation((prev) => {
+                      if (!prev) return prev;
+
+                      // Update the screen card message to completed
+                      const messages = messageId
+                        ? prev.messages.map((m) =>
+                            m.id === messageId ||
+                            (m.data?.screenId === updatedScreen.id &&
+                              m.status === "screen_start")
+                              ? {
+                                  ...m,
+                                  status: "screen_complete",
+                                  content: `Updated: ${updatedScreen.title}`,
+                                  data: {
+                                    ...m.data,
+                                    title: updatedScreen.title,
+                                    screenId: updatedScreen.id,
+                                  },
+                                }
+                              : m
+                          )
+                        : prev.messages;
+
+                      return {
+                        ...prev,
+                        messages,
+                        screens: prev.screens.map((s) =>
+                          s.id === updatedScreen.id
+                            ? {
+                                ...s,
+                                ...updatedScreen,
+                                x: s.x,
+                                y: s.y,
+                                width: s.width,
+                                height: s.height,
+                              }
+                            : s
+                        ),
+                      };
+                    });
+                  }
+                  break;
+                }
+
+                case "status_update":
+                  if (eventData?.message) {
+                    // Handle error or status messages
+                    if (eventData.message.startsWith("Error:")) {
+                      setError(eventData.message);
+                    }
+                  }
+                  break;
+
+                case "all_complete":
+                  // Add completion message
+                  const completeMessage: Message = {
+                    id: `complete-${Date.now()}`,
+                    content: "Update completed.",
+                    role: "assistant",
+                    createdAt: new Date().toISOString(),
+                    type: "final",
+                    status: "all_complete",
+                  };
+                  setConversation((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          messages: [...prev.messages, completeMessage],
+                        }
+                      : prev
+                  );
+                  setIsGenerating(false);
+                  break;
+              }
+            } catch (e) {
+              console.error("Parse error", e);
+            }
+          }
+        }
+      } catch (e: any) {
+        if (e.name === "AbortError") return;
+        console.error("Error updating screen:", e);
+        setError(e?.message || "Failed to update screen");
+
+        // Add error message
+        const errorMessage: Message = {
+          id: `error-${Date.now()}`,
+          content: e?.message || "Failed to update screen",
+          role: "assistant",
+          createdAt: new Date().toISOString(),
+          type: "final",
+          status: "error",
+        };
+        setConversation((prev) =>
+          prev ? { ...prev, messages: [...prev.messages, errorMessage] } : prev
+        );
+      } finally {
+        setIsGenerating(false);
+        abortControllerRef.current = null;
+        readerRef.current = null;
+      }
+    },
+    [cancelGeneration]
   );
 
   return {
@@ -792,6 +1099,7 @@ export function useChatGenerator(): UseChatGeneratorResult {
     progress,
     error,
     sendMessage,
+    updateScreen,
     cancelGeneration,
     clearConversation,
     loadConversation,

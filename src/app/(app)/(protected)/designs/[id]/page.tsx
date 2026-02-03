@@ -27,6 +27,7 @@ export default function DesignEditorPage() {
     clearConversation,
     loadConversation,
     updateColorPalette,
+    updateScreen,
   } = useChatGenerator();
 
   const { prompt: promptContext, type: typeContext, clearPrompt } = usePrompt();
@@ -119,6 +120,9 @@ export default function DesignEditorPage() {
               `Delete the screen "${artboardTitle}" with ID ${artboardId}`,
               designId
             );
+          }}
+          onUpdateArtboard={(artboardId: string, prompt: string) => {
+             updateScreen(designId, artboardId, prompt);
           }}
         />
       </div>
