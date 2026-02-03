@@ -118,6 +118,13 @@ export function MobileFrame({
         if (typeof event.data === 'object') {
           if (event.data.type === 'CANVAS_READY') {
             setIsLoaded(true);
+            // Immediately sync theme if we have it
+            if (colorPalette && iframeRef.current?.contentWindow) {
+              iframeRef.current.contentWindow.postMessage(
+                { type: "UPDATE_THEME", palette: colorPalette },
+                "*"
+              );
+            }
           } else if (event.data.type === 'UPDATE_HEIGHT') {
             const newHeight = event.data.height;
             if (newHeight && !isResizing && !isDragging) {
@@ -130,16 +137,21 @@ export function MobileFrame({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [isResizing, isDragging]);
+  }, [colorPalette, isResizing, isDragging]);
 
   useEffect(() => {
     if (isLoaded && htmlContent && iframeRef.current?.contentWindow) {
       iframeRef.current.contentWindow.postMessage(
-        { type: "UPDATE_CONTENT", html: htmlContent },
+        { 
+          type: "UPDATE_CONTENT", 
+          html: htmlContent,
+          // Send theme as well during content updates to ensure consistency
+          palette: colorPalette 
+        },
         "*"
       );
     }
-  }, [htmlContent, isLoaded]);
+  }, [htmlContent, isLoaded, colorPalette]);
 
   useEffect(() => {
     if (isLoaded && colorPalette && iframeRef.current?.contentWindow) {

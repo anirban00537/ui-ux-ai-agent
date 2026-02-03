@@ -13,6 +13,7 @@ import {
   addMessage,
   updateMessageStatus,
   updateColorValue,
+  setColorPalette,
   removeArtboard,
   Conversation,
   Message,
@@ -306,6 +307,41 @@ export function useChatGenerator(designId?: string) {
                   }
                   break;
                 
+                case "phase_theme_generating":
+                  dispatch(setProgress({
+                    current: 0,
+                    total: 0,
+                    phase: "theme_generating",
+                    currentScreen: "Generating theme...",
+                  }));
+                  break;
+
+                case "phase_theme_complete":
+                case "color_palette": {
+                  const palette = eventData?.palette ?? eventData;
+                  if (palette && typeof palette === 'object' && palette.background) {
+                    dispatch(setColorPalette(palette));
+                  }
+                  break;
+                }
+
+                case "phase_step":
+                  if (eventData?.label) {
+                    dispatch(addMessage({
+                      id: `phase-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                      content: eventData.label,
+                      role: "system",
+                      createdAt: new Date().toISOString(),
+                      type: "stream",
+                      status: "phase_step",
+                      data: { 
+                        label: eventData.label, 
+                        status: eventData.status 
+                      }
+                    }));
+                  }
+                  break;
+
                 case "all_complete":
                   dispatch(setProgress({
                     current: 100,
