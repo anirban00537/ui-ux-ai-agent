@@ -241,16 +241,16 @@ export function MobileFrame({
       }}
       resizeHandleComponent={isSelected ? {
         bottomRight: (
-          <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nwse-resize z-[70] transition-all hover:scale-125" />
+          <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
         ),
         bottomLeft: (
-          <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nesw-resize z-[70] transition-all hover:scale-125" />
+          <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
         ),
         topRight: (
-          <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nesw-resize z-[70] transition-all hover:scale-125" />
+          <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
         ),
         topLeft: (
-          <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-md cursor-nwse-resize z-[70] transition-all hover:scale-125" />
+          <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
         ),
       } : {}}
     >
@@ -284,9 +284,9 @@ export function MobileFrame({
         <div 
            className="relative w-full h-full group"
         >
-             {/* Selection Border */}
+             {/* Selection Border - Rectangular Bounding Box */}
             {isSelected && (
-              <div className="absolute -inset-[1px] border-[2px] border-primary rounded-[33px] z-20 pointer-events-none" />
+              <div className="absolute -inset-[1px] border border-primary z-20 pointer-events-none" />
             )}
 
             {/* Generating Animation */}
