@@ -57,6 +57,7 @@ export const designSystemInstructions = `
 • EXPANDING CONTENT: Middle section must have "flex-1" or "grow" to push footer to bottom.
 • TOUCH TARGETS: Buttons/Inputs min-h-[44px] or size-10+.
 • SAFE ZONES: p-5 or p-6 padding on edges (Give content room to breathe!).
+• COVER/HERO SECTIONS: Determine a specific fixed pixel height or aspect ratio that suits the content. NEVER use vh units (h-[60vh]) as they cause unpredictable growth in auto-height frames. The chosen height must be a static value (e.g. pixels).
 • SCROLLING: overflow-y-auto on the flex-1 container if content is long. Hide scrollbars if possible (scrollbar-hide).
 • HEADER: Fixed height Standard: "h-16 flex items-center px-6". Do NOT vary header height between screens.
 • NAVIGATION: Persistent "Bottom Tab Bar" is MANDATORY for all main screens. (e.g. Home, Search, Profile).
@@ -119,7 +120,7 @@ Glass: "rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg
 • NO Emojis as icons. Use Remix Icons.
 • NO Lorem Ipsum. Use realistic copy ("Meeting with Sarah", "$4,200.00").
 • NO Arbitrary values (w-[350px], h-[800px]). Use w-full, h-full, flex.
-• NO "vh" units for element heights (e.g. h-[50vh]). Use fixed pixels (h-[300px]) or aspect ratios (aspect-[2/3]).
+• NO "vh" units for element heights (e.g. h-[50vh]). Use fixed pixel values or aspect ratios decided by you. This is CRITICAL for proper frame rendering and stability.
 • NO Broken HTML. Close all tags.
 • NO "placeholders". Build the real UI.
 • NO "placeholders". Build the real UI.
