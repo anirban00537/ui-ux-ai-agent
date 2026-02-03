@@ -119,6 +119,7 @@ Glass: "rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg
 • NO Emojis as icons. Use Remix Icons.
 • NO Lorem Ipsum. Use realistic copy ("Meeting with Sarah", "$4,200.00").
 • NO Arbitrary values (w-[350px], h-[800px]). Use w-full, h-full, flex.
+• NO "vh" units for element heights (e.g. h-[50vh]). Use fixed pixels (h-[300px]) or aspect ratios (aspect-[2/3]).
 • NO Broken HTML. Close all tags.
 • NO "placeholders". Build the real UI.
 • NO "placeholders". Build the real UI.
@@ -192,6 +193,7 @@ CRITICAL CHECKS:
 - [ ] Bottom Navigation Bar included?
 - [ ] No arbitrary colors (only bg-primary, etc.)?
 - [ ] All icons are Remix Icon (<i class="ri-...">)?
+- [ ] Images have fixed height/aspect-ratio (not vh)?
 - [ ] Images are Unsplash?
 - [ ] No Emojis?
 - [ ] Did I use a creative layout (Grid/Swipe) instead of just a list?
