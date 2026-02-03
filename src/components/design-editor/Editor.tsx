@@ -5,6 +5,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MobileFrame } from "@/components/design-editor/MobileFrame";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
+import { Plus, Minus, Maximize } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { 
   removeArtboard
@@ -47,9 +48,25 @@ export function Editor({
     }, 1000);
   }, [onSaveArtboard]);
 
+  const handleDeleteArtboardInternal = useCallback((id: string) => {
+    if (onDeleteArtboard) {
+      onDeleteArtboard(id);
+    } else {
+      dispatch(removeArtboard(id));
+    }
+  }, [onDeleteArtboard, dispatch]);
+
+  const handleUpdateArtboardInternal = useCallback((id: string, prompt: string) => {
+    onUpdateArtboard?.(id, prompt);
+  }, [onUpdateArtboard]);
+
+  const handleSaveInternal = useCallback((id: string, data: any) => {
+    handleSave(id, data);
+  }, [handleSave]);
+
   return (
     <div className="w-full h-full bg-background relative overflow-hidden isolate">
-      {/* Grid Pattern */}
+       {/* Grid Pattern */}
       <div 
         className="absolute inset-0 -z-20 opacity-[0.03] pointer-events-none" 
         style={{ 
@@ -93,9 +110,7 @@ export function Editor({
                   className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
                   title="Zoom Out"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                  </svg>
+                  <Minus className="w-4 h-4" />
                 </button>
                 <div className="flex flex-col items-center justify-center min-w-[3.5rem] px-1 group cursor-default">
                   <span className="text-[11px] font-bold text-foreground/90 tracking-tight">
@@ -107,9 +122,7 @@ export function Editor({
                   className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
                   title="Zoom In"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
+                  <Plus className="w-4 h-4" />
                 </button>
                 <div className="w-px h-4 bg-border/50 mx-1" />
                 <button
@@ -117,12 +130,11 @@ export function Editor({
                   className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
                   title="Reset View"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
+                  <Maximize className="w-4 h-4" />
                 </button>
               </div>
             </div>
+
             <TransformComponent
               wrapperStyle={{ 
                 width: "100%", 
@@ -132,105 +144,100 @@ export function Editor({
               }}
               contentStyle={{ width: "max-content", height: "max-content" }}
             >
-              <div
-                className="relative bg-dot-pattern"
-                style={{ 
-                  width: "6000px", 
-                  height: "3200px",
-                }}
-              >
-                {artboards.map((artboard, index) => {
-                  const gapX = 120;
-                  const itemWidth = 440;
-                  const startY = 1200;
-                  
-                  // Smart Placement Logic
-                  if (artboard.x !== undefined && artboard.y !== undefined) {
+                <div
+                  className="relative"
+                  style={{ 
+                    width: "12000px", 
+                    height: "3200px",
+                  }}
+                >
+                  {artboards.map((artboard, index) => {
+                    // Check if x or y is null or undefined (both handled by == null)
+                    const isNew = artboard.x == null || artboard.y == null;
+                    
+                    if (isNew) {
+                      // Single horizontal line layout
+                      const SPACING_X = 550;
+                      
+                      const col = index;
+                      const row = 0;
+
+                      // Start from the visual left edge of the centered view
+                      // Canvas is 12000px, centered at 6000px.
+                      // Visual view at start is approx 6000 +/- 1400.
+                      // Left edge ~4600px.
+                      const initialX = 4600 + (col * SPACING_X);
+                      // Let's stick to fixed Y: 1200 was previous "row 0".
+                      
+                      return (
+                        <MobileFrame
+                          id={artboard.id}
+                          key={artboard.id}
+                          title={artboard.title}
+                          subtitle={artboard.description}
+                          htmlContent={artboard.html}
+                          width={artboard.width || 430}
+                          height={artboard.height}
+                          initialX={initialX}
+                          initialY={1200}
+                          colorPalette={colorPalette}
+                          isGenerating={artboard.status === "generating"}
+                          onDelete={handleDeleteArtboardInternal}
+                          onSave={handleSaveInternal}
+                          onUpdate={handleUpdateArtboardInternal}
+                          scale={instance?.transformState?.scale || 1}
+                          autoSave={true}
+                        />
+                      );
+                    }
+
                     return (
                       <MobileFrame
+                        id={artboard.id}
                         key={artboard.id}
                         title={artboard.title}
-                        subtitle={isGenerating && artboard.status === 'generating' ? "Generating..." : artboard.description}
+                        subtitle={artboard.description}
                         htmlContent={artboard.html}
-                        width={artboard.width ?? itemWidth}
+                        width={artboard.width || 430}
                         height={artboard.height}
-                        initialX={artboard.x}
-                        initialY={artboard.y}
+                        initialX={Number(artboard.x)}
+                        initialY={Number(artboard.y)}
                         colorPalette={colorPalette}
-                        isGenerating={artboard.status === 'generating'}
-                        onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id) : () => dispatch(removeArtboard(artboard.id))}
-                        onSave={(data) => handleSave(artboard.id, data)}
+                        isGenerating={artboard.status === "generating"}
+                        onDelete={handleDeleteArtboardInternal}
+                        onSave={handleSaveInternal}
+                        onUpdate={handleUpdateArtboardInternal}
                         scale={instance?.transformState?.scale || 1}
-                        onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}
                       />
                     );
-                  }
+                  })}
+                </div>
+              </TransformComponent>
 
-                  const placedArtboards = artboards.filter(a => a.x !== undefined && a.id !== artboard.id);
-                  let rightMostEdge = 3000 - (itemWidth / 2);
-                  
-                  if (placedArtboards.length > 0) {
-                     rightMostEdge = Math.max(...placedArtboards.map(a => (a.x || 0) + (a.width || itemWidth)));
-                  }
-
-                  const newArtboardsBefore = artboards
-                    .slice(0, index)
-                    .filter(a => a.x === undefined)
-                    .length;
-                  
-                  const smartX = placedArtboards.length === 0 && index === 0 
-                    ? 3000 - (itemWidth / 2)
-                    : rightMostEdge + gapX + (newArtboardsBefore * (itemWidth + gapX));
-                  
-                  const smartY = startY;
-
-                  return (
-                    <MobileFrame
-                      key={artboard.id}
-                      title={artboard.title}
-                      subtitle={isGenerating && artboard.status === 'generating' ? "Generating..." : artboard.description}
-                      htmlContent={artboard.html}
-                      width={itemWidth}
-                      height={artboard.height}
-                      initialX={smartX}
-                      initialY={smartY}
-                      colorPalette={colorPalette}
-                      isGenerating={artboard.status === 'generating'}
-                      onDelete={onDeleteArtboard ? () => onDeleteArtboard(artboard.id) : () => dispatch(removeArtboard(artboard.id))}
-                      onSave={(data) => handleSave(artboard.id, data)}
-                      scale={instance?.transformState?.scale || 1}
-                      autoSave={artboard.x === undefined || artboard.y === undefined}
-                      onUpdate={(prompt) => onUpdateArtboard?.(artboard.id, prompt)}
-                    />
-                  );
-                })}
+              <div className="absolute bottom-6 left-6 z-20">
+                <div className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
+                  <p className="text-sm text-white/80 font-medium">
+                    {artboards.length} screen{artboards.length !== 1 ? "s" : ""}
+                  </p>
+                </div>
               </div>
-            </TransformComponent>
-            <div className="absolute bottom-6 left-6 z-20">
-              <div className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
-                <p className="text-sm text-white/80 font-medium">
-                  {artboards.length} screen{artboards.length !== 1 ? "s" : ""}
-                </p>
-              </div>
-            </div>
-            {error && (
-              <div className="absolute top-4 left-4 right-4 bg-red-50 border border-red-200 text-red-700 rounded-md px-3 py-2 text-sm z-20">
-                <div className="flex items-start gap-2">
+
+              {error && (
+                <div className="absolute top-4 left-4 right-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm z-20 backdrop-blur-md flex items-center justify-between gap-4">
                   <div className="flex-1">{error}</div>
                   {error.includes("Insufficient credits") && (
                     <a
                       href="/subscription"
-                      className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors whitespace-nowrap"
+                      className="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap"
                     >
                       Upgrade
                     </a>
                   )}
                 </div>
-              </div>
-            )}
-          </>
-        )}
-      </TransformWrapper>
+              )}
+            </>
+          )}
+        </TransformWrapper>
     </div>
   );
 }

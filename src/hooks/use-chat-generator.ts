@@ -32,6 +32,9 @@ export function useChatGenerator(designId?: string) {
   const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null);
 
   // TanStack Query for loading design
+  const lastUpdateRef = useRef<Record<string, number>>({});
+  const UPDATE_THROTTLE_MS = 150;
+
   const { data: queryData, isLoading: isLoadingDesign } = useQuery({
     queryKey: ["design", designId],
     queryFn: async () => {
@@ -234,15 +237,14 @@ export function useChatGenerator(designId?: string) {
                     }));
                   }
 
-                  if (screenId) {
-                    dispatch(updateArtboard({
-                      id: screenId,
-                      title,
-                      html: "",
-                      createdAt: new Date().toISOString(),
-                      status: "generating",
-                    }));
-                  }
+                  const targetId = screenId ?? `streaming-${title}`;
+                  dispatch(updateArtboard({
+                    id: targetId,
+                    title,
+                    html: "",
+                    createdAt: new Date().toISOString(),
+                    status: "generating",
+                  }));
 
                   if (raw?.progress) {
                     dispatch(setProgress({
@@ -258,6 +260,16 @@ export function useChatGenerator(designId?: string) {
                   const title = eventData?.title;
                   const screenId = eventData?.id || eventData?.screenId;
                   const accumulatedText = eventData?.accumulatedText || "";
+
+                  // Throttle streaming updates
+                  const targetId = screenId ?? `streaming-${title}`;
+                  const now = Date.now();
+                  if (lastUpdateRef.current[targetId] && 
+                      now - lastUpdateRef.current[targetId] < UPDATE_THROTTLE_MS) {
+                    break;
+                  }
+                  lastUpdateRef.current[targetId] = now;
+
                   let partialHtml = "";
                   try {
                     const htmlMatch = accumulatedText.match(/"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"|$)/);
@@ -268,7 +280,7 @@ export function useChatGenerator(designId?: string) {
 
                   if (title && partialHtml) {
                     dispatch(updateArtboard({
-                      id: screenId ?? `streaming-${title}`,
+                      id: targetId,
                       title,
                       html: partialHtml,
                       createdAt: new Date().toISOString(),
@@ -289,6 +301,10 @@ export function useChatGenerator(designId?: string) {
                   const screenPayload = eventData?.screen ?? eventData;
                   const tempId = eventData?.tempId;
                   if (screenPayload) {
+                    // Update last update time to ensure we don't skip final version
+                    const targetId = screenPayload.id;
+                    lastUpdateRef.current[targetId] = Date.now();
+
                     dispatch(updateArtboard({
                       id: screenPayload.id,
                       title: screenPayload.title,
@@ -400,6 +416,7 @@ export function useChatGenerator(designId?: string) {
         dispatch(setProgress(null));
         abortControllerRef.current = null;
         readerRef.current = null;
+        lastUpdateRef.current = {};
       }
     },
     [dispatch, conversation, designId]

@@ -22,6 +22,7 @@ interface ColorPalette {
 }
 
 interface MobileFrameProps {
+  id: string;
   htmlContent: string;
   title?: string;
   subtitle?: string;
@@ -32,14 +33,15 @@ interface MobileFrameProps {
   initialY?: number;
   colorPalette?: ColorPalette;
   isGenerating?: boolean;
-  onDelete?: () => void;
-  onUpdate?: (prompt: string) => void;
-  onSave?: (data: { x: number; y: number; width: number; height: number }) => void;
+  onDelete?: (id: string) => void;
+  onUpdate?: (id: string, prompt: string) => void;
+  onSave?: (id: string, data: { x: number; y: number; width: number; height: number }) => void;
   scale?: number;
   autoSave?: boolean;
 }
 
-export function MobileFrame({
+export const MobileFrame = React.memo(({
+  id,
   htmlContent,
   title,
   subtitle,
@@ -55,7 +57,7 @@ export function MobileFrame({
   onSave,
   scale = 1,
   autoSave = false,
-}: MobileFrameProps) {
+}: MobileFrameProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
@@ -106,7 +108,7 @@ export function MobileFrame({
   // Auto-save initial position if requested (for smart placement persistence)
   useEffect(() => {
     if (autoSave && onSave) {
-      onSave({ x: initialX, y: initialY, width, height: height || standardHeight });
+      onSave(id, { x: initialX, y: initialY, width, height: height || standardHeight });
     }
     // Only run once on mount/init when autoSave is true
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -228,7 +230,7 @@ export function MobileFrame({
       onDragStop={(e, d) => {
         setIsDragging(false);
         setPosition({ x: d.x, y: d.y });
-        onSave?.({ x: d.x, y: d.y, width: size.width, height: size.height });
+        onSave?.(id, { x: d.x, y: d.y, width: size.width, height: size.height });
       }}
       onResizeStart={() => {
         setIsResizing(true);
@@ -249,7 +251,7 @@ export function MobileFrame({
         };
         setSize(newSize);
         setPosition(position);
-        onSave?.({ x: position.x, y: position.y, width: newSize.width, height: newSize.height });
+        onSave?.(id, { x: position.x, y: position.y, width: newSize.width, height: newSize.height });
       }}
       enableResizing={{
         bottomRight: true,
@@ -284,9 +286,9 @@ export function MobileFrame({
           <div className="absolute -top-14 left-0 w-full flex justify-center z-[60]">
              <FrameToolbar
                 title={title}
-                onDelete={onDelete}
+                onDelete={() => onDelete?.(id)}
                 onViewCode={() => setShowCodeModal(true)}
-                onUpdate={onUpdate}
+                onUpdate={(prompt) => onUpdate?.(id, prompt)}
                 showUpdateInput={showUpdateInput}
                 setShowUpdateInput={setShowUpdateInput}
               />
@@ -386,4 +388,4 @@ export function MobileFrame({
     />
     </>
   );
-}
+});

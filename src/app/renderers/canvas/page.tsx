@@ -85,23 +85,26 @@ export default function CanvasPage() {
       if (p.input != null) docRoot.style.setProperty("--input", p.input);
     };
 
+    // Debounce for background fallbacks and height reporting
+    let fallbackTimeout: NodeJS.Timeout;
+    let heightReportTimeout: NodeJS.Timeout;
+
     const handleMessage = (event: MessageEvent) => {
-      // Just accept messages for now. In production, check origin.
       const data = event.data;
       if (!data) return;
 
       if (data.type === "UPDATE_CONTENT") {
         const html = data.html || "";
         if (root) {
-          // 1. Set HTML - Use min-h-screen so it fills screen but grows if needed
+          // 1. Set HTML - Use h-auto to grow with content
           root.innerHTML = `<div id="canvas-wrapper" class="w-full h-auto flex flex-col">${html}</div>`;
 
-          // 2. Attach fallback for images that fail to load
+          // 2. Attach fallback for images that fail to load (fast task)
           root.querySelectorAll("img").forEach((img) => {
             img.onerror = () => applyFallback(img);
           });
 
-          // 3. Execute scripts manually consistently
+          // 3. Execute scripts manually
           const scripts = root.querySelectorAll("script");
           scripts.forEach((oldScript) => {
             const newScript = document.createElement("script");
@@ -112,18 +115,13 @@ export default function CanvasPage() {
             oldScript.parentNode?.replaceChild(newScript, oldScript);
           });
 
-          // 4. Apply fallback for background images that fail to load
-          requestAnimationFrame(() => {
+          // 4. Debounced heavy fallback check
+          clearTimeout(fallbackTimeout);
+          fallbackTimeout = setTimeout(() => {
             applyBackgroundFallbacks(root).catch(() => {});
-            
-            // Send height after content update
-            window.parent.postMessage({ 
-              type: "UPDATE_HEIGHT", 
-              height: document.body.scrollHeight 
-            }, "*");
-          });
+          }, 1000); // Wait 1s after last update to check bg fallbacks
 
-          // 5. Apply theme if provided in the same message
+          // 5. Apply theme if provided
           if (data.palette) {
             applyTheme(data.palette);
           }
@@ -135,25 +133,31 @@ export default function CanvasPage() {
       }
     };
 
-    // Watch for size changes to report back to parent
+    // Watch for size changes with throttling
     const resizeObserver = new ResizeObserver(() => {
-      window.parent.postMessage({ 
-        type: "UPDATE_HEIGHT", 
-        height: document.body.scrollHeight 
-      }, "*");
+      clearTimeout(heightReportTimeout);
+      heightReportTimeout = setTimeout(() => {
+        window.parent.postMessage({ 
+          type: "UPDATE_HEIGHT", 
+          height: document.body.scrollHeight 
+        }, "*");
+      }, 150); // Report height at most every 150ms
     });
+
     // Observe body for any content changes
     resizeObserver.observe(document.body);
 
     window.addEventListener("message", handleMessage);
 
-    // Notify parent that the renderer is ready to receive content
+    // Notify parent that the renderer is ready
     window.parent.postMessage({ type: "CANVAS_READY" }, "*");
 
     return () => {
       root.removeEventListener("error", handleImageError, true);
       window.removeEventListener("message", handleMessage);
       resizeObserver.disconnect();
+      clearTimeout(fallbackTimeout);
+      clearTimeout(heightReportTimeout);
     };
   }, []);
 
