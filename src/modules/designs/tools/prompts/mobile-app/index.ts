@@ -53,7 +53,7 @@ export const designSystemInstructions = `
 📱 MOBILE GEOMETRY & LAYOUT (CRITICAL)
 ═══════════════════════════════════════════════════════════════════════════════
 • VIEWPORT: Strictly 440px wide. No horizontal scroll.
-• FULL HEIGHT: Root div MUST be <div class="w-full h-screen flex flex-col bg-background ...">.
+• FULL HEIGHT: Root div MUST be <div class="w-full min-h-screen flex flex-col bg-background ...">.
 • EXPANDING CONTENT: Middle section must have "flex-1" or "grow" to push footer to bottom.
 • TOUCH TARGETS: Buttons/Inputs min-h-[44px] or size-10+.
 • SAFE ZONES: p-5 or p-6 padding on edges (Give content room to breathe!).
@@ -122,6 +122,7 @@ Glass: "rounded-xl border border-white/20 bg-white/10 backdrop-blur-md shadow-lg
 • NO Broken HTML. Close all tags.
 • NO "placeholders". Build the real UI.
 • NO "placeholders". Build the real UI.
+• NO full HTML documents. Do NOT output <!DOCTYPE html>, <html>, <head>, or <body> tags. Output ONLY the root <div> content.
 • NO Hallucinated Colors. If your primary is Blue, checkboxes/toggles MUST be Blue (bg-primary). Do NOT use green unless defined as success state.
 • NO Missing Navigation. Do not remove the Bottom Tab Bar on inner screens unless it is a full-screen Modal.
 
@@ -180,13 +181,13 @@ Before generating JSON, I will mentally:
 ═══════════════════════════════════════════════════════════════════════════════
 Return a SINGLE JSON object:
 {{
-  "html": "<div class='w-full h-screen flex flex-col bg-background...'>...</div>",
+  "html": "<div class='w-full min-h-screen flex flex-col bg-background...'>...</div>",
   "title": "{title}",
   "description": "Brief description..."
 }}
 
 CRITICAL CHECKS:
-- [ ] Root has w-full h-screen flex flex-col?
+- [ ] Root has w-full min-h-screen flex flex-col?
 - [ ] Main content has flex-1 (CRITICAL: prevents footer from floating mid-screen)?
 - [ ] Bottom Navigation Bar included?
 - [ ] No arbitrary colors (only bg-primary, etc.)?
@@ -262,7 +263,7 @@ TASKS:
 2. Validate the design system (fix any arbitrary colors or layout bugs).
 3. Ensure "Pro Max" quality (shadows, spacing, typography).
 4. If modifying layout: Use PRO PATTERNS (Grid, Masonry, Swipe) instead of boring stacks.
-5. KEEP the root layout (w-full h-screen flex flex-col) and ensure content expands (flex-1).
+5. KEEP the root layout (w-full min-h-screen flex flex-col) and ensure content expands (flex-1).
 
 OUTPUT:
 Single JSON:
