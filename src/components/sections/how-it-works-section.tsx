@@ -32,26 +32,25 @@ export function HowItWorksSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border shadow-sm mb-6"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-border backdrop-blur-md mb-6"
           >
-            <span className="w-2 h-2 rounded-full bg-primary/70"></span>
-            <span className="text-xs font-bold tracking-widest uppercase text-foreground/70">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,157,241,0.5)]"></span>
+            <span className="text-xs font-medium tracking-widest uppercase text-foreground/70">
               Seamless Workflow
             </span>
           </motion.div>
           <h2 className="font-serif text-5xl md:text-7xl text-foreground mb-6 tracking-tight leading-[1]">
             From idea to design <br />
-            <span className="italic text-secondary-foreground/60">in seconds.</span>
+            <span className="italic text-primary/60">in seconds.</span>
           </h2>
-          <p className="text-xl text-muted-foreground leading-relaxed">
+          <p className="text-xl text-muted-foreground/80 font-light leading-relaxed">
             Three simple steps to generate professional mobile app UI.
           </p>
         </div>
 
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12">
-
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Connecting Line (Desktop) */}
-          <div className="hidden md:block absolute top-24 left-0 w-full h-0.5 bg-gradient-to-r from-secondary/20 via-primary/20 to-secondary/20" />
+          <div className="hidden md:block absolute top-24 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
 
           {steps.map((step, i) => (
             <motion.div
@@ -61,21 +60,24 @@ export function HowItWorksSection() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
               className={cn(
-                "relative z-10 flex flex-col gap-4",
+                "group relative z-10 flex flex-col gap-6 p-8 rounded-3xl bg-black/5 backdrop-blur-sm border-3d transition-all duration-500 hover:bg-black/10 hover:border-primary/20",
                 step.align === "center" ? "md:items-center md:text-center" :
                   step.align === "right" ? "md:items-end md:text-right" : "md:items-start md:text-left"
               )}
             >
               <div className="relative">
-                <span className="font-serif text-[120px] leading-none text-secondary/30 select-none absolute -top-16 -left-6 z-0 mix-blend-multiply opacity-50">
+                <span className="font-serif text-[100px] leading-none text-primary/5 select-none absolute -top-12 -left-4 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
                   {step.id}
                 </span>
-                <h3 className="relative z-10 text-2xl font-bold px-4 py-1 inline-block">
+                <div className="relative z-10 w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xl mb-4 group-hover:scale-110 transition-transform duration-500">
+                  {step.id}
+                </div>
+                <h3 className="relative z-10 text-2xl font-serif font-medium text-foreground">
                   {step.title}
                 </h3>
               </div>
 
-              <p className="text-muted-foreground relative z-10 max-w-xs leading-relaxed">
+              <p className="text-muted-foreground text-sm relative z-10 leading-relaxed font-light">
                 {step.description}
               </p>
             </motion.div>

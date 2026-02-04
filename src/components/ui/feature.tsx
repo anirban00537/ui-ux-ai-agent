@@ -37,43 +37,44 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-24 bg-background relative overflow-hidden" id="features">
+    <section className="py-32 bg-background relative overflow-hidden" id="features">
       {/* Background Subtle Elements */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
-      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-secondary/20 to-transparent" />
-
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50" />
+      
       <div className="container mx-auto px-4 relative z-10">
-        {/* Header Section - Inspired by PricingSection */}
+        {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border shadow-sm mb-6">
-            <span className="w-2 h-2 rounded-full bg-primary/70"></span>
-            <span className="text-xs font-bold tracking-widest uppercase text-foreground/70">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></span>
+            <span className="text-xs font-medium tracking-widest uppercase text-white/70">
               Powerful Capabilities
             </span>
           </div>
           <h2 className="font-serif text-5xl md:text-6xl text-foreground mb-6 tracking-tight leading-[1.1]">
             Everything you need, <br />
-            <span className="italic text-primary bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-500">nothing you don't.</span>
+            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-400 to-blue-400">
+              nothing you don't.
+            </span>
           </h2>
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground/80 leading-relaxed max-w-2xl mx-auto font-light">
             A complete suite of design tools designed to eliminate the friction between your ideas and a finished mobile app design.
           </p>
         </div>
 
         {/* Features Grid - Clean & Minimal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group p-8 rounded-3xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-md hover:border-primary/20"
+              className="group p-8 rounded-3xl bg-black/20 backdrop-blur-sm border-3d transition-all duration-500 hover:border-white/10 hover:bg-white/[0.02]"
             >
-              <div className="mb-6 inline-flex p-3 rounded-2xl bg-secondary/10 group-hover:bg-primary/10 transition-colors duration-300">
+              <div className="mb-6 inline-flex p-3 rounded-2xl bg-white/5 border-3d text-primary group-hover:text-indigo-400 group-hover:scale-110 transition-all duration-500">
                 {feature.icon}
               </div>
-              <h3 className="font-serif text-2xl text-foreground mb-3 font-medium">
+              <h3 className="font-serif text-2xl text-foreground mb-3 font-medium group-hover:text-white transition-colors duration-300">
                 {feature.title}
               </h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed group-hover:text-muted-foreground/80 transition-colors duration-300">
                 {feature.description}
               </p>
             </div>

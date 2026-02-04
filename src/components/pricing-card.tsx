@@ -84,16 +84,16 @@ export function PricingCard({
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
       className={cn(
-        "relative rounded-3xl p-8 transition-all duration-300 transform",
+        "relative rounded-[40px] p-8 transition-all duration-500 transform",
         isPopular
-          ? "bg-card shadow-depth-3 border border-border md:scale-105 z-10"
-          : "bg-card/80 border border-border shadow-sm hover:shadow-md hover:bg-card",
+          ? "bg-white/[0.03] backdrop-blur-xl border-3d shadow-2xl md:scale-105 z-10"
+          : "bg-black/10 backdrop-blur-md border-3d shadow-sm hover:border-border/80 hover:bg-black/20",
         className
       )}
     >
       {/* Pro Glow Effect */}
       {isPopular && (
-        <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-b from-primary/20 via-secondary/20 to-transparent blur-xl opacity-60" />
+        <div className="absolute inset-0 -z-10 rounded-[40px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent blur-2xl opacity-50" />
       )}
 
       {isPopular && (

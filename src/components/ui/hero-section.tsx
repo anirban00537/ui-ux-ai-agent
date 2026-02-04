@@ -23,9 +23,12 @@ export default function HeroSection() {
           backgroundRepeat: "no-repeat",
         }}
       />
-      {/* Overlay for better readability */}
-      <div className="absolute inset-0 -z-10 bg-background/40 backdrop-blur-[2px]" />
-
+      {/* Refined overlay for depth and readability */}
+      {/* Refined overlay for depth and readability */}
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/10 to-black" />
+      
+   
+    
       <div className="container relative z-10 px-4 flex flex-col items-center">
         <div className="w-full max-w-4xl flex flex-col gap-3">
           {/* Headline */}
@@ -41,17 +44,17 @@ export default function HeroSection() {
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={spinningWord}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -20, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: "easeInOut" }}
-                    className="absolute left-0 bottom-0 italic text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-500 whitespace-nowrap"
+                    initial={{ y: 20, opacity: 0, filter: "blur(4px)" }}
+                    animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                    exit={{ y: -20, opacity: 0, filter: "blur(4px)" }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute left-0 bottom-0 italic text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-400 to-blue-400 whitespace-nowrap pb-1"
                   >
                     {spinningWord}
                   </motion.span>
                 </AnimatePresence>
                 {/* Invisible spacer to maintain layout height/width based on longest word */}
-                <span className="opacity-0 invisible pointer-events-none italic whitespace-nowrap">
+                <span className="opacity-0 invisible pointer-events-none italic whitespace-nowrap pb-1">
                   {spinningWord}
                 </span>
               </span>{" "}
@@ -74,7 +77,6 @@ export default function HeroSection() {
             <PromptBox
               name="message"
               onError={(errorMessage: string) => setError(errorMessage)}
-              className="border border-border bg-card shadow-none"
             />
 
             {error && (
