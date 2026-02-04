@@ -41,6 +41,10 @@ export function useChatGenerator(designId?: string) {
 
   // Reset editor when designId changes
   useEffect(() => {
+    // If the conversation in store ALREADY matches the new designId, do NOT reset.
+    // This handles the "create -> redirect" flow where we pre-populate the store.
+    if (conversation?.id === designId) return;
+
     isResettingRef.current = true;
     dispatch(resetEditor());
     // Use timeout to ensure state is cleared before query might re-fetch or sync
@@ -48,7 +52,7 @@ export function useChatGenerator(designId?: string) {
       isResettingRef.current = false;
     }, 0);
     return () => clearTimeout(timer);
-  }, [designId, dispatch]);
+  }, [designId, dispatch, conversation?.id]);
 
   const { data: queryData, isLoading: isLoadingDesign } = useQuery({
     queryKey: ["design", designId],
@@ -64,9 +68,13 @@ export function useChatGenerator(designId?: string) {
   // Sync Redux with Query data
   useEffect(() => {
     if (queryData && !isResettingRef.current) {
-      dispatch(setConversation(queryData));
+      // Avoid overwriting existing conversation if it matches the loaded ID
+      // This prevents the initial load from wiping out the real-time stream state during creation
+      if (!conversation || conversation.id !== queryData.id) {
+        dispatch(setConversation(queryData));
+      }
     }
-  }, [queryData, dispatch]);
+  }, [queryData, dispatch, conversation]);
 
   // Sync position mutation
   const { mutate: syncArtboardPosition } = useMutation({
