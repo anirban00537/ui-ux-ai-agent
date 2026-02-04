@@ -2,7 +2,6 @@
 export { default as ArtboardCreator } from './artboard-creator';
 export { default as ArtboardUpdater } from './artboard-updater';
 export { ColorPaletteGenerator } from './color-palette-generator';
-export { PromptEnhancer } from './prompt-enhancer';
 
 // Export types
 export type { ScreenGenerationResult } from './artboard-creator';

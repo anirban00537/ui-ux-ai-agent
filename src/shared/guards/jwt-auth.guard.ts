@@ -7,13 +7,14 @@ import {
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { getAuth } from 'src/modules/auth/auth-lib';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { PrismaService } from 'src/modules/prisma/prisma.service';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private prisma: PrismaService, // Inject properly
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -31,7 +32,7 @@ export class JwtAuthGuard implements CanActivate {
     // but don't require it
     if (isPublic) {
       if (session) {
-        const fullUser = await prisma.user.findUnique({
+        const fullUser = await this.prisma.user.findUnique({
           where: { id: session.user.id },
         });
         if (fullUser) {
@@ -48,7 +49,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     // Fetch full user from database including role field
-    const fullUser = await prisma.user.findUnique({
+    const fullUser = await this.prisma.user.findUnique({
       where: { id: session.user.id },
     });
 
