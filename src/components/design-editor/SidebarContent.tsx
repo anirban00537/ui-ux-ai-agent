@@ -11,12 +11,16 @@ import { SidebarPromptInput } from "@/components/design-editor/SidebarPromptInpu
 import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Share2, Globe, Lock, Copy, Check, Loader2 } from "lucide-react";
+import { updateDesign } from "@/services/designs";
+import { toast } from "sonner";
 
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   Message,
   GenerationProgress,
   ColorPalette,
+  updateConversation,
 } from "@/store/slices/designEditorSlice";
 
 // Card statuses that trigger screen cards
@@ -285,11 +289,13 @@ export function SidebarContent({
             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
             <h2 className="text-sm font-medium text-white/90">Chat</h2>
           </div>
-          <Link href="/home">
-            <button className="px-3 py-1 text-[11px] text-white/50 hover:text-white/80 hover:bg-zinc-800/50 rounded transition-all">
-              Back
-            </button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/home">
+              <button className="px-3 py-1 text-[11px] text-white/50 hover:text-white/80 hover:bg-zinc-800/50 rounded transition-all">
+                Back
+              </button>
+            </Link>
+          </div>
         </div>
         {!balanceLoading && (
           <div className="flex items-center gap-1.5 text-[11px]">
@@ -479,3 +485,5 @@ export function SidebarContent({
     </div>
   );
 }
+
+

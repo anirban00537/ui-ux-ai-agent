@@ -5,7 +5,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { MobileFrame } from "@/components/design-editor/MobileFrame";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { cn } from "@/lib/utils";
-import { Plus, Minus, Maximize } from "lucide-react";
+import { Plus, Minus, Maximize, Eye } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { 
   removeArtboard
@@ -132,6 +132,19 @@ export function Editor({
                 >
                   <Maximize className="w-4 h-4" />
                 </button>
+                {conversation?.id && (
+                  <>
+                    <div className="w-px h-4 bg-border/50 mx-1" />
+                    <button
+                      onClick={() => window.open(`/preview/${conversation.id}`, '_blank')}
+                      className="flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition-all duration-200 active:scale-95 group font-bold text-xs ring-1 ring-primary/20"
+                      title="Preview Design"
+                    >
+                      <Eye className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+                      <span>Preview</span>
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
@@ -157,7 +170,7 @@ export function Editor({
                     
                     if (isNew) {
                       // Single horizontal line layout
-                      const SPACING_X = 550;
+                      const SPACING_X = 600;
                       
                       const col = index;
                       const row = 0;
@@ -176,7 +189,7 @@ export function Editor({
                           title={artboard.title}
                           subtitle={artboard.description}
                           htmlContent={artboard.html}
-                          width={artboard.width || 430}
+                          width={artboard.width || 480}
                           height={artboard.height}
                           initialX={initialX}
                           initialY={1200}
@@ -198,7 +211,7 @@ export function Editor({
                         title={artboard.title}
                         subtitle={artboard.description}
                         htmlContent={artboard.html}
-                        width={artboard.width || 430}
+                        width={artboard.width || 480}
                         height={artboard.height}
                         initialX={Number(artboard.x)}
                         initialY={Number(artboard.y)}

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, Suspense } from "react";
 
 const FALLBACK_IMAGE = "https://picsum.photos/seed/placeholder/400/600";
 const FALLBACK_BG_IMAGE = "https://picsum.photos/seed/background/1200/800";
@@ -55,8 +56,11 @@ const applyBackgroundFallbacks = async (root: HTMLElement) => {
   });
 };
 
-export default function CanvasPage() {
+function CanvasContent() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode") || "editor";
+  const isPreview = mode === "preview";
 
   useEffect(() => {
     const root = rootRef.current;
@@ -96,10 +100,10 @@ export default function CanvasPage() {
       if (data.type === "UPDATE_CONTENT") {
         const html = data.html || "";
         if (root) {
-          // 1. Set HTML - Use h-auto to grow with content
+          // 1. Set HTML - Use h-auto for editor mode to grow, h-full for preview to scroll
           root.innerHTML = `<div id="canvas-wrapper" class="w-full h-auto flex flex-col">${html}</div>`;
 
-          // 2. Attach fallback for images that fail to load (fast task)
+          // 2. Attach fallback for images that fail to load
           root.querySelectorAll("img").forEach((img) => {
             img.onerror = () => applyFallback(img);
           });
@@ -119,7 +123,7 @@ export default function CanvasPage() {
           clearTimeout(fallbackTimeout);
           fallbackTimeout = setTimeout(() => {
             applyBackgroundFallbacks(root).catch(() => {});
-          }, 1000); // Wait 1s after last update to check bg fallbacks
+          }, 1000);
 
           // 5. Apply theme if provided
           if (data.palette) {
@@ -133,7 +137,7 @@ export default function CanvasPage() {
       }
     };
 
-    // Watch for size changes with throttling
+    // Watch for size changes with throttling (only really needed for editor mode to inform parent)
     const resizeObserver = new ResizeObserver(() => {
       clearTimeout(heightReportTimeout);
       heightReportTimeout = setTimeout(() => {
@@ -141,15 +145,11 @@ export default function CanvasPage() {
           type: "UPDATE_HEIGHT", 
           height: document.body.scrollHeight 
         }, "*");
-      }, 150); // Report height at most every 150ms
+      }, 150);
     });
 
-    // Observe body for any content changes
     resizeObserver.observe(document.body);
-
     window.addEventListener("message", handleMessage);
-
-    // Notify parent that the renderer is ready
     window.parent.postMessage({ type: "CANVAS_READY" }, "*");
 
     return () => {
@@ -166,8 +166,71 @@ export default function CanvasPage() {
       <div
         id="root"
         ref={rootRef}
-        className="w-full bg-transparent relative"
+        className="w-full relative"
       />
+
+      <style jsx global>{`
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+          width: 0px;
+          background: transparent;
+          display: none;
+        }
+        
+        * {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+
+        #root::-webkit-scrollbar {
+          width: ${isPreview ? '6px' : '0px'};
+          display: ${isPreview ? 'block' : 'none'};
+        }
+        
+        #root::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        #root::-webkit-scrollbar-thumb {
+          background-color: rgba(156, 163, 175, 0.3);
+          border-radius: 9999px;
+        }
+
+        /* Firefox */
+        #root {
+          scrollbar-width: ${isPreview ? 'thin' : 'none'};
+          scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+        }
+        
+        html, body {
+          margin: 0;
+          padding: 0;
+          height: ${isPreview ? '100%' : 'auto'};
+          width: 100%;
+          overflow: hidden; /* Prevent body scroll */
+          background: transparent;
+        }
+
+        #root {
+          height: ${isPreview ? '100%' : 'auto'};
+          overflow-y: ${isPreview ? 'auto' : 'hidden'}; /* NEVER scroll in editor */
+          overflow-x: hidden;
+          min-height: 100%;
+        }
+
+        #canvas-wrapper {
+          height: auto !important;
+          min-height: 0;
+        }
+      `}</style>
     </>
+  );
+}
+
+export default function CanvasPage() {
+  return (
+    <Suspense fallback={null}>
+      <CanvasContent />
+    </Suspense>
   );
 }

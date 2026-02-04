@@ -180,9 +180,6 @@ export default function CanvasLayout({
           .border-input { border-color: var(--input) !important; }
           .border-ring { border-color: var(--ring) !important; }
 
-          /* GlobalScrollbar Hide */
-          ::-webkit-scrollbar { width: 0px; background: transparent; display: none; }
-          * { -ms-overflow-style: none; scrollbar-width: none; }
         `}</style>
       </head>
       <body>{children}</body>

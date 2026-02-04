@@ -70,9 +70,9 @@ export default function PricingPage() {
           <div className="w-full max-w-7xl">
             <PageSkeleton>
               <Skeleton className="h-12 w-1/3 mx-auto rounded-2xl border border-border" />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full pt-10">
+              <div className="flex flex-col md:flex-row flex-wrap justify-center gap-8 w-full pt-10">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-[500px] w-full rounded-3xl border border-border" />
+                  <Skeleton key={i} className="h-[500px] w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-2rem)] max-w-sm rounded-3xl border border-border" />
                 ))}
               </div>
             </PageSkeleton>
@@ -99,25 +99,26 @@ export default function PricingPage() {
         <div className="w-full mt-16 max-w-7xl flex flex-col gap-16">
           <PricingHeader />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch pt-8">
+          <div className="flex flex-col md:flex-row flex-wrap justify-center gap-8 items-stretch pt-8">
             {sortedProducts.map((product, index) => {
               const isCurrentPlan = hasAccess && currentSubscription?.productId === product.id;
               const isPopular = index === 1;
               const hasBlockingSubscription = isSubscriptionActive && !isCanceled;
 
               return (
-                <PricingCard
-                  key={product.id}
-                  product={product}
-                  isPopular={isPopular}
-                  isCurrentPlan={false}
-                  isCanceled={false}
-                  index={index}
-                  onSelect={handleSelectPlan}
-                  loading={loadingCheckout === product.id}
-                  href={undefined}
-                  cta={undefined}
-                />
+                <div key={product.id} className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-2rem)] max-w-sm">
+                  <PricingCard
+                    product={product}
+                    isPopular={isPopular}
+                    isCurrentPlan={false}
+                    isCanceled={false}
+                    index={index}
+                    onSelect={handleSelectPlan}
+                    loading={loadingCheckout === product.id}
+                    href={undefined}
+                    cta={undefined}
+                  />
+                </div>
               );
             })}
           </div>

@@ -37,9 +37,9 @@ export function PricingSection() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row flex-wrap justify-center gap-8 items-center max-w-6xl mx-auto">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-card rounded-3xl p-8 h-[450px] animate-pulse border border-border">
+              <div key={i} className="bg-card rounded-3xl p-8 h-[450px] w-full lg:w-[calc(33.333%-2rem)] max-w-sm animate-pulse border border-border">
                 <div className="h-6 w-24 bg-secondary/20 rounded mb-4" />
                 <div className="h-4 w-48 bg-secondary/10 rounded mb-8" />
                 <div className="h-12 w-32 bg-secondary/20 rounded mb-8" />
@@ -55,22 +55,23 @@ export function PricingSection() {
 
         {/* Products Grid */}
         {!isLoading && displayPlans.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row flex-wrap justify-center gap-8 items-stretch max-w-6xl mx-auto">
             {displayPlans.slice(0, 3).map((plan: any, i) => {
               const isPlus = plan.name?.toLowerCase().includes("plus");
 
               return (
-                <PricingCard
-                  key={plan.id || i}
-                  product={plan}
-                  index={i}
-                  isPopular={isPlus}
-                  isCurrentPlan={false}
-                  onSelect={undefined}
-                  href="/signup"
-                  loading={false}
-                  cta={isPlus ? "Get Started Now" : "Start for Free"}
-                />
+                <div key={plan.id || i} className="w-full lg:w-[calc(33.333%-2rem)] max-w-sm">
+                  <PricingCard
+                    product={plan}
+                    index={i}
+                    isPopular={isPlus}
+                    isCurrentPlan={false}
+                    onSelect={undefined}
+                    href="/signup"
+                    loading={false}
+                    cta={isPlus ? "Get Started Now" : "Start for Free"}
+                  />
+                </div>
               );
             })}
           </div>

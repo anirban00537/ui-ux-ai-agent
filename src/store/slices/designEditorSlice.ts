@@ -46,6 +46,7 @@ export interface Conversation {
   messages: Message[];
   artboards: Artboard[];
   colorPalette?: ColorPalette;
+  isPublic: boolean;
 }
 
 interface DesignEditorState {
@@ -95,6 +96,7 @@ const designEditorSlice = createSlice({
         messages: action.payload.messages || [],
         artboards: action.payload.artboards || action.payload.screens || [],
         colorPalette: action.payload.colorPalette,
+        isPublic: !!action.payload.isPublic,
       };
     },
     updateConversation: (state, action: PayloadAction<Partial<Conversation>>) => {

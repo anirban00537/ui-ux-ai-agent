@@ -46,7 +46,7 @@ export const MobileFrame = React.memo(({
   title,
   subtitle,
   className = "",
-  width = 430,
+  width = 480,
   height,
   initialX = 0,
   initialY = 0,
@@ -63,8 +63,8 @@ export const MobileFrame = React.memo(({
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showUpdateInput, setShowUpdateInput] = useState(false);
 
-  // State for dimensions - iPhone 14 Pro Max (430x932)
-  const standardRatio = 932 / 430;
+  // State for dimensions - Large Mobile (480x1040)
+  const standardRatio = 1040 / 480;
   const standardHeight = Math.floor(width * standardRatio);
 
   const [size, setSize] = useState({ width: width, height: height || standardHeight });
@@ -330,12 +330,12 @@ export const MobileFrame = React.memo(({
               className={`relative overflow-hidden isolate shadow-2xl w-full h-full ${!isSelected ? 'drag-target cursor-grab active:cursor-grabbing' : ''}`}
               style={{
                 borderRadius: "32px", 
-                background: colorPalette?.background || "#ffffff"
+                background: "transparent"
               }}
             >
               <iframe
                 ref={iframeRef}
-                src="/renderers/canvas"
+                src="/renderers/canvas?mode=editor"
                 className={`size-full border-0 block transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                 title="Canvas Frame"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"

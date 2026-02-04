@@ -8,6 +8,7 @@ export interface Design {
   title: string | null;
   type: DesignType;
   colorPalette: any;
+  isPublic: boolean;
   createdAt: string;
   updatedAt: string;
   artboards?: { 
@@ -67,6 +68,11 @@ export async function getDesignById(designId: string) {
   return response.data;
 }
 
+export async function getPublicDesignById(designId: string) {
+  const response = await request.get(`/designs/public/${designId}`);
+  return response.data;
+}
+
 export async function deleteDesign(designId: string) {
   const response = await request.delete(`/designs/${designId}`);
   return response.data;
@@ -74,7 +80,7 @@ export async function deleteDesign(designId: string) {
 
 export async function updateDesign(
   designId: string,
-  data: { title?: string; colorPalette?: Record<string, string> }
+  data: { title?: string; colorPalette?: Record<string, string>; isPublic?: boolean }
 ) {
   const response = await request.patch(`/designs/${designId}`, data);
   return response.data;
