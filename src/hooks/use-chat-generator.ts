@@ -113,7 +113,7 @@ export function useChatGenerator(designId?: string) {
   }, [dispatch, conversation]);
 
   const sendMessage = useCallback(
-    async (message: string, designIdOverride?: string, designType?: DesignType) => {
+    async (message: string, designIdOverride?: string, designType?: DesignType, targetArtboardId?: string) => {
       const activeDesignId = designIdOverride || designId;
       if (abortControllerRef.current) abortControllerRef.current.abort();
       const abortController = new AbortController();
@@ -143,7 +143,16 @@ export function useChatGenerator(designId?: string) {
         }
 
         const baseUrl = CONFIG.API_URL.replace(/\/$/, "");
-        const streamUrl = `${baseUrl}/designs/chat/stream/${activeDesignId ?? ""}?prompt=${encodeURIComponent(message)}`;
+        
+        // Determine endpoint based on whether we are updating a specific artboard or chatting generally
+        let streamUrl: string;
+        if (targetArtboardId) {
+          // Use the specialized update endpoint
+          streamUrl = `${baseUrl}/designs/chat/stream-update/${activeDesignId ?? ""}?prompt=${encodeURIComponent(message)}&artboardId=${targetArtboardId}`;
+        } else {
+          // Use the standard chat endpoint
+          streamUrl = `${baseUrl}/designs/chat/stream/${activeDesignId ?? ""}?prompt=${encodeURIComponent(message)}`;
+        }
         
         const res = await fetch(streamUrl, {
           method: "GET",
@@ -351,9 +360,10 @@ export function useChatGenerator(designId?: string) {
                 }
 
                 case "screen_update": {
+                  // Dedicated event for update API success
                   const screenPayload = eventData?.screen ?? eventData;
                   if (screenPayload) {
-                    dispatch(updateArtboard({
+                     dispatch(updateArtboard({
                       id: screenPayload.id,
                       title: screenPayload.title,
                       description: screenPayload.description,
@@ -439,7 +449,8 @@ export function useChatGenerator(designId?: string) {
   );
 
   const updateScreen = useCallback(async (designIdParam: string, artboardId: string, prompt: string) => {
-    await sendMessage(`Update screen ${artboardId}: ${prompt}`, designIdParam);
+    // Call sendMessage with the raw prompt and targetArtboardId to trigger the specialized update API
+    await sendMessage(prompt, designIdParam, undefined, artboardId);
   }, [sendMessage]);
 
   const clearConversation = useCallback(() => {
