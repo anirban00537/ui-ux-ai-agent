@@ -33,7 +33,7 @@ export const DesignCard: React.FC<DesignCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const screenCount = design.screens?.length ?? 0;
+  const screenCount = design.artboards?.length ?? 0;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
