@@ -35,6 +35,10 @@ export const metadata: Metadata = {
     "mobile prototype builder",
     "AI-powered UI design",
     "mobile app design software",
+    "smart layout generator",
+    "instant mobile prototyping",
+    "brand consistency tool",
+    "text to app design",
   ],
   authors: [{ name: "Butterfast" }],
   creator: "Butterfast",
@@ -43,6 +47,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -50,7 +57,7 @@ export const metadata: Metadata = {
     siteName: "Butterfast",
     title: "Butterfast - AI Mobile App Design Generator",
     description:
-      "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator.",
+      "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator. Turn ideas into professional screens in seconds.",
     images: [
       {
         url: "/og-image.png",
@@ -64,7 +71,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Butterfast - AI Mobile App Design Generator",
     description:
-      "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator.",
+      "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator. Turn ideas into professional screens in seconds.",
     creator: "@butterfast",
     images: ["/og-image.png"],
   },
@@ -81,6 +88,22 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Butterfast",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "description": "AI-powered mobile app design generator that turns text into professional UI/UX designs.",
+  "featureList": "AI Layout Generation, Instant Prototyping, Brand Consistency, Text to Design",
+  "screenshot": "/og-image.png"
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -89,6 +112,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full dark">
       <body className={`${poppins.variable} ${libre.variable} font-sans antialiased h-full`}>
+        <Script
+          id="json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Providers>{children}</Providers>
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
