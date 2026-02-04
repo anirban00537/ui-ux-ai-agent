@@ -86,7 +86,7 @@ export const coreConstant = {
   AI_MODELS: {
     DESIGN: {
       NAME: 'minimax/minimax-m2.1',
-      PRICING: { prompt: 0.40, completion: 1.5 },
+      PRICING: { prompt: 1, completion: 2 },
       PROVIDER: {
         ENABLED: true,
         ORDER: ['friendli', 'deepinfra/fp8'] as any,
@@ -95,7 +95,7 @@ export const coreConstant = {
     },
     AGENT: {
    NAME: 'minimax/minimax-m2.1',
-      PRICING: { prompt: 0.40, completion: 1.5 },
+      PRICING: { prompt: 1, completion: 2 },
       PROVIDER: {
         ENABLED: true,
         ORDER: ['friendli', 'deepinfra/fp8'] as any,
