@@ -19,10 +19,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const post = await getPostSSR(slug);
   if (!post) return { title: "Post Not Found" };
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://butterfast.com';
+
   return {
     title: `${post.title} | Butterfast`,
     description: post.excerpt || post.title,
+    alternates: {
+      canonical: `${baseUrl}/blog/${slug}`,
+    },
     openGraph: {
+      title: `${post.title} | Butterfast`,
+      description: post.excerpt || post.title,
+      url: `${baseUrl}/blog/${slug}`,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author?.name || 'Butterfast'],
       images: post.featuredImg ? [post.featuredImg] : [],
     },
   };

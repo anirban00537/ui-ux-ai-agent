@@ -8,9 +8,20 @@ import { Navbar } from "@/components/navbar";
 // Force dynamic rendering to ensure env vars are available at runtime
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
   title: "Blog | Butterfast",
-  description: "Insights, tutorials, and updates from the Butterfast team.",
+  description: "Insights, tutorials, and updates from the Butterfast team on AI, design, and mobile app development.",
+  alternates: {
+    canonical: "/blog",
+  },
+  openGraph: {
+    title: "Blog | Butterfast",
+    description: "Insights, tutorials, and updates from the Butterfast team on AI, design, and mobile app development.",
+    url: "/blog",
+    type: "website",
+  },
 };
 
 export default async function BlogPage() {

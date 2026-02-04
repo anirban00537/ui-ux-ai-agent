@@ -45,10 +45,10 @@ export const metadata: Metadata = {
   publisher: "Butterfast",
   applicationName: "Butterfast",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    process.env.NEXT_PUBLIC_APP_URL || "https://butterfast.com"
   ),
   alternates: {
-    canonical: "/",
+    canonical: "https://butterfast.com",
   },
   openGraph: {
     type: "website",
