@@ -15,6 +15,7 @@ import {
   updateColorValue,
   setColorPalette,
   removeArtboard,
+  resetEditor,
   Conversation,
   Message,
   ColorPalette,
@@ -35,6 +36,20 @@ export function useChatGenerator(designId?: string) {
   const lastUpdateRef = useRef<Record<string, number>>({});
   const UPDATE_THROTTLE_MS = 150;
 
+  // Track if we are in the middle of a reset to avoid double-loading
+  const isResettingRef = useRef(false);
+
+  // Reset editor when designId changes
+  useEffect(() => {
+    isResettingRef.current = true;
+    dispatch(resetEditor());
+    // Use timeout to ensure state is cleared before query might re-fetch or sync
+    const timer = setTimeout(() => {
+      isResettingRef.current = false;
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [designId, dispatch]);
+
   const { data: queryData, isLoading: isLoadingDesign } = useQuery({
     queryKey: ["design", designId],
     queryFn: async () => {
@@ -48,7 +63,7 @@ export function useChatGenerator(designId?: string) {
 
   // Sync Redux with Query data
   useEffect(() => {
-    if (queryData) {
+    if (queryData && !isResettingRef.current) {
       dispatch(setConversation(queryData));
     }
   }, [queryData, dispatch]);
@@ -69,8 +84,9 @@ export function useChatGenerator(designId?: string) {
     return () => {
       if (abortControllerRef.current) abortControllerRef.current.abort();
       if (readerRef.current) readerRef.current.cancel().catch(() => {});
+      dispatch(resetEditor());
     };
-  }, []);
+  }, [dispatch]);
 
   const cancelGeneration = useCallback(() => {
     if (abortControllerRef.current) {

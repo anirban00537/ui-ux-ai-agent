@@ -176,7 +176,8 @@ const designEditorSlice = createSlice({
     },
     setSelectedId: (state, action: PayloadAction<string | null>) => {
       state.selectedArtboardId = action.payload;
-    }
+    },
+    resetEditor: () => initialState,
   }
 });
 
@@ -193,7 +194,8 @@ export const {
   setColorPalette,
   updateColorValue,
   setCopiedId,
-  setSelectedId
+  setSelectedId,
+  resetEditor
 } = designEditorSlice.actions;
 
 export default designEditorSlice.reducer;
