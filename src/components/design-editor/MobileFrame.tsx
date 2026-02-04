@@ -329,7 +329,7 @@ export const MobileFrame = React.memo(({
             <div
               className={`relative overflow-hidden isolate shadow-2xl w-full h-full ${!isSelected ? 'drag-target cursor-grab active:cursor-grabbing' : ''}`}
               style={{
-                borderRadius: "50px", 
+                borderRadius: "32px", 
                 background: colorPalette?.background || "#ffffff"
               }}
             >
