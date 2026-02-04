@@ -3,11 +3,11 @@ import { PrismaService } from '../../../prisma/prisma.service';
 // Token estimation constants for different operations
 const TOKEN_ESTIMATES = {
   PROMPT_ENHANCEMENT: 800,
-  COLOR_PALETTE: 800,
+  COLOR_PALETTE: 1800,
   INTENT_ANALYSIS: 800,
-  SCREEN_PLANNING: 1000,
-  SCREEN_GENERATION: 4500,
-  SCREEN_UPDATE: 4500,
+  SCREEN_PLANNING: 1500,
+  SCREEN_GENERATION: 9500,
+  SCREEN_UPDATE: 5000,
   BUFFER_MULTIPLIER: 1.1,
 } as const;
 

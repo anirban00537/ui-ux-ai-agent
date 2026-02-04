@@ -58,6 +58,31 @@ export class DesignsService {
       return errorResponse(error.message);
     }
   }
+
+  async getPublicDesignById(id: string): Promise<ResponseModel> {
+    try {
+      const design = await this.prisma.design.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          artboards: {
+            orderBy: {
+              createdAt: 'asc',
+            },
+          },
+        },
+      });
+
+      if (!design || !design.isPublic) {
+        return errorResponse('Design is not public or does not exist');
+      }
+
+      return successResponse('Public design fetched successfully', design);
+    } catch (error) {
+      return errorResponse(error.message);
+    }
+  }
   async deleteDesign(id: string, userId: string): Promise<ResponseModel> {
     try {
       const existing = await this.prisma.design.findUnique({ where: { id } });
@@ -106,7 +131,7 @@ export class DesignsService {
   async updateDesign(
     id: string,
     userId: string,
-    data: { title?: string; colorPalette?: Record<string, string> },
+    data: { title?: string; colorPalette?: Record<string, string>; isPublic?: boolean },
   ): Promise<ResponseModel> {
     try {
       const existing = await this.prisma.design.findUnique({ where: { id } });
@@ -120,6 +145,9 @@ export class DesignsService {
       }
       if (data.colorPalette !== undefined) {
         updateData.colorPalette = data.colorPalette;
+      }
+      if (data.isPublic !== undefined) {
+        updateData.isPublic = data.isPublic;
       }
       
       const updated = await this.prisma.design.update({

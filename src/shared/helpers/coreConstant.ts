@@ -128,4 +128,33 @@ export const coreConstant = {
     FREE_TIER: 500,
     DEFAULT_NEW_USER: 500,
   } as const,
+
+  // Pricing Plans
+  PRICING_PLANS: {
+    STARTER: {
+      NAME: 'Starter',
+      PRICE: 10,
+      CREDITS: 7000,
+      FEATURES: [
+        '7,000 Credits (~140 Screens)',
+        'Unlimited Projects',
+        'Basic Export (HTML + Tailwind)',
+        'Standard Speed',
+        'Community Support',
+      ],
+    },
+    PRO: {
+      NAME: 'Pro',
+      PRICE: 20,
+      CREDITS: 15000,
+      FEATURES: [
+        '15,000 Credits (~300 Screens)',
+        'Priority Generation Queue',
+        'Advanced Export (React Components)',
+        'Design History (Unlimited)',
+        'Commercial Usage Rights',
+        'Priority Support',
+      ],
+    },
+  },
 };

@@ -408,7 +408,7 @@ export class ArtboardCreator {
     // Default start X is 0 if no screens exist.
     // Frontend uses ~4600 as start, but 0 is fine as relative base.
     // Gap is 550.
-    const newX = lastArtboard?.x != null ? Number(lastArtboard.x) + 550 : 0;
+    const newX = lastArtboard?.x != null ? Number(lastArtboard.x) + 600 : 0;
     const newY = 1200; // Standard Y row
 
     return await this.prisma.artboard.create({

@@ -610,6 +610,7 @@ model Design {
   title        String?
   type         String   @default("mobile_app")
   colorPalette Json?
+  isPublic     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

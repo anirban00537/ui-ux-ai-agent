@@ -16,6 +16,7 @@ import { User } from '@prisma/client';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Public } from 'src/shared/decorators/public.decorator';
 
 @Controller('designs')
 export class DesignsController {
@@ -47,6 +48,14 @@ export class DesignsController {
     return this.designsService.getDesignById(id, user.id);
   }
 
+  @Public()
+  @Get('public/:id')
+  async getPublicDesignById(
+    @Param('id') id: string,
+  ): Promise<ResponseModel> {
+    return this.designsService.getPublicDesignById(id);
+  }
+
   @Post('conversations')
   async createDesignConversation(
     @Body() body: { title: string; type?: string },
@@ -75,7 +84,7 @@ export class DesignsController {
   @Patch(':id')
   async updateDesign(
     @Param('id') id: string,
-    @Body() body: { title?: string; colorPalette?: Record<string, string> },
+    @Body() body: { title?: string; colorPalette?: Record<string, string>; isPublic?: boolean },
     @UserInfo() user: User,
   ): Promise<ResponseModel> {
     return this.designsService.updateDesign(id, user.id, body);
