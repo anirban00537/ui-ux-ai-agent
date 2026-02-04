@@ -120,7 +120,13 @@ REQUIREMENTS:
 1. **NO CUSTOM CSS**. Use only Tailwind classes.
 2. **NO PLACEHOLDERS**. Fill with realistic, high-quality data (names, prices, metrics).
 3. **ICONS**: Use <i class="ri-name-line"></i> or <i class="ri-name-fill"></i> for everything.
-4. **IMAGES**: Use <img src="https://images.unsplash.com/photo-..." class="bg-muted object-cover ...">.
+4. **IMAGES**: Use VALID Unsplash IDs. Format: 'https://images.unsplash.com/photo-[ID]?w=800&auto=format&fit=crop&q=60'. 
+       - People: 'photo-1534528741775-53994a69daeb'
+       - Tech: 'photo-1519389950473-47ba0277781c'
+       - Food: 'photo-1504674900247-0877df9cc836'
+       - Nature: 'photo-1472214103451-9374bd1c798e'
+       - Abstract: 'photo-1550684848-fac1c5b4e853'
+       - Use these or other *real* IDs you know. DO NOT invent IDs like 'photo-car'.
 5. **INTERACTIVITY**: Every button/card MUST have 'active:scale-95' or 'hover:bg-accent'.
 6. **SCROLL**: Main content must be 'flex-1 overflow-y-auto no-scrollbar'.
 7. **NAV**: If this is a main screen, include the Bottom Tab Bar.
