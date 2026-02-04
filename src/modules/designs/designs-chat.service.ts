@@ -5,6 +5,7 @@ import { StreamUpdate } from './schemas';
 import { ColorPaletteGenerator } from './tools/agents/color-palette-generator';
 import { PromptEnhancer } from './tools/agents/prompt-enhancer';
 import ArtboardCreator from './tools/agents/artboard-creator';
+import ArtboardPlanner from './tools/agents/artboard-planner';
 import ArtboardUpdater from './tools/agents/artboard-updater';
 import { coreConstant } from '../../shared/helpers/coreConstant';
 import { StreamMessenger } from './tools/streaming';
@@ -94,6 +95,11 @@ export class DesignsChatService {
           }
 
           const artboardCreator = new ArtboardCreator(
+            this.prisma,
+            creditManager,
+            this.aiUsageService,
+          );
+          const artboardPlanner = new ArtboardPlanner(
             this.prisma,
             creditManager,
             this.aiUsageService,
@@ -190,6 +196,7 @@ export class DesignsChatService {
           await runCreatePhase(
             activeMessenger,
             artboardCreator,
+            artboardPlanner,
             context,
             effectivePrompt,
             colorPalette as import('./schemas').ColorPalette | null,

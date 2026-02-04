@@ -1,5 +1,6 @@
 import { ColorPalette } from '../schemas';
 import ArtboardCreator from '../tools/agents/artboard-creator';
+import ArtboardPlanner from '../tools/agents/artboard-planner';
 import { StreamMessenger } from '../tools/streaming';
 import { coreConstant } from '../../../shared/helpers/coreConstant';
 import type { ChatContext } from './chat-context';
@@ -7,6 +8,7 @@ import type { ChatContext } from './chat-context';
 export async function runCreatePhase(
   messenger: StreamMessenger,
   artboardCreator: ArtboardCreator,
+  artboardPlanner: ArtboardPlanner,
   context: ChatContext,
   prompt: string,
   colorPalette: ColorPalette | null,
@@ -31,12 +33,12 @@ export async function runCreatePhase(
     type: coreConstant.STREAM_EVENT.PHASE_PLANNING,
   });
 
-  const plan = await artboardCreator.planArtboards(
+  const plan = await artboardPlanner.planArtboards(
     prompt,
     contextMessages,
     userId,
     designId,
-    designType ?? undefined,
+    designType ?? '',
     signal,
   );
 
