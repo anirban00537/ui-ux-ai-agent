@@ -45,10 +45,51 @@ export default async function IndustryPage({ params }: PageProps) {
     notFound();
   }
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://butterfast.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Industries",
+        "item": "https://butterfast.com/industries"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": template.title,
+        "item": `https://butterfast.com/industries/${template.slug}`
+      }
+    ]
+  };
+
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": template.title,
+    "provider": {
+       "@type": "Organization",
+       "name": "Butterfast"
+    },
+    "description": template.metaDescription,
+    "areaServed": "World",
+    "serviceType": "Mobile App Design"
+  };
+
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-background relative overflow-hidden">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
+
         {/* Background Gradients */}
         <div className="absolute inset-0 bg-[url('/background.png')] bg-cover bg-center opacity-5 pointer-events-none" />
         <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
@@ -57,10 +98,13 @@ export default async function IndustryPage({ params }: PageProps) {
         <section className="pt-32 pb-20 px-4 relative z-10">
           <div className="container mx-auto max-w-5xl text-center">
             
-            <Link href="/industries" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8 text-sm font-medium">
-              <ArrowLeft size={16} />
-              Back to all industries
-            </Link>
+            <div className="flex items-center justify-center gap-2 mb-8 text-sm font-medium">
+               <Link href="/industries" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                 <ArrowLeft size={16} /> All Industries
+               </Link>
+               <span className="text-muted-foreground/30">/</span>
+               <span className="text-foreground">{template.title}</span>
+            </div>
 
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
                <Sparkles size={16} />

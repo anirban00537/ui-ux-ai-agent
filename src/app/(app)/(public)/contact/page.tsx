@@ -43,12 +43,39 @@ export default function ContactPage() {
         }
     };
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            { "@type": "Question", "name": "Is there a free trial?", "acceptedAnswer": { "@type": "Answer", "text": "Yes! You can start for free and create up to 3 designs without a credit card." }},
+            { "@type": "Question", "name": "Can I export my designs?", "acceptedAnswer": { "@type": "Answer", "text": "Absolutely. You can export to clean React code, HTML/CSS, or high-res PNG." }},
+            { "@type": "Question", "name": "Do you offer team billing?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, we have enterprise and team plans with centralized billing and collaborative features." }}
+        ]
+    };
+
     return (
         <>
             <Navbar />
             <main className="relative min-h-screen overflow-auto bg-background">
+                <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+                
+                {/* Breadcrumbs */}
+                <div className="container mx-auto px-4 pt-24 pb-4">
+                     <nav className="flex text-sm text-muted-foreground" aria-label="Breadcrumb">
+                        <ol className="inline-flex items-center space-x-2">
+                            <li className="inline-flex items-center">
+                                <a href="/" className="hover:text-foreground">Home</a>
+                            </li>
+                            <li className="flex items-center">
+                                <span className="mx-2">/</span>
+                                <span className="text-foreground font-medium">Contact</span>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                
                 <div>
-                    <section className="pt-32 pb-24">
+                    <section className="pt-8 pb-24">
                         <div className="container mx-auto px-4">
                             <div className="max-w-5xl mx-auto">
                                 <div className="text-center mb-16">

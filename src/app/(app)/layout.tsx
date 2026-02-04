@@ -90,18 +90,43 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Butterfast",
-  "applicationCategory": "DesignApplication",
-  "operatingSystem": "Web",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "description": "AI-powered mobile app design generator that turns text into professional UI/UX designs.",
-  "featureList": "AI Layout Generation, Instant Prototyping, Brand Consistency, Text to Design",
-  "screenshot": "/og-image.png"
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://butterfast.com/#organization",
+      "name": "Butterfast",
+      "url": "https://butterfast.com",
+      "logo": "https://butterfast.com/icon.png",
+      "sameAs": [
+        "https://twitter.com/butterfast",
+        "https://linkedin.com/company/butterfast"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "hello@butterfast.com",
+        "contactType": "customer support"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://butterfast.com/#software",
+      "name": "Butterfast",
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "Web",
+      "author": {
+        "@id": "https://butterfast.com/#organization"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/OnlineOnly"
+      },
+      "description": "AI-powered mobile app design generator that turns text into professional UI/UX designs instantly.",
+      "featureList": "AI Layout Generation, Instant Prototyping, Brand Consistency, Text to Design, Design System Export",
+      "screenshot": "https://butterfast.com/og-image.png"
+    }
+  ]
 };
 
 export default function RootLayout({

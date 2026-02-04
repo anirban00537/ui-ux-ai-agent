@@ -56,8 +56,35 @@ export default async function BlogPostPage({ params }: PageProps) {
     );
   }
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://butterfast.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": "https://butterfast.com/blog"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": post.title,
+        "item": `https://butterfast.com/blog/${slug}`
+      }
+    ]
+  };
+
   return (
     <article className="min-h-screen bg-background pt-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+
       {/* Featured Image - Full Width Hero */}
       {post.featuredImg && (
         <div className="w-full">
@@ -72,11 +99,14 @@ export default async function BlogPostPage({ params }: PageProps) {
       )}
 
       <div className="max-w-[900px] mx-auto px-6 py-12">
-        {/* Back Link */}
-        <Link href="/blog" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8 group">
-          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-sm font-medium">Back to Blog</span>
-        </Link>
+        {/* Breadcrumb Nav */}
+        <div className="flex items-center gap-2 mb-8 text-sm font-medium">
+             <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group">
+               <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Blog
+             </Link>
+             <span className="text-muted-foreground/30">/</span>
+             <span className="text-foreground truncate max-w-[200px] sm:max-w-[400px]">{post.title}</span>
+        </div>
 
         {/* Category */}
         {post.category && (
