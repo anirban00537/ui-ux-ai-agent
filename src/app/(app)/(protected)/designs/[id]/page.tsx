@@ -16,7 +16,7 @@ import { Loader2 } from "lucide-react";
 export default function DesignEditorPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const designId = params.id as string;
+  const [currentDesignId, setCurrentDesignId] = React.useState<string>(params.id as string);
   const promptFromUrl = searchParams.get("prompt");
   const {
     conversation,
@@ -31,16 +31,21 @@ export default function DesignEditorPage() {
     updateScreen,
     syncArtboardPosition,
     deleteArtboard,
-  } = useChatGenerator(designId);
+  } = useChatGenerator(currentDesignId);
 
   const { prompt: promptContext, type: typeContext, clearPrompt } = usePrompt();
   const hasSentInitialPrompt = useRef(false);
+
+  // Sync params with state in case of navigation
+  useEffect(() => {
+    if (params.id) setCurrentDesignId(params.id as string);
+  }, [params.id]);
 
   // Handle initialization from Context (New Flow)
   useEffect(() => {
     const initFromContext = async () => {
       if (
-        designId === "new" &&
+        currentDesignId === "new" &&
         promptContext &&
         !hasSentInitialPrompt.current &&
         !isGenerating
@@ -54,10 +59,11 @@ export default function DesignEditorPage() {
           if (resp?.success && resp?.data?.id) {
             const newId = resp.data.id;
             
-            // 2. Update URL immediately
+            // 2. Update State & URL
+            setCurrentDesignId(newId);
             window.history.replaceState(null, "", `/designs/${newId}`);
             
-            // 3. Start Stream
+            // 3. Start Stream with NEW ID
             await sendMessage(promptContext, newId, typeContext);
             
             // 4. Clear Context
@@ -65,35 +71,34 @@ export default function DesignEditorPage() {
           }
         } catch (err) {
           console.error("Failed to initialize design:", err);
-          // Optional: Show error
         }
       }
     };
 
     initFromContext();
-  }, [designId, promptContext, typeContext, isGenerating, sendMessage, clearPrompt]);
+  }, [currentDesignId, promptContext, typeContext, isGenerating, sendMessage, clearPrompt]);
 
   // Handle initialization from URL (Legacy/Direct Link)
   useEffect(() => {
     if (
       promptFromUrl &&
-      designId &&
-      designId !== "new" && 
+      currentDesignId &&
+      currentDesignId !== "new" && 
       !hasSentInitialPrompt.current &&
       !isGenerating
     ) {
       const timer = setTimeout(() => {
         if (!conversation || conversation.messages.length === 0) {
           hasSentInitialPrompt.current = true;
-          sendMessage(promptFromUrl, designId);
-          window.history.replaceState({}, "", `/designs/${designId}`);
+          sendMessage(promptFromUrl, currentDesignId);
+          window.history.replaceState({}, "", `/designs/${currentDesignId}`);
         }
       }, 300);
       return () => clearTimeout(timer);
     }
   }, [
     promptFromUrl,
-    designId,
+    currentDesignId,
     isGenerating,
     conversation,
     sendMessage,
@@ -122,7 +127,7 @@ export default function DesignEditorPage() {
             deleteArtboard(artboardId);
           }}
           onUpdateArtboard={(artboardId: string, prompt: string) => {
-             updateScreen(designId, artboardId, prompt);
+             updateScreen(currentDesignId, artboardId, prompt);
           }}
           onSaveArtboard={(id, data) => {
             syncArtboardPosition({ id, data });
@@ -138,7 +143,7 @@ export default function DesignEditorPage() {
         className="relative shrink-0 z-10"
       >
         <SidebarContent
-          onGenerate={(prompt) => sendMessage(prompt, designId)}
+          onGenerate={(prompt) => sendMessage(prompt, currentDesignId)}
           onClear={clearConversation}
           onCancel={cancelGeneration}
           onColorChange={updateColorPalette}
