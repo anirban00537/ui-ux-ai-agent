@@ -24,7 +24,7 @@ import { DesignCard } from "@/components/my-designs";
 export default function MyDesignsPage() {
   const router = useRouter();
   const [page, setPage] = React.useState(1);
-  const LIMIT = 15;
+  const LIMIT = 18;
 
   const { data: designsResponse, isLoading } = useDesignsList({
     page,

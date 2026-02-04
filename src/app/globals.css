@@ -120,37 +120,37 @@
 }
 
 .dark {
-  --background: #09090b;
+  --background: #000000;
   --foreground: #fafafa;
-  --card: #1c1c1c;
+  --card: #050505;
   --card-foreground: #fafafa;
-  --popover: #1c1c1c;
+  --popover: #050505;
   --popover-foreground: #fafafa;
   --primary: #1c9cf0;
   --primary-foreground: #ffffff;
-  --secondary: #27272a;
+  --secondary: #0a0a0a;
   --secondary-foreground: #fafafa;
-  --muted: #27272a;
+  --muted: #0a0a0a;
   --muted-foreground: #a1a1aa;
-  --accent: #27272a;
+  --accent: #0a0a0a;
   --accent-foreground: #fafafa;
   --destructive: #f87171;
   --destructive-foreground: #ffffff;
-  --border: #27272a;
-  --input: #27272a;
+  --border: #0a0a0a;
+  --input: #0a0a0a;
   --ring: #1c9cf0;
   --chart-1: #4ade80;
   --chart-2: #1c9cf0;
   --chart-3: #fca5a5;
   --chart-4: #5993f4;
   --chart-5: #a0a0a0;
-  --sidebar: #09090b;
+  --sidebar: #000000;
   --sidebar-foreground: #fafafa;
   --sidebar-primary: #fafafa;
   --sidebar-primary-foreground: #18181b;
-  --sidebar-accent: #27272a;
+  --sidebar-accent: #0a0a0a;
   --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #27272a;
+  --sidebar-border: #0a0a0a;
   --sidebar-ring: #fafafa;
   --font-sans: Plus Jakarta Sans, sans-serif;
   --font-serif: Lora, serif;

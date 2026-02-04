@@ -18,42 +18,49 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] overflow-hidden px-4 ">
+    <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4">
       {/* Content */}
-      <div className="relative w-full max-w-4xl flex flex-col gap-4 z-10">
+      <div className="relative w-full max-w-4xl flex flex-col gap-10 z-10 py-12">
         <HomeHeader />
 
-
-        {/* Prompt Box */}
+        {/* Prompt Box Container with Glass effect */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
+          transition={{ 
+            type: "spring",
+            damping: 25,
+            stiffness: 120,
+            delay: 0.1 
+          }}
           className="relative w-full max-w-2xl mx-auto"
         >
+          <div className="absolute -inset-1.5 bg-gradient-to-r from-primary/20 via-primary/5 to-primary/20 rounded-[32px] blur-xl opacity-20 -z-10" />
+          
           <PromptBox
             name="message"
             defaultValue={promptValue}
             onError={(errorMessage: string) => setError(errorMessage)}
-            className="border border-border bg-card shadow-none"
           />
 
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-500 text-center font-medium"
+              className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-500 text-center font-medium backdrop-blur-md"
             >
               {error}
             </motion.div>
           )}
         </motion.div>
 
-        <SuggestionGrid
-          suggestions={suggestions}
-          onSuggestionClick={handleSuggestionClick}
-        />
-
+        <div className="relative">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border/20 to-transparent -z-10" />
+          <SuggestionGrid
+            suggestions={suggestions}
+            onSuggestionClick={handleSuggestionClick}
+          />
+        </div>
       </div>
     </div>
   );
