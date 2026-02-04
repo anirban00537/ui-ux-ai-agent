@@ -3,7 +3,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getPublicDesignById, getDesignById, updateDesign } from "@/services/designs";
-import { Loader2, ChevronLeft, ChevronRight, Share2, Moon, Sun, ArrowLeft, Globe, Lock, Copy, Check } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Share2, ArrowLeft, Globe, Lock, Copy, Check, LayoutDashboard } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { PreviewMobileFrame } from "@/components/design-editor/PreviewMobileFrame";
@@ -35,7 +36,6 @@ export default function PreviewPage() {
   const [design, setDesign] = useState<Design | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDarkMode, setIsDarkMode] = useState(true);
 
   useEffect(() => {
     async function fetchDesign() {
@@ -134,31 +134,35 @@ export default function PreviewPage() {
 
   return (
     <div className={cn(
-      "fixed inset-0 z-50 flex flex-col transition-colors duration-500",
-      isDarkMode ? "bg-[#0a0a0a]" : "bg-[#f5f5f5]"
+      "fixed inset-0 z-50 flex flex-col transition-colors duration-500 bg-[#0a0a0a]"
     )}>
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 px-6 py-4 flex items-center justify-between z-50 bg-transparent">
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => router.back()}
-            className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 text-white transition-all border border-white/5 backdrop-blur-md"
-          >
-            <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-            </div>
-            <span className="text-sm font-bold tracking-tight">Back to Projects</span>
-          </button>
+          {user?.id === design?.userId ? (
+            <Link 
+              href={`/designs/${designId}`}
+              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 text-white transition-all border border-white/5 backdrop-blur-md"
+            >
+              <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-bold tracking-tight">Back to Design</span>
+            </Link>
+          ) : (
+            <Link 
+              href="/home"
+              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 text-white transition-all border border-white/5 backdrop-blur-md"
+            >
+              <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-bold tracking-tight">Back to Projects</span>
+            </Link>
+          )}
         </div>
 
         <div className="flex items-center gap-2 bg-zinc-900/50 backdrop-blur-md p-1 rounded-xl border border-white/5 scale-90 sm:scale-100">
-          <button 
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2 hover:bg-white/5 rounded-lg text-white/50 hover:text-white transition-all"
-            title="Toggle Dark Mode"
-          >
-            {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
           
           <div className="w-px h-4 bg-white/10 mx-1" />
           
