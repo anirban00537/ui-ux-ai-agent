@@ -398,12 +398,27 @@ export class ArtboardCreator {
     artboard: SingleScreen,
     designId: string,
   ): Promise<ExistingArtboard> {
+    // Find the rightmost artboard to append the new one
+    const lastArtboard = await this.prisma.artboard.findFirst({
+      where: { designId },
+      orderBy: { x: 'desc' },
+      select: { x: true },
+    });
+
+    // Default start X is 0 if no screens exist.
+    // Frontend uses ~4600 as start, but 0 is fine as relative base.
+    // Gap is 550.
+    const newX = lastArtboard?.x != null ? Number(lastArtboard.x) + 550 : 0;
+    const newY = 1200; // Standard Y row
+
     return await this.prisma.artboard.create({
       data: {
         designId,
         title: artboard.title,
         description: artboard.description,
         html: artboard.html,
+        x: newX,
+        y: newY,
       },
     });
   }
