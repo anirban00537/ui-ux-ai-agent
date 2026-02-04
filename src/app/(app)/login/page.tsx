@@ -79,25 +79,34 @@ export default function LoginPage() {
       </div>
 
       {/* Right Column - Visuals */}
-      <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-muted">
+      <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-black">
+        <Image 
+          src="/background.png" 
+          alt="Butterfast Experience" 
+          fill 
+          className="object-cover opacity-60"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-[5]" />
+        
         <div className="relative z-10 w-full max-w-[480px] p-8">
-           <h2 className="text-4xl font-bold tracking-tight text-foreground mb-12 font-serif text-center drop-shadow-sm leading-tight">
+           <h2 className="text-4xl font-bold tracking-tight text-white mb-12 font-serif text-center drop-shadow-md leading-tight">
               From prompt<br/>to mobile app.
            </h2>
 
            <div className="space-y-6 relative">
               {/* Connecting Line */}
-              <div className="absolute left-[27px] top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-foreground/10 to-transparent"></div>
+              <div className="absolute left-[27px] top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
 
               {/* Step 1 */}
-              <div className="relative group rounded-2xl bg-card/80 border border-border p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-card hover:shadow-md hover:translate-x-1">
-                 <div className="flex items-start gap-5">
-                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-card shadow-sm border border-border group-hover:scale-110 transition-transform duration-500">
-                       <span className="text-2xl filter drop-shadow-sm">💡</span>
+              <div className="relative group rounded-3xl bg-black/40 border border-white/5 p-6 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 hover:bg-black/60 hover:border-white/15 hover:translate-x-1">
+                 <div className="flex items-start gap-6">
+                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/[0.03] shadow-inner border border-white/10 group-hover:scale-110 transition-transform duration-500 hover:bg-white/[0.08]">
+                       <span className="text-2xl filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">💡</span>
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-foreground mb-1">Describe your app</h3>
-                       <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                       <h3 className="text-lg font-bold text-white mb-1.5 tracking-tight group-hover:text-primary transition-colors">Describe your app</h3>
+                       <p className="text-white/60 text-sm leading-relaxed font-normal">
                           Simply type a topic or paste your requirements. Our AI understands context and structure instantly.
                        </p>
                     </div>
@@ -105,14 +114,14 @@ export default function LoginPage() {
               </div>
 
               {/* Step 2 */}
-              <div className="relative group rounded-2xl bg-card/80 border border-border p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-card hover:shadow-md hover:translate-x-1">
-                 <div className="flex items-start gap-5">
-                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-card shadow-sm border border-border group-hover:scale-110 transition-transform duration-500">
-                       <Sparkles className="w-6 h-6 text-indigo-500" />
+              <div className="relative group rounded-3xl bg-black/40 border border-white/5 p-6 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 hover:bg-black/60 hover:border-white/15 hover:translate-x-1">
+                 <div className="flex items-start gap-6">
+                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/[0.03] shadow-inner border border-white/10 group-hover:scale-110 transition-transform duration-500 hover:bg-white/[0.08]">
+                       <Sparkles className="w-6 h-6 text-primary filter drop-shadow-[0_0_8px_rgba(30,157,241,0.4)]" />
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-foreground mb-1">AI generates UI</h3>
-                       <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                       <h3 className="text-lg font-bold text-white mb-1.5 tracking-tight group-hover:text-primary transition-colors">AI generates UI</h3>
+                       <p className="text-white/60 text-sm leading-relaxed font-normal">
                           Watch as layouts, images, and components are generated automatically in our premium design system.
                        </p>
                     </div>
@@ -120,14 +129,14 @@ export default function LoginPage() {
               </div>
 
               {/* Step 3 */}
-              <div className="relative group rounded-2xl bg-card/80 border border-border p-5 backdrop-blur-xl shadow-sm transition-all hover:bg-card hover:shadow-md hover:translate-x-1">
-                 <div className="flex items-start gap-5">
-                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-card shadow-sm border border-border group-hover:scale-110 transition-transform duration-500">
-                       <Zap className="w-6 h-6 text-teal-500" />
+              <div className="relative group rounded-3xl bg-black/40 border border-white/5 p-6 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 hover:bg-black/60 hover:border-white/15 hover:translate-x-1">
+                 <div className="flex items-start gap-6">
+                    <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/[0.03] shadow-inner border border-white/10 group-hover:scale-110 transition-transform duration-500 hover:bg-white/[0.08]">
+                       <Zap className="w-6 h-6 text-teal-400 filter drop-shadow-[0_0_8px_rgba(45,212,191,0.4)]" />
                     </div>
                     <div>
-                       <h3 className="text-lg font-bold text-foreground mb-1">Export & Share</h3>
-                       <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                       <h3 className="text-lg font-bold text-white mb-1.5 tracking-tight group-hover:text-primary transition-colors">Export & Share</h3>
+                       <p className="text-white/60 text-sm leading-relaxed font-normal">
                           Get production-ready code, export to design tools, or share a live prototype with your team.
                        </p>
                     </div>
