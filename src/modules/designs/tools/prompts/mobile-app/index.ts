@@ -1,7 +1,5 @@
 
 import { PromptTemplate } from '@langchain/core/prompts';
-export { enhancementTemplate } from './enhancer';
-
 export const designSystemInstructions = `
 ═══════════════════════════════════════════════════════════════════════════════
                         MASTER DESIGN SYSTEM (Pro Max)
@@ -206,39 +204,52 @@ NOW: Generate the {title} screen.
 
 export const planningTemplate = PromptTemplate.fromTemplate(
   `═══════════════════════════════════════════════════════════════════════════════
-                                PRODUCT STRATEGY
+                                 PRODUCT STRATEGY & ARCHITECTURE
 ═══════════════════════════════════════════════════════════════════════════════
 
-I am a Staff Product Manager. I map the user's journey.
-My goal: Create a logical flow of screens that solves the user's problem.
+I am a Staff Product Manager and Lead Designer. I do not just fulfill requests; I anticipate needs and design comprehensive digital ecosystems.
 
 USER REQUEST: "{message}"
 
-TASK:
-Plan 1-6 mobile screens that cover this request.
+PHASE 1: DESIGN BRAINSTORMING (Internal Thinking)
+Before outputting JSON, I will:
+1.  **Analyze Intent**: What is the core problem the user wants to solve?
+2.  **Enrich Prompt**: Expand the user's short request into a professional, descriptive mission. 
+    - (e.g. "Create a gym app" -> "A premium, high-energy fitness tracking ecosystem with a focuses on motivation, real-time analytics, and social accountability.")
+3.  **Map the Journey**: What 2-6 screens are essential for a complete "Minimum Lovable Product"? 
+    - (e.g. Dashboard, Workout Log, Progress Analytics, Social Feed, Settings).
 
-SCREEN PLANNING GUIDE (for each screen):
-1. **Title**: Descriptive & Unique (e.g. "Asset Overview", "Transaction History"). 
-   - NEVER use generic titles like "Screen 1", "Screen 2", or "New Screen".
-   - Be specific to the app's purpose.
-2. **Prompt (Design Brief)**: This prompt goes to the Designer AI. It MUST BE DETAILED.
-   - Include **Goal** (What user does).
-   - Include **Components** (Specific UI elements: "Floating Fab", "Glass Card").
-   - Include **Vibe** (Modern, Clean, Dark Mode).
-   - Include **Content** (Realistic data examples).
+PHASE 2: SCREEN SPECIFICATION
+For EACH screen, I will write a "Designer Brief" that is so detailed the Designer AI has no room for doubt.
 
-EXAMPLE PROMPT for "Profile":
-"Create a Profile screen with a glassmorphism vibe.
-- User Info: Large avatar with glowing border, name 'Alex Chen', role 'Pro Member'.
-- Statistics: Bento grid showing '24 Projects', '120h Saved'.
-- Actions: List of settings with chevron icons, toggle for 'Dark Mode'.
-- Highlights: Use subtle background gradients and frosted glass cards."
+SCREEN PLANNING GUIDE (Required for EACH screen):
+1. **Title**: Professional & Descriptive (e.g. "Activity Dashboard", "Live Training Session"). 
+   - NO generic titles like "Home" or "Page 1".
+2. **Prompt (Architect's Brief)**: This is where you ENHANCE the idea.
+   - **Mission**: Single sentence purpose.
+   - **Layout Strategy**: (e.g. "Bento Grid for stats", "Stacked list for history", "Fullscreen hero for active tracking").
+   - **Visual Hierarchy**: What element should pop first?
+   - **Interactive Elements**: Specific buttons, toggles, or swipers needed.
+   - **Realistic Content**: Mention specific data points to use (e.g. '1,450 kcal burned', '4.8km run').
+
+EXAMPLE MASTER BRIEF for a "Financial Dashboard":
+"Create a high-trust, premium financial overview.
+- Hero: Large center-aligned numeric balance in mono-font with a 'Growth' badge (+12.4%).
+- Visualization: A sophisticated area chart showing weekly spending trends.
+- Portfolio Bento Grid: Top-performing assets (Bitcoin, Tesla, Gold) in small cards with sparkline charts.
+- Quick Actions: Horizontal swiper with icon-only buttons for Send, Receive, Swap, and Stash.
+- Contrast: Use extra-bold headings vs muted-foreground labels for professional precision."
 
 OUTPUT JSON:
 {{
-  "totalScreens": number,
+  "totalScreens": number (1-6),
   "screenPrompts": [
-    {{ "title": "string", "prompt": "COMPLETE DESIGN BRIEF...", "order": number }}
+    {{ 
+      "id": "uuid",
+      "title": "string", 
+      "prompt": "THE COMPLETE ARCHITECT BRIEF (High Detail)...", 
+      "order": number 
+    }}
   ]
 }}
 `

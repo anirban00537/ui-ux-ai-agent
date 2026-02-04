@@ -3,7 +3,6 @@ import { Observable } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { StreamUpdate } from './schemas';
 import { ColorPaletteGenerator } from './tools/agents/color-palette-generator';
-import { PromptEnhancer } from './tools/agents/prompt-enhancer';
 import ArtboardCreator from './tools/agents/artboard-creator';
 import ArtboardPlanner from './tools/agents/artboard-planner';
 import ArtboardUpdater from './tools/agents/artboard-updater';
@@ -14,7 +13,6 @@ import { AiUsageService } from '../subscription/services/ai-usage.service';
 import {
   buildChatContext,
   checkCredits,
-  runPromptEnhancementPhase,
   runThemePhase,
   runCreatePhase,
 } from './chat';
@@ -108,32 +106,7 @@ export class DesignsChatService {
             creditManager,
             this.aiUsageService,
           );
-          const promptEnhancer = new PromptEnhancer(
-            creditManager,
-            this.aiUsageService,
-          );
-
-          let effectivePrompt = prompt;
-          try {
-            effectivePrompt = await runPromptEnhancementPhase(
-              activeMessenger,
-              promptEnhancer,
-              prompt,
-              context.design.type,
-              userId,
-              context.designId,
-              signal,
-            );
-          } catch (err) {
-            if (signal.aborted) {
-              console.log(
-                '[DesignsChatService] Cancelled during prompt enhancement',
-              );
-              subscriber.complete();
-              return;
-            }
-            effectivePrompt = prompt;
-          }
+          const effectivePrompt = prompt;
 
           if (signal.aborted) {
             console.log('[DesignsChatService] Cancelled before theme phase');
