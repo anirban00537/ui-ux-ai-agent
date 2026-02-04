@@ -316,7 +316,7 @@ export const MobileFrame = React.memo(({
             {/* Generating Animation */}
             {isGenerating && (
               <div 
-                  className="absolute -inset-1 rounded-[36px] opacity-75 blur-md pointer-events-none"
+                  className="absolute -inset-1 rounded-[30px] opacity-75 blur-md pointer-events-none"
                   style={{
                     background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
                     backgroundSize: "300% 100%",
@@ -329,8 +329,9 @@ export const MobileFrame = React.memo(({
             <div
               className={`relative overflow-hidden isolate shadow-2xl w-full h-full ${!isSelected ? 'drag-target cursor-grab active:cursor-grabbing' : ''}`}
               style={{
-                borderRadius: "32px", 
-                background: "transparent"
+                borderRadius: "28px", 
+                background: "transparent",
+                border: "4px solid #1a1a1a"
               }}
             >
               <iframe

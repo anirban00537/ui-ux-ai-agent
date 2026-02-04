@@ -69,8 +69,8 @@ export const PreviewMobileFrame = React.memo(({
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showUpdateInput, setShowUpdateInput] = useState(false);
 
-  // State for dimensions - Large Mobile (480x1040)
-  const standardRatio = 1040 / 480;
+  // State for dimensions - Large Mobile (480x840)
+  const standardRatio = 840 / 480;
   const standardHeight = Math.floor(width * standardRatio);
 
   const [size, setSize] = useState({ width: width, height: height || standardHeight });
@@ -266,7 +266,7 @@ export const PreviewMobileFrame = React.memo(({
           {/* Generating Animation */}
           {isGenerating && (
             <div 
-                className="absolute -inset-1 rounded-[44px] opacity-75 blur-md pointer-events-none"
+                className="absolute -inset-1 rounded-[34px] opacity-75 blur-md pointer-events-none"
                 style={{
                   background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
                   backgroundSize: "300% 100%",
@@ -282,18 +282,14 @@ export const PreviewMobileFrame = React.memo(({
               !isSelected && !isStatic ? 'drag-target cursor-grab active:cursor-grabbing' : ''
             )}
             style={{
-              borderRadius: "44px", 
+              borderRadius: "32px", 
               background: colorPalette?.background || "#ffffff",
-              border: "8px solid #1a1a1a",
+              border: "6px solid #1a1a1a",
               boxShadow: isStatic 
-                ? "0 0 0 4px #262626, 0 50px 100px -20px rgba(0,0,0,0.5)"
-                : "0 0 0 2px #262626, 0 10px 30px rgba(0,0,0,0.2)"
+                ? "0 0 0 1px #262626, 0 40px 80px -20px rgba(0,0,0,0.5)"
+                : "0 0 0 1px #262626, 0 10px 30px rgba(0,0,0,0.2)"
             }}
           >
-            {/* Speaker Grill / Notch Area */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#1a1a1a] rounded-b-2xl z-30 flex items-center justify-center pointer-events-none">
-                <div className="w-10 h-1 rounded-full bg-zinc-800" />
-            </div>
 
             <iframe
               ref={iframeRef}

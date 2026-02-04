@@ -86,8 +86,29 @@ export default function PreviewPage() {
 
   const currentArtboard = design?.artboards[currentIndex];
 
-  // Fixed scale for "fixed height" request - Scaled down slightly as requested
-  const scale = 0.85;
+  const [scale, setScale] = useState(0.85);
+
+  // Dynamic scaling based on viewport height
+  useEffect(() => {
+    const calculateScale = () => {
+      const vh = window.innerHeight;
+      const vw = window.innerWidth;
+      
+      // Target height is 840px. Leave 180px for header/margins.
+      const availableHeight = vh - 180;
+      const heightScale = Math.min(availableHeight / 840, 0.9);
+      
+      // Also ensure it doesn't overflow horizontally
+      const availableWidth = vw - 80; // Margin
+      const widthScale = Math.min(availableWidth / 480, 0.9);
+      
+      setScale(Math.min(heightScale, widthScale));
+    };
+
+    calculateScale();
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, []);
 
   if (loading) {
     return (
@@ -149,8 +170,8 @@ export default function PreviewPage() {
         </div>
       </div>
 
-      {/* Main Preview Container - Allow Scrolling */}
-      <div className="flex-1 relative flex justify-center min-h-0 overflow-y-auto overflow-x-hidden p-0 pt-20 pb-10">
+      {/* Main Preview Container - Center content perfectly */}
+      <div className="flex-1 relative flex items-center justify-center min-h-0 overflow-y-auto overflow-x-hidden p-0 py-20">
         {/* Navigation Arrows */}
         {design.artboards.length > 1 && (
           <>
@@ -176,14 +197,14 @@ export default function PreviewPage() {
               className="absolute bg-primary/20 blur-[120px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity"
               style={{
                 width: 480 * scale,
-                height: 1040 * scale,
+                height: 840 * scale,
               }}
            />
            
-           {/* Screen Title Label */}
+           {/* Screen Title Label - Proportional Gap */}
            <div 
-             className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-mono tracking-[0.2em] text-zinc-500/80 uppercase transition-all duration-300"
-             style={{ top: `-30px` }}
+             className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-mono tracking-[0.2em] text-zinc-500/80 uppercase transition-all duration-300 pointer-events-none"
+             style={{ top: `-${25 * scale}px` }}
            >
               {currentArtboard?.title || `Screen ${currentIndex + 1}`}
            </div>
@@ -193,7 +214,7 @@ export default function PreviewPage() {
              className="flex items-center justify-center transition-all duration-300"
              style={{
                 width: 480 * scale,
-                height: 1040 * scale,
+                height: 840 * scale,
              }}
            >
               {currentArtboard && (
@@ -205,8 +226,8 @@ export default function PreviewPage() {
                   isStatic={true}
                   disableDrag={true}
                   disableResize={true}
-                   width={480}
-                  height={1040}
+                  width={480}
+                  height={840}
                   scale={scale}
                 />
               )}
