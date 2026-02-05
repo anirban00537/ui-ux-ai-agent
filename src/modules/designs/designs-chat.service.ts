@@ -271,6 +271,22 @@ export class DesignsChatService {
             return;
           }
 
+          const creditManager = new CreditManager(this.prisma);
+          // Estimate credits for a screen update (approx 5000 tokens / 200 = 25 credits)
+          const estimatedCredits = creditManager.estimateCredits('update_existing', { numScreensToUpdate: 1 });
+          const { hasEnough, required, balance } = await creditManager.hasEnoughCredits(userId, estimatedCredits);
+
+          if (!hasEnough) {
+             const errMsg = `Insufficient credits. Required: ${required}, Available: ${balance?.remainingCredits || 0}`;
+             await activeMessenger.emit(
+               { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
+               `Error: ${errMsg}`,
+               false,
+            );
+             subscriber.complete();
+             return;
+          }
+
           // Save the user's update prompt message to the database
           await this.prisma.message.create({
             data: {
@@ -295,7 +311,6 @@ export class DesignsChatService {
             true,
           );
 
-          const creditManager = new CreditManager(this.prisma);
           const artboardUpdater = new ArtboardUpdater(
             this.prisma,
             creditManager,
