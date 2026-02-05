@@ -89,7 +89,7 @@ export function Editor({
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03)_0%,transparent_70%)] pointer-events-none" />
 
       <TransformWrapper
-        initialScale={0.6}
+        initialScale={0.5}
         minScale={0.1}
         maxScale={3}
         centerOnInit={true}
