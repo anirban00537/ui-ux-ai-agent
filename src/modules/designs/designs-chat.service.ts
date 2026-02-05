@@ -16,6 +16,8 @@ import {
   runThemePhase,
   runCreatePhase,
 } from './chat';
+import { IntentAnalyzer } from './tools/agents/intent-analyzer';
+import { ChatAgent } from './tools/agents/chat-agent';
 
 @Injectable()
 export class DesignsChatService {
@@ -106,10 +108,101 @@ export class DesignsChatService {
             creditManager,
             this.aiUsageService,
           );
+          const chatAgent = new ChatAgent(
+            creditManager,
+            this.aiUsageService,
+          );
           const effectivePrompt = prompt;
 
           if (signal.aborted) {
             console.log('[DesignsChatService] Cancelled before theme phase');
+            subscriber.complete();
+            return;
+          }
+
+          // Intent Analysis Step
+          const intentAnalyzer = new IntentAnalyzer(
+            this.prisma,
+            creditManager,
+            this.aiUsageService,
+          );
+
+          await activeMessenger.emit(
+            {
+              type: coreConstant.STREAM_EVENT.INTENT_ANALYSIS,
+              data: { label: 'Analyzing request', status: 'completed' },
+            },
+            'Analyzing request...',
+          );
+
+          let intentResult: { intent: 'CHAT' | 'DESIGN'; thinking?: string } = {
+            intent: 'DESIGN',
+          };
+          try {
+            intentResult = await intentAnalyzer.analyze(
+              effectivePrompt,
+              userId,
+              designId,
+              signal,
+            );
+
+            if (intentResult.thinking) {
+              await activeMessenger.emit(
+                {
+                  type: coreConstant.STREAM_EVENT.AI_THINKING,
+                  data: { message: intentResult.thinking },
+                },
+                intentResult.thinking,
+                true,
+              );
+            }
+          } catch (err) {
+            console.error(
+              '[DesignsChatService] Intent analysis failed, defaulting to DESIGN',
+              err,
+            );
+          }
+
+          if (intentResult.intent === 'CHAT') {
+            const chatResult = await chatAgent.respond(
+              effectivePrompt,
+              context.contextMessages,
+              userId,
+              designId,
+              context.existingArtboards.slice(-5).map(a => a.title),
+              signal,
+            );
+
+            if (chatResult.thinking) {
+              await activeMessenger.emit(
+                {
+                  type: coreConstant.STREAM_EVENT.AI_THINKING,
+                  data: { message: chatResult.thinking },
+                },
+                chatResult.thinking,
+                true,
+              );
+            }
+
+            await activeMessenger.emit(
+              {
+                type: coreConstant.STREAM_EVENT.AI_RESPONSE,
+                data: { message: chatResult.response },
+              },
+              chatResult.response,
+              true,
+            );
+
+            await activeMessenger.emit(
+              { type: coreConstant.STREAM_EVENT.ALL_COMPLETE },
+              'Complete.',
+            );
+
+            subscriber.complete();
+            return;
+          }
+
+          if (signal.aborted) {
             subscriber.complete();
             return;
           }
@@ -317,28 +410,39 @@ export class DesignsChatService {
             this.aiUsageService,
           );
 
-          // 2. Fetch Previous Screens for Context (Optional consistency)
+          // 2. Fetch Previous Screens for Context (Visual consistency)
           const prevScreens = await this.prisma.artboard.findMany({
             where: {
               designId: designId,
-              id: { not: artboardId }, // Exclude current
+              id: { not: artboardId }, 
             },
             take: 3,
             orderBy: { createdAt: 'asc' },
             select: { id: true, title: true, description: true, html: true },
           });
 
+          // 3. Fetch History for Context (Textual consistency)
+          const messages = await this.prisma.message.findMany({
+            where: { designId },
+            orderBy: { createdAt: 'asc' },
+          });
+          const contextMessages = messages.map((m) => ({
+            role: m.role as 'system' | 'user' | 'assistant',
+            content: m.content,
+          }));
+
           if (signal.aborted) {
             subscriber.complete();
             return;
           }
 
-          // 3. Run Update
+          // 4. Run Update
           const result = await artboardUpdater.updateArtboard(
             userId,
             designId,
             artboard.html || '', // Existing HTML
             prompt,
+            contextMessages,
             signal,
             prevScreens.map((s) => ({
               title: s.title,

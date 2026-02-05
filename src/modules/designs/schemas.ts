@@ -27,6 +27,7 @@ export interface ScreenPromptItem {
 export interface ScreenPlan {
   totalScreens: number;
   screenPrompts: ScreenPromptItem[];
+  thinking?: string;
 }
 
 export interface SingleScreen {

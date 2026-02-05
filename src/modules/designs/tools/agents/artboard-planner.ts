@@ -68,18 +68,23 @@ export class ArtboardPlanner {
     userId: string,
     designId: string,
     designType: string,
+    screenTitles: string[] = [],
     signal?: AbortSignal,
   ): Promise<ScreenPlan> {
     checkAborted(signal, 'screen_planning');
 
+    const screensContext = screenTitles.length > 0
+      ? `\nEXISTING SCREENS (Current Project):\n${screenTitles.map(t => `- ${t}`).join('\n')}\n`
+      : '';
+
     const prompts = PromptManager.getPrompts(designType);
-    const planningPrompt = await prompts.planningTemplate.format({
+    const planningPrompt = (await prompts.planningTemplate.format({
       message,
-    });
+    })) + screensContext;
 
     const allMessages = [
       { role: 'system' as const, content: planningPrompt },
-      ...contextMessages,
+      ...contextMessages.slice(-15),
       { role: 'user' as const, content: message },
     ];
 
@@ -116,8 +121,14 @@ export class ArtboardPlanner {
       signal,
     ) as any;
 
-    const content = response.choices[0]?.message?.content;
+    const messageObj = response.choices[0]?.message;
+    const content = messageObj?.content;
     const plan = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ScreenPlan;
+    
+    // Capture native reasoning or JSON-based
+    plan.thinking = messageObj?.reasoning || plan.thinking;
+
+    console.log(`[ArtboardPlanner] Plan screens: ${plan.totalScreens}, Thinking Length: ${plan.thinking?.length || 0}`);
 
     // Add stable IDs for streaming
     plan.screenPrompts = plan.screenPrompts.map(sp => ({

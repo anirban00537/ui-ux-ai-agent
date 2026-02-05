@@ -39,10 +39,22 @@ export async function runCreatePhase(
     userId,
     designId,
     designType ?? '',
+    existingArtboards.slice(-5).map(a => a.title),
     signal,
   );
 
   if (signal.aborted) return;
+
+  if (plan.thinking) {
+    await messenger.emit(
+      {
+        type: coreConstant.STREAM_EVENT.AI_THINKING,
+        data: { message: plan.thinking },
+      },
+      plan.thinking,
+      true,
+    );
+  }
 
   messenger.emitFast({
     type: coreConstant.STREAM_EVENT.PHASE_PLANNED,

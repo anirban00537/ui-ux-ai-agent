@@ -149,7 +149,7 @@ export class ArtboardCreator {
     const userContent = `Original request: ${message}\n\nSpecific artboard prompt: ${promptData.prompt}`;
     const allMessages = [
       { role: 'system' as const, content: systemPrompt },
-      ...contextMessages,
+      ...contextMessages.slice(-15),
       { role: 'user' as const, content: userContent },
     ];
 
@@ -322,7 +322,7 @@ export class ArtboardCreator {
     const userContent = `Original request: ${message}\n\nSpecific artboard prompt: ${promptData.prompt}`;
     const allMessages = [
       { role: 'system' as const, content: systemPrompt },
-      ...contextMessages,
+      ...contextMessages.slice(-15),
       { role: 'user' as const, content: userContent },
     ];
 

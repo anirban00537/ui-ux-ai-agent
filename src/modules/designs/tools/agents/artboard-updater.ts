@@ -45,6 +45,7 @@ export default class ArtboardUpdater {
     designId: string,
     existingHtml: string,
     updatePrompt: string,
+    contextMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = [],
     signal?: AbortSignal,
     previousScreens: PreviousScreenContext[] = [],
   ): Promise<{ title: string; description: string; html: string }> {
@@ -82,19 +83,17 @@ Provide the response in the following JSON format:
     // 2. Call LLM
     const client = getOpenRouterClient();
     
-    // Calculate cost (approximate)
-    const promptTokens = (systemPrompt.length + userPrompt.length) / 4;
-    const estimatedCost = 
-      (promptTokens / 1_000_000) * coreConstant.AI_MODELS.DESIGN.PRICING.prompt;
+    const messages = [
+      { role: 'system' as const, content: systemPrompt },
+      ...contextMessages.slice(-15) as any,
+      { role: 'user' as const, content: userPrompt },
+    ];
 
     const response = await withTimeout(
       client.chat.send(
         {
           model: coreConstant.AI_MODELS.DESIGN.NAME,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
-          ],
+          messages,
           responseFormat: {
             type: 'json_schema',
             jsonSchema: {
@@ -134,21 +133,35 @@ Provide the response in the following JSON format:
       throw new Error('Invalid JSON response from LLM');
     }
 
-    // 4. Record Usage
+    // 4. Record Usage and Deduct Credits
     if (response.usage) {
-      // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Updater):', JSON.stringify(response.usage, null, 2));
+      const usage = response.usage as any;
+      const tokenUsage = {
+        inputTokens: usage.prompt_tokens || usage.promptTokens || 0,
+        outputTokens: usage.completion_tokens || usage.completionTokens || 0,
+        totalTokens: usage.total_tokens || usage.totalTokens || 0,
+        reasoningTokens: usage.completion_tokens_details?.reasoning_tokens || usage.completionTokensDetails?.reasoningTokens || 0,
+      };
+
       try {
         await this.aiUsageService.logUsage({
           userId,
           modelName: coreConstant.AI_MODELS.DESIGN.NAME,
-          inputTokens: (response.usage as any)?.prompt_tokens || (response.usage as any)?.promptTokens || 0,
-          outputTokens: (response.usage as any)?.completion_tokens || (response.usage as any)?.completionTokens || 0,
+          inputTokens: tokenUsage.inputTokens,
+          outputTokens: tokenUsage.outputTokens,
           type: 'artboard_update',
           designId,
           provider: 'openrouter',
         });
+
+        await this.creditManager.deductCredits(
+          userId,
+          designId,
+          'artboard_update',
+          tokenUsage,
+        );
       } catch (error) {
-        console.warn('Failed to record AI usage:', error);
+        console.warn('Failed to record AI usage or deduct credits:', error);
       }
     }
 
