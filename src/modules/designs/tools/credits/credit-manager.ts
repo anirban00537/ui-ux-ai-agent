@@ -127,7 +127,7 @@ export class CreditManager {
     operation: string,
     usage: TokenUsage,
     _model: string = 'minimax/minimax-m2.1',
-  ): Promise<void> {
+  ): Promise<number> {
     const creditsUsed = this.convertTokensToCredits(usage.totalTokens);
 
     const balance = await this.prisma.creditBalance.findUnique({
@@ -164,5 +164,7 @@ export class CreditManager {
         },
       });
     });
+
+    return creditsUsed;
   }
 }

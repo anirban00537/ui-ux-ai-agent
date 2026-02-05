@@ -21,7 +21,7 @@ export class ChatAgent {
     designId: string,
     screenTitles: string[] = [],
     signal?: AbortSignal,
-  ): Promise<{ response: string; thinking?: string }> {
+  ): Promise<{ response: string; thinking?: string; credits?: number }> {
     checkAborted(signal, 'chat_response');
 
     const screensContext =
@@ -81,11 +81,12 @@ Instructions:
       designId,
     } as any).catch(e => console.error("Chat usage log error", e));
 
-    await this.creditManager.deductCredits(userId, designId, 'chat', tokenUsage);
+    const credits = await this.creditManager.deductCredits(userId, designId, 'chat', tokenUsage);
 
     return {
       response: responseText,
       thinking: thinking,
+      credits: credits,
     };
   }
 }

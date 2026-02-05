@@ -163,7 +163,7 @@ export class ColorPaletteGenerator {
       designId,
     } as any).catch(err => console.error('[ColorPaletteGenerator] Usage log error:', err));
 
-    await this.creditManager.deductCredits(
+    colorPalette.credits = await this.creditManager.deductCredits(
       userId,
       designId,
       'color_palette',

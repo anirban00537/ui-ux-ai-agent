@@ -38,12 +38,6 @@ export class DesignsService {
           id,
         },
         include: {
-          messages: {
-            orderBy: {
-              createdAt: 'asc',
-            },
-            take: -50, // Take LATEST 50 messages in ascending order
-          },
           artboards: {
             orderBy: {
               createdAt: 'asc',

@@ -67,11 +67,11 @@ export async function runCreatePhase(
   await messenger.emit(
     {
       type: coreConstant.STREAM_EVENT.PHASE_STEP,
-      data: { label: 'Planning actions', status: 'completed' },
+      data: { label: 'Planning actions', status: 'completed', credits: plan.credits },
     },
     'Planning actions: completed',
     true,
-    { label: 'Planning actions', status: 'completed' },
+    { label: 'Planning actions', status: 'completed', credits: plan.credits },
   );
 
   const screenDescriptions = plan.screenPrompts
@@ -130,8 +130,7 @@ export async function runCreatePhase(
       },
     });
 
-    let screen: { title: string; description: string; html: string } | null =
-      null;
+    let screen: import('../schemas').SingleScreen | null = null;
     const streamGenerator = artboardCreator.generateArtboardStreaming(
       sp,
       prompt,
@@ -179,7 +178,7 @@ export async function runCreatePhase(
       screenStartMessageId,
       `Generated: ${saved.title}`,
       coreConstant.STREAM_EVENT.SCREEN_COMPLETE,
-      { title: saved.title, screenId: saved.id, screen: completeData },
+      { title: saved.title, screenId: saved.id, screen: completeData, credits: screen.credits },
     );
     messenger.emitFast({
       type: coreConstant.STREAM_EVENT.SCREEN_COMPLETE,
@@ -188,6 +187,7 @@ export async function runCreatePhase(
         messageId: screenStartMessageId, 
         ...completeData,
         tempId: sp.id, // Let frontend know which temp ID this real ID replaces
+        credits: screen.credits,
       },
     });
   }

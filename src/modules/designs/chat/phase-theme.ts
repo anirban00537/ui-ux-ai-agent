@@ -52,11 +52,11 @@ export async function runThemePhase(
     await messenger.emit(
       {
         type: coreConstant.STREAM_EVENT.PHASE_STEP,
-        data: { label: 'Generating theme', status: 'completed' },
+        data: { label: 'Generating theme', status: 'completed', credits: colorPalette.credits },
       },
       'Generating theme: completed',
       true,
-      { label: 'Generating theme', status: 'completed' },
+      { label: 'Generating theme', status: 'completed', credits: colorPalette.credits },
     );
     messenger.emitFast({
       type: coreConstant.STREAM_EVENT.PHASE_THEME_COMPLETE,

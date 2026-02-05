@@ -273,7 +273,7 @@ export class ArtboardCreator {
     } as any).catch(err => console.error('[ArtboardCreator] Screen creation usage log error:', err));
 
     // Deduct credits
-    await this.creditManager.deductCredits(
+    const credits = await this.creditManager.deductCredits(
       userId,
       designId,
       'screen_creation',
@@ -283,7 +283,7 @@ export class ArtboardCreator {
     // Yield final complete artboard
     yield {
       type: 'complete',
-      data: artboard,
+      data: { ...artboard, credits },
     };
   }
 
@@ -388,7 +388,7 @@ export class ArtboardCreator {
       designId,
     } as any).catch(err => console.error('[ArtboardCreator] Screen creation usage log error:', err));
 
-    await this.creditManager.deductCredits(
+    artboard.credits = await this.creditManager.deductCredits(
       userId,
       designId,
       'screen_creation',

@@ -34,6 +34,7 @@ export class IntentAnalyzer {
   ): Promise<{
     intent: 'CHAT' | 'DESIGN';
     thinking?: string;
+    credits?: number;
   }> {
     checkAborted(signal, 'intent_analysis');
 
@@ -146,7 +147,7 @@ Output JSON Format: {"intent": "CHAT" | "DESIGN"}`;
         } as any)
         .catch((e) => console.error('Usage log error', e));
 
-      await this.creditManager.deductCredits(
+      const credits = await this.creditManager.deductCredits(
         userId,
         designId,
         'intent_analysis',
@@ -156,6 +157,7 @@ Output JSON Format: {"intent": "CHAT" | "DESIGN"}`;
       return {
         intent: result.intent || 'DESIGN',
         thinking: thinking,
+        credits: credits,
       };
     } catch (e: any) {
       console.error('Intent Analysis Failed, defaulting to DESIGN:', e);

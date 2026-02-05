@@ -15,6 +15,7 @@ export interface ColorPalette {
   border: string;
   input: string;
   themeMode?: 'light' | 'dark';
+  credits?: number;
 }
 
 export interface ScreenPromptItem {
@@ -28,12 +29,14 @@ export interface ScreenPlan {
   totalScreens: number;
   screenPrompts: ScreenPromptItem[];
   thinking?: string;
+  credits?: number;
 }
 
 export interface SingleScreen {
   title: string;
   description: string;
   html: string;
+  credits?: number;
 }
 
 export interface Intent {

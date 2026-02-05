@@ -450,6 +450,7 @@ model AiUsage {
   inputTokens  Int
   outputTokens Int
   cost         Float // Actual cost in USD
+  credits      Float? // Credits deducted
   provider     String @default("openrouter")
 
   // Success tracking

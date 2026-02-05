@@ -48,7 +48,7 @@ export default class ArtboardUpdater {
     contextMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = [],
     signal?: AbortSignal,
     previousScreens: PreviousScreenContext[] = [],
-  ): Promise<{ title: string; description: string; html: string }> {
+  ): Promise<{ title: string; description: string; html: string; credits?: number }> {
     checkAborted(signal, 'ArtboardUpdater.updateArtboard');
 
     // 1. Construct prompt
@@ -134,6 +134,7 @@ Provide the response in the following JSON format:
     }
 
     // 4. Record Usage and Deduct Credits
+    let credits = 0;
     if (response.usage) {
       const usage = response.usage as any;
       const tokenUsage = {
@@ -154,7 +155,7 @@ Provide the response in the following JSON format:
           provider: 'openrouter',
         });
 
-        await this.creditManager.deductCredits(
+        credits = await this.creditManager.deductCredits(
           userId,
           designId,
           'artboard_update',
@@ -169,6 +170,7 @@ Provide the response in the following JSON format:
       title: result.title,
       description: result.description,
       html: result.html,
+      credits,
     };
   }
   

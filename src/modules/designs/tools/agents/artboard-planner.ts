@@ -171,7 +171,7 @@ export class ArtboardPlanner {
       designId,
     } as any).catch(err => console.error('[ArtboardPlanner] Planning usage log error:', err));
 
-    await this.creditManager.deductCredits(
+    plan.credits = await this.creditManager.deductCredits(
       userId,
       designId,
       'screen_planning',

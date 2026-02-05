@@ -17,7 +17,7 @@ export class AdminArtifactsService {
       // 1. Calculate system-wide stats first (Total Tokens, Total Cost, Total Artboards)
       // We do this independently of pagination/search to provide global context
       const [usageStats, totalArtboards] = await Promise.all([
-        this.prisma.aiUsage.aggregate({
+        (this.prisma.aiUsage as any).aggregate({
           where: {
             // If filtering by user, show their totals. Otherwise show platform totals.
             ...(userId ? { userId } : { docId: { not: null } }),
@@ -26,6 +26,7 @@ export class AdminArtifactsService {
             inputTokens: true,
             outputTokens: true,
             cost: true,
+            credits: true,
           }
         }),
         this.prisma.artboard.count({
@@ -34,8 +35,9 @@ export class AdminArtifactsService {
       ]);
 
       const systemStats = {
-        totalTokens: (usageStats._sum.inputTokens || 0) + (usageStats._sum.outputTokens || 0),
-        totalCost: usageStats._sum.cost || 0,
+        totalTokens: ((usageStats as any)._sum.inputTokens || 0) + ((usageStats as any)._sum.outputTokens || 0),
+        totalCost: (usageStats as any)._sum.cost || 0,
+        totalCredits: (usageStats as any)._sum.credits || 0,
         totalArtboards: totalArtboards || 0,
       };
 
@@ -73,20 +75,23 @@ export class AdminArtifactsService {
               inputTokens: true,
               outputTokens: true,
               cost: true,
+              credits: true,
             },
-          });
+          } as any);
 
           const totalTokens = aiUsages.reduce(
             (sum, usage) => sum + usage.inputTokens + usage.outputTokens,
             0,
           );
           const totalCost = aiUsages.reduce((sum, usage) => sum + usage.cost, 0);
+          const totalCredits = (aiUsages as any[]).reduce((sum, usage) => sum + (usage.credits || 0), 0);
 
           return {
             ...design,
             aiUsage: {
               totalTokens,
               totalCost,
+              totalCredits,
             },
           };
         }),

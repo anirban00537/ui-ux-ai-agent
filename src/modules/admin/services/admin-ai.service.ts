@@ -53,14 +53,14 @@ export class AdminAiService {
 
   async getModelEfficiency(): Promise<ResponseModel> {
     try {
-      const stats = await this.prisma.aiUsage.groupBy({
+      const stats = await (this.prisma.aiUsage as any).groupBy({
         by: ['modelName'],
         _count: { _all: true },
-        _sum: { cost: true, inputTokens: true, outputTokens: true },
-        _avg: { cost: true },
+        _sum: { cost: true, inputTokens: true, outputTokens: true, credits: true },
+        _avg: { cost: true, credits: true },
       });
 
-      const failedCounts = await this.prisma.aiUsage.groupBy({
+      const failedCounts = await (this.prisma.aiUsage as any).groupBy({
         by: ['modelName'],
         where: { isSuccess: false },
         _count: { _all: true },
@@ -75,6 +75,8 @@ export class AdminAiService {
           failureRate: (failed / s._count._all) * 100,
           totalCost: s._sum.cost,
           avgCost: s._avg.cost,
+          totalCredits: s._sum.credits,
+          avgCredits: s._avg.credits,
           totalTokens: (s._sum.inputTokens || 0) + (s._sum.outputTokens || 0),
         };
       });

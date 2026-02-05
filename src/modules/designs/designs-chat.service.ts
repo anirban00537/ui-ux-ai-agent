@@ -135,7 +135,7 @@ export class DesignsChatService {
             'Analyzing request...',
           );
 
-          let intentResult: { intent: 'CHAT' | 'DESIGN'; thinking?: string } = {
+          let intentResult: { intent: 'CHAT' | 'DESIGN'; thinking?: string; credits?: number } = {
             intent: 'DESIGN',
           };
           try {
@@ -187,7 +187,7 @@ export class DesignsChatService {
             await activeMessenger.emit(
               {
                 type: coreConstant.STREAM_EVENT.AI_RESPONSE,
-                data: { message: chatResult.response },
+                data: { message: chatResult.response, credits: chatResult.credits },
               },
               chatResult.response,
               true,
@@ -240,14 +240,16 @@ export class DesignsChatService {
             throw err;
           }
 
+          const analysisCredits = (intentResult.credits || 0) + ((colorPalette as any)?.credits || 0);
+
           await activeMessenger.emit(
             {
               type: coreConstant.STREAM_EVENT.PHASE_STEP,
-              data: { label: 'Analyzing request', status: 'completed' },
+              data: { label: 'Analyzing request', status: 'completed', credits: analysisCredits },
             },
             'Analyzing request: completed',
             true,
-            { label: 'Analyzing request', status: 'completed' },
+            { label: 'Analyzing request', status: 'completed', credits: analysisCredits },
           );
 
           if (signal.aborted) {
