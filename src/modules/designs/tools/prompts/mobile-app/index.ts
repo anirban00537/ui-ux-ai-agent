@@ -52,7 +52,7 @@ D. **"Neo-Brutalist"**:
 // 3. LAYOUT SHELL (The Frame)
 // ---------------------------------------------------------------------------
 const LAYOUT_SHELL_INSTRUCTION = `
-MANDATORY HTML STRUCTURE:
+MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 <div class="w-full min-h-screen bg-background text-foreground font-sans overflow-x-hidden selection:bg-primary/20 relative flex flex-col">
 
   <!-- 1. HEADER (Adaptive) -->
@@ -178,6 +178,7 @@ CRITICAL RULES:
     - Cyber/Neon: 'photo-1550684848-fac1c5b4e853', 'photo-1515630278258-407f66498911'
     - Minimal: 'photo-1494438639946-1ebd1d20bf85'
 4.  **Navigation Consistency**: CHECK {{previousScreensContext}}. If a Bottom Navigation exists, YOU MUST COPY IT EXACTLY (same icons, same order). Do not generate a random new one.
+5.  **NO STRUCTURAL BOILERPLATE**: DO NOT include "<!DOCTYPE html>", "<html>", "<head>", or "<body>" tags. The output MUST start directly with the main <div class="w-full..."> wrapper. Any content outside this div will break the app.
 
 OUTPUT FORMAT:
 Return ONLY a valid JSON object.
@@ -239,6 +240,7 @@ INSTRUCTIONS:
 1.  **Preserve Style**: If the current screen is "Neon Dark", do NOT turn it white. Keep the classes.
 2.  **Refine**: Make the specific requested change.
 3.  **Fix Layouts**: If converting to Bento, switch the main wrapper to 'grid grid-cols-2'.
+4.  **NO STRUCTURAL BOILERPLATE**: Return ONLY the inner content starting with the main wrapper div. NO "<!DOCTYPE html>", "<html>", or "<body>".
 
 Output Single JSON:
 {{ "html": "...", "title": "...", "description": "..." }}
