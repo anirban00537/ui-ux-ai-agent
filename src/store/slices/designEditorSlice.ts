@@ -180,6 +180,17 @@ const designEditorSlice = createSlice({
       state.selectedArtboardId = action.payload;
     },
     resetEditor: () => initialState,
+    cancelGeneration: (state) => {
+      state.isGenerating = false;
+      state.progress = null;
+      if (state.conversation?.artboards) {
+        state.conversation.artboards.forEach(artboard => {
+          if (artboard.status === "generating") {
+            artboard.status = "complete"; 
+          }
+        });
+      }
+    },
   }
 });
 
@@ -197,7 +208,8 @@ export const {
   updateColorValue,
   setCopiedId,
   setSelectedId,
-  resetEditor
+  resetEditor,
+  cancelGeneration
 } = designEditorSlice.actions;
 
 export default designEditorSlice.reducer;

@@ -16,6 +16,7 @@ import {
   setColorPalette,
   removeArtboard,
   resetEditor,
+  cancelGeneration as cancelGenerationAction,
   Conversation,
   Message,
   ColorPalette,
@@ -105,8 +106,7 @@ export function useChatGenerator(designId?: string) {
       readerRef.current.cancel().catch(() => {});
       readerRef.current = null;
     }
-    dispatch(setGenerating(false));
-    dispatch(setProgress(null));
+    dispatch(cancelGenerationAction());
 
     if (conversation) {
       dispatch(addMessage({
