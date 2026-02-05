@@ -38,6 +38,17 @@ export const getAuth = async () => {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       },
     },
+    advanced: {
+      crossSubDomainCookies: {
+        enabled: true,
+        domain: process.env.BETTER_AUTH_URL?.includes("butterfast.com")
+          ? ".butterfast.com"
+          : undefined,
+      },
+      defaultRedirectURL: process.env.BETTER_AUTH_URL?.includes("butterfast.com")
+        ? "https://butterfast.com/home"
+        : "http://localhost:3000/home",
+    },
     trustedOrigins: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(",")
       : [
