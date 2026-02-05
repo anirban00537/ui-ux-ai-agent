@@ -48,6 +48,22 @@ export class DesignsController {
     return this.designsService.getDesignById(id, user.id);
   }
 
+  @Get(':id/messages')
+  async getDesignMessages(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 20,
+    @Query('sortBy') sortBy = 'createdAt',
+    @Query('sortOrder') sortOrder: 'asc' | 'desc' = 'desc',
+  ): Promise<ResponseModel> {
+    return this.designsService.getDesignMessages(id, user.id, {
+      page: Number(page),
+      pageSize: Number(pageSize),
+      orderBy: { [sortBy]: sortOrder },
+    });
+  }
+
   @Public()
   @Get('public/:id')
   async getPublicDesignById(

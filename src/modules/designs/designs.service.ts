@@ -42,6 +42,7 @@ export class DesignsService {
             orderBy: {
               createdAt: 'asc',
             },
+            take: -50, // Take LATEST 50 messages in ascending order
           },
           artboards: {
             orderBy: {
@@ -54,6 +55,30 @@ export class DesignsService {
         return errorResponse('User does not have this Design');
       }
       return successResponse('Design fetched successfully', design);
+    } catch (error) {
+      return errorResponse(error.message);
+    }
+  }
+
+  async getDesignMessages(
+    id: string,
+    userId: string,
+    paginationOptions: PaginationOptions,
+  ): Promise<ResponseModel> {
+    try {
+      const design = await this.prisma.design.findUnique({ where: { id } });
+      if (!design || design.userId !== userId) {
+        return errorResponse('User does not have this Design');
+      }
+
+      const result = await paginatedQuery(
+        this.prisma,
+        'message',
+        { designId: id },
+        paginationOptions,
+      );
+
+      return successResponse('Messages fetched successfully', result);
     } catch (error) {
       return errorResponse(error.message);
     }
