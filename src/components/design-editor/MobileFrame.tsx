@@ -2,10 +2,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
-import { cn } from "@/lib/utils";
 import { CodeViewerModal } from "./CodeViewerModal";
 import { FrameToolbar } from "./FrameToolbar";
-import { Monitor } from "lucide-react";
 
 interface ColorPalette {
   background: string;
@@ -388,5 +386,23 @@ export const MobileFrame = React.memo(({
       colorPalette={colorPalette}
     />
     </>
+  );
+}, (prev: MobileFrameProps, next: MobileFrameProps) => {
+  // Custom comparison to avoid re-renders if distinct props haven't changed
+  // Especially important for colorPalette object reference stability
+  return (
+    prev.id === next.id &&
+    prev.htmlContent === next.htmlContent &&
+    prev.title === next.title &&
+    prev.subtitle === next.subtitle &&
+    prev.width === next.width &&
+    prev.height === next.height &&
+    prev.initialX === next.initialX &&
+    prev.initialY === next.initialY &&
+    prev.isGenerating === next.isGenerating &&
+    prev.scale === next.scale &&
+    prev.autoSave === next.autoSave &&
+    // Deep compare color palette
+    JSON.stringify(prev.colorPalette) === JSON.stringify(next.colorPalette)
   );
 });
