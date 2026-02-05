@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { IconSparkles, IconAlertCircle } from "@tabler/icons-react";
+import { formatCredits, getCreditColor } from "@/lib/credit-utils";
 
 interface CreditBalanceCardProps {
   balance: number;
@@ -35,8 +36,8 @@ export const CreditBalanceCard: React.FC<CreditBalanceCardProps> = ({
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-0.5">
             Available Now
           </p>
-          <p className="text-3xl font-bold text-foreground tracking-tight">
-            {balance.toLocaleString()}
+          <p className={`text-3xl font-bold tracking-tight ${getCreditColor(balance)}`}>
+            {formatCredits(balance)}
           </p>
         </div>
       </div>

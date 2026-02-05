@@ -48,13 +48,13 @@ export default function HeroSection() {
                     animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
                     exit={{ y: -20, opacity: 0, filter: "blur(4px)" }}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute left-0 bottom-0 italic text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-400 to-blue-400 whitespace-nowrap pb-1"
+                    className="absolute left-0 bottom-0 italic font-[family-name:var(--font-libre)] text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-blue-400 to-blue-500 whitespace-nowrap pb-1 translate-y-2"
                   >
                     {spinningWord}
                   </motion.span>
                 </AnimatePresence>
                 {/* Invisible spacer to maintain layout height/width based on longest word */}
-                <span className="opacity-0 invisible pointer-events-none italic whitespace-nowrap pb-1">
+                <span className="opacity-0 invisible pointer-events-none italic font-[family-name:var(--font-libre)] whitespace-nowrap pb-1">
                   {spinningWord}
                 </span>
               </span>{" "}

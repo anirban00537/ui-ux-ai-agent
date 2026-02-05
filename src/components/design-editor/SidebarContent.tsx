@@ -23,6 +23,8 @@ import {
   updateConversation,
 } from "@/store/slices/designEditorSlice";
 
+import { formatCredits, getCreditColor } from "@/lib/credit-utils";
+
 // Card statuses that trigger screen cards
 const SCREEN_CARD_STATUSES = [
   "screen_start",
@@ -39,6 +41,7 @@ interface SidebarContentProps {
 }
 
 // Agent activity line - minimal terminal-like log entry with shimmer effect
+// Agent activity line - minimal vertical timeline style
 function AgentActivityLine({
   label,
   status,
@@ -49,43 +52,33 @@ function AgentActivityLine({
   isLast: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 text-[13px] font-medium tracking-wide">
-      {status === "loading" ? (
-        <div className="flex-shrink-0 flex items-center justify-center w-3 h-3">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--primary)]" />
-        </div>
-      ) : (
-        <div className="flex-shrink-0 text-primary/50">
-          <svg
-            className="w-3 h-3"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-            />
-          </svg>
-        </div>
+    <div className="relative flex items-start gap-4 pl-1 group">
+      {/* Timeline Line */}
+      {!isLast && (
+        <div className="absolute left-[5.5px] top-6 bottom-[-8px] w-px bg-zinc-800/80 group-hover:bg-zinc-700/80 transition-colors" />
       )}
+      
+      {/* Status Dot */}
+      <div className="relative flex-shrink-0 mt-1.5">
+        {status === "loading" ? (
+          <div className="relative flex items-center justify-center w-3 h-3">
+            <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
+            <div className="relative w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
+          </div>
+        ) : (
+          <div className="w-3 h-3 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center">
+            <div className="w-1 h-1 rounded-full bg-zinc-500" />
+          </div>
+        )}
+      </div>
 
       <span
         className={cn(
-          "transition-all duration-500",
+          "text-[12px] leading-relaxed transition-all duration-500 py-0.5",
           status === "completed"
-            ? "text-zinc-500 font-normal"
-            : "text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 via-white to-zinc-500 bg-[length:200%_auto] animate-gradient-flow"
+            ? "text-zinc-500 font-medium"
+            : "text-transparent bg-clip-text bg-gradient-to-r from-zinc-200 via-zinc-400 to-zinc-200 bg-[length:200%_auto] animate-gradient-flow font-medium"
         )}
-        style={{
-          animation:
-            status === "loading"
-              ? "gradient-flow 1.5s linear infinite"
-              : "none",
-          backgroundSize: "200% auto",
-        }}
       >
         {label}
       </span>
@@ -93,7 +86,7 @@ function AgentActivityLine({
   );
 }
 
-// Screen generation card - clean, minimal design
+// Screen generation card - ultra clean row
 function ScreenCard({
   title,
   status,
@@ -110,30 +103,27 @@ function ScreenCard({
   return (
     <div
       className={cn(
-        "group relative flex items-center gap-3 px-3 py-3 rounded-lg border transition-all duration-300",
-        isGenerating &&
-          "bg-zinc-800/40 border-primary/20 shadow-[0_0_15px_-5px_var(--primary)]",
-        isCompleted && "bg-zinc-900/40 border-white/5",
-        isPending && "bg-transparent border-transparent opacity-50"
+        "group relative flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all duration-300",
+        isGenerating
+          ? "bg-zinc-900/80 border-primary/20 shadow-[0_4px_12px_-4px_rgba(var(--primary),0.1)]"
+          : isCompleted
+          ? "bg-zinc-900/20 border-white/5 hover:bg-zinc-900/40"
+          : "bg-transparent border-transparent opacity-40"
       )}
     >
-      {/* Index/Status Indicator */}
+      {/* Index Badge */}
       <div
         className={cn(
-          "flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-medium transition-colors duration-300",
-          isGenerating && "bg-primary/10 text-primary ring-1 ring-primary/20",
-          isCompleted && "bg-zinc-800 text-zinc-400",
-          isPending && "bg-zinc-800/50 text-zinc-600"
+          "flex-shrink-0 w-5 h-5 rounded flex items-center justify-center text-[9px] font-bold font-mono transition-colors duration-300",
+          isGenerating && "bg-primary text-primary-foreground shadow-sm",
+          isCompleted && "bg-zinc-800 text-zinc-500",
+          isPending && "bg-zinc-800/30 text-zinc-700"
         )}
       >
         {isGenerating ? (
-          <div className="relative w-2.5 h-2.5">
-            <div className="absolute inset-0 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
-          </div>
-        ) : isCompleted ? (
-          <span className="text-xs">{index + 1}</span>
+          <Loader2 className="w-3 h-3 animate-spin" />
         ) : (
-          <span>{index + 1}</span>
+          <span className="mt-[1px]">{index + 1}</span>
         )}
       </div>
 
@@ -141,22 +131,17 @@ function ScreenCard({
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <span
           className={cn(
-            "text-[13px] font-medium truncate transition-colors duration-300",
-            isGenerating ? "text-white" : "text-white/60"
+            "text-[12px] font-medium truncate transition-colors duration-300",
+            isGenerating ? "text-zinc-100" : "text-zinc-400 group-hover:text-zinc-300"
           )}
         >
           {title}
         </span>
-        {isGenerating && (
-          <span className="text-[10px] text-primary/70 font-medium tracking-wide animate-pulse mt-0.5">
-            Building UI...
-          </span>
-        )}
       </div>
 
-      {/* Active Glow for Generating State */}
-      {isGenerating && (
-        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 via-transparent to-transparent opacity-50 pointer-events-none" />
+      {/* Status Icon */}
+      {isCompleted && (
+        <Check className="w-3.5 h-3.5 text-zinc-600" />
       )}
     </div>
   );
@@ -266,74 +251,39 @@ export function SidebarContent({
     setTimeout(() => refetchBalance(), 2000);
   }, [onGenerate, prompt, refetchBalance]);
 
-  const formatCredits = (credits: number | undefined) => {
-    if (credits !== 0 && !credits) return "0";
-    if (credits >= 1000) return `${(credits / 1000).toFixed(1)}K`;
-    return credits.toLocaleString();
-  };
-
-  const getCreditColor = () => {
-    if (!balance) return "text-white/70";
-    const pct = balance.usagePercentage;
-    if (pct >= 80) return "text-red-400";
-    if (pct >= 50) return "text-primary";
-    return "text-primary";
-  };
-
   return (
-    <div className="relative flex flex-col h-full font-sans bg-background">
-      {/* Header */}
-      <div className="px-4 py-3 border-b border-zinc-800/60">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-            <h2 className="text-sm font-medium text-white/90">Chat</h2>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/home">
-              <button className="px-3 py-1 text-[11px] text-white/50 hover:text-white/80 hover:bg-zinc-800/50 rounded transition-all">
-                Back
-              </button>
-            </Link>
-          </div>
-        </div>
-        {!balanceLoading && (
-          <div className="flex items-center gap-1.5 text-[11px]">
-            <svg
-              className={`w-3 h-3 ${getCreditColor()}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
+    <div className="relative flex flex-col h-full font-sans bg-background/95">
+      {/* Header - Minimal with transparency */}
+      <div className="flex-shrink-0 px-5 py-3 border-b border-zinc-800/40 bg-background/50 backdrop-blur-sm z-10">
+        <div className="flex items-center justify-between">
+          <Link href="/home" className="group flex items-center gap-1.5 -ml-2 px-2 py-1 rounded-md transition-colors hover:bg-zinc-800/50">
+            <svg className="w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className={getCreditColor()}>
-              {formatCredits(balance?.remainingCredits)} credits
-            </span>
-          </div>
-        )}
+            <span className="text-xs font-medium text-zinc-500 group-hover:text-zinc-300 transition-colors">Home</span>
+          </Link>
+          
+          {!balanceLoading && (
+            <div className={`flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider ${getCreditColor(balance?.remainingCredits)} bg-zinc-900/50 px-2 py-1 rounded-full border border-white/5`}>
+              <span>{formatCredits(balance?.remainingCredits)} Credits</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Messages */}
+      {/* Messages Area */}
       <div
         ref={chatContainerRef}
-        className="flex-1 p-4 space-y-5 overflow-y-auto custom-scrollbar"
+        className="flex-1 overflow-y-auto px-5 py-6 space-y-8 custom-scrollbar scroll-smooth"
       >
         {conversationTurns.length > 0 ? (
           <>
-            <div className="mx-auto flex w-full items-center gap-3 text-[10px] text-zinc-500">
-              <div className="h-px flex-1 bg-zinc-800/60" />
-              <span className="px-2 font-mono">Today</span>
-              <div className="h-px flex-1 bg-zinc-800/60" />
+            <div className="flex items-center justify-center pb-4">
+              <span className="text-[10px] font-medium text-zinc-600 uppercase tracking-widest opacity-60">Session Started</span>
             </div>
 
             {conversationTurns.map((turn, turnIndex) => {
-              // Build display steps from step messages
+              // Build display steps logic (kept same as before)
               const allStepMessages = [
                 ...turn.stepMessages,
                 ...turn.cardMessages.filter((m) => m.status === "phase_step"),
@@ -346,141 +296,103 @@ export function SidebarContent({
                           new Date(a.createdAt).getTime() -
                           new Date(b.createdAt).getTime()
                       );
-                      const byLabel = new Map<
-                        string,
-                        "loading" | "completed"
-                      >();
+                      const byLabel = new Map<string, "loading" | "completed">();
                       for (const msg of sorted) {
                         const label = (msg.data?.label as string) || "";
-                        const status =
-                          msg.data?.status === "completed"
-                            ? "completed"
-                            : "loading";
+                        const status = msg.data?.status === "completed" ? "completed" : "loading";
                         if (label) byLabel.set(label, status);
                       }
                       return Array.from(byLabel.entries()).map(
                         ([label, status]) => ({
                           label,
-                          status: !turn.isActive
-                            ? ("completed" as const)
-                            : status,
+                          status: !turn.isActive ? ("completed" as const) : status,
                         })
                       );
                     })()
                   : null;
 
-              // For updates, only show the screen being updated
               const isUpdateTurn = turn.cardMessages.some(
                 (m) => m.data?.kind === "update"
               );
 
               return (
-                <div key={turn.userMessage.id} className="space-y-3">
-                  {/* User Message */}
-                  <div className="flex justify-end">
-                    <div className="max-w-[85%]">
-                      <div className="bg-zinc-800/50 text-white px-3 py-2 rounded-lg border border-zinc-700/40">
-                        <p className="text-[13px] text-white/90 leading-relaxed">
-                          {turn.userMessage.content}
-                        </p>
-                      </div>
+                <div key={turn.userMessage.id} className="group/turn animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  {/* User Bubble */}
+                  <div className="flex justify-end mb-6">
+                    <div className="max-w-[90%] bg-zinc-950/50 text-zinc-300 px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm border border-zinc-900 text-[13px] leading-relaxed backdrop-blur-sm">
+                      {turn.userMessage.content}
                     </div>
                   </div>
 
-                  {/* Agent Activity Log - clean terminal style */}
-                  {displaySteps && displaySteps.length > 0 && (
-                    <div className="pl-1 space-y-2 mt-4 mb-4">
-                      {displaySteps.map((step, idx) => (
-                        <AgentActivityLine
-                          key={step.label + idx}
-                          label={step.label}
-                          status={step.status}
-                          isLast={idx === displaySteps.length - 1}
-                        />
-                      ))}
-                    </div>
-                  )}
+                  {/* Agent Response Area */}
+                  {(turn.isActive || turn.cardMessages.length > 0 || (displaySteps && displaySteps.length > 0)) && (
+                     <div className="pl-4 border-l-2 border-zinc-800/60 ml-2 space-y-6">
+                        
+                        {/* Timeline Steps */}
+                        {displaySteps && displaySteps.length > 0 && (
+                          <div className="space-y-3">
+                            {displaySteps.map((step, idx) => (
+                              <AgentActivityLine
+                                key={step.label + idx}
+                                label={step.label}
+                                status={step.status}
+                                isLast={idx === displaySteps.length - 1}
+                              />
+                            ))}
+                          </div>
+                        )}
 
-                  {/* Screen Cards */}
-                  {turn.isActive &&
-                  loading &&
-                  progress &&
-                  progress.total > 0 &&
-                  !isUpdateTurn ? (
-                    <div className="space-y-2 mt-2">
-                      {Array.from({ length: progress.total }, (_, i) => {
-                        const title =
-                          progress.screenTitles?.[i] ?? `Screen ${i + 1}`;
-                        const status: "pending" | "generating" | "completed" =
-                          i === progress.current
-                            ? "generating"
-                            : i < progress.current
-                            ? "completed"
-                            : "pending";
-                        return (
-                          <ScreenCard
-                            key={i}
-                            title={title}
-                            status={status}
-                            index={i}
-                          />
-                        );
-                      })}
-                    </div>
-                  ) : turn.cardMessages.length > 0 ? (
-                    <div className="space-y-2 mt-2">
-                      {turn.cardMessages
-                        .filter(
-                          (m) => !isUpdateTurn || m.data?.kind === "update"
-                        )
-                        .map((msg, idx) => {
-                          const title =
-                            (msg.data?.title as string) ||
-                            msg.content.replace(
-                              /^(Generating|Generated|Updating|Updated):\s*/i,
-                              ""
-                            );
-                          const status =
-                            msg.status === "screen_start" && turn.isActive
-                              ? "generating"
-                              : "completed";
-                          return (
-                            <ScreenCard
-                              key={msg.id}
-                              title={title}
-                              status={status}
-                              index={idx}
-                            />
-                          );
-                        })}
-                    </div>
-                  ) : null}
+                        {/* Cards Grid */}
+                        {(turn.cardMessages.length > 0 || (turn.isActive && loading && progress && progress.total > 0 && !isUpdateTurn)) && (
+                          <div className="grid grid-cols-1 gap-2 pt-1">
+                             {/* Active Progress Cards */}
+                             {turn.isActive && loading && progress && progress.total > 0 && !isUpdateTurn ? (
+                                Array.from({ length: progress.total }, (_, i) => {
+                                  const title = progress.screenTitles?.[i] ?? `Screen ${i + 1}`;
+                                  const status = i === progress.current ? "generating" : i < progress.current ? "completed" : "pending";
+                                  return <ScreenCard key={i} title={title} status={status as any} index={i} />;
+                                })
+                             ) : (
+                                /* Completed Cards */
+                                turn.cardMessages
+                                  .filter((m) => !isUpdateTurn || m.data?.kind === "update")
+                                  .map((msg, idx) => {
+                                    const title = (msg.data?.title as string) || msg.content.replace(/^(Generating|Generated|Updating|Updated):\s*/i, "");
+                                    const status = msg.status === "screen_start" && turn.isActive ? "generating" : "completed";
+                                    return <ScreenCard key={msg.id} title={title} status={status} index={idx} />;
+                                  })
+                             )}
+                          </div>
+                        )}
+                     </div>
+                  )}
                 </div>
               );
             })}
-
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} className="h-4" />
           </>
         ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-[12px] text-zinc-500 font-mono">
-              Start a conversation to generate screens
-            </p>
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-40">
+            <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+               <Share2 className="w-8 h-8 text-zinc-700" />
+            </div>
+            <div className="max-w-[200px]">
+              <p className="text-sm font-medium text-zinc-400">Ready to Create</p>
+              <p className="text-[11px] text-zinc-600 mt-1">Describe your app idea below to start generating screens.</p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Input */}
-      <div className="p-4 border-t border-zinc-800/60">
-        <div className="relative group">
-          <SidebarPromptInput
-            prompt={prompt}
-            setPrompt={setPrompt}
-            onSubmit={handleSubmit}
-            loading={loading}
-            onCancel={onCancel}
-          />
-        </div>
+      {/* Input Area - Floated effect */}
+      <div className="relative p-4 bg-gradient-to-t from-background via-background to-transparent z-20">
+        <SidebarPromptInput
+          prompt={prompt}
+          setPrompt={setPrompt}
+          onSubmit={handleSubmit}
+          loading={loading}
+          onCancel={onCancel}
+        />
       </div>
     </div>
   );

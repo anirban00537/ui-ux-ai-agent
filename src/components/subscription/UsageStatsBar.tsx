@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+import { formatCredits } from "@/lib/credit-utils";
+
 interface UsageStatsBarProps {
   usedCredits: number;
   balance: number;
@@ -29,7 +31,7 @@ export const UsageStatsBar: React.FC<UsageStatsBarProps> = ({
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 mb-1">Historical Impact</p>
           <div className="flex items-center gap-3 justify-center md:justify-start">
-            <span className="text-2xl font-bold text-foreground tracking-tight">{usedCredits.toLocaleString()}</span>
+            <span className="text-2xl font-bold text-foreground tracking-tight">{formatCredits(usedCredits)}</span>
             <span className="text-[10px] font-bold text-muted-foreground/60 mt-1 uppercase tracking-wider">Credits Consumed</span>
           </div>
         </div>

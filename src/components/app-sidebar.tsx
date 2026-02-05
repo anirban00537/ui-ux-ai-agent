@@ -39,6 +39,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { formatCredits, getCreditColor } from "@/lib/credit-utils";
+
 // Navigation items
 const navItems = [
   { title: "Home", url: "/home", icon: IconDashboard },
@@ -270,8 +272,8 @@ export function AppSidebar() {
                         : "Free Plan"}
                     </h4>
                     <p className="text-[11px] text-muted-foreground leading-tight flex items-center gap-1.5">
-                      <span className="font-bold text-primary">
-                        {creditBalance?.balance ?? 0}
+                      <span className={cn("font-bold", getCreditColor(creditBalance?.balance))}>
+                        {formatCredits(creditBalance?.balance)}
                       </span>{" "}
                       credits remaining
                     </p>

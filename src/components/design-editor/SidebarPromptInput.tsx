@@ -2,7 +2,6 @@
 
 import React, { useCallback, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { SendHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SidebarPromptInputProps {
@@ -13,6 +12,10 @@ interface SidebarPromptInputProps {
   placeholder?: string;
   onCancel?: () => void;
 }
+
+// ... (imports remain)
+import { SendHorizontal, Square, X } from "lucide-react";
+// ... (interface remains)
 
 export function SidebarPromptInput({
   prompt,
@@ -52,28 +55,23 @@ export function SidebarPromptInput({
     <div className="relative group">
       <div 
         className={cn(
-          "relative bg-zinc-900 border transition-all duration-300 rounded-xl overflow-hidden",
+          "relative bg-zinc-900/40 backdrop-blur-xl border transition-all duration-300 rounded-2xl overflow-hidden shadow-lg",
           loading 
-            ? "border-primary/30 ring-1 ring-primary/10" 
-            : "border-zinc-800 hover:border-zinc-700 focus-within:border-zinc-600 focus-within:ring-1 focus-within:ring-zinc-800"
+            ? "border-primary/20 ring-1 ring-primary/10 shadow-[0_0_20px_-10px_var(--primary)]" 
+            : "border-white/5 hover:border-white/10 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/10"
         )}
       >
-        {/* Subtle Gradient for Loading State */}
-        {loading && (
-           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-transparent pointer-events-none animate-gradient-flow bg-[length:200%_auto]" />
-        )}
-
-        <div className="relative flex items-end gap-2 p-3">
-          <div className="flex-1 min-w-0">
+        <div className="relative flex items-end gap-3 p-3.5">
+          <div className="flex-1 min-w-0 py-0.5">
             <textarea
               ref={textareaRef}
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={loading ? "Agent is working..." : placeholder}
+              placeholder={loading ? "Generating designs..." : placeholder}
               className={cn(
-                "w-full resize-none border-0 bg-transparent p-0 text-[13px] leading-5 text-zinc-100 placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-sans custom-scrollbar disabled:opacity-50",
-                loading && "text-zinc-400 cursor-not-allowed"
+                "w-full resize-none border-0 bg-transparent p-0 text-[13px] leading-relaxed text-zinc-100 placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-medium custom-scrollbar disabled:opacity-50",
+                loading && "text-zinc-400 cursor-not-allowed italic"
               )}
               rows={1}
               disabled={loading}
@@ -81,17 +79,17 @@ export function SidebarPromptInput({
             />
           </div>
           
-          <div className="flex items-center gap-1 flex-shrink-0 mb-0.5">
+          <div className="flex items-center gap-1 flex-shrink-0 mb-[1px]">
              {loading && onCancel ? (
                <Button
                  size="icon"
                  variant="ghost"
                  onClick={onCancel}
-                 className="h-6 w-6 rounded-lg text-red-400/80 hover:text-red-400 hover:bg-red-400/10 transition-colors"
+                 className="h-7 w-7 rounded-lg group/stop relative overflow-hidden bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all"
                  title="Stop generation"
                >
                  <span className="sr-only">Stop</span>
-                 <div className="w-2 h-2 rounded-sm bg-current" />
+                 <Square className="w-2.5 h-2.5 fill-current" />
                </Button>
              ) : (
                 <Button
@@ -99,23 +97,30 @@ export function SidebarPromptInput({
                   onClick={handleSubmit}
                   disabled={!prompt.trim() || loading}
                   className={cn(
-                    "h-6 w-6 rounded-lg transition-all duration-200",
+                    "h-7 w-7 rounded-lg transition-all duration-300 shadow-sm",
                     prompt.trim() 
-                      ? "bg-zinc-100 text-black hover:bg-white" 
-                      : "bg-zinc-800 text-zinc-500 hover:bg-zinc-700"
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-95" 
+                      : "bg-zinc-800 text-zinc-600 cursor-not-allowed opacity-50"
                   )}
                 >
-                  <SendHorizontal className="h-3 w-3" />
+                  <SendHorizontal className="h-3.5 w-3.5" />
                 </Button>
              )}
           </div>
         </div>
+        
+        {/* Loading Progress Bar at bottom */}
+        {loading && (
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary/10">
+            <div className="h-full bg-primary/50 animate-progress-indeterminate" />
+          </div>
+        )}
       </div>
       
-      {/* Footer hint */}
+      {/* Keyboard hint */}
       {!loading && (
-        <div className="absolute -bottom-5 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-           <span className="text-[10px] text-zinc-600/60 font-medium">Return to send</span>
+        <div className="absolute -bottom-5 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+           <span className="text-[9px] text-zinc-600 font-medium tracking-wide">Press Enter to send</span>
         </div>
       )}
     </div>
