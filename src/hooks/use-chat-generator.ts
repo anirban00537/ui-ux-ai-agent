@@ -5,9 +5,10 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useDebouncedCallback } from "use-debounce";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { 
-  setConversation, 
-  setGenerating, 
-  setProgress, 
+  setConversation,
+  updateConversation,
+  setGenerating,
+  setProgress,
   setError,
   updateArtboard,
   addMessage,
@@ -68,6 +69,23 @@ export function useChatGenerator(designId?: string) {
     enabled: !!designId && designId !== "new",
   });
 
+  // Fetch initial messages
+  const { data: messagesData } = useQuery({
+    queryKey: ["design-messages", designId],
+    queryFn: async () => {
+      if (!designId || designId === "new") return null;
+      const resp = await getDesignMessages(designId, {
+        page: 1,
+        pageSize: 20,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      });
+      if (!resp.success) throw new Error(resp.message || "Failed to load messages");
+      return resp.data;
+    },
+    enabled: !!designId && designId !== "new",
+  });
+
   // Sync Redux with Query data
   useEffect(() => {
     if (queryData && !isResettingRef.current) {
@@ -78,6 +96,28 @@ export function useChatGenerator(designId?: string) {
       }
     }
   }, [queryData, dispatch, conversation]);
+
+  // Sync messages to Redux
+  useEffect(() => {
+    if (messagesData && !isResettingRef.current && conversation?.id === designId) {
+      if (!conversation) return;
+      const { items, pagination } = messagesData;
+      
+      // Sorted ASC for the UI
+      const sortedItems = [...items].sort((a: any, b: any) => 
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+
+      // We only want to set these if we don't have messages yet or they are very few
+      // This ensures we load the initial state correctly without wiping out real-time updates
+      if (conversation.messages.length <= 1) {
+        dispatch(updateConversation({ messages: sortedItems }));
+      }
+
+      paginationRef.current.page = pagination.currentPage;
+      paginationRef.current.hasMore = pagination.currentPage < pagination.totalPages;
+    }
+  }, [messagesData, dispatch, conversation?.id, designId, conversation?.messages.length]);
 
   // Sync position mutation
   const { mutate: syncArtboardPosition } = useMutation({
