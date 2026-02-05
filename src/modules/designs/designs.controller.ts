@@ -11,18 +11,22 @@ import {
 } from '@nestjs/common';
 import { DesignsChatService } from './designs-chat.service';
 import { DesignsService } from './designs.service';
+import { DesignsExportService } from './designs-export.service';
 import { UserInfo } from 'src/shared/decorators/user.decorators';
 import { User } from '@prisma/client';
 import { ResponseModel } from 'src/shared/models/response.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Public } from 'src/shared/decorators/public.decorator';
+import { Res } from '@nestjs/common';
+import { Response } from 'express';
 
 @Controller('designs')
 export class DesignsController {
   constructor(
     private readonly designsChatService: DesignsChatService,
     private readonly designsService: DesignsService,
+    private readonly designsExportService: DesignsExportService,
   ) {}
 
   @Get()
@@ -141,5 +145,79 @@ export class DesignsController {
       artboardId,
     );
     return source$.pipe(map((update: any) => ({ data: update })));
+  }
+
+  @Get(':id/export/images')
+  async exportAllAsZip(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.designsExportService.exportAllAsZip(id, user.id);
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="design-${id}-images.zip"`,
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
+  @Get(':id/export/html')
+  async exportAllHtmlAsZip(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.designsExportService.exportAllHtmlAsZip(id, user.id);
+    res.set({
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="design-${id}-html.zip"`,
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
+  @Get('artboards/:id/export/image')
+  async exportArtboardAsImage(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Res() res: Response,
+  ) {
+    const buffer = await this.designsExportService.exportArtboardAsImage(id, user.id);
+    res.set({
+      'Content-Type': 'image/png',
+      'Content-Disposition': `attachment; filename="artboard-${id}.png"`,
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
+  @Get('artboards/:id/export/html')
+  async exportArtboardAsHtml(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+    @Res() res: Response,
+  ) {
+    const { html, title } = await this.designsExportService.exportArtboardAsHtml(id, user.id);
+    const fileName = `artboard-${id}.html`;
+    res.set({
+      'Content-Type': 'text/html',
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Content-Length': html.length,
+    });
+    res.end(html);
+  }
+
+  @Get('artboards/:id/code')
+  async getArtboardCode(
+    @Param('id') id: string,
+    @UserInfo() user: User,
+  ) {
+    const { html, title } = await this.designsExportService.exportArtboardAsHtml(id, user.id);
+    return {
+      success: true,
+      message: 'Artboard code fetched successfully',
+      data: { html, title }
+    };
   }
 }
