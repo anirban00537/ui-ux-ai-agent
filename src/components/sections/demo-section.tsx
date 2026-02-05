@@ -24,11 +24,14 @@ export function DemoSection() {
           {/* Main Frame */}
           <div className="relative rounded-2xl md:rounded-3xl border border-border/40 bg-card p-2 md:p-3 shadow-2xl">
             <div className="group relative overflow-hidden rounded-xl md:rounded-2xl border border-border/20 bg-muted shadow-sm">
-              <img
-                src="https://f005.backblazeb2.com/file/butterfast/demo/0205.gif"
-                alt="Butterfast Demo"
-                className="w-full h-auto object-cover"
-              />
+              <div className="relative w-full aspect-video overflow-hidden">
+                <iframe
+                  src="https://www.youtube.com/embed/OmrXVvhJt_I?autoplay=1&mute=1&loop=1&playlist=OmrXVvhJt_I&controls=0&rel=0&modestbranding=1&playsinline=1"
+                  title="Butterfast Demo"
+                  className="absolute inset-0 w-full h-full border-0 pointer-events-none scale-105"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              </div>
               
               {/* Border Ring */}
               <div className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl ring-1 ring-inset ring-black/10 dark:ring-white/10" />
