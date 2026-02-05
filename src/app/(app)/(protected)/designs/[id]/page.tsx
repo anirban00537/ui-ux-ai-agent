@@ -12,6 +12,7 @@ import { useChatGenerator } from "@/hooks/use-chat-generator";
 import { usePrompt } from "@/contexts/PromptContext";
 import { createDesignConversation } from "@/services/designs";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function DesignEditorPage() {
   const params = useParams();
@@ -71,6 +72,10 @@ export default function DesignEditorPage() {
           }
         } catch (err) {
           console.error("Failed to initialize design:", err);
+          // @ts-ignore
+          toast.error("Failed to create design. Please try again.");
+          // Optional: redirect to home if critical
+          // router.push('/home');
         }
       }
     };

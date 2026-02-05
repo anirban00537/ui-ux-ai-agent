@@ -305,11 +305,14 @@ export function useChatGenerator(designId?: string) {
 
                   let partialHtml = "";
                   try {
+                    // Robust regex to capture the "html" value even if streamed in chunks
                     const htmlMatch = accumulatedText.match(/"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"|$)/);
                     if (htmlMatch?.[1]) {
                       partialHtml = htmlMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
                     }
-                  } catch {}
+                  } catch (err) {
+                    console.warn("Stream parsing warning:", err);
+                  }
 
                   if (title && partialHtml) {
                     dispatch(updateArtboard({
@@ -429,6 +432,30 @@ export function useChatGenerator(designId?: string) {
                   break;
                 }
 
+                case "status_update": {
+                  const dataObj = eventData?.data || eventData;
+                  const msg = dataObj?.message || dataObj?.error || "";
+                  
+                  // Debug logging to see exactly what we are catching
+                  if (msg.startsWith("Error:") || dataObj?.code === 'INSUFFICIENT_CREDITS' || dataObj?.error) {
+                    const errorText = msg.replace("Error:", "").trim();
+                    console.log("[useChatGenerator] Credit Error Detected:", errorText);
+                    
+                    dispatch(setError(errorText));
+                    return; 
+                  } else if (msg) {
+                    dispatch(addMessage({
+                      id: `status-${Date.now()}`,
+                      content: msg,
+                      role: "system",
+                      createdAt: new Date().toISOString(),
+                      type: "stream",
+                      eventType: "status_update",
+                    }));
+                  }
+                  break;
+                }
+
                 case "all_complete":
                   dispatch(setProgress({
                     current: 100,
@@ -443,7 +470,18 @@ export function useChatGenerator(designId?: string) {
         }
       } catch (e: any) {
         if (e.name !== "AbortError") {
-          dispatch(setError(e?.message || "Failed to send message"));
+          let errorMessage = e?.message || "Failed to send message";
+          
+          // Check for credit-related errors
+          if (
+            errorMessage.toLowerCase().includes("credit") || 
+            errorMessage.toLowerCase().includes("insufficient") ||
+            errorMessage.toLowerCase().includes("payment")
+          ) {
+            errorMessage = "Insufficient credits. Please upgrade your plan to continue.";
+          }
+
+          dispatch(setError(errorMessage));
         }
       } finally {
         dispatch(setGenerating(false));

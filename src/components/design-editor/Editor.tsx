@@ -236,14 +236,14 @@ export function Editor({
               </div>
 
               {error && (
-                <div className="absolute top-4 left-4 right-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm z-20 backdrop-blur-md flex items-center justify-between gap-4">
-                  <div className="flex-1">{error}</div>
-                  {error.includes("Insufficient credits") && (
+                <div className="absolute top-4 left-4 right-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm z-50 backdrop-blur-md flex items-center justify-between gap-4">
+                  <div className="flex-1 font-medium select-text">{error}</div>
+                  {(error.toLowerCase().includes("credit") || error.toLowerCase().includes("plan")) && (
                     <a
                       href="/subscription"
-                      className="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap"
+                      className="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-red-500/20"
                     >
-                      Upgrade
+                      Upgrade Plan
                     </a>
                   )}
                 </div>
