@@ -1,18 +1,18 @@
 import {
-  IconCpu,
   IconPlant,
   IconDisc,
   IconShoppingBag,
+  IconHeart,
 } from "@tabler/icons-react";
 
 export const suggestions = [
   {
-    icon: IconCpu,
-    title: "Cyberpunk Crypto",
-    description: "Futuristic trading hub",
-    prompt: `Crypto trading app. Real-time market charts look like holographic projections. Transaction history items have glitch-effect borders. Wallet balance displayed in luminous digital digits. Asset icons are glowing 3D polygons. Dark, immersive background.
+    icon: IconHeart,
+    title: "Kawaii Dream Journal",
+    description: "Cute digital diary",
+    prompt: `Personal diary and mood tracker. Day view looks like a scrapbook pages with stickers. Mood selector uses animated bouncy emojis. Weekly overview shows a pastel path with milestones. Photo memories have polaroid frames. Soft, patterned background.
 
-Mobile UI, Cyberpunk Futuristic aesthetic. Neon color palette (e.g., electric blue, neon purple, matrix green). Glowing grid lines, metallic textures, terminal-style typography. High-tech HUD elements. Monospaced fonts, smooth slide animations, data-driven visuals.`,
+Mobile UI, Kawaii Cute aesthetic. Pastel color palette (e.g., strawberry milk pink, baby blue, creamy yellow, lavender). Rounded bubbly shapes, soft drop shadows, playful hand-drawn elements. Rounded sans-serif fonts, bounce animations, friendly atmosphere.`,
     color: "bg-chart-1",
     iconColor: "text-chart-1",
   },

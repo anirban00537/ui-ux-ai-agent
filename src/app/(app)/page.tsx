@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/navbar";
 import HeroSection from "@/components/ui/hero-section";
+import { DemoSection } from "@/components/sections/demo-section";
 import { FeaturesSection } from "@/components/ui/feature";
 import { HowItWorksSection } from "@/components/sections/how-it-works-section";
 import { PricingSection } from "@/components/sections/pricing-section";
@@ -13,6 +14,7 @@ export default function Home() {
       <Navbar />
       <main className="min-h-screen h-full w-full bg-background">
         <HeroSection />
+        <DemoSection />
         <FeaturesSection />
         <HowItWorksSection />
         <PricingSection />
