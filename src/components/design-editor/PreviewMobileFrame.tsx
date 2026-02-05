@@ -439,9 +439,7 @@ export const PreviewMobileFrame = React.memo(({
     <CodeViewerModal 
       isOpen={showCodeModal}
       onClose={() => setShowCodeModal(false)}
-      htmlContent={htmlContent}
-      title={title}
-      colorPalette={colorPalette}
+      artboardId={id}
     />
     </>
   );

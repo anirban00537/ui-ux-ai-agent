@@ -2,12 +2,26 @@ import request from "@/lib/request";
 
 export type DesignType = "mobile_app";
 
+export interface ColorPalette {
+  background: string;
+  foreground: string;
+  primary: string;
+  primaryForeground: string;
+  secondary: string;
+  secondaryForeground: string;
+  mutedForeground: string;
+  card: string;
+  cardForeground: string;
+  border: string;
+  input: string;
+}
+
 export interface Design {
   id: string;
   userId: string;
   title: string | null;
   type: DesignType;
-  colorPalette: any;
+  colorPalette: ColorPalette | null;
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
@@ -111,5 +125,41 @@ export async function getDesignMessages(
   const response = await request.get(`/designs/${designId}/messages`, {
     params,
   });
+  return response.data;
+}
+
+export async function exportArtboardImage(artboardId: string) {
+  const response = await request.get(`/designs/artboards/${artboardId}/export/image`, {
+    responseType: 'blob'
+  });
+  return response.data;
+}
+
+export async function exportArtboardHtml(artboardId: string) {
+  const response = await request.get(`/designs/artboards/${artboardId}/export/html`, {
+    responseType: 'blob'
+  });
+  return response.data;
+}
+
+export async function exportDesignImages(designId: string) {
+  const response = await request.get(`/designs/${designId}/export/images`, {
+    responseType: 'blob'
+  });
+  return response.data;
+}
+
+export async function exportDesignHtml(designId: string) {
+  const response = await request.get(`/designs/${designId}/export/html`, {
+    responseType: 'blob'
+  });
+  return response.data;
+}
+
+export async function getArtboardCode(artboardId: string) {
+  const response = await request.get<{
+    success: boolean;
+    data: { html: string; title: string };
+  }>(`/designs/artboards/${artboardId}/code`);
   return response.data;
 }

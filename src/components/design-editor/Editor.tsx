@@ -10,6 +10,9 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { 
   removeArtboard
 } from "@/store/slices/designEditorSlice";
+import { useExportDesign } from "@/hooks/use-export";
+import { Download, Image as ImageIcon, FileCode, ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface EditorProps {
   onDeleteArtboard?: (artboardId: string) => void;
@@ -28,6 +31,8 @@ export function Editor({
     isGenerating, 
     error, 
   } = useAppSelector((state) => state.designEditor);
+
+  const { exportAllImages, exportAllHtml, isExporting } = useExportDesign();
 
   const artboards = conversation?.artboards ?? [];
   const colorPalette = conversation?.colorPalette;
@@ -63,6 +68,33 @@ export function Editor({
   const handleSaveInternal = useCallback((id: string, data: any) => {
     handleSave(id, data);
   }, [handleSave]);
+
+  const [showExportMenu, setShowExportMenu] = useState(false);
+
+  useEffect(() => {
+    if (!showExportMenu) return;
+    const handleClickOutside = () => setShowExportMenu(false);
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, [showExportMenu]);
+
+  const handleExportAllHtml = useCallback(() => {
+    if (!conversation?.id) return;
+    exportAllHtml.mutate({ 
+      id: conversation.id, 
+      filename: `${conversation.id}_html_export` 
+    });
+    setShowExportMenu(false);
+  }, [conversation, exportAllHtml]);
+
+  const handleExportAllImages = useCallback(() => {
+    if (!conversation?.id) return;
+    exportAllImages.mutate({ 
+      id: conversation.id, 
+      filename: `${conversation.id}_images_export` 
+    });
+    setShowExportMenu(false);
+  }, [conversation, exportAllImages]);
 
   return (
     <div className="w-full h-full bg-background relative overflow-hidden isolate">
@@ -134,6 +166,62 @@ export function Editor({
                 </button>
                 {conversation?.id && (
                   <>
+                    <div className="w-px h-4 bg-border/50 mx-1" />
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowExportMenu(!showExportMenu);
+                        }}
+                        disabled={isExporting}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95 font-bold text-xs ring-1 ring-white/5",
+                          showExportMenu && "bg-white/5 text-foreground",
+                          isExporting && "opacity-50 cursor-not-allowed"
+                        )}
+                        title="Export All"
+                      >
+                        <Download className={cn("w-3.5 h-3.5", isExporting && "animate-bounce")} />
+                        <span>{isExporting ? "Exporting..." : "Export All"}</span>
+                        <ChevronDown className="w-3 h-3 opacity-50" />
+                      </button>
+
+                      {/* Global Export Dropdown */}
+                      {showExportMenu && (
+                        <div 
+                          className="absolute top-full right-0 mt-2 w-56 bg-background border border-border/50 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[70] ring-1 ring-white/5"
+                          onMouseDown={(e) => e.stopPropagation()}
+                        >
+                          <div className="p-1.5 flex flex-col gap-1">
+                            <button
+                              onClick={() => handleExportAllImages()}
+                              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold text-foreground hover:bg-white/10 rounded-lg transition-all active:scale-[0.98] group"
+                            >
+                              <div className="w-7 h-7 rounded-md bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                <ImageIcon className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="flex flex-col items-start text-left">
+                                <span className="text-foreground">Export as Images</span>
+                                <span className="text-[10px] text-muted-foreground font-medium">ZIP with PNG files</span>
+                              </div>
+                            </button>
+                            
+                            <button
+                              onClick={() => handleExportAllHtml()}
+                              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold text-foreground hover:bg-white/10 rounded-lg transition-all active:scale-[0.98] group"
+                            >
+                              <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                                <FileCode className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="flex flex-col items-start text-left">
+                                <span className="text-foreground">Export as Code</span>
+                                <span className="text-[10px] text-muted-foreground font-medium">ZIP with HTML files</span>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <div className="w-px h-4 bg-border/50 mx-1" />
                     <button
                       onClick={() => window.open(`/preview/${conversation.id}`, '_blank')}

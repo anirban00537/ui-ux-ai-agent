@@ -10,9 +10,13 @@ import {
   X, 
   Code, 
   MoreHorizontal,
-  ChevronRight
+  ChevronRight,
+  Download,
+  Image as ImageIcon,
+  FileCode
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface FrameToolbarProps {
   title?: string;
@@ -20,6 +24,8 @@ interface FrameToolbarProps {
   onRegenerate?: () => void;
   onViewCode: () => void;
   onUpdate?: (prompt: string) => void;
+  onExportImage?: () => void;
+  onExportHtml?: () => void;
   showUpdateInput: boolean;
   setShowUpdateInput: (show: boolean) => void;
 }
@@ -30,16 +36,26 @@ export function FrameToolbar({
   onRegenerate,
   onViewCode,
   onUpdate,
+  onExportImage,
+  onExportHtml,
   showUpdateInput,
   setShowUpdateInput
 }: FrameToolbarProps) {
   const updateInputRef = useRef<HTMLInputElement>(null);
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     if (showUpdateInput) {
       updateInputRef.current?.focus();
     }
   }, [showUpdateInput]);
+
+  useEffect(() => {
+    if (!showMenu) return;
+    const handleClickOutside = () => setShowMenu(false);
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, [showMenu]);
 
   const handleUpdateSubmit = () => {
     const val = updateInputRef.current?.value.trim();
@@ -56,8 +72,7 @@ export function FrameToolbar({
         showUpdateInput ? "border-primary/50 ring-4 ring-primary/10 w-fit" : "border-border"
       )}
       onMouseDown={(e) => {
-        // Allow drag, but prevent click-through if necessary (though usually fine)
-        // Checks if specific targets need stopPropagation
+        if (showMenu) e.stopPropagation();
       }}
     >
       {showUpdateInput ? (
@@ -116,7 +131,7 @@ export function FrameToolbar({
           <div className="w-px h-6 bg-border mx-1" />
 
           {/* Actions */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 relative">
             {onUpdate && (
               <button 
                 onClick={(e) => { e.stopPropagation(); setShowUpdateInput(true); }}
@@ -153,9 +168,51 @@ export function FrameToolbar({
               </button>
             )}
 
-            <button className="p-2 hover:bg-muted text-muted-foreground hover:text-foreground rounded-xl transition-all active:scale-90">
-               <MoreHorizontal className="w-4.5 h-4.5" />
-            </button>
+            <div className="relative">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
+                className={cn(
+                  "p-2 hover:bg-muted text-muted-foreground hover:text-foreground rounded-xl transition-all active:scale-90",
+                  showMenu && "bg-muted text-foreground"
+                )}
+              >
+                 <MoreHorizontal className="w-4.5 h-4.5" />
+              </button>
+
+              {/* Dropdown Menu */}
+              {showMenu && (
+                <div 
+                  className="absolute top-full right-0 mt-2 w-48 bg-background border border-border/50 rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[70]"
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <div className="p-1">
+                    <button
+                      onClick={() => {
+                        onExportImage?.();
+                        setShowMenu(false);
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                      <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                      <span>Export Image</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        onExportHtml?.();
+                        setShowMenu(false);
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                      <FileCode className="w-4 h-4 text-muted-foreground" />
+                      <span>Export HTML</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}

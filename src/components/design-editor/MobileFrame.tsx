@@ -5,19 +5,9 @@ import { Rnd } from "react-rnd";
 import { CodeViewerModal } from "./CodeViewerModal";
 import { FrameToolbar } from "./FrameToolbar";
 
-interface ColorPalette {
-  background: string;
-  foreground: string;
-  primary: string;
-  primaryForeground: string;
-  secondary: string;
-  secondaryForeground: string;
-  mutedForeground: string;
-  card: string;
-  cardForeground: string;
-  border: string;
-  input: string;
-}
+
+import { useExportArtboard } from "@/hooks/use-export";
+import { type ColorPalette } from "@/services/designs";
 
 interface MobileFrameProps {
   id: string;
@@ -57,6 +47,7 @@ export const MobileFrame = React.memo(({
   autoSave = false,
 }: MobileFrameProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showUpdateInput, setShowUpdateInput] = useState(false);
@@ -71,10 +62,19 @@ export const MobileFrame = React.memo(({
   const [isResizing, setIsResizing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
+  const { exportImage, exportHtml } = useExportArtboard();
   const lastWidthProp = useRef(width);
   const lastHeightProp = useRef(height);
   const lastXProp = useRef(initialX);
   const lastYProp = useRef(initialY);
+
+  const handleExportImage = useCallback(() => {
+    exportImage.mutate({ id, title: title || 'export' });
+  }, [id, title, exportImage]);
+
+  const handleExportHtml = useCallback(() => {
+    exportHtml.mutate({ id, title: title || 'export' });
+  }, [id, title, exportHtml]);
 
   // Sync with prop updates IF the props themselves changed (ignoring local state differences)
   useEffect(() => {
@@ -287,6 +287,8 @@ export const MobileFrame = React.memo(({
                 onDelete={() => onDelete?.(id)}
                 onViewCode={() => setShowCodeModal(true)}
                 onUpdate={(prompt) => onUpdate?.(id, prompt)}
+                onExportImage={handleExportImage}
+                onExportHtml={handleExportHtml}
                 showUpdateInput={showUpdateInput}
                 setShowUpdateInput={setShowUpdateInput}
               />
@@ -337,6 +339,7 @@ export const MobileFrame = React.memo(({
                 src="/renderers/canvas?mode=editor"
                 className={`size-full border-0 block transition-opacity duration-500 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                 title="Canvas Frame"
+                data-artboard-id={id}
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
                 style={{ pointerEvents: (isResizing || isDragging) ? 'none' : 'auto' }}
               />
@@ -381,9 +384,7 @@ export const MobileFrame = React.memo(({
     <CodeViewerModal 
       isOpen={showCodeModal}
       onClose={() => setShowCodeModal(false)}
-      htmlContent={htmlContent}
-      title={title}
-      colorPalette={colorPalette}
+      artboardId={id}
     />
     </>
   );
