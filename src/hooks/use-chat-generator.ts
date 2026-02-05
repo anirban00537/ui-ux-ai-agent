@@ -1,5 +1,5 @@
 import { useCallback, useRef, useEffect } from "react";
-import { getDesignById, updateDesign, updateArtboard as apiUpdateArtboard, deleteArtboard as apiDeleteArtboard, DesignType } from "@/services/designs";
+import { getDesignById, updateDesign, updateArtboard as apiUpdateArtboard, deleteArtboard as apiDeleteArtboard, getDesignMessages, DesignType } from "@/services/designs";
 import { CONFIG } from "@/lib/config";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useDebouncedCallback } from "use-debounce";
@@ -11,6 +11,7 @@ import {
   setError,
   updateArtboard,
   addMessage,
+  prependMessages,
   updateMessageStatus,
   updateColorValue,
   setColorPalette,
@@ -32,6 +33,7 @@ export function useChatGenerator(designId?: string) {
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const readerRef = useRef<ReadableStreamDefaultReader<Uint8Array> | null>(null);
+  const paginationRef = useRef({ page: 1, hasMore: true, isLoading: false });
 
   // TanStack Query for loading design
   const lastUpdateRef = useRef<Record<string, number>>({});
@@ -208,7 +210,7 @@ export function useChatGenerator(designId?: string) {
                     role: "system",
                     createdAt: new Date().toISOString(),
                     type: "stream",
-                    eventType: "intent_analysis",
+                    status: "intent_analysis",
                   }));
                   dispatch(setProgress({
                     current: 0,
@@ -408,6 +410,20 @@ export function useChatGenerator(designId?: string) {
                       id: `ai-${Date.now()}`,
                       content: eventData.message,
                       role: "assistant",
+                      status: "ai_response",
+                      createdAt: new Date().toISOString(),
+                      type: "final",
+                    }));
+                  }
+                  break;
+
+                case "ai_thinking":
+                  if (eventData?.message) {
+                    dispatch(addMessage({
+                      id: `think-${Date.now()}`,
+                      content: eventData.message,
+                      role: "assistant",
+                      status: "ai_thinking",
                       createdAt: new Date().toISOString(),
                       type: "final",
                     }));
@@ -450,7 +466,7 @@ export function useChatGenerator(designId?: string) {
                       role: "system",
                       createdAt: new Date().toISOString(),
                       type: "stream",
-                      eventType: "status_update",
+                      status: "status_update",
                     }));
                   }
                   break;
@@ -516,6 +532,50 @@ export function useChatGenerator(designId?: string) {
     }
   }, [dispatch, conversation, debouncedUpdate]);
 
+  const loadMoreMessages = useCallback(async () => {
+    if (!designId || designId === "new" || paginationRef.current.isLoading || !paginationRef.current.hasMore) {
+      return;
+    }
+
+    try {
+      paginationRef.current.isLoading = true;
+      const nextPage = paginationRef.current.page + 1;
+      
+      const resp = await getDesignMessages(designId, {
+        page: nextPage,
+        pageSize: 20,
+        sortBy: 'createdAt',
+        sortOrder: 'desc' // We want latest messages first usually, but the backend order might vary.
+      });
+
+      if (resp.success && resp.data) {
+        const { items, pagination } = resp.data;
+        
+        // Items are in desc order from API (latest first), 
+        // but our UI expects them in asc order (oldest first) because we prepend them.
+        // Wait, if it's DESC, and we prepend, then:
+        // [New1, New2] prepend [Old1, Old2] -> [Old1, Old2, New1, New2]
+        // Prepending [Page2Items] before [Page1Items]
+        // Page 1: [M1, M2] (M2 is newer)
+        // Page 2: [M3, M4] (M4 is newer, M3 is older than M1)
+        // Prepending [M3, M4] -> [M3, M4, M1, M2] - Correct!
+        // But the items should be sorted ASC within the prepended block to match the list flow.
+        const sortedItems = [...items].sort((a: any, b: any) => 
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+
+        dispatch(prependMessages(sortedItems));
+        
+        paginationRef.current.page = pagination.currentPage;
+        paginationRef.current.hasMore = pagination.currentPage < pagination.totalPages;
+      }
+    } catch (err) {
+      console.error("Failed to load more messages:", err);
+    } finally {
+      paginationRef.current.isLoading = false;
+    }
+  }, [designId, dispatch]);
+
   return {
     conversation,
     isGenerating,
@@ -529,5 +589,7 @@ export function useChatGenerator(designId?: string) {
     updateColorPalette,
     syncArtboardPosition,
     deleteArtboard,
+    loadMoreMessages,
+    hasMoreMessages: paginationRef.current.hasMore,
   };
 }

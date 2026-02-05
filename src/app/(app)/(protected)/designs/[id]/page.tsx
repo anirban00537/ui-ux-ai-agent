@@ -32,6 +32,8 @@ export default function DesignEditorPage() {
     updateScreen,
     syncArtboardPosition,
     deleteArtboard,
+    loadMoreMessages,
+    hasMoreMessages,
   } = useChatGenerator(currentDesignId);
 
   const { prompt: promptContext, type: typeContext, clearPrompt } = usePrompt();
@@ -152,6 +154,8 @@ export default function DesignEditorPage() {
           onClear={clearConversation}
           onCancel={cancelGeneration}
           onColorChange={updateColorPalette}
+          loadMoreMessages={loadMoreMessages}
+          hasMoreMessages={hasMoreMessages}
         />
       </CustomResizableSidebar>
     </div>

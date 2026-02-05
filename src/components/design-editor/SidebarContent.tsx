@@ -11,7 +11,7 @@ import { SidebarPromptInput } from "@/components/design-editor/SidebarPromptInpu
 import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Share2, Globe, Lock, Copy, Check, Loader2 } from "lucide-react";
+import { Share2, Globe, Lock, Copy, Check, Loader2, Brain, ChevronRight, CheckCircle2 } from "lucide-react";
 import { updateDesign } from "@/services/designs";
 import { toast } from "sonner";
 
@@ -38,6 +38,8 @@ interface SidebarContentProps {
   onCancel?: () => void;
   onColorChange?: (key: keyof ColorPalette, value: string) => void;
   onFontChange?: (fontFamily: string) => void;
+  loadMoreMessages?: () => Promise<void>;
+  hasMoreMessages?: boolean;
 }
 
 // Agent activity line - minimal terminal-like log entry with shimmer effect
@@ -151,9 +153,39 @@ function ScreenCard({
 interface ConversationTurn {
   userMessage: Message;
   aiMessage: Message | null;
+  thinkingMessage: Message | null;
   cardMessages: Message[];
   stepMessages: Message[];
   isActive: boolean;
+}
+
+function ThinkingBlock({ content }: { content: string }) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  if (!content) return null;
+
+  return (
+    <div className="group/think mb-4 border border-emerald-500/10 rounded-lg p-2 bg-emerald-500/5">
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center gap-2 text-[11px] font-medium text-emerald-500/80 hover:text-emerald-400 transition-colors uppercase tracking-wider"
+      >
+        <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+          <Brain className={cn("w-2.5 h-2.5 transition-transform duration-300", isExpanded ? "rotate-12 scale-110 text-emerald-400" : "text-emerald-600")} />
+        </div>
+        Thinking Process
+        <ChevronRight className={cn("w-3 h-3 transition-transform duration-200", isExpanded && "rotate-90")} />
+      </button>
+      
+      {isExpanded && (
+        <div className="mt-2 pl-4 border-l border-emerald-500/20 overflow-hidden animate-in slide-in-from-top-1 duration-300">
+          <div className="text-[12px] leading-relaxed text-zinc-400 italic font-light pr-2">
+            {content}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function SidebarContent({
@@ -161,6 +193,8 @@ export function SidebarContent({
   onClear,
   onCancel,
   onColorChange,
+  loadMoreMessages,
+  hasMoreMessages: hasMoreInApi,
 }: SidebarContentProps) {
   const {
     conversation,
@@ -181,48 +215,138 @@ export function SidebarContent({
   const conversationTurns = useMemo(() => {
     const messages = conversation?.messages || [];
     const turns: ConversationTurn[] = [];
-    const userMessages = messages.filter((m) => m.role === "user");
+    
+    let currentTurn: ConversationTurn | null = null;
 
-    for (let i = 0; i < userMessages.length; i++) {
-      const userMsg = userMessages[i];
-      const userMsgIndex = messages.findIndex((m) => m.id === userMsg.id);
-      const nextUserIndex = messages.findIndex(
-        (m, idx) => idx > userMsgIndex && m.role === "user"
-      );
-      const endIndex = nextUserIndex === -1 ? messages.length : nextUserIndex;
-      const turnMessages = messages.slice(userMsgIndex + 1, endIndex);
-
-      let aiMessage: Message | null = null;
-      const cardMessages: Message[] = [];
-      const stepMessages: Message[] = [];
-
-      for (const msg of turnMessages) {
-        if (msg.role === "assistant" && msg.type === "final") {
-          if (!aiMessage) aiMessage = msg;
+    for (const msg of messages) {
+      if (msg.role === "user") {
+        // Start a new turn
+        if (currentTurn) {
+          turns.push(currentTurn);
         }
-        if (
-          msg.status &&
-          SCREEN_CARD_STATUSES.includes(
-            msg.status as (typeof SCREEN_CARD_STATUSES)[number]
-          )
-        ) {
-          cardMessages.push(msg);
+        currentTurn = {
+          userMessage: msg,
+          aiMessage: null,
+          thinkingMessage: null,
+          cardMessages: [],
+          stepMessages: [],
+          isActive: false,
+        };
+      } else {
+        // Handle non-user messages
+        if (!currentTurn) {
+          // Orphaned messages (e.g. from the middle of a turn due to pagination)
+          // We create a dummy user message for this turn
+          currentTurn = {
+            userMessage: { 
+              id: "orphan-" + msg.id, 
+              content: "", 
+              role: "user", 
+              createdAt: msg.createdAt 
+            },
+            aiMessage: null,
+            thinkingMessage: null,
+            cardMessages: [],
+            stepMessages: [],
+            isActive: false,
+          };
         }
-        if (msg.status === "phase_step") {
-          stepMessages.push(msg);
+
+        const isProcessMessage = 
+          msg.status === "phase_step" || 
+          msg.status === "intent_analysis" ||
+          msg.status === "ai_thinking" ||
+          (msg.status && SCREEN_CARD_STATUSES.includes(msg.status as any));
+
+        if (msg.role === "assistant") {
+          if (msg.status === "ai_response") {
+            currentTurn.aiMessage = msg;
+          } else if (msg.status === "ai_thinking") {
+            currentTurn.thinkingMessage = msg;
+          } else if (!currentTurn.aiMessage && !isProcessMessage) {
+            currentTurn.aiMessage = msg;
+          }
+        }
+
+        if (msg.status && SCREEN_CARD_STATUSES.includes(msg.status as any)) {
+          currentTurn.cardMessages.push(msg);
+        }
+        
+        if (msg.status === "phase_step" || msg.status === "intent_analysis" || msg.status === "status_update") {
+          currentTurn.stepMessages.push(msg);
         }
       }
-
-      turns.push({
-        userMessage: userMsg,
-        aiMessage,
-        cardMessages,
-        stepMessages,
-        isActive: i === userMessages.length - 1 && loading === true,
-      });
     }
+
+    if (currentTurn) {
+      currentTurn.isActive = loading === true;
+      turns.push(currentTurn);
+    }
+
     return turns;
   }, [conversation?.messages, loading]);
+
+  // Combined pagination (local + api)
+  const [visibleCount, setVisibleCount] = useState(10);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const [isApiLoading, setIsApiLoading] = useState(false);
+
+  const displayedTurns = useMemo(() => {
+    return conversationTurns.slice(-visibleCount);
+  }, [conversationTurns, visibleCount]);
+
+  const hasMoreLocal = conversationTurns.length > visibleCount;
+  const hasMore = hasMoreLocal || hasMoreInApi;
+
+  // Auto-scroll logic fixes for pagination
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+
+  useEffect(() => {
+    if (loading) {
+      setShouldScrollToBottom(true);
+      setVisibleCount(10); 
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      async (entries) => {
+        if (entries[0].isIntersecting) {
+           const container = chatContainerRef.current;
+           const oldScrollHeight = container?.scrollHeight || 0;
+
+           if (hasMoreLocal) {
+             // Load more from local state first
+             setVisibleCount((prev) => Math.min(prev + 10, conversationTurns.length));
+             
+             requestAnimationFrame(() => {
+               if (container) {
+                 container.scrollTop += (container.scrollHeight - oldScrollHeight);
+               }
+             });
+           } else if (hasMoreInApi && !isApiLoading && loadMoreMessages) {
+             // Fetch from API if local exhausted
+             setIsApiLoading(true);
+             await loadMoreMessages();
+             setIsApiLoading(false);
+             
+             // After API load, increase visible count to show the new messages
+             setVisibleCount((prev) => prev + 10);
+
+             requestAnimationFrame(() => {
+               if (container) {
+                 container.scrollTop += (container.scrollHeight - oldScrollHeight);
+               }
+             });
+           }
+        }
+      },
+      { threshold: 0.5, rootMargin: '100px' }
+    );
+
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [hasMoreLocal, hasMoreInApi, isApiLoading, conversationTurns.length, loadMoreMessages]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     messagesEndRef.current?.scrollIntoView({
@@ -233,10 +357,10 @@ export function SidebarContent({
   }, []);
 
   useEffect(() => {
-    if (conversation?.messages.length) {
-      scrollToBottom("auto");
+    if (conversation?.messages.length && shouldScrollToBottom) {
+      scrollToBottom(loading ? "smooth" : "auto");
     }
-  }, [conversation?.messages.length, scrollToBottom]);
+  }, [conversation?.messages.length, scrollToBottom, shouldScrollToBottom, loading]);
 
   useEffect(() => {
     if (loading && progress) {
@@ -246,6 +370,8 @@ export function SidebarContent({
 
   const handleSubmit = useCallback(async () => {
     if (!onGenerate || !prompt.trim()) return;
+    setVisibleCount(10); // Reset pagination on new message
+    setShouldScrollToBottom(true);
     await onGenerate(prompt.trim());
     setPrompt("");
     setTimeout(() => refetchBalance(), 2000);
@@ -275,14 +401,33 @@ export function SidebarContent({
       <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto px-5 py-6 space-y-8 custom-scrollbar scroll-smooth"
+        onScroll={() => {
+          const container = chatContainerRef.current;
+          if (container) {
+            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            setShouldScrollToBottom(isAtBottom);
+          }
+        }}
       >
-        {conversationTurns.length > 0 ? (
+        {displayedTurns.length > 0 ? (
           <>
-            <div className="flex items-center justify-center pb-4">
-              <span className="text-[10px] font-medium text-zinc-600 uppercase tracking-widest opacity-60">Session Started</span>
+            {/* Pagination Sentinel */}
+            <div ref={loadMoreRef} className="h-10 flex items-center justify-center">
+               {hasMore && (
+                 <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-medium py-4">
+                   <Loader2 className="w-3 h-3 animate-spin" />
+                   <span>Loading history...</span>
+                 </div>
+               )}
             </div>
 
-            {conversationTurns.map((turn, turnIndex) => {
+            <div className="flex items-center justify-center pb-4">
+              {!hasMore && (
+                <span className="text-[10px] font-medium text-zinc-600 uppercase tracking-widest opacity-60">Session Started</span>
+              )}
+            </div>
+
+            {displayedTurns.map((turn, turnIndex) => {
               // Build display steps logic (kept same as before)
               const allStepMessages = [
                 ...turn.stepMessages,
@@ -318,15 +463,29 @@ export function SidebarContent({
               return (
                 <div key={turn.userMessage.id} className="group/turn animate-in fade-in slide-in-from-bottom-2 duration-500">
                   {/* User Bubble */}
-                  <div className="flex justify-end mb-6">
-                    <div className="max-w-[90%] bg-zinc-950/50 text-zinc-300 px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm border border-zinc-900 text-[13px] leading-relaxed backdrop-blur-sm">
-                      {turn.userMessage.content}
+                  {turn.userMessage.content && (
+                    <div className="flex justify-end mb-6">
+                      <div className="max-w-[90%] bg-zinc-950/50 text-zinc-300 px-4 py-2.5 rounded-2xl rounded-tr-sm shadow-sm border border-zinc-900 text-[13px] leading-relaxed backdrop-blur-sm">
+                        {turn.userMessage.content}
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Agent Response Area */}
-                  {(turn.isActive || turn.cardMessages.length > 0 || (displaySteps && displaySteps.length > 0)) && (
+                  {(turn.isActive || turn.aiMessage || turn.thinkingMessage || turn.cardMessages.length > 0 || (displaySteps && displaySteps.length > 0)) && (
                      <div className="pl-4 border-l-2 border-zinc-800/60 ml-2 space-y-6">
+                        
+                        {/* Thinking Process */}
+                        {turn.thinkingMessage && (
+                          <ThinkingBlock content={(turn.thinkingMessage.data?.message as string) || turn.thinkingMessage.content} />
+                        )}
+
+                        {/* AI Text Response */}
+                        {turn.aiMessage && (
+                          <div className="text-[13px] leading-relaxed text-zinc-200 pr-2 animate-in fade-in slide-in-from-left-1 duration-500">
+                            {turn.aiMessage.content}
+                          </div>
+                        )}
                         
                         {/* Timeline Steps */}
                         {displaySteps && displaySteps.length > 0 && (

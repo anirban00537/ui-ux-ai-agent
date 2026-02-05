@@ -109,6 +109,15 @@ const designEditorSlice = createSlice({
         state.conversation.messages.push(action.payload);
       }
     },
+    prependMessages: (state, action: PayloadAction<Message[]>) => {
+      if (state.conversation) {
+        // Create a new array with prepended messages, avoiding duplicates by ID
+        const existingIds = new Set(state.conversation.messages.map(m => m.id));
+        const newMessages = action.payload.filter(m => !existingIds.has(m.id));
+        
+        state.conversation.messages = [...newMessages, ...state.conversation.messages];
+      }
+    },
     updateMessageStatus: (state, action: PayloadAction<{ id: string; content?: string; status: string; data?: any }>) => {
       if (state.conversation) {
         const msg = state.conversation.messages.find(m => m.id === action.payload.id);
@@ -198,6 +207,7 @@ export const {
   setConversation,
   updateConversation,
   addMessage,
+  prependMessages,
   updateMessageStatus,
   updateArtboard,
   removeArtboard,

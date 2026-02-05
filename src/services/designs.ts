@@ -98,3 +98,18 @@ export async function deleteArtboard(artboardId: string) {
   const response = await request.delete(`/designs/artboards/${artboardId}`);
   return response.data;
 }
+
+export async function getDesignMessages(
+  designId: string,
+  params?: {
+    page?: number;
+    pageSize?: number;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+  }
+) {
+  const response = await request.get(`/designs/${designId}/messages`, {
+    params,
+  });
+  return response.data;
+}
