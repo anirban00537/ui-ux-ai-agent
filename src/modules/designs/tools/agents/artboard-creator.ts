@@ -253,11 +253,13 @@ export class ArtboardCreator {
 
     // Handle token usage and credits
     const tokenUsage = {
-      inputTokens: usageData?.prompt_tokens || 0,
-      outputTokens: usageData?.completion_tokens || 0,
-      totalTokens: usageData?.total_tokens || 0,
+      inputTokens: usageData?.promptTokens || usageData?.prompt_tokens || 0,
+      outputTokens: usageData?.completionTokens || usageData?.completion_tokens || 0,
+      totalTokens: usageData?.totalTokens || usageData?.total_tokens || 0,
+      reasoningTokens: usageData?.completionTokensDetails?.reasoningTokens || usageData?.completion_tokens_details?.reasoning_tokens || 0,
     };
 
+    // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Streaming):', JSON.stringify(usageData, null, 2));
     console.log('[ArtboardCreator] Deducting credits for artboard generation:', tokenUsage);
 
     // Fire-and-forget for non-critical logging
@@ -370,8 +372,10 @@ export class ArtboardCreator {
       inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
       outputTokens: usage.completionTokens || usage.completion_tokens || 0,
       totalTokens: usage.totalTokens || usage.total_tokens || 0,
+      reasoningTokens: usage.completionTokensDetails?.reasoningTokens || usage.completion_tokens_details?.reasoning_tokens || 0,
     };
 
+    // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Non-Streaming):', JSON.stringify(usage, null, 2));
     console.log(`[ArtboardCreator] Deducting credits for "${promptData.title}":`, tokenUsage);
 
     // Fire-and-forget for non-critical logging

@@ -144,8 +144,10 @@ export class ArtboardPlanner {
       inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
       outputTokens: usage.completionTokens || usage.completion_tokens || 0,
       totalTokens: usage.totalTokens || usage.total_tokens || 0,
+      reasoningTokens: usage.completionTokensDetails?.reasoningTokens || usage.completion_tokens_details?.reasoning_tokens || 0,
     };
 
+    // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Planner):', JSON.stringify(usage, null, 2));
     console.log('[ArtboardPlanner] Deducting credits for planning:', tokenUsage);
 
     // Fire-and-forget for non-critical logging

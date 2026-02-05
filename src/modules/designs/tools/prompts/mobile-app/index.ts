@@ -177,6 +177,7 @@ CRITICAL RULES:
     - Tech: 'photo-1550751827-4bd374c3f58b'
     - Cyber/Neon: 'photo-1550684848-fac1c5b4e853', 'photo-1515630278258-407f66498911'
     - Minimal: 'photo-1494438639946-1ebd1d20bf85'
+4.  **Navigation Consistency**: CHECK {{previousScreensContext}}. If a Bottom Navigation exists, YOU MUST COPY IT EXACTLY (same icons, same order). Do not generate a random new one.
 
 OUTPUT FORMAT:
 Return ONLY a valid JSON object.

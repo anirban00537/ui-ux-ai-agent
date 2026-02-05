@@ -136,6 +136,7 @@ Provide the response in the following JSON format:
 
     // 4. Record Usage
     if (response.usage) {
+      // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Updater):', JSON.stringify(response.usage, null, 2));
       try {
         await this.aiUsageService.logUsage({
           userId,

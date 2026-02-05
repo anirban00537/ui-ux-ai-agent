@@ -125,8 +125,8 @@ export const coreConstant = {
 
   // Credit System Constants
   CREDITS: {
-    FREE_TIER: 500,
-    DEFAULT_NEW_USER: 500,
+    FREE_TIER: 0,
+    DEFAULT_NEW_USER: 250,
   } as const,
 
   // Pricing Plans
