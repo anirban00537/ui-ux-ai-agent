@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import { CodeViewerModal } from "./CodeViewerModal";
 import { FrameToolbar } from "./FrameToolbar";
+import { Sparkles, ChevronRight } from "lucide-react";
 
 
 import { useExportArtboard } from "@/hooks/use-export";
@@ -130,12 +131,11 @@ export const MobileFrame = React.memo(({
             if (contentHeight && !isResizing && !isDragging) {
               setSize(prev => {
                 // Max height safety cap to prevent infinite growth
-                const MAX_AUTO_HEIGHT = 2000;
+                const MAX_AUTO_HEIGHT = 3000;
                 
-                // Use content height but keep it within reasonable bounds
-                // We allow it to be shorter than standardHeight if the user wants "auto" height
-                const targetHeight = contentHeight;
-                const safeHeight = Math.min(Math.max(targetHeight, 200), MAX_AUTO_HEIGHT);
+                // Ensure it's at least as tall as a standard phone screen
+                // but grows to fit all content if it's a long scrollable page.
+                const safeHeight = Math.min(Math.max(contentHeight, standardHeight), MAX_AUTO_HEIGHT);
 
                 // Only update if difference is significant to avoid jitter loops
                 if (Math.abs(safeHeight - prev.height) > 10) {
@@ -209,6 +209,22 @@ export const MobileFrame = React.memo(({
     }
   }, [isSelected]);
 
+  const updateInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (showUpdateInput) {
+      setTimeout(() => updateInputRef.current?.focus(), 100);
+    }
+  }, [showUpdateInput]);
+
+  const handleUpdateSubmit = () => {
+    const val = updateInputRef.current?.value.trim();
+    if (val && onUpdate) {
+      onUpdate(id, val);
+      setShowUpdateInput(false);
+    }
+  };
+
   return (
     <>
     <Rnd
@@ -279,9 +295,9 @@ export const MobileFrame = React.memo(({
       <div 
         className="relative w-full h-full flex flex-col items-center select-none"
       >
-        {/* Toolbar (Floating Top) */}
+        {/* Toolbar & Prompt Box (Floating Top) */}
         {isSelected && (
-          <div className="absolute -top-14 left-0 w-full flex justify-center z-[60]">
+          <div className="absolute -top-16 left-0 w-full flex flex-col items-center gap-3 z-[60]">
              <FrameToolbar
                 title={title}
                 onDelete={() => onDelete?.(id)}
@@ -292,13 +308,44 @@ export const MobileFrame = React.memo(({
                 showUpdateInput={showUpdateInput}
                 setShowUpdateInput={setShowUpdateInput}
               />
+
+             {/* Prompt Box */}
+             {showUpdateInput && (
+                <div className="w-full max-w-[400px] animate-in slide-in-from-top-2 duration-300">
+                  <div 
+                    className="flex items-center gap-3 p-2 bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/5"
+                    onMouseDown={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-white/[0.03] rounded-xl border border-white/[0.05] focus-within:border-primary/50 transition-all">
+                      <Sparkles className="w-4 h-4 text-primary animate-pulse shrink-0" />
+                      <input
+                        ref={updateInputRef}
+                        type="text"
+                        placeholder="Ask me to change anything..."
+                        className="bg-transparent border-none outline-none text-[13px] w-full text-white placeholder:text-zinc-500 font-medium"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleUpdateSubmit();
+                          if (e.key === "Escape") setShowUpdateInput(false);
+                          e.stopPropagation();
+                        }}
+                      />
+                    </div>
+                    <button 
+                      onClick={handleUpdateSubmit}
+                      className="w-10 h-10 flex items-center justify-center bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-all active:scale-95 shrink-0"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+             )}
           </div>
         )}
 
         {/* Unselected Title (Legacy/Hover) */}
         {!isSelected && title && (
           <div className="absolute -top-10 w-full text-center opacity-0 group-hover:opacity-100 transition-opacity drag-target cursor-grab">
-             <span className="text-xs font-medium text-gray-400 uppercase tracking-wider bg-background/80 px-2 py-1 rounded shadow-sm border border-border">
+             <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider bg-zinc-950/80 px-2 py-1 rounded shadow-sm border border-white/10 backdrop-blur-sm">
                 {title}
              </span>
           </div>
@@ -310,13 +357,13 @@ export const MobileFrame = React.memo(({
         >
              {/* Selection Border - Rectangular Bounding Box */}
             {isSelected && (
-              <div className="absolute -inset-[1px] border border-primary z-20 pointer-events-none" />
+              <div className="absolute -inset-[1.5px] border-2 border-primary/50 z-20 pointer-events-none rounded-[32px]" />
             )}
 
             {/* Generating Animation */}
             {isGenerating && (
               <div 
-                  className="absolute -inset-1 rounded-[30px] opacity-75 blur-md pointer-events-none"
+                  className="absolute -inset-1.5 rounded-[34px] opacity-75 blur-md pointer-events-none transition-all duration-500"
                   style={{
                     background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
                     backgroundSize: "300% 100%",
@@ -329,9 +376,10 @@ export const MobileFrame = React.memo(({
             <div
               className={`relative overflow-hidden isolate shadow-2xl w-full h-full ${!isSelected ? 'drag-target cursor-grab active:cursor-grabbing' : ''}`}
               style={{
-                borderRadius: "28px", 
-                background: "transparent",
-                border: "4px solid #1a1a1a"
+                borderRadius: "32px", 
+                background: colorPalette?.background || "#ffffff",
+                border: "6px solid #141414",
+                boxShadow: isSelected ? "0 25px 50px -12px rgba(0,0,0,0.5)" : "0 10px 20px rgba(0,0,0,0.2)"
               }}
             >
               <iframe
@@ -356,26 +404,26 @@ export const MobileFrame = React.memo(({
               )}
 
               {!isLoaded && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 text-gray-300 pointer-events-none">
-                  <div className="w-8 h-8 rounded-full border-2 border-current border-t-transparent animate-spin mb-4" />
-                  <p className="text-xs font-mono uppercase tracking-widest">Loading Renderer</p>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 border border-white/5 rounded-[26px]">
+                  <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-lg shadow-primary/20" />
+                  <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 animate-pulse">Initializing</p>
                 </div>
               )}
             </div>
           </div>
 
         {/* Dimensions Label (Bottom) */}
-        {isSelected && (
-           <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 rounded-md bg-primary px-2 py-0.5 text-primary-foreground text-xs shadow-sm font-medium tabular-nums z-[60] pointer-events-none">
-              {Math.round(size.width)} × {Math.round(size.height)}
+        {isSelected && !showUpdateInput && (
+           <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full bg-zinc-950/80 backdrop-blur-xl border border-white/10 px-3 py-1 text-zinc-100 text-[10px] shadow-2xl font-bold tracking-widest tabular-nums z-[60] pointer-events-none uppercase">
+              {Math.round(size.width)} <span className="text-zinc-500 mx-1">×</span> {Math.round(size.height)}
            </div>
         )}
 
         {/* Generating Badge */}
         {isGenerating && (
-          <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/20 whitespace-nowrap z-[70]">
-            <div className="w-3 h-3 rounded-full border-2 border-white border-t-transparent animate-spin" />
-            <span className="text-xs font-semibold text-white tracking-wide">Generating...</span>
+          <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 px-6 py-3 bg-primary text-white rounded-full shadow-2xl shadow-primary/30 whitespace-nowrap z-[70] border border-white/20 animate-in zoom-in-95 duration-300">
+            <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+            <span className="text-xs font-bold uppercase tracking-widest">Generating UI</span>
           </div>
         )}
       </div>

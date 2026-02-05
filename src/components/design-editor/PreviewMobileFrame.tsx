@@ -145,12 +145,11 @@ export const PreviewMobileFrame = React.memo(({
             if (contentHeight && !isResizing && !isDragging && !isStatic) {
               setSize(prev => {
                 // Max height safety cap to prevent infinite growth
-                const MAX_AUTO_HEIGHT = 2000;
+                const MAX_AUTO_HEIGHT = 3000;
                 
-                // Use content height but keep it within reasonable bounds
-                // We allow it to be shorter than standardHeight if the user wants "auto" height
-                const targetHeight = contentHeight;
-                const safeHeight = Math.min(Math.max(targetHeight, 200), MAX_AUTO_HEIGHT);
+                // Ensure it's at least as tall as a standard phone screen
+                // but grows to fit all content if it's a long scrollable page.
+                const safeHeight = Math.min(Math.max(contentHeight, standardHeight), MAX_AUTO_HEIGHT);
 
                 // Only update if difference is significant to avoid jitter loops
                 if (Math.abs(safeHeight - prev.height) > 10) {
