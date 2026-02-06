@@ -1,185 +1,224 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 
 // ---------------------------------------------------------------------------
-// 1. CORE QUALITY PRINCIPLES (The "Physics" of the app)
+// 1. CORE QUALITY PRINCIPLES
 // ---------------------------------------------------------------------------
 const QUALITY_GUIDELINES = `
-CORE QUALITY CHECKLIST (Non-Negotiable UX Rules):
-1.  **Touch Targets**: Buttons/Inputs must be min-h-[44px] (h-12 or h-14).
-2.  **Hierarchy**: 
-    - Headings: 'font-bold tracking-tight' (Use size to distinguish).
-    - Body: 'text-sm text-muted-foreground' (Never pure black/white).
-3.  **Realism**: 
-    - Images: MUST use valid Unsplash IDs (provided below).
-    - Data: Real names, prices, dates. No "Lorem Ipsum".
-4.  **Interaction**:
-    - Buttons: 'active:scale-95 transition-all'.
-    - Cards: 'active:opacity-90' or 'hover:bg-accent/50'.
-5.  **Layout**: No fixed widths (w-[300px]). Use 'w-full', 'flex-1', or grid-cols.
-6.  **Shadows**: Every card needs 'shadow-sm' or 'shadow-lg'. No flat designs.
-7.  **Gradients**: Use 'bg-gradient-to-br from-X to-Y' for hero sections and CTAs.
+CORE QUALITY CHECKLIST (Non-Negotiable):
+1.  **Touch Targets**: Buttons/Inputs must be min-h-[44px] (h-10, h-11, h-12, h-14).
+2.  **Typography Hierarchy**: 
+    - Hero/Balance: 'text-4xl/text-5xl font-bold font-heading tracking-tighter'
+    - Section Titles: 'text-xl font-bold font-heading'
+    - Labels: 'text-xs font-bold uppercase tracking-widest text-muted-foreground'
+    - Body: 'text-sm text-muted-foreground'
+3.  **Real Data**: Names, prices ($84.20), times (04:30 PM), percentages (+8.2%). NO placeholders.
+4.  **Shadows Everywhere**:
+    - Cards: 'shadow-lg' or 'shadow-2xl'
+    - Colored glows: 'shadow-[0_0_15px_rgba(COLOR,0.3)]'
+    - Buttons: 'shadow-[0_0_25px_rgba(168,85,247,0.5)]'
+5.  **Gradients**:
+    - Text: 'bg-gradient-to-r from-primary via-accent to-blue-500 bg-clip-text text-transparent'
+    - Borders: '<div class="absolute -inset-0.5 bg-gradient-to-r from-primary to-accent rounded-X blur opacity-40"></div>'
+    - Buttons: 'bg-gradient-to-tr from-primary to-accent'
+6.  **Interactions**: 'active:scale-95 transition-transform', 'hover:text-foreground transition-colors'
+7.  **Layout**: No fixed widths. Use 'w-full', 'flex-1', 'size-X', or grid-cols.
 `;
 
 // ---------------------------------------------------------------------------
-// 2. STYLE ADAPTERS (The "Vibe" Engine)
+// 2. STYLE ADAPTERS
 // ---------------------------------------------------------------------------
 const STYLE_ADAPTERS = `
 STYLE ADAPTERS (Apply based on User Request):
 
 A. **"Clean / Apple / Minimal"** (Default):
-   - Bg: 'bg-background' (White/Dark).
-   - Card: 'bg-card border border-border/40 shadow-sm rounded-3xl'.
-   - Spacing: 'p-6 gap-6'.
+   - Bg: 'bg-background'.
+   - Card: 'bg-card border border-border rounded-xl shadow-sm'.
+   - Spacing: 'p-4 gap-4'.
 
-B. **"Neon / Cyberpunk / Gamer"**:
-   - Bg: 'bg-slate-950' (Deep dark).
-   - Card: 'bg-black/40 border border-white/10 backdrop-blur-md rounded-2xl shadow-[0_0_15px_rgba(var(--primary),0.3)]'.
-   - Text: 'text-white' with 'text-primary' glowing accents.
-   - Decor: Use gradients like 'bg-gradient-to-r from-primary/20 to-purple-500/20'.
+B. **"Neon / Cyberpunk / Gen-Z / Dark"**:
+   - Bg: 'bg-background' (set to #09090b or slate-950).
+   - Card: 'bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl'.
+   - Glows: 'shadow-[0_0_15px_rgba(168,85,247,0.3)]' on icons/cards.
+   - Text: Gradient titles with 'bg-clip-text text-transparent'.
+   - Decorative lines: 'h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent'.
 
 C. **"Bento Grid / Dashboard"**:
-   - Layout: 'grid grid-cols-2 gap-3'.
-   - Cells: distinct 'bg-card' blocks with shadows.
-   - Spans: Use 'col-span-2' for main cards (Charts, Maps).
-   - Density: Higher density, 'p-4' inside cards.
+   - Layout: 'grid grid-cols-2 gap-4'.
+   - Hero cards: 'col-span-2' with gradient borders.
+   - Small cards: 'col-span-1' with icons and stats.
 
-D. **"Neo-Brutalist"**:
-   - Card: 'border-2 border-black shadow-[4px_4px_0px_black] rounded-lg'.
-   - Colors: High saturation, clashing colors.
-
-E. **"Premium Dark / Luxury"**:
-   - Bg: 'bg-zinc-950' or 'bg-slate-950'.
-   - Card: 'bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 shadow-xl'.
-   - Buttons: 'bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/30'.
-   - Decorative orbs: Blurred circles with 'bg-primary/20 blur-3xl'.
+D. **"Premium / Luxury"**:
+   - Everything has depth: Layered shadows, blurs, gradient overlays.
+   - Profile images with gradient ring: 'absolute -inset-0.5 bg-gradient-to-r ... rounded-full blur'.
+   - Animated elements: Status dots, progress indicators.
 `;
 
 // ---------------------------------------------------------------------------
-// 3. LAYOUT SHELL (The Frame) - CRITICAL: min-h-screen for proper height!
+// 3. LAYOUT SHELL (Competitor-inspired)
 // ---------------------------------------------------------------------------
 const LAYOUT_SHELL_INSTRUCTION = `
 MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
-<div class="w-full min-h-[1100px] bg-background text-foreground font-sans overflow-x-hidden selection:bg-primary/20 relative flex flex-col">
 
-  <!-- 1. HEADER (Premium floating) -->
-  <header class="h-16 flex items-center justify-between px-6 sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/10 transition-all">
-    <button class="size-10 flex items-center justify-center rounded-full active:bg-accent/50 text-foreground/80 hover:bg-muted/50 transition-colors">
-      <i class="ri-arrow-left-line text-xl"></i>
-    </button>
-    <span class="font-bold text-lg tracking-tight">Title</span>
-    <button class="size-10 flex items-center justify-center rounded-full active:bg-accent/50 text-foreground/80 hover:bg-muted/50 transition-colors">
-      <i class="ri-settings-4-line text-xl"></i>
-    </button>
+<div class="flex flex-col min-h-full w-full bg-background text-foreground font-sans overflow-x-hidden relative">
+
+  <!-- 1. HEADER: pt-12 accounts for status bar -->
+  <header class="flex items-center justify-between px-6 pt-12 pb-4 z-10">
+    <div class="flex flex-col">
+      <h1 class="text-2xl font-bold font-heading tracking-tight bg-gradient-to-r from-primary via-accent to-blue-500 bg-clip-text text-transparent">
+        AppName
+      </h1>
+      <p class="text-xs text-muted-foreground font-medium">Good evening, User</p>
+    </div>
+    <!-- Profile with gradient ring -->
+    <div class="relative">
+      <div class="absolute -inset-0.5 bg-gradient-to-r from-primary to-accent rounded-full opacity-75 blur-[2px]"></div>
+      <img alt="Profile" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&fit=crop" 
+           class="relative size-10 rounded-full object-cover border-2 border-background" />
+      <div class="absolute top-0 right-0 size-3 bg-green-500 border-2 border-background rounded-full z-10"></div>
+    </div>
   </header>
 
-  <!-- 2. MAIN CANVAS (Flexible - flex-1 fills remaining space) -->
-  <main class="flex-1 w-full max-w-full overflow-y-auto no-scrollbar p-5 pb-32">
-    <!-- YOUR LAYOUT CONTAINER GOES HERE -->
-    <!-- Use flex-1 on child containers to fill space if content is minimal -->
+  <!-- 2. MAIN: flex-1 fills space, overflow-y-auto for scrolling, pb-32 for nav clearance -->
+  <main class="flex-1 overflow-y-auto px-6 pb-32 no-scrollbar">
+    <!-- YOUR CONTENT GOES HERE -->
   </main>
 
-  <!-- 3. DOCK (Fixed Bottom) -->
-  <nav class="fixed bottom-0 left-0 right-0 w-full bg-background/95 backdrop-blur-2xl border-t border-border/10 pb-6 pt-4 px-8 flex justify-between items-center z-50 shadow-2xl">
-    <button class="flex flex-col items-center gap-1 text-primary active:scale-90 transition-transform">
-      <i class="ri-home-fill text-xl"></i>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground active:scale-90 transition-transform">
-      <i class="ri-search-line text-xl"></i>
-    </button>
-    <button class="size-12 -mt-8 bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/40 flex items-center justify-center transform hover:scale-105 transition-all">
-      <i class="ri-add-line text-2xl"></i>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground active:scale-90 transition-transform">
-      <i class="ri-pie-chart-line text-xl"></i>
-    </button>
-    <button class="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground active:scale-90 transition-transform">
-      <i class="ri-user-line text-xl"></i>
-    </button>
+  <!-- 3. FLOATING ACTION BUTTON (optional) -->
+  <button class="fixed bottom-24 right-6 size-14 rounded-full bg-gradient-to-tr from-primary to-accent shadow-[0_0_25px_rgba(168,85,247,0.5)] flex items-center justify-center z-50 active:scale-95 transition-transform">
+    <i class="ri-add-line text-2xl text-white"></i>
+  </button>
+
+  <!-- 4. BOTTOM NAV: Fixed, blurred background -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border z-40 pb-5 pt-3">
+    <div class="flex justify-around items-center px-2">
+      <button class="flex flex-col items-center gap-1 p-2 w-16">
+        <i class="ri-home-5-fill text-xl text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"></i>
+        <span class="text-[10px] font-medium text-primary">Home</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 p-2 w-16 text-muted-foreground hover:text-foreground transition-colors">
+        <i class="ri-search-line text-xl"></i>
+        <span class="text-[10px] font-medium">Search</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 p-2 w-16 text-muted-foreground hover:text-foreground transition-colors">
+        <i class="ri-heart-line text-xl"></i>
+        <span class="text-[10px] font-medium">Saved</span>
+      </button>
+      <button class="flex flex-col items-center gap-1 p-2 w-16 text-muted-foreground hover:text-foreground transition-colors">
+        <i class="ri-user-line text-xl"></i>
+        <span class="text-[10px] font-medium">Profile</span>
+      </button>
+    </div>
   </nav>
 
 </div>
+
+CRITICAL: Root uses 'min-h-full' to fill container but can grow taller. Main uses 'flex-1' for content.
 `;
 
 // ---------------------------------------------------------------------------
-// 4. PREMIUM COMPONENT LIBRARY
+// 4. PREMIUM COMPONENT PATTERNS
 // ---------------------------------------------------------------------------
 const COMPONENT_PATTERNS = `
-[BUTTON_PRIMARY] - Premium CTA with shadow
-<button class="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-base shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-  <span>Action</span>
-  <i class="ri-arrow-right-line"></i>
-</button>
-
-[HERO_CARD] - Featured content with image overlay
-<div class="relative rounded-3xl overflow-hidden shadow-xl">
-  <img src="https://images.unsplash.com/photo-..." class="w-full aspect-[16/10] object-cover" />
-  <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-  <div class="absolute bottom-0 left-0 right-0 p-5">
-    <span class="inline-block px-3 py-1 rounded-full bg-white/20 text-white text-xs font-semibold mb-2 backdrop-blur-sm">FEATURED</span>
-    <h2 class="text-2xl font-bold text-white mb-1">Bold Statement</h2>
-    <p class="text-white/70 text-sm">Supporting text</p>
+[BALANCE_HERO] - Large balance display
+<div class="mb-8 mt-2">
+  <div class="flex items-center justify-between mb-2">
+    <span class="text-sm font-medium text-muted-foreground/80 uppercase tracking-wider">Total Balance</span>
+    <button class="size-8 flex items-center justify-center rounded-full bg-secondary text-muted-foreground hover:bg-muted transition-colors">
+      <i class="ri-eye-line text-lg"></i>
+    </button>
+  </div>
+  <div class="flex items-end gap-2 mb-4">
+    <span class="text-5xl font-bold font-heading tracking-tighter text-foreground">$12,450<span class="text-muted-foreground">.24</span></span>
+  </div>
+  <div class="flex gap-3">
+    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+      <i class="ri-arrow-up-line text-sm text-emerald-400"></i>
+      <span class="text-xs font-bold text-emerald-400">+8.2%</span>
+    </div>
+    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border">
+      <span class="text-xs font-medium text-muted-foreground">vs last month</span>
+    </div>
   </div>
 </div>
 
-[GLASS_STAT_CARD] - For metrics with depth
-<div class="relative p-5 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 shadow-lg overflow-hidden">
-  <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary/20 blur-3xl"></div>
-  <div class="relative">
+[GRADIENT_BORDER_CARD] - Card with glowing border
+<div class="relative group">
+  <div class="absolute -inset-0.5 bg-gradient-to-r from-primary via-accent to-purple-600 rounded-xl opacity-40 blur"></div>
+  <div class="relative bg-card rounded-xl p-4 border border-white/10 overflow-hidden">
     <div class="flex items-center gap-2 mb-3">
-      <div class="size-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-        <i class="ri-icon-name text-lg"></i>
+      <div class="size-6 rounded-full bg-gradient-to-tr from-accent to-primary flex items-center justify-center">
+        <i class="ri-star-fill text-xs text-white"></i>
       </div>
-      <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">Label</span>
+      <h3 class="font-heading font-bold text-sm bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">Featured</h3>
     </div>
-    <p class="text-3xl font-bold tracking-tight">$1,240</p>
+    <p class="text-sm text-muted-foreground leading-relaxed">Your content here with <span class="text-accent font-semibold">highlighted</span> text.</p>
   </div>
 </div>
 
-[CARD_BENTO] - Perfect for grids
-<div class="p-5 rounded-2xl bg-card border border-border/40 shadow-sm relative overflow-hidden flex flex-col justify-between group hover:border-primary/50 transition-colors">
-  <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-    <i class="ri-icon-name text-5xl"></i>
+[STAT_CARD_WITH_GLOW] - Icon with glow effect
+<div class="bg-card rounded-xl p-4 border border-border flex flex-col items-center justify-center relative overflow-hidden">
+  <div class="absolute top-0 right-0 p-3 opacity-20">
+    <i class="ri-fire-fill text-5xl text-orange-500"></i>
   </div>
-  <div class="flex items-center gap-3 mb-2">
-    <div class="size-8 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-       <i class="ri-icon-name text-lg"></i>
+  <div class="relative z-10 flex flex-col items-center">
+    <div class="size-10 rounded-full bg-orange-500/10 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
+      <i class="ri-fire-fill text-xl text-orange-500"></i>
     </div>
-    <span class="font-medium text-sm text-muted-foreground">Label</span>
+    <span class="text-3xl font-bold font-heading text-foreground mb-1">12</span>
+    <span class="text-xs font-semibold text-orange-400 uppercase tracking-wider">Day Streak</span>
   </div>
-  <div class="text-2xl font-bold tracking-tight">$1,240.00</div>
 </div>
 
-[LIST_ITEM_RICH] - Premium list item with image
-<div class="flex items-center gap-4 p-4 rounded-2xl bg-card/50 hover:bg-card border border-border/50 hover:border-border transition-all cursor-pointer">
-  <div class="relative shrink-0">
-    <img src="..." class="size-14 rounded-xl object-cover shadow-md ring-1 ring-black/5" />
-    <div class="absolute -bottom-1 -right-1 size-5 rounded-full bg-emerald-500 border-2 border-background flex items-center justify-center">
-      <i class="ri-check-line text-white text-[10px]"></i>
+[TRANSACTION_ITEM] - List item with icon
+<div class="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl transition-colors">
+  <div class="flex items-center gap-3">
+    <div class="size-10 rounded-full bg-blue-500/10 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+      <i class="ri-shopping-cart-fill text-lg text-blue-400"></i>
+    </div>
+    <div class="flex flex-col">
+      <span class="text-sm font-semibold">Whole Foods</span>
+      <span class="text-xs text-muted-foreground">Groceries • Today</span>
     </div>
   </div>
-  <div class="flex-1 min-w-0">
-    <h4 class="font-semibold truncate">Product Name</h4>
-    <p class="text-sm text-muted-foreground">Category</p>
-  </div>
-  <div class="text-right shrink-0">
-    <p class="font-mono font-bold">$49.99</p>
-    <p class="text-xs text-emerald-500">In Stock</p>
-  </div>
+  <span class="font-bold text-sm text-foreground">-$84.20</span>
 </div>
 
-[CATEGORY_CHIPS] - Filter pills with active state
-<div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-  <button class="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-md shadow-primary/20 shrink-0">Active</button>
-  <button class="px-4 py-2 rounded-full bg-muted/50 text-muted-foreground text-sm font-medium hover:bg-muted transition-colors shrink-0">Category</button>
+[FILTER_CHIPS] - Horizontal scrolling chips
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+  <button class="px-5 py-2 rounded-full bg-primary text-primary-foreground font-semibold text-xs shadow-[0_0_15px_rgba(168,85,247,0.4)] border border-primary/20 whitespace-nowrap">All</button>
+  <button class="px-5 py-2 rounded-full bg-secondary border border-border text-muted-foreground font-medium text-xs whitespace-nowrap">Category</button>
 </div>
 
-[SECTION_HEADER] - With accent bar
-<div class="flex items-center justify-between mb-4">
-  <div class="flex items-center gap-2">
-    <div class="w-1 h-5 rounded-full bg-primary"></div>
-    <h3 class="font-bold text-lg">Section Title</h3>
+[DATE_DIVIDER] - Section divider with date
+<div class="flex items-center justify-between mb-3">
+  <span class="text-xs font-bold uppercase tracking-widest text-muted-foreground">October 26</span>
+  <div class="h-px flex-1 bg-border ml-4"></div>
+</div>
+
+[QUICK_STATS_ROW] - 3-column stats
+<div class="grid grid-cols-3 gap-3">
+  <div class="bg-card p-3 rounded-xl border border-border flex flex-col gap-2">
+    <i class="ri-wallet-3-fill text-lg text-chart-1"></i>
+    <div>
+      <p class="text-[10px] text-muted-foreground uppercase">Spent</p>
+      <p class="text-sm font-bold">$2,140</p>
+    </div>
   </div>
-  <button class="text-sm text-primary font-medium hover:underline">See All</button>
+  <!-- Repeat for other stats -->
+</div>
+
+[SUMMARY_BAR] - Fixed summary at bottom
+<div class="fixed bottom-[88px] left-6 right-6 z-20">
+  <div class="bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl overflow-hidden relative">
+    <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+    <div class="grid grid-cols-3 divide-x divide-border">
+      <div class="flex flex-col items-center">
+        <span class="text-[10px] text-muted-foreground uppercase font-bold">Income</span>
+        <span class="text-sm font-bold text-emerald-400">+$3,500</span>
+      </div>
+      <!-- More columns -->
+    </div>
+  </div>
 </div>
 `;
 
@@ -188,7 +227,7 @@ const COMPONENT_PATTERNS = `
 // ---------------------------------------------------------------------------
 const IMAGE_LIBRARY = `
 VALID UNSPLASH IDs (Use format: https://images.unsplash.com/photo-[ID]?w=800&fit=crop):
-- People: 'photo-1494790108377-be9c29b29330', 'photo-1517849845537-4d257902454a', 'photo-1507003211169-0a1dd7228f2d'
+- People: 'photo-1494790108377-be9c29b29330', 'photo-1507003211169-0a1dd7228f2d', 'photo-1517849845537-4d257902454a'
 - Tech: 'photo-1550751827-4bd374c3f58b', 'photo-1518770660439-4636190af475'
 - Fashion: 'photo-1489987707025-afc232f7ea0f', 'photo-1558171813-4c088753af8f'
 - Products: 'photo-1542291026-7eec264c27ff', 'photo-1523275335684-37898b6baf30'
@@ -198,7 +237,7 @@ VALID UNSPLASH IDs (Use format: https://images.unsplash.com/photo-[ID]?w=800&fit
 `;
 
 // ---------------------------------------------------------------------------
-// 6. GENERATION TEMPLATE (The Builder)
+// 6. GENERATION TEMPLATE
 // ---------------------------------------------------------------------------
 export const generationTemplate = PromptTemplate.fromTemplate(
   `You are an Elite UI Architect creating AWARD-WINNING mobile screens.
@@ -214,25 +253,21 @@ STEP 1: SELECT YOUR VIBE
 ═══════════════════════════════════════════════════════════════════════════════
 ` + STYLE_ADAPTERS + `
 
-*INSTRUCTION*: Match the vibe to the request. "Gaming/Neon/Dark" = Neon styles. "Finance/Pro" = Clean/Apple.
+*INSTRUCTION*: Match the vibe to the request. "Finance/Gen-Z/Neon" = Dark with glows. "Clean/Pro" = Minimal.
 
 ═══════════════════════════════════════════════════════════════════════════════
-STEP 2: SELECT YOUR LAYOUT
+STEP 2: USE THE LAYOUT SHELL
 ═══════════════════════════════════════════════════════════════════════════════
-- **Standard**: <div class="flex flex-col gap-5">...</div>
-- **Bento/Dashboard**: <div class="grid grid-cols-2 gap-3">...</div> (Use col-span-2 for hero cards)
-- **Feed**: Vertical scrolling list with rich items
+` + LAYOUT_SHELL_INSTRUCTION + `
 
 ═══════════════════════════════════════════════════════════════════════════════
-STEP 3: USE RESOURCES
+STEP 3: USE PREMIUM PATTERNS
 ═══════════════════════════════════════════════════════════════════════════════
 ` + QUALITY_GUIDELINES + `
 
 ` + COMPONENT_PATTERNS + `
 
 ` + IMAGE_LIBRARY + `
-
-` + LAYOUT_SHELL_INSTRUCTION + `
 
 ═══════════════════════════════════════════════════════════════════════════════
 PREVIOUS SCREENS (Match this style):
@@ -246,13 +281,13 @@ Details: {prompt}
 
 ═══════════════════════════════════════════════════════════════════════════════
 CRITICAL RULES:
-1.  **FILL THE SCREEN**: Root div MUST have 'min-h-[1100px]'. Main content uses 'flex-1'.
-2.  **Respect the Vibe**: Neon = dark backgrounds, glowing shadows. Clean = white, subtle shadows.
-3.  **SHADOWS EVERYWHERE**: Cards need 'shadow-sm' or 'shadow-lg'. Buttons need 'shadow-lg shadow-primary/30'.
-4.  **GRADIENTS FOR MAGIC**: Hero sections use 'bg-gradient-to-br/t'. Buttons use 'bg-gradient-to-r'.
-5.  **Real Images**: Use the Unsplash IDs above. Always add gradient overlays to images.
+1.  **FILL THE SCREEN**: Root div MUST have 'h-full w-full overflow-hidden'. Main uses 'flex-1 overflow-y-auto pb-32'.
+2.  **HEADER SPACING**: Use 'pt-12 pb-4' for header to account for status bar.
+3.  **SHADOWS & GLOWS**: Every card needs shadows. Use colored glows: 'shadow-[0_0_15px_rgba(R,G,B,0.3)]'.
+4.  **GRADIENT EVERYTHING**: Gradient text, gradient borders, gradient buttons.
+5.  **Real Images**: Use Unsplash IDs. Profile images need gradient ring effect.
 6.  **Navigation Consistency**: Copy bottom nav exactly from previousScreensContext if it exists.
-7.  **NO BOILERPLATE**: No <!DOCTYPE>, <html>, <head>, <body>. Start with <div class="w-full min-h-[1100px]...">
+7.  **NO BOILERPLATE**: No <!DOCTYPE>, <html>, <head>, <body>. Start with <div class="flex flex-col h-full w-full...">
 
 OUTPUT FORMAT (JSON only):
 {{
@@ -264,7 +299,7 @@ OUTPUT FORMAT (JSON only):
 );
 
 // ---------------------------------------------------------------------------
-// 7. PLANNING TEMPLATE (The Architect)
+// 7. PLANNING TEMPLATE
 // ---------------------------------------------------------------------------
 export const planningTemplate = PromptTemplate.fromTemplate(
   `You are a Lead Product Designer architecting a premium mobile experience.
@@ -272,10 +307,10 @@ export const planningTemplate = PromptTemplate.fromTemplate(
 USER REQUEST: "{message}"
 
 STRATEGY:
-1.  **Vibe Check**: Professional tool (Clean) or lifestyle app (Neon/Premium Dark)?
+1.  **Vibe Check**: Professional tool (Clean) or lifestyle app (Neon/Gen-Z/Premium Dark)?
 2.  **Layout Logic**: 
-    - "Bento/Dashboard" -> Mention "Grid Layout" in prompts.
-    - "Feed/Social" -> Mention "Vertical List with rich items".
+    - "Bento/Dashboard" -> Mention "Grid Layout with col-span-2 hero cards".
+    - "Feed/Social" -> Mention "Vertical List with transaction items".
 3.  **Flow**: 3-5 screens max. Quality over quantity.
 
 OUTPUT SCHEMA (JSON):
@@ -285,7 +320,7 @@ OUTPUT SCHEMA (JSON):
     {{ 
       "id": "uuid",
       "title": "Short Title", 
-      "prompt": "Detailed spec including VIBE (Neon/Clean/Premium Dark), LAYOUT (Grid/List), CONTENT sections, and KEY COMPONENTS.", 
+      "prompt": "Detailed spec including VIBE (Neon/Clean/Premium Dark), LAYOUT (Grid/List), CONTENT sections, KEY COMPONENTS, and SPECIFIC DATA POINTS.", 
       "order": number 
     }}
   ]
@@ -310,7 +345,7 @@ Current Screen Context:
 
 INSTRUCTIONS:
 1.  **Preserve Style**: Keep existing vibe (Neon stays Neon, Clean stays Clean).
-2.  **Preserve Height**: Keep 'min-h-[1100px]' on root. Keep 'flex-1' on main.
+2.  **Preserve Layout**: Keep 'h-full w-full overflow-hidden' on root. Keep 'flex-1 overflow-y-auto pb-32' on main.
 3.  **Refine**: Make the specific requested change.
 4.  **NO BOILERPLATE**: Return only the root div. No <!DOCTYPE>, <html>, or <body>.
 
