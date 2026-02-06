@@ -165,7 +165,7 @@ export const MobileFrame = React.memo(({
 
   // State for dimensions - Large Mobile (480x1100 minimum)
   const MIN_FRAME_HEIGHT = 1100;
-  const standardRatio = 1040 / 480;
+  const standardRatio = 1100 / 480;
   const standardHeight = Math.max(Math.floor(width * standardRatio), MIN_FRAME_HEIGHT);
 
   const [size, setSize] = useState({ width: width, height: Math.max(height || standardHeight, MIN_FRAME_HEIGHT) });

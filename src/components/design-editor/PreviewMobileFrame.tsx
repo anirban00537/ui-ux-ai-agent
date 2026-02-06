@@ -69,9 +69,10 @@ export const PreviewMobileFrame = React.memo(({
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showUpdateInput, setShowUpdateInput] = useState(false);
 
-  // State for dimensions - Large Mobile (480x840)
-  const standardRatio = 840 / 480;
-  const standardHeight = Math.floor(width * standardRatio);
+  // State for dimensions - Large Mobile (480x1100 minimum)
+  const MIN_FRAME_HEIGHT = 1100;
+  const standardRatio = 1100 / 480;
+  const standardHeight = Math.max(Math.floor(width * standardRatio), MIN_FRAME_HEIGHT);
 
   const [size, setSize] = useState({ width: width, height: height || standardHeight });
   const [position, setPosition] = useState({ x: initialX, y: initialY });

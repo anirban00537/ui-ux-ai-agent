@@ -107,6 +107,12 @@ function CanvasContent() {
           document.head.appendChild(link);
         }
       }
+      
+      // Explicit body background for immediate coverage
+      if (p.background) {
+        document.body.style.backgroundColor = p.background;
+        document.documentElement.style.backgroundColor = p.background;
+      }
     };
 
     // Debounce for background fallbacks and height reporting
@@ -121,7 +127,12 @@ function CanvasContent() {
         const html = data.html || "";
         if (root) {
           // 1. Set HTML - Use h-auto for editor mode to grow, h-full for preview to scroll
-          root.innerHTML = `<div id="canvas-wrapper" class="w-full h-auto flex flex-col">${html}</div>`;
+          root.innerHTML = `
+            <div id="canvas-wrapper" class="w-full h-auto flex flex-col flex-1 min-h-full relative overflow-hidden">
+              <div id="canvas-dot-pattern" class="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style="background-size: 24px 24px; background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);"></div>
+              <div class="canvas-design-root flex-1 flex flex-col min-h-full relative z-10">${html}</div>
+            </div>
+          `;
 
           // 2. Attach fallback for images that fail to load
           root.querySelectorAll("img").forEach((img) => {
@@ -162,6 +173,10 @@ function CanvasContent() {
       clearTimeout(heightReportTimeout);
       heightReportTimeout = setTimeout(() => {
         const wrapper = document.getElementById("canvas-wrapper");
+        if (!wrapper) return;
+        
+        // Measure the natural height of the first child or the wrapper itself
+        // if the wrapper is height: auto
         window.parent.postMessage({ 
           type: "UPDATE_HEIGHT", 
           height: wrapper ? wrapper.scrollHeight : document.body.scrollHeight 
@@ -226,7 +241,7 @@ function CanvasContent() {
         html, body {
           margin: 0;
           padding: 0;
-          min-height: 100%;
+          height: 100%;
           width: 100%;
           overflow: ${isPreview ? 'hidden' : 'auto'} !important;
           background: var(--background, transparent);
@@ -234,24 +249,37 @@ function CanvasContent() {
 
         #root {
           min-height: 100%;
+          display: flex;
+          flex-direction: column;
           overflow-y: ${isPreview ? 'auto' : 'visible'} !important;
           overflow-x: hidden;
+          background: var(--background, transparent);
         }
 
         #canvas-wrapper {
+          flex: 1;
+          height: 100%;
           min-height: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+          position: relative;
+          overflow: hidden;
+          background: var(--background, transparent);
         }
 
-        /* Generated content can grow beyond iframe */
-        #canvas-wrapper > div:first-child {
-          height: auto !important;
+        .canvas-design-root > div:not(style):first-of-type {
           min-height: 100% !important;
-          overflow: visible !important;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
 
         /* Prevent internal scrolling in logic (override prompt's overflow-y-auto w/ visible) */
-        #canvas-wrapper > div:first-child main {
-          overflow: visible !important;
+        #canvas-wrapper main, 
+        #canvas-wrapper section,
+        #canvas-wrapper > div {
+          overflow-y: visible !important;
         }
       `}</style>
     </>

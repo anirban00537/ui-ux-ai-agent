@@ -12,7 +12,7 @@ export default function CanvasLayout({
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
         />
 
-        {/* Fonts: Anek Latin, DM Sans, JetBrains Mono, Playfair Display (Competitor Stack) */}
+        {/* Fonts: Nunito Sans, JetBrains Mono, Playfair Display (Competitor Stack) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -20,11 +20,7 @@ export default function CanvasLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@100;200;300;400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
         <link
@@ -80,34 +76,34 @@ export default function CanvasLayout({
           }
 
           :root {
-            --background: #0f0c29;
-            --foreground: #ffffff;
-            --primary: #6366f1;
+            --background: #ffffff;
+            --foreground: #000000;
+            --primary: #3b82f6;
             --primary-foreground: #ffffff;
-            --secondary: rgba(255, 255, 255, 0.1);
-            --secondary-foreground: #ffffff;
-            --muted: rgba(255, 255, 255, 0.05);
-            --muted-foreground: #a1a1aa;
-            --accent: rgba(99, 102, 241, 0.2);
-            --accent-foreground: #ffffff;
+            --secondary: #f3f4f6;
+            --secondary-foreground: #1f2937;
+            --muted: #f9fafb;
+            --muted-foreground: #6b7280;
+            --accent: #eff6ff;
+            --accent-foreground: #1d4ed8;
             --destructive: #ef4444;
-            --card: rgba(255, 255, 255, 0.03);
-            --card-foreground: #ffffff;
-            --popover: #1a1b2e;
-            --popover-foreground: #ffffff;
-            --border: rgba(255, 255, 255, 0.15);
-            --input: rgba(255, 255, 255, 0.05);
-            --ring: #6366f1;
-            --chart-1: #8b5cf6;
-            --chart-2: #ec4899;
-            --chart-3: #06b6d4;
-            --chart-4: #10b981;
-            --chart-5: #f59e0b;
-            --font-sans: "DM Sans", sans-serif;
-            --font-heading: "Anek Latin", sans-serif;
+            --card: #ffffff;
+            --card-foreground: #000000;
+            --popover: #ffffff;
+            --popover-foreground: #000000;
+            --border: #e5e7eb;
+            --input: #e5e7eb;
+            --ring: #3b82f6;
+            --chart-1: #3b82f6;
+            --chart-2: #10b981;
+            --chart-3: #f59e0b;
+            --chart-4: #ef4444;
+            --chart-5: #8b5cf6;
+            --font-sans: "Nunito Sans", sans-serif;
+            --font-heading: "Nunito Sans", sans-serif;
             --font-serif: "Playfair Display", serif;
             --font-mono: "JetBrains Mono", monospace;
-            --radius: 0.38rem;
+            --radius: 1rem;
           }
         `}</style>
 
@@ -117,6 +113,7 @@ export default function CanvasLayout({
             margin: 0;
             padding: 0;
             width: 100%;
+            height: 100%;
             background-color: var(--background);
             font-family: var(--font-sans), "Space Grotesk", sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -128,6 +125,12 @@ export default function CanvasLayout({
             display: flex;
             flex-direction: column;
             width: 100%;
+            min-height: 100%;
+          }
+
+          #canvas-wrapper > *:first-child {
+            min-height: 100% !important;
+            flex: 1;
           }
 
           /* Theme utilities - must exist for dynamically injected content */
