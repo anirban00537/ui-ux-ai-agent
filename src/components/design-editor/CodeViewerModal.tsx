@@ -24,6 +24,7 @@ interface ColorPalette {
   input: string;
   fontHeading?: string;
   fontBody?: string;
+  accent?: string;
 }
 
 interface CodeViewerModalProps {
@@ -38,6 +39,11 @@ const constructFullHtml = (html: string, title: string, palette?: ColorPalette) 
   const headingFont = palette?.fontHeading || 'Space Grotesk';
   const bodyFont = palette?.fontBody || 'Plus Jakarta Sans';
   
+  // Dynamic secondary/accent colors if missing
+  const primaryColor = palette?.primary || '#3b82f6';
+  const secondaryColor = palette?.secondary || '#f1f5f9';
+  const accentColor = palette?.accent || primaryColor; // Fallback to primary if accent missing
+
   const googleFontsUrl = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
 
   return `<!DOCTYPE html>
@@ -53,10 +59,12 @@ const constructFullHtml = (html: string, title: string, palette?: ColorPalette) 
         :root {
             --background: ${palette?.background || '#ffffff'};
             --foreground: ${palette?.foreground || '#020617'};
-            --primary: ${palette?.primary || '#3b82f6'};
+            --primary: ${primaryColor};
             --primary-foreground: ${palette?.primaryForeground || '#ffffff'};
-            --secondary: ${palette?.secondary || '#f1f5f9'};
+            --secondary: ${secondaryColor};
             --secondary-foreground: ${palette?.secondaryForeground || '#0f172a'};
+            --accent: ${accentColor};
+            --accent-foreground: ${palette?.primaryForeground || '#ffffff'};
             --muted-foreground: ${palette?.mutedForeground || '#64748b'};
             --card: ${palette?.card || '#ffffff'};
             --card-foreground: ${palette?.cardForeground || '#020617'};
@@ -64,20 +72,6 @@ const constructFullHtml = (html: string, title: string, palette?: ColorPalette) 
             --input: ${palette?.input || '#e2e8f0'};
             --font-heading: '${headingFont}', sans-serif;
             --font-sans: '${bodyFont}', sans-serif;
-        }
-
-        @theme {
-            --color-background: var(--background);
-            --color-foreground: var(--foreground);
-            --color-primary: var(--primary);
-            --color-primary-foreground: var(--primary-foreground);
-            --color-secondary: var(--secondary);
-            --color-secondary-foreground: var(--secondary-foreground);
-            --color-muted-foreground: var(--muted-foreground);
-            --color-card: var(--card);
-            --color-card-foreground: var(--card-foreground);
-            --color-border: var(--border);
-            --color-input: var(--input);
         }
 
         * {
@@ -94,6 +88,7 @@ const constructFullHtml = (html: string, title: string, palette?: ColorPalette) 
             min-height: 100%;
             background: var(--background);
             font-family: var(--font-sans);
+            color: var(--foreground);
         }
 
         .font-heading { font-family: var(--font-heading); }
@@ -114,6 +109,10 @@ const constructFullHtml = (html: string, title: string, palette?: ColorPalette) 
                 DEFAULT: 'var(--secondary)',
                 foreground: 'var(--secondary-foreground)',
               },
+              accent: {
+                DEFAULT: 'var(--accent)',
+                foreground: 'var(--accent-foreground)',
+              },
               muted: {
                 foreground: 'var(--muted-foreground)',
               },
@@ -133,7 +132,7 @@ const constructFullHtml = (html: string, title: string, palette?: ColorPalette) 
       }
     </script>
 </head>
-<body class="antialiased">
+<body class="antialiased font-sans">
     ${html}
 </body>
 </html>`;
@@ -148,7 +147,11 @@ export function CodeViewerModal({
 }: CodeViewerModalProps) {
   const [isCopied, setIsCopied] = useState(false);
   
-  const finalHtml = React.useMemo(() => constructFullHtml(htmlContent, title, colorPalette), [htmlContent, title, colorPalette]);
+  // Use React.useMemo to generate the full HTML once per prop change
+  const finalHtml = React.useMemo(() => {
+    if (!isOpen) return "";
+    return constructFullHtml(htmlContent, title, colorPalette);
+  }, [htmlContent, title, colorPalette, isOpen]);
 
   const handleCopyCode = useCallback(() => {
     navigator.clipboard.writeText(finalHtml);
@@ -161,7 +164,7 @@ export function CodeViewerModal({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${title.toLowerCase().replace(/\s+/g, '-')}.html`;
+    a.download = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.html`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
