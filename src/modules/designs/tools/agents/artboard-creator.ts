@@ -168,7 +168,7 @@ export class ArtboardCreator {
             schema: singleArtboardJsonSchema,
           },
         },
-        temperature: 0.5,
+        temperature: 0.7,
         stream: true,
         streamOptions: {
           includeUsage: true,
@@ -342,7 +342,7 @@ export class ArtboardCreator {
               schema: singleArtboardJsonSchema,
             },
           },
-          temperature: 0.5,
+          temperature: 0.7,
           ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
             ? {
                 provider: {
