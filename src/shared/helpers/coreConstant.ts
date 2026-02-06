@@ -85,22 +85,22 @@ export const coreConstant = {
 
   AI_MODELS: {
     DESIGN: {
-      NAME: 'minimax/minimax-m2.1',
+      NAME: 'deepseek/deepseek-v3.2',
       PRICING: { prompt: 1, completion: 2 },
       PROVIDER: {
         ENABLED: true,
-        ORDER: ['friendli', 'deepinfra/fp8'] as any,
+        ORDER: ['deepinfra/fp4', 'deepinfra/fp8'] as any,
         ALLOW_FALLBACKS: true,
-      }
+      },
     },
     AGENT: {
-   NAME: 'qwen/qwen3-coder-next',
+      NAME: 'google/gemini-3-flash-preview',
       PRICING: { prompt: 1, completion: 2 },
       PROVIDER: {
         ENABLED: false,
-        ORDER: ['friendli', 'deepinfra/fp8'] as any,
+        ORDER: ['together', 'deepinfra/fp8'] as any,
         ALLOW_FALLBACKS: true,
-      }
+      },
     },
   },
 
