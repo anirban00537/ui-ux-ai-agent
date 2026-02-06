@@ -28,6 +28,22 @@ const updatedArtboardJsonSchema = {
   additionalProperties: false,
 };
 
+const generateFontInstructions = (colorPalette?: any | null): string => {
+  const headingFont = colorPalette?.fontHeading || 'Space Grotesk';
+  const bodyFont = colorPalette?.fontBody || 'Plus Jakarta Sans';
+  
+  const googleFontsUrl = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+
+  return `
+<link href="${googleFontsUrl}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  .font-heading { font-family: '${headingFont}', sans-serif; }
+  .font-sans { font-family: '${bodyFont}', sans-serif; }
+</style>
+`;
+};
+
 @Injectable()
 export default class ArtboardUpdater {
   constructor(
@@ -48,6 +64,7 @@ export default class ArtboardUpdater {
     contextMessages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }> = [],
     signal?: AbortSignal,
     previousScreens: PreviousScreenContext[] = [],
+    colorPalette?: any,
   ): Promise<{ title: string; description: string; html: string; credits?: number }> {
     checkAborted(signal, 'ArtboardUpdater.updateArtboard');
 
@@ -71,6 +88,9 @@ INSTRUCTIONS:
 3.  Ensure the updated HTML is fully functional, responsive, and uses Tailwind CSS utility classes.
 4.  Retain the overall structure if it doesn't conflict with the update.
 ${this.formatPreviousScreens(previousScreens)}
+
+TYPOGRAPHY CONTEXT:
+${generateFontInstructions(colorPalette)}
 
 Provide the response in the following JSON format:
 {

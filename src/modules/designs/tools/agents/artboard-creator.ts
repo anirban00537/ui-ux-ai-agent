@@ -79,6 +79,22 @@ ${themeModeInstruction}
 ${THEME_CLASSES_BLOCK}`;
 };
 
+const generateFontInstructions = (colorPalette?: ColorPalette | null): string => {
+  const headingFont = colorPalette?.fontHeading || 'Space Grotesk';
+  const bodyFont = colorPalette?.fontBody || 'Plus Jakarta Sans';
+  
+  const googleFontsUrl = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+
+  return `
+<link href="${googleFontsUrl}" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  .font-heading { font-family: '${headingFont}', sans-serif; }
+  .font-sans { font-family: '${bodyFont}', sans-serif; }
+</style>
+`;
+};
+
 const MAX_HTML_LENGTH_PER_SCREEN = 2500;
 
 function formatPreviousScreensForDesignPattern(
@@ -134,11 +150,13 @@ export class ArtboardCreator {
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
     const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
+    const fontInstructions = generateFontInstructions(colorPalette);
     const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
 
     const prompts = PromptManager.getPrompts(designType);
     const systemPrompt = await prompts.generationTemplate.format({
       colorPaletteInstructions,
+      fontInstructions,
       message,
       title: promptData.title,
       description: designType + ' design ' + promptData.title,
@@ -307,11 +325,13 @@ export class ArtboardCreator {
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
     const colorPaletteInstructions = generateColorPaletteInstructions(colorPalette);
+    const fontInstructions = generateFontInstructions(colorPalette);
     const previousScreensContext = formatPreviousScreensForDesignPattern(previousScreens);
 
     const prompts = PromptManager.getPrompts(designType);
     const systemPrompt = await prompts.generationTemplate.format({
       colorPaletteInstructions,
+      fontInstructions,
       message,
       title: promptData.title,
       description: designType + ' design ' + promptData.title,

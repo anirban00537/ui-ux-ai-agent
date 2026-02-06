@@ -451,6 +451,7 @@ export class DesignsChatService {
               description: s.description || '',
               html: s.html || '',
             })),
+            artboard.design.colorPalette as any, // Pass color palette
           );
 
           if (signal.aborted) {

@@ -85,7 +85,7 @@ export const coreConstant = {
 
   AI_MODELS: {
     DESIGN: {
-      NAME: 'minimax/minimax-m2.1',
+       NAME: 'qwen/qwen3-coder-next',
       PRICING: { prompt: 1, completion: 2 },
       PROVIDER: {
         ENABLED: true,

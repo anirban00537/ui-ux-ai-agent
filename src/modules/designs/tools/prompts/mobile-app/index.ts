@@ -60,12 +60,8 @@ const LAYOUT_SHELL_INSTRUCTION = `
 MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 
 <!-- Fonts & Styles -->
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<style>
-  .font-heading {{ font-family: 'Space Grotesk', sans-serif; }}
-  .font-sans {{ font-family: 'Plus Jakarta Sans', sans-serif; }}
-</style>
+<!-- Fonts & Styles -->
+{fontInstructions}
 
 <div class="flex flex-col min-h-full w-full bg-background text-foreground font-sans overflow-x-hidden relative">
 
@@ -353,7 +349,7 @@ Current Screen Context:
 
 INSTRUCTIONS:
 1.  **Preserve Style**: Keep existing vibe (Neon stays Neon, Clean stays Clean).
-2.  **Preserve Layout**: Keep 'h-full w-full overflow-hidden' on root. Keep 'flex-1 overflow-y-auto pb-32' on main.
+2.  **Preserve Layout**: Keep 'min-h-full w-full overflow-x-hidden relative' on root container. Keep 'flex-1 overflow-y-auto pb-32' on main.
 3.  **Refine**: Make the specific requested change.
 4.  **NO BOILERPLATE**: No <!DOCTYPE>. Return fonts/styles + root div.
 

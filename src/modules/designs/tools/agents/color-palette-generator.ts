@@ -25,12 +25,15 @@ const colorPaletteJsonSchema = {
     cardForeground: { type: 'string', description: 'Text on card.' },
     border: { type: 'string', description: 'Border color.' },
     input: { type: 'string', description: 'Input background.' },
+    fontHeading: { type: 'string', description: 'Google Font name for headings (e.g. "Space Grotesk", "Inter", "Playfair Display").' },
+    fontBody: { type: 'string', description: 'Google Font name for body text (e.g. "Plus Jakarta Sans", "Roboto", "Lato").' },
   },
   required: [
     'themeMode',
     'background', 'foreground', 'primary', 'primaryForeground',
     'secondary', 'secondaryForeground', 'mutedForeground',
     'card', 'cardForeground', 'border', 'input',
+    'fontHeading', 'fontBody'
   ],
   additionalProperties: false,
 };
@@ -70,6 +73,12 @@ RULES: COLOR HARMONY (HEX CODES ONLY)
 [CONTRAST MANDATES]:
 - primaryForeground: IF primary is dark, use #ffffff. IF primary is light/neon, use #000000.
 - mutedForeground: Must be readable. Slate-500 (#64748b) usually works well.
+
+[RULES: TYPOGRAPHY (GOOGLE FONTS ONLY)]:
+1. **Tech/SaaS**: Heading='Space Grotesk' or 'Inter', Body='Plus Jakarta Sans' or 'Inter'.
+2. **Luxury/Fashion**: Heading='Playfair Display' or 'Cormorant Garamond', Body='Lato' or 'Montserrat'.
+3. **Cyber/Game**: Heading='Orbitron' or 'Rajdhani', Body='Roboto' or 'Exo 2'.
+4. **Clean/Minimal**: Heading='DM Sans' or 'Outfit', Body='DM Sans' or 'Inter'.
 
 [OUTPUT STRUCTURE]:
 Return a single JSON object with all 11 keys + themeMode.
@@ -187,6 +196,8 @@ export class ColorPaletteGenerator {
       cardForeground: '#f8fafc',
       border: '#1e293b',     // Slate 800
       input: '#0f172a',
+      fontHeading: 'Space Grotesk',
+      fontBody: 'Plus Jakarta Sans',
     };
   }
 }
