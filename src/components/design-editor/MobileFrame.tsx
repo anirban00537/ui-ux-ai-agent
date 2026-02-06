@@ -71,6 +71,9 @@ function ToolbarPortalContent({
         top: position.top,
         transform: "translate(-50%, -100%)",
       }}
+      data-toolbar-portal="true"
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
       <FrameToolbar
         title={title}
@@ -160,11 +163,12 @@ export const MobileFrame = React.memo(({
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showUpdateInput, setShowUpdateInput] = useState(false);
 
-  // State for dimensions - Large Mobile (480x1040)
+  // State for dimensions - Large Mobile (480x1100 minimum)
+  const MIN_FRAME_HEIGHT = 1100;
   const standardRatio = 1040 / 480;
-  const standardHeight = Math.floor(width * standardRatio);
+  const standardHeight = Math.max(Math.floor(width * standardRatio), MIN_FRAME_HEIGHT);
 
-  const [size, setSize] = useState({ width: width, height: height || standardHeight });
+  const [size, setSize] = useState({ width: width, height: Math.max(height || standardHeight, MIN_FRAME_HEIGHT) });
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [isSelected, setIsSelected] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -239,10 +243,12 @@ export const MobileFrame = React.memo(({
               setSize(prev => {
                 // Max height safety cap to prevent infinite growth
                 const MAX_AUTO_HEIGHT = 3000;
+                // Minimum frame height - ensures frames always look like phone screens
+                const MIN_HEIGHT = MIN_FRAME_HEIGHT;
                 
-                // Ensure it's at least as tall as a standard phone screen
-                // but grows to fit all content if it's a long scrollable page.
-                const safeHeight = Math.min(Math.max(contentHeight, standardHeight), MAX_AUTO_HEIGHT);
+                // Frame height follows content OR saved user height, but never goes below minimum
+                const desiredHeight = Math.max(contentHeight, lastHeightProp.current || 0, MIN_HEIGHT);
+                const safeHeight = Math.min(desiredHeight, MAX_AUTO_HEIGHT);
 
                 // Only update if difference is significant to avoid jitter loops
                 if (Math.abs(safeHeight - prev.height) > 10) {
@@ -291,6 +297,13 @@ export const MobileFrame = React.memo(({
 
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      
+      // Check if click is inside the toolbar portal
+      const toolbarPortal = target.closest('[data-toolbar-portal="true"]');
+      if (toolbarPortal) {
+        return; // Don't deselect if clicking on toolbar
+      }
+      
       if (rndRef.current) {
         const rndElement = rndRef.current.getSelfElement();
         if (rndElement && !rndElement.contains(target)) {
@@ -340,6 +353,8 @@ export const MobileFrame = React.memo(({
       size={{ width: size.width, height: size.height }}
       position={{ x: position.x, y: position.y }}
       scale={scale}
+      minWidth={480}
+      minHeight={MIN_FRAME_HEIGHT}
       dragHandleClassName="drag-target"
       onDragStart={() => {
         setIsDragging(true);

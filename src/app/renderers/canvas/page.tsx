@@ -205,22 +205,33 @@ function CanvasContent() {
         html, body {
           margin: 0;
           padding: 0;
-          height: ${isPreview ? '100%' : 'auto'};
+          height: ${isPreview ? '100%' : 'auto'} !important;
           width: 100%;
-          overflow: hidden; /* Prevent body scroll */
+          overflow: ${isPreview ? 'hidden' : 'visible'} !important;
           background: transparent;
         }
 
         #root {
-          height: ${isPreview ? '100%' : 'auto'};
-          overflow-y: ${isPreview ? 'auto' : 'hidden'}; /* NEVER scroll in editor */
+          height: ${isPreview ? '100%' : 'auto'} !important;
+          overflow-y: ${isPreview ? 'auto' : 'visible'} !important;
           overflow-x: hidden;
           min-height: 100%;
         }
 
         #canvas-wrapper {
+          min-height: 100%;
+        }
+
+        /* Generated content can grow beyond iframe */
+        #canvas-wrapper > div:first-child {
           height: auto !important;
-          min-height: 0;
+          min-height: 100% !important;
+          overflow: visible !important;
+        }
+
+        /* Prevent internal scrolling in logic (override prompt's overflow-y-auto w/ visible) */
+        #canvas-wrapper > div:first-child main {
+          overflow: visible !important;
         }
       `}</style>
     </>
