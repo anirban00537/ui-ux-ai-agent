@@ -62,9 +62,8 @@ MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 <!-- Fonts & Styles -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --font-heading: 'Space Grotesk', sans-serif; --font-sans: 'Plus Jakarta Sans', sans-serif; }
-  .font-heading { font-family: var(--font-heading); }
-  .font-sans { font-family: var(--font-sans); }
+  .font-heading {{ font-family: 'Space Grotesk', sans-serif; }}
+  .font-sans {{ font-family: 'Plus Jakarta Sans', sans-serif; }}
 </style>
 
 <div class="flex flex-col min-h-full w-full bg-background text-foreground font-sans overflow-x-hidden relative">
@@ -363,3 +362,5 @@ Output (JSON):
 );
 
 export const designSystemInstructions = QUALITY_GUIDELINES;
+
+// Force hot reload: fixed css escaping issue 2026-02-06

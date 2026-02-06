@@ -94,10 +94,10 @@ export const coreConstant = {
       }
     },
     AGENT: {
-   NAME: 'minimax/minimax-m2.1',
+   NAME: 'qwen/qwen3-coder-next',
       PRICING: { prompt: 1, completion: 2 },
       PROVIDER: {
-        ENABLED: true,
+        ENABLED: false,
         ORDER: ['friendli', 'deepinfra/fp8'] as any,
         ALLOW_FALLBACKS: true,
       }
