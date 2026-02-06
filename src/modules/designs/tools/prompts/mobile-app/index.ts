@@ -63,7 +63,7 @@ MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 <!-- Fonts & Styles -->
 {fontInstructions}
 
-<div class="flex flex-col min-h-full w-full bg-background text-foreground font-sans overflow-x-hidden relative">
+<div class="flex flex-col min-h-screen w-full bg-background text-foreground font-sans overflow-x-hidden relative">
 
   <!-- 1. HEADER: pt-12 accounts for status bar -->
   <header class="flex items-center justify-between px-6 pt-12 pb-4 z-10">
@@ -116,7 +116,7 @@ MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 
 </div>
 
-CRITICAL: Root uses 'min-h-full' to fill container but can grow taller. Main uses 'flex-1' for content.
+CRITICAL: Root uses 'min-h-screen' to fill frame height but can grow taller. Main uses 'flex-1' for content.
 `;
 
 // ---------------------------------------------------------------------------
@@ -349,7 +349,7 @@ Current Screen Context:
 
 INSTRUCTIONS:
 1.  **Preserve Style**: Keep existing vibe (Neon stays Neon, Clean stays Clean).
-2.  **Preserve Layout**: Keep 'min-h-full w-full overflow-x-hidden relative' on root container. Keep 'flex-1 overflow-y-auto pb-32' on main.
+2.  **Preserve Layout**: Keep 'min-h-screen w-full overflow-x-hidden relative' on root container. Keep 'flex-1 overflow-y-auto pb-32' on main.
 3.  **Refine**: Make the specific requested change.
 4.  **NO BOILERPLATE**: No <!DOCTYPE>. Return fonts/styles + root div.
 
