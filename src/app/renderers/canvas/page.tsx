@@ -76,38 +76,59 @@ function CanvasContent() {
     const applyTheme = (p: any) => {
       const docRoot = document.documentElement;
       if (!p) return;
-      if (p.background != null) docRoot.style.setProperty("--background", p.background);
-      if (p.foreground != null) docRoot.style.setProperty("--foreground", p.foreground);
+      if (p.background != null)
+        docRoot.style.setProperty("--background", p.background);
+      if (p.foreground != null)
+        docRoot.style.setProperty("--foreground", p.foreground);
       if (p.primary != null) docRoot.style.setProperty("--primary", p.primary);
-      if (p.primaryForeground != null) docRoot.style.setProperty("--primary-foreground", p.primaryForeground);
-      if (p.secondary != null) docRoot.style.setProperty("--secondary", p.secondary);
-      if (p.secondaryForeground != null) docRoot.style.setProperty("--secondary-foreground", p.secondaryForeground);
-      if (p.mutedForeground != null) docRoot.style.setProperty("--muted-foreground", p.mutedForeground);
+      if (p.primaryForeground != null)
+        docRoot.style.setProperty("--primary-foreground", p.primaryForeground);
+      if (p.secondary != null)
+        docRoot.style.setProperty("--secondary", p.secondary);
+      if (p.secondaryForeground != null)
+        docRoot.style.setProperty(
+          "--secondary-foreground",
+          p.secondaryForeground
+        );
+      if (p.mutedForeground != null)
+        docRoot.style.setProperty("--muted-foreground", p.mutedForeground);
       if (p.card != null) docRoot.style.setProperty("--card", p.card);
-      if (p.cardForeground != null) docRoot.style.setProperty("--card-foreground", p.cardForeground);
+      if (p.cardForeground != null)
+        docRoot.style.setProperty("--card-foreground", p.cardForeground);
       if (p.border != null) docRoot.style.setProperty("--border", p.border);
       if (p.input != null) docRoot.style.setProperty("--input", p.input);
 
       // Dynamic Font Loading
       if (p.fontHeading || p.fontBody) {
-        const headingFont = p.fontHeading || 'Space Grotesk';
-        const bodyFont = p.fontBody || 'Plus Jakarta Sans';
-        
+        const headingFont = p.fontHeading || "Space Grotesk";
+        const bodyFont = p.fontBody || "Plus Jakarta Sans";
+
         // 1. Set CSS variables for fonts
-        docRoot.style.setProperty("--font-heading", `'${headingFont}', sans-serif`);
+        docRoot.style.setProperty(
+          "--font-heading",
+          `'${headingFont}', sans-serif`
+        );
         docRoot.style.setProperty("--font-sans", `'${bodyFont}', sans-serif`);
 
         // 2. Load the font from Google Fonts if not already loaded
-        const fontId = `google-fonts-${headingFont}-${bodyFont}`.replace(/ /g, '-').toLowerCase();
+        const fontId = `google-fonts-${headingFont}-${bodyFont}`
+          .replace(/ /g, "-")
+          .toLowerCase();
         if (!document.getElementById(fontId)) {
-          const link = document.createElement('link');
+          const link = document.createElement("link");
           link.id = fontId;
-          link.rel = 'stylesheet';
-          link.href = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+          link.rel = "stylesheet";
+          link.href = `https://fonts.googleapis.com/css2?family=${headingFont.replace(
+            / /g,
+            "+"
+          )}:wght@300;400;500;600;700&family=${bodyFont.replace(
+            / /g,
+            "+"
+          )}:wght@300;400;500;600;700&display=swap`;
           document.head.appendChild(link);
         }
       }
-      
+
       // Explicit body background for immediate coverage
       if (p.background) {
         document.body.style.backgroundColor = p.background;
@@ -133,6 +154,17 @@ function CanvasContent() {
               <div class="canvas-design-root flex-1 flex flex-col min-h-full relative z-10">${html}</div>
             </div>
           `;
+
+          const wrapper = document.getElementById("canvas-wrapper");
+          if (wrapper) {
+            window.parent.postMessage(
+              {
+                type: "UPDATE_HEIGHT",
+                height: wrapper.scrollHeight,
+              },
+              "*"
+            );
+          }
 
           // 2. Attach fallback for images that fail to load
           root.querySelectorAll("img").forEach((img) => {
@@ -174,13 +206,16 @@ function CanvasContent() {
       heightReportTimeout = setTimeout(() => {
         const wrapper = document.getElementById("canvas-wrapper");
         if (!wrapper) return;
-        
+
         // Measure the natural height of the first child or the wrapper itself
         // if the wrapper is height: auto
-        window.parent.postMessage({ 
-          type: "UPDATE_HEIGHT", 
-          height: wrapper ? wrapper.scrollHeight : document.body.scrollHeight 
-        }, "*");
+        window.parent.postMessage(
+          {
+            type: "UPDATE_HEIGHT",
+            height: wrapper ? wrapper.scrollHeight : document.body.scrollHeight,
+          },
+          "*"
+        );
       }, 150);
     });
 
@@ -199,11 +234,7 @@ function CanvasContent() {
 
   return (
     <>
-      <div
-        id="root"
-        ref={rootRef}
-        className="w-full relative"
-      />
+      <div id="root" ref={rootRef} className="w-full relative" />
 
       <style jsx global>{`
         /* Scrollbar styling */
@@ -212,21 +243,21 @@ function CanvasContent() {
           background: transparent;
           display: none;
         }
-        
+
         * {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
 
         #root::-webkit-scrollbar {
-          width: ${isPreview ? '6px' : '0px'};
-          display: ${isPreview ? 'block' : 'none'};
+          width: ${isPreview ? "6px" : "0px"};
+          display: ${isPreview ? "block" : "none"};
         }
-        
+
         #root::-webkit-scrollbar-track {
           background: transparent;
         }
-        
+
         #root::-webkit-scrollbar-thumb {
           background-color: rgba(156, 163, 175, 0.3);
           border-radius: 9999px;
@@ -234,16 +265,17 @@ function CanvasContent() {
 
         /* Firefox */
         #root {
-          scrollbar-width: ${isPreview ? 'thin' : 'none'};
+          scrollbar-width: ${isPreview ? "thin" : "none"};
           scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
         }
-        
-        html, body {
+
+        html,
+        body {
           margin: 0;
           padding: 0;
           height: 100%;
           width: 100%;
-          overflow: ${isPreview ? 'hidden' : 'auto'} !important;
+          overflow: ${isPreview ? "hidden" : "auto"} !important;
           background: var(--background, transparent);
         }
 
@@ -251,7 +283,7 @@ function CanvasContent() {
           min-height: 100%;
           display: flex;
           flex-direction: column;
-          overflow-y: ${isPreview ? 'auto' : 'visible'} !important;
+          overflow-y: ${isPreview ? "auto" : "visible"} !important;
           overflow-x: hidden;
           background: var(--background, transparent);
         }
@@ -276,7 +308,7 @@ function CanvasContent() {
         }
 
         /* Prevent internal scrolling in logic (override prompt's overflow-y-auto w/ visible) */
-        #canvas-wrapper main, 
+        #canvas-wrapper main,
         #canvas-wrapper section,
         #canvas-wrapper > div {
           overflow-y: visible !important;

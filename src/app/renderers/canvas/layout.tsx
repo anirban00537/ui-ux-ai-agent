@@ -31,11 +31,21 @@ export default function CanvasLayout({
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
+        <link
+          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet"
+        />
 
         {/* Tailwind v4 - Play CDN / browser build */}
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer />
+        <script
+          src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
+          defer
+        />
         {/* Remix Icon (Keep as fallback) */}
-        <link href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css" rel="stylesheet" />
+        <link
+          href="https://cdn.jsdelivr.net/npm/remixicon@4.8.0/fonts/remixicon.css"
+          rel="stylesheet"
+        />
         {/* Compititor Script: Iconify */}
         <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
 
