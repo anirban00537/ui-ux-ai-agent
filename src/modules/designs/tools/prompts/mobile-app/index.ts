@@ -59,6 +59,14 @@ D. **"Premium / Luxury"**:
 const LAYOUT_SHELL_INSTRUCTION = `
 MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 
+<!-- Fonts & Styles -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --font-heading: 'Space Grotesk', sans-serif; --font-sans: 'Plus Jakarta Sans', sans-serif; }
+  .font-heading { font-family: var(--font-heading); }
+  .font-sans { font-family: var(--font-sans); }
+</style>
+
 <div class="flex flex-col min-h-full w-full bg-background text-foreground font-sans overflow-x-hidden relative">
 
   <!-- 1. HEADER: pt-12 accounts for status bar -->
@@ -287,7 +295,7 @@ CRITICAL RULES:
 4.  **GRADIENT EVERYTHING**: Gradient text, gradient borders, gradient buttons.
 5.  **Real Images**: Use Unsplash IDs. Profile images need gradient ring effect.
 6.  **Navigation Consistency**: Copy bottom nav exactly from previousScreensContext if it exists.
-7.  **NO BOILERPLATE**: No <!DOCTYPE>, <html>, <head>, <body>. Start with <div class="flex flex-col h-full w-full...">
+7.  **NO BOILERPLATE**: No <!DOCTYPE>, <html>, <body>. Return <link>, <style>, and the root div.
 
 OUTPUT FORMAT (JSON only):
 {{
@@ -347,7 +355,7 @@ INSTRUCTIONS:
 1.  **Preserve Style**: Keep existing vibe (Neon stays Neon, Clean stays Clean).
 2.  **Preserve Layout**: Keep 'h-full w-full overflow-hidden' on root. Keep 'flex-1 overflow-y-auto pb-32' on main.
 3.  **Refine**: Make the specific requested change.
-4.  **NO BOILERPLATE**: Return only the root div. No <!DOCTYPE>, <html>, or <body>.
+4.  **NO BOILERPLATE**: No <!DOCTYPE>. Return fonts/styles + root div.
 
 Output (JSON):
 {{ "html": "...", "title": "...", "description": "..." }}
