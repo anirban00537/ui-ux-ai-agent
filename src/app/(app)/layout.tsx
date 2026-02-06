@@ -137,6 +137,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full dark">
       <body className={`${poppins.variable} ${libre.variable} font-sans antialiased h-full`}>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
         <Script
           id="json-ld"
           type="application/ld+json"

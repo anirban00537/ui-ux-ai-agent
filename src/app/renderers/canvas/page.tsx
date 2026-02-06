@@ -205,14 +205,14 @@ function CanvasContent() {
         html, body {
           margin: 0;
           padding: 0;
-          height: ${isPreview ? '100%' : 'auto'} !important;
+          height: 100% !important;
           width: 100%;
           overflow: ${isPreview ? 'hidden' : 'visible'} !important;
           background: transparent;
         }
 
         #root {
-          height: ${isPreview ? '100%' : 'auto'} !important;
+          height: 100% !important;
           overflow-y: ${isPreview ? 'auto' : 'visible'} !important;
           overflow-x: hidden;
           min-height: 100%;
