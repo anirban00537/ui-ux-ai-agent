@@ -242,16 +242,15 @@ export const MobileFrame = React.memo(({
             if (contentHeight && !isResizing && !isDragging) {
               setSize(prev => {
                 // Max height safety cap to prevent infinite growth
-                const MAX_AUTO_HEIGHT = 3000;
+                const MAX_AUTO_HEIGHT = 5000;
                 // Minimum frame height - ensures frames always look like phone screens
                 const MIN_HEIGHT = MIN_FRAME_HEIGHT;
                 
-                // Frame height follows content OR saved user height, but never goes below minimum
-                const desiredHeight = Math.max(contentHeight, lastHeightProp.current || 0, MIN_HEIGHT);
-                const safeHeight = Math.min(desiredHeight, MAX_AUTO_HEIGHT);
+                // Frame height follows content, but never goes below minimum
+                const safeHeight = Math.min(Math.max(contentHeight, MIN_HEIGHT), MAX_AUTO_HEIGHT);
 
                 // Only update if difference is significant to avoid jitter loops
-                if (Math.abs(safeHeight - prev.height) > 10) {
+                if (Math.abs(safeHeight - prev.height) > 5) {
                    return { ...prev, height: safeHeight };
                 }
                 return prev;
@@ -526,7 +525,9 @@ export const MobileFrame = React.memo(({
     <CodeViewerModal 
       isOpen={showCodeModal}
       onClose={() => setShowCodeModal(false)}
-      artboardId={id}
+      title={title || 'Design'}
+      htmlContent={htmlContent}
+      colorPalette={colorPalette}
     />
     </>
   );

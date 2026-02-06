@@ -142,17 +142,17 @@ export const PreviewMobileFrame = React.memo(({
           } else if (event.data.type === 'UPDATE_HEIGHT') {
             const contentHeight = event.data.height;
             // Only auto-resize if NOT static and not currently overlapping interaction
-            if (contentHeight && !isResizing && !isDragging && !isStatic) {
+            if (contentHeight && !isResizing && !isDragging) {
               setSize(prev => {
                 // Max height safety cap to prevent infinite growth
-                const MAX_AUTO_HEIGHT = 3000;
+                const MAX_AUTO_HEIGHT = 5000;
                 
                 // Ensure it's at least as tall as a standard phone screen
                 // but grows to fit all content if it's a long scrollable page.
                 const safeHeight = Math.min(Math.max(contentHeight, standardHeight), MAX_AUTO_HEIGHT);
 
                 // Only update if difference is significant to avoid jitter loops
-                if (Math.abs(safeHeight - prev.height) > 10) {
+                if (Math.abs(safeHeight - prev.height) > 5) {
                    return { ...prev, height: safeHeight };
                 }
                 return prev;
@@ -438,7 +438,9 @@ export const PreviewMobileFrame = React.memo(({
     <CodeViewerModal 
       isOpen={showCodeModal}
       onClose={() => setShowCodeModal(false)}
-      artboardId={id}
+      title={title || 'Design'}
+      htmlContent={htmlContent}
+      colorPalette={colorPalette}
     />
     </>
   );

@@ -87,6 +87,26 @@ function CanvasContent() {
       if (p.cardForeground != null) docRoot.style.setProperty("--card-foreground", p.cardForeground);
       if (p.border != null) docRoot.style.setProperty("--border", p.border);
       if (p.input != null) docRoot.style.setProperty("--input", p.input);
+
+      // Dynamic Font Loading
+      if (p.fontHeading || p.fontBody) {
+        const headingFont = p.fontHeading || 'Space Grotesk';
+        const bodyFont = p.fontBody || 'Plus Jakarta Sans';
+        
+        // 1. Set CSS variables for fonts
+        docRoot.style.setProperty("--font-heading", `'${headingFont}', sans-serif`);
+        docRoot.style.setProperty("--font-sans", `'${bodyFont}', sans-serif`);
+
+        // 2. Load the font from Google Fonts if not already loaded
+        const fontId = `google-fonts-${headingFont}-${bodyFont}`.replace(/ /g, '-').toLowerCase();
+        if (!document.getElementById(fontId)) {
+          const link = document.createElement('link');
+          link.id = fontId;
+          link.rel = 'stylesheet';
+          link.href = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+          document.head.appendChild(link);
+        }
+      }
     };
 
     // Debounce for background fallbacks and height reporting
@@ -141,9 +161,10 @@ function CanvasContent() {
     const resizeObserver = new ResizeObserver(() => {
       clearTimeout(heightReportTimeout);
       heightReportTimeout = setTimeout(() => {
+        const wrapper = document.getElementById("canvas-wrapper");
         window.parent.postMessage({ 
           type: "UPDATE_HEIGHT", 
-          height: document.body.scrollHeight 
+          height: wrapper ? wrapper.scrollHeight : document.body.scrollHeight 
         }, "*");
       }, 150);
     });
@@ -205,17 +226,16 @@ function CanvasContent() {
         html, body {
           margin: 0;
           padding: 0;
-          height: 100% !important;
+          min-height: 100%;
           width: 100%;
-          overflow: ${isPreview ? 'hidden' : 'visible'} !important;
-          background: transparent;
+          overflow: ${isPreview ? 'hidden' : 'auto'} !important;
+          background: var(--background, transparent);
         }
 
         #root {
-          height: 100% !important;
+          min-height: 100%;
           overflow-y: ${isPreview ? 'auto' : 'visible'} !important;
           overflow-x: hidden;
-          min-height: 100%;
         }
 
         #canvas-wrapper {

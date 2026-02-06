@@ -200,8 +200,9 @@ export default function PreviewPage() {
            <div 
               className="absolute bg-primary/20 blur-[120px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity"
               style={{
-                width: 480 * scale,
-                height: 840 * scale,
+                 width: 480 * scale,
+                 minHeight: 840 * scale,
+                 height: "auto",
               }}
            />
            
@@ -213,12 +214,12 @@ export default function PreviewPage() {
               {currentArtboard?.title || `Screen ${currentIndex + 1}`}
            </div>
 
-           {/* The Frame - Fixed Size */}
            <div 
              className="flex items-center justify-center transition-all duration-300"
              style={{
                 width: 480 * scale,
-                height: 840 * scale,
+                minHeight: 840 * scale,
+                height: "auto",
              }}
            >
               {currentArtboard && (

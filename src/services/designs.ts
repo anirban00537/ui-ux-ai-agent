@@ -14,6 +14,9 @@ export interface ColorPalette {
   cardForeground: string;
   border: string;
   input: string;
+  themeMode?: 'light' | 'dark';
+  fontHeading?: string;
+  fontBody?: string;
 }
 
 export interface Design {
