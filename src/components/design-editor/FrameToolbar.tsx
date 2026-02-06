@@ -22,7 +22,7 @@ interface FrameToolbarProps {
   title?: string;
   onDelete?: () => void;
   onRegenerate?: () => void;
-  onViewCode: () => void;
+  onViewCode?: () => void;
   onUpdate?: (prompt: string) => void;
   onExportImage?: () => void;
   onExportHtml?: () => void;

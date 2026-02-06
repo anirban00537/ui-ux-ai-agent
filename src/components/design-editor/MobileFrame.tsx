@@ -1,14 +1,121 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Rnd } from "react-rnd";
 import { CodeViewerModal } from "./CodeViewerModal";
 import { FrameToolbar } from "./FrameToolbar";
 import { Sparkles, ChevronRight } from "lucide-react";
 
-
 import { useExportArtboard } from "@/hooks/use-export";
 import { type ColorPalette } from "@/services/designs";
+
+// Separate component for portal content to handle position updates
+interface ToolbarPortalContentProps {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  title?: string;
+  onDelete?: () => void;
+  onViewCode?: () => void;
+  onUpdate?: (prompt: string) => void;
+  onExportImage?: () => void;
+  onExportHtml?: () => void;
+  showUpdateInput: boolean;
+  setShowUpdateInput: (show: boolean) => void;
+  updateInputRef: React.RefObject<HTMLInputElement | null>;
+  handleUpdateSubmit: () => void;
+}
+
+function ToolbarPortalContent({
+  containerRef,
+  title,
+  onDelete,
+  onViewCode,
+  onUpdate,
+  onExportImage,
+  onExportHtml,
+  showUpdateInput,
+  setShowUpdateInput,
+  updateInputRef,
+  handleUpdateSubmit,
+}: ToolbarPortalContentProps) {
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    let rafId: number;
+
+    const updatePosition = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setPosition({
+          top: rect.top - 16,
+          left: rect.left + rect.width / 2,
+        });
+      }
+      rafId = requestAnimationFrame(updatePosition);
+    };
+
+    updatePosition();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
+  }, [containerRef]);
+
+  if (!position) return null;
+
+  return (
+    <div
+      className="fixed z-[9999] flex flex-col items-center gap-3 pointer-events-auto"
+      style={{
+        left: position.left,
+        top: position.top,
+        transform: "translate(-50%, -100%)",
+      }}
+    >
+      <FrameToolbar
+        title={title}
+        onDelete={onDelete}
+        onViewCode={onViewCode}
+        onUpdate={onUpdate}
+        onExportImage={onExportImage}
+        onExportHtml={onExportHtml}
+        showUpdateInput={showUpdateInput}
+        setShowUpdateInput={setShowUpdateInput}
+      />
+
+      {/* Prompt Box */}
+      {showUpdateInput && (
+        <div className="w-[400px] animate-in slide-in-from-top-2 duration-300">
+          <div
+            className="flex items-center gap-3 p-2 bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/5"
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-white/[0.03] rounded-xl border border-white/[0.05] focus-within:border-primary/50 transition-all">
+              <Sparkles className="w-4 h-4 text-primary animate-pulse shrink-0" />
+              <input
+                ref={updateInputRef}
+                type="text"
+                placeholder="Ask me to change anything..."
+                className="bg-transparent border-none outline-none text-[13px] w-full text-white placeholder:text-zinc-500 font-medium"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleUpdateSubmit();
+                  if (e.key === "Escape") setShowUpdateInput(false);
+                  e.stopPropagation();
+                }}
+              />
+            </div>
+            <button
+              onClick={handleUpdateSubmit}
+              className="w-10 h-10 flex items-center justify-center bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-all active:scale-95 shrink-0"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface MobileFrameProps {
   id: string;
@@ -293,55 +400,9 @@ export const MobileFrame = React.memo(({
       } : {}}
     >
       <div 
+        ref={containerRef}
         className="relative w-full h-full flex flex-col items-center select-none"
       >
-        {/* Toolbar & Prompt Box (Floating Top) */}
-        {isSelected && (
-          <div className="absolute -top-16 left-0 w-full flex flex-col items-center gap-3 z-[60]">
-             <FrameToolbar
-                title={title}
-                onDelete={() => onDelete?.(id)}
-                onViewCode={() => setShowCodeModal(true)}
-                onUpdate={(prompt) => onUpdate?.(id, prompt)}
-                onExportImage={handleExportImage}
-                onExportHtml={handleExportHtml}
-                showUpdateInput={showUpdateInput}
-                setShowUpdateInput={setShowUpdateInput}
-              />
-
-             {/* Prompt Box */}
-             {showUpdateInput && (
-                <div className="w-full max-w-[400px] animate-in slide-in-from-top-2 duration-300">
-                  <div 
-                    className="flex items-center gap-3 p-2 bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/5"
-                    onMouseDown={(e) => e.stopPropagation()}
-                  >
-                    <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-white/[0.03] rounded-xl border border-white/[0.05] focus-within:border-primary/50 transition-all">
-                      <Sparkles className="w-4 h-4 text-primary animate-pulse shrink-0" />
-                      <input
-                        ref={updateInputRef}
-                        type="text"
-                        placeholder="Ask me to change anything..."
-                        className="bg-transparent border-none outline-none text-[13px] w-full text-white placeholder:text-zinc-500 font-medium"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") handleUpdateSubmit();
-                          if (e.key === "Escape") setShowUpdateInput(false);
-                          e.stopPropagation();
-                        }}
-                      />
-                    </div>
-                    <button 
-                      onClick={handleUpdateSubmit}
-                      className="w-10 h-10 flex items-center justify-center bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-all active:scale-95 shrink-0"
-                    >
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-             )}
-          </div>
-        )}
-
         {/* Unselected Title (Legacy/Hover) */}
         {!isSelected && title && (
           <div className="absolute -top-10 w-full text-center opacity-0 group-hover:opacity-100 transition-opacity drag-target cursor-grab">
@@ -428,6 +489,24 @@ export const MobileFrame = React.memo(({
         )}
       </div>
     </Rnd>
+
+    {/* Portal-based Toolbar - renders outside zoom container for consistent size */}
+    {isSelected && typeof window !== 'undefined' && containerRef.current && createPortal(
+      <ToolbarPortalContent
+        containerRef={containerRef}
+        title={title}
+        onDelete={() => onDelete?.(id)}
+        onViewCode={() => setShowCodeModal(true)}
+        onUpdate={(prompt) => onUpdate?.(id, prompt)}
+        onExportImage={handleExportImage}
+        onExportHtml={handleExportHtml}
+        showUpdateInput={showUpdateInput}
+        setShowUpdateInput={setShowUpdateInput}
+        updateInputRef={updateInputRef}
+        handleUpdateSubmit={handleUpdateSubmit}
+      />,
+      document.body
+    )}
     
     <CodeViewerModal 
       isOpen={showCodeModal}
