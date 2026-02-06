@@ -61,6 +61,7 @@ MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 
 <!-- Fonts & Styles -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
   .font-heading {{ font-family: 'Space Grotesk', sans-serif; }}
   .font-sans {{ font-family: 'Plus Jakarta Sans', sans-serif; }}
@@ -92,26 +93,26 @@ MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
 
   <!-- 3. FLOATING ACTION BUTTON (optional) -->
   <button class="fixed bottom-24 right-6 size-14 rounded-full bg-gradient-to-tr from-primary to-accent shadow-[0_0_25px_rgba(168,85,247,0.5)] flex items-center justify-center z-50 active:scale-95 transition-transform">
-    <i class="ri-add-line text-2xl text-white"></i>
+    <span class="material-icons text-2xl text-white">add</span>
   </button>
 
   <!-- 4. BOTTOM NAV: Fixed, blurred background -->
   <nav class="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border z-40 pb-5 pt-3">
     <div class="flex justify-around items-center px-2">
       <button class="flex flex-col items-center gap-1 p-2 w-16">
-        <i class="ri-home-5-fill text-xl text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]"></i>
+        <span class="material-icons text-xl text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">home</span>
         <span class="text-[10px] font-medium text-primary">Home</span>
       </button>
       <button class="flex flex-col items-center gap-1 p-2 w-16 text-muted-foreground hover:text-foreground transition-colors">
-        <i class="ri-search-line text-xl"></i>
+        <span class="material-icons text-xl">search</span>
         <span class="text-[10px] font-medium">Search</span>
       </button>
       <button class="flex flex-col items-center gap-1 p-2 w-16 text-muted-foreground hover:text-foreground transition-colors">
-        <i class="ri-heart-line text-xl"></i>
+        <span class="material-icons text-xl">favorite_border</span>
         <span class="text-[10px] font-medium">Saved</span>
       </button>
       <button class="flex flex-col items-center gap-1 p-2 w-16 text-muted-foreground hover:text-foreground transition-colors">
-        <i class="ri-user-line text-xl"></i>
+        <span class="material-icons text-xl">person_outline</span>
         <span class="text-[10px] font-medium">Profile</span>
       </button>
     </div>
@@ -131,7 +132,7 @@ const COMPONENT_PATTERNS = `
   <div class="flex items-center justify-between mb-2">
     <span class="text-sm font-medium text-muted-foreground/80 uppercase tracking-wider">Total Balance</span>
     <button class="size-8 flex items-center justify-center rounded-full bg-secondary text-muted-foreground hover:bg-muted transition-colors">
-      <i class="ri-eye-line text-lg"></i>
+      <span class="material-icons text-lg">visibility</span>
     </button>
   </div>
   <div class="flex items-end gap-2 mb-4">
@@ -139,7 +140,7 @@ const COMPONENT_PATTERNS = `
   </div>
   <div class="flex gap-3">
     <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-      <i class="ri-arrow-up-line text-sm text-emerald-400"></i>
+      <span class="material-icons text-sm text-emerald-400">arrow_upward</span>
       <span class="text-xs font-bold text-emerald-400">+8.2%</span>
     </div>
     <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border">
@@ -154,7 +155,7 @@ const COMPONENT_PATTERNS = `
   <div class="relative bg-card rounded-xl p-4 border border-white/10 overflow-hidden">
     <div class="flex items-center gap-2 mb-3">
       <div class="size-6 rounded-full bg-gradient-to-tr from-accent to-primary flex items-center justify-center">
-        <i class="ri-star-fill text-xs text-white"></i>
+        <span class="material-icons text-xs text-white">star</span>
       </div>
       <h3 class="font-heading font-bold text-sm bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">Featured</h3>
     </div>
@@ -165,11 +166,11 @@ const COMPONENT_PATTERNS = `
 [STAT_CARD_WITH_GLOW] - Icon with glow effect
 <div class="bg-card rounded-xl p-4 border border-border flex flex-col items-center justify-center relative overflow-hidden">
   <div class="absolute top-0 right-0 p-3 opacity-20">
-    <i class="ri-fire-fill text-5xl text-orange-500"></i>
+    <span class="material-icons text-5xl text-orange-500">local_fire_department</span>
   </div>
   <div class="relative z-10 flex flex-col items-center">
     <div class="size-10 rounded-full bg-orange-500/10 flex items-center justify-center mb-3 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
-      <i class="ri-fire-fill text-xl text-orange-500"></i>
+      <span class="material-icons text-xl text-orange-500">local_fire_department</span>
     </div>
     <span class="text-3xl font-bold font-heading text-foreground mb-1">12</span>
     <span class="text-xs font-semibold text-orange-400 uppercase tracking-wider">Day Streak</span>
@@ -180,7 +181,7 @@ const COMPONENT_PATTERNS = `
 <div class="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl transition-colors">
   <div class="flex items-center gap-3">
     <div class="size-10 rounded-full bg-blue-500/10 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-      <i class="ri-shopping-cart-fill text-lg text-blue-400"></i>
+      <span class="material-icons text-lg text-blue-400">shopping_cart</span>
     </div>
     <div class="flex flex-col">
       <span class="text-sm font-semibold">Whole Foods</span>
@@ -205,7 +206,7 @@ const COMPONENT_PATTERNS = `
 [QUICK_STATS_ROW] - 3-column stats
 <div class="grid grid-cols-3 gap-3">
   <div class="bg-card p-3 rounded-xl border border-border flex flex-col gap-2">
-    <i class="ri-wallet-3-fill text-lg text-chart-1"></i>
+    <span class="material-icons text-lg text-chart-1">account_balance_wallet</span>
     <div>
       <p class="text-[10px] text-muted-foreground uppercase">Spent</p>
       <p class="text-sm font-bold">$2,140</p>
@@ -363,4 +364,4 @@ Output (JSON):
 
 export const designSystemInstructions = QUALITY_GUIDELINES;
 
-// Force hot reload: fixed css escaping issue 2026-02-06
+// Force hot reload: switched to Material Icons 2026-02-06
