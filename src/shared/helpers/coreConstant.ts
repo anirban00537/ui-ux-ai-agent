@@ -94,11 +94,11 @@ export const coreConstant = {
       },
     },
     AGENT: {
-      NAME: 'google/gemini-3-flash-preview',
+      NAME: 'minimax/minimax-m2.1',
       PRICING: { prompt: 1, completion: 2 },
       PROVIDER: {
-        ENABLED: false,
-        ORDER: ['together', 'deepinfra/fp8'] as any,
+        ENABLED: true,
+        ORDER: ['deepinfra/fp8', 'atlas-cloud/fp8'] as any,
         ALLOW_FALLBACKS: true,
       },
     },
