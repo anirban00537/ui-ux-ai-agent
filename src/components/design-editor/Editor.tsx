@@ -135,6 +135,17 @@ export function Editor({
       >
         {({ zoomIn, zoomOut, resetTransform, instance }) => (
           <>
+            {/* Branding - Top Left */}
+            <div className="absolute top-6 left-6 z-20">
+              <div className="flex items-center justify-center bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-2.5 shadow-2xl ring-1 ring-white/5">
+                <img 
+                  src="/logo.svg" 
+                  alt="Butterfast Logo" 
+                  className="w-28 h-5 drop-shadow-sm" 
+                />
+              </div>
+            </div>
+
             <div className="absolute top-6 right-6 z-20">
               <div className="flex items-center gap-1.5 bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-1.5 shadow-2xl ring-1 ring-white/5">
                 <button
