@@ -121,12 +121,14 @@ function CanvasContent() {
             </div>
           `;
 
-          const wrapper = document.getElementById("canvas-wrapper");
-          if (wrapper) {
+          // Measure actual content height (not wrapper which has min-height)
+          const designRoot = root.querySelector('.canvas-design-root');
+          const contentHeight = designRoot ? designRoot.scrollHeight : 0;
+          if (contentHeight > 0) {
             window.parent.postMessage(
               {
                 type: "UPDATE_HEIGHT",
-                height: wrapper.scrollHeight,
+                height: contentHeight,
               },
               "*"
             );
@@ -165,15 +167,17 @@ function CanvasContent() {
     const resizeObserver = new ResizeObserver(() => {
       clearTimeout(heightReportTimeout);
       heightReportTimeout = setTimeout(() => {
-        const wrapper = document.getElementById("canvas-wrapper");
-        if (!wrapper) return;
+        // Measure actual content height from the design root, not wrapper
+        const designRoot = root?.querySelector('.canvas-design-root');
+        if (!designRoot) return;
 
-        // Measure the natural height of the first child or the wrapper itself
-        // if the wrapper is height: auto
+        // Get the actual content height
+        const contentHeight = designRoot.scrollHeight;
+        
         window.parent.postMessage(
           {
             type: "UPDATE_HEIGHT",
-            height: wrapper ? wrapper.scrollHeight : document.body.scrollHeight,
+            height: contentHeight,
           },
           "*"
         );
@@ -250,8 +254,8 @@ function CanvasContent() {
 
         #canvas-wrapper {
           flex: 1;
-          ${isPreview ? 'height: 100%; overflow-y: auto;' : 'height: auto; overflow: hidden;'}
-          min-height: 100%;
+          ${isPreview ? 'height: 100%; overflow-y: auto;' : 'height: auto; overflow: visible;'}
+          ${isPreview ? 'min-height: 100%;' : ''}
           display: flex;
           flex-direction: column;
           align-items: stretch;
@@ -260,8 +264,7 @@ function CanvasContent() {
         }
 
         .canvas-design-root > div:not(style):first-of-type {
-          min-height: ${isPreview ? 'auto' : '100%'} !important;
-          flex: 1;
+          min-height: auto !important;
           display: flex;
           flex-direction: column;
         }
