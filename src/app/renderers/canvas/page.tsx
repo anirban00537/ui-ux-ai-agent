@@ -112,9 +112,10 @@ function CanvasContent() {
       if (data.type === "UPDATE_CONTENT") {
         const html = data.html || "";
         if (root) {
-          // 1. Set HTML - Use h-auto for editor mode to grow, h-full for preview to scroll
+          // In preview mode, content scrolls inside a fixed frame
+          // In editor mode, content grows and frame expands
           root.innerHTML = `
-            <div id="canvas-wrapper" class="w-full h-auto flex flex-col flex-1 min-h-full relative overflow-hidden">
+            <div id="canvas-wrapper" class="w-full ${isPreview ? 'h-full overflow-y-auto' : 'h-auto'} flex flex-col flex-1 min-h-full relative">
               <div id="canvas-dot-pattern" class="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style="background-size: 24px 24px; background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);"></div>
               <div class="canvas-design-root flex-1 flex flex-col min-h-full relative z-10">${html}</div>
             </div>
@@ -193,7 +194,7 @@ function CanvasContent() {
 
   return (
     <>
-      <div id="root" ref={rootRef} className="w-full relative" />
+      <div id="root" ref={rootRef} className={`w-full relative ${isPreview ? 'h-full overflow-y-auto' : ''}`} />
 
       <style jsx global>{`
         /* Scrollbar styling */
@@ -249,29 +250,31 @@ function CanvasContent() {
 
         #canvas-wrapper {
           flex: 1;
-          height: 100%;
+          ${isPreview ? 'height: 100%; overflow-y: auto;' : 'height: auto; overflow: hidden;'}
           min-height: 100%;
           display: flex;
           flex-direction: column;
           align-items: stretch;
           position: relative;
-          overflow: hidden;
           background: var(--background, transparent);
         }
 
         .canvas-design-root > div:not(style):first-of-type {
-          min-height: 100% !important;
+          min-height: ${isPreview ? 'auto' : '100%'} !important;
           flex: 1;
           display: flex;
           flex-direction: column;
         }
 
-        /* Prevent internal scrolling in logic (override prompt's overflow-y-auto w/ visible) */
+        /* In preview mode, allow internal elements to scroll naturally */
+        /* In editor mode, prevent internal scrolling so frame grows */
+        ${isPreview ? '' : `
         #canvas-wrapper main,
         #canvas-wrapper section,
         #canvas-wrapper > div {
           overflow-y: visible !important;
         }
+        `}
       `}</style>
     </>
   );

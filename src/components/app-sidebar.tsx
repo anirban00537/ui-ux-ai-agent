@@ -269,7 +269,7 @@ export function AppSidebar() {
                       {isSubscribed
                         ? subscriptionStatus?.features?.productName ||
                           "Pro Plan"
-                        : "Free Plan"}
+                        : "Restricted Access"}
                     </h4>
                     <p className="text-[11px] text-muted-foreground leading-tight flex items-center gap-1.5">
                       <span className={cn("font-bold", getCreditColor(creditBalance?.balance))}>

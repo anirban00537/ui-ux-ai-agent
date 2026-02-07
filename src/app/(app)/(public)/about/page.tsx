@@ -336,7 +336,7 @@ export default function AboutPage() {
                                     className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-white font-bold rounded-full hover:scale-105 transition-all duration-300 shadow-xl"
                                 >
                                     <IconSparkles size={20} />
-                                    Get Started Free
+                                    Get Started Now
                                 </a>
                             </div>
                         </motion.div>

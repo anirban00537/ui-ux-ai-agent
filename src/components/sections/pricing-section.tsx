@@ -69,7 +69,7 @@ export function PricingSection() {
                     onSelect={undefined}
                     href="/signup"
                     loading={false}
-                    cta={isPlus ? "Get Started Now" : "Start for Free"}
+                    cta={isPlus ? "Get Started Now" : "Get Started"}
                   />
                 </div>
               );

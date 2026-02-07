@@ -32,15 +32,15 @@ export function CTASection() {
             
             <div className="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-6">
                  <Link href="/signup" className="w-full sm:w-auto">
-                    <Button size="lg" className="w-full h-16 px-10 rounded-full text-lg bg-primary hover:bg-primary/90 text-white shadow-coral-glow hover:scale-105 transition-all duration-500">
-                        Start Creating for Free
+                     <Button size="lg" className="w-full h-16 px-10 rounded-full text-lg bg-primary hover:bg-primary/90 text-white shadow-coral-glow hover:scale-105 transition-all duration-500">
+                        Start Creating Now
                         <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                  </Link>
             </div>
             
             <p className="relative z-10 mt-8 text-sm text-white/20 font-light tracking-wide">
-                No credit card required. Cancel anytime.
+                Join our premium community today. Cancel anytime.
             </p>
         </motion.div>
       </div>

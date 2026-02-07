@@ -72,9 +72,9 @@ export const PreviewMobileFrame = React.memo(({
   // State for dimensions - Large Mobile (480x1100 minimum)
   const MIN_FRAME_HEIGHT = 1100;
   const standardRatio = 1100 / 480;
-  const standardHeight = Math.max(Math.floor(width * standardRatio), MIN_FRAME_HEIGHT);
+  const frameWidth = width;
+  const frameHeight = height || Math.max(Math.floor(width * standardRatio), MIN_FRAME_HEIGHT);
 
-  const [size, setSize] = useState({ width: width, height: height || standardHeight });
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [isSelected, setIsSelected] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -96,36 +96,9 @@ export const PreviewMobileFrame = React.memo(({
       lastYProp.current = initialY;
       return;
     }
+  }, [width, height, initialX, initialY, isResizing, isDragging, isStatic]);
 
-    // Force update if static mode is enabled to ensure fixed size
-    if (isStatic) {
-       setSize({ width, height: height || standardHeight });
-    } else {
-        if (width !== lastWidthProp.current) {
-            setSize(prev => ({ ...prev, width }));
-            lastWidthProp.current = width;
-        }
-        if (height !== undefined && height !== lastHeightProp.current) {
-            setSize(prev => ({ ...prev, height }));
-            lastHeightProp.current = height;
-        }
-    }
-    
-    if (initialX !== lastXProp.current || initialY !== lastYProp.current) {
-        setPosition({ x: initialX, y: initialY });
-        lastXProp.current = initialX;
-        lastYProp.current = initialY;
-    }
-  }, [width, height, initialX, initialY, isResizing, isDragging, isStatic, standardHeight]);
 
-  // Auto-save initial position if requested (for smart placement persistence)
-  useEffect(() => {
-    if (autoSave && onSave) {
-      onSave(id, { x: initialX, y: initialY, width, height: height || standardHeight });
-    }
-    // Only run once on mount/init when autoSave is true
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -140,26 +113,7 @@ export const PreviewMobileFrame = React.memo(({
                 "*"
               );
             }
-          } else if (event.data.type === 'UPDATE_HEIGHT') {
-            const contentHeight = event.data.height;
-            // Only auto-resize if NOT static and not currently overlapping interaction
-            if (contentHeight && !isResizing && !isDragging) {
-              setSize(prev => {
-                // Max height safety cap to prevent infinite growth
-                const MAX_AUTO_HEIGHT = 5000;
-                
-                // Ensure it's at least as tall as a standard phone screen
-                // but grows to fit all content if it's a long scrollable page.
-                const safeHeight = Math.min(Math.max(contentHeight, standardHeight), MAX_AUTO_HEIGHT);
-
-                // Only update if difference is significant to avoid jitter loops
-                if (Math.abs(safeHeight - prev.height) > 5) {
-                   return { ...prev, height: safeHeight };
-                }
-                return prev;
-              });
-            }
-          }
+          } 
         }
       }
     };
@@ -325,12 +279,6 @@ export const PreviewMobileFrame = React.memo(({
           </div>
         </div>
 
-      {/* Dimensions Label (Bottom) */}
-      {isSelected && !isStatic && (
-         <div className="absolute -bottom-14 left-1/2 -translate-x-1/2 rounded-md bg-primary px-2 py-0.5 text-primary-foreground text-xs shadow-sm font-medium tabular-nums z-[60] pointer-events-none">
-            {Math.round(size.width)} × {Math.round(size.height)}
-         </div>
-      )}
 
       {/* Generating Badge */}
       {isGenerating && (
@@ -354,8 +302,8 @@ export const PreviewMobileFrame = React.memo(({
         <div 
           className="relative transition-all duration-300 origin-center"
           style={{ 
-            width: size.width, 
-            height: size.height, 
+            width: frameWidth, 
+            height: frameHeight, 
             transform: `scale(${scale})`
           }}
         >
@@ -370,7 +318,7 @@ export const PreviewMobileFrame = React.memo(({
     <Rnd
       ref={rndRef}
       className={`mobile-frame-container z-10 ${isSelected ? 'z-50' : ''} ${className}`}
-      size={{ width: size.width, height: size.height }}
+      size={{ width: frameWidth, height: frameHeight }}
       position={{ x: position.x, y: position.y }}
       disableDragging={disableDrag}
       enableResizing={disableResize ? false : {
@@ -392,29 +340,18 @@ export const PreviewMobileFrame = React.memo(({
       onDrag={(e, d) => {
         setPosition({ x: d.x, y: d.y });
       }}
-      onDragStop={(e, d) => {
-        setIsDragging(false);
-        setPosition({ x: d.x, y: d.y });
-        onSave?.(id, { x: d.x, y: d.y, width: size.width, height: size.height });
-      }}
+    
       onResizeStart={() => {
         setIsResizing(true);
         setIsSelected(true);
       }}
-      onResize={(e, direction, ref, delta, position) => {
-        setSize({ 
-          width: parseInt(ref.style.width), 
-          height: parseInt(ref.style.height) 
-        });
-        setPosition(position);
-      }}
+  
       onResizeStop={(e, direction, ref, delta, position) => {
         setIsResizing(false);
         const newSize = { 
           width: parseInt(ref.style.width), 
           height: parseInt(ref.style.height) 
         };
-        setSize(newSize);
         setPosition(position);
         onSave?.(id, { x: position.x, y: position.y, width: newSize.width, height: newSize.height });
       }}
