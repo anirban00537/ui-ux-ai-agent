@@ -82,26 +82,25 @@ export const coreConstant = {
   DESIGN_CONTEXT: {
     MAX_PREVIOUS_SCREENS: 3,
   } as const,
-
-  AI_MODELS: {
-    DESIGN: {
-      NAME: 'deepseek/deepseek-v3.2',
-      PRICING: { prompt: 1, completion: 2 },
-      PROVIDER: {
-        ENABLED: true,
-        ORDER: ['deepinfra/fp4', 'deepinfra/fp8'] as any,
-        ALLOW_FALLBACKS: true,
-      },
+AI_MODELS:{
+  DESIGN: {
+    NAME: 'z-ai/glm-4.7',
+    PRICING: { prompt: 1, completion: 4 },
+    PROVIDER: {
+      ENABLED: false,
+      ORDER: ['cerebras/fp16'] as any,
+      ALLOW_FALLBACKS: true,
     },
-    AGENT: {
-      NAME: 'minimax/minimax-m2.1',
-      PRICING: { prompt: 1, completion: 2 },
-      PROVIDER: {
-        ENABLED: true,
-        ORDER: ['deepinfra/fp8', 'atlas-cloud/fp8'] as any,
-        ALLOW_FALLBACKS: true,
-      },
+  },
+  AGENT: {
+    NAME: 'z-ai/glm-4.7',
+    PRICING: { prompt: 1, completion: 4 },
+    PROVIDER: {
+      ENABLED: false,
+      ORDER: ['cerebras/fp16']as any,
+      ALLOW_FALLBACKS: true,
     },
+  }
   },
 
   // Subscription Status Constants
@@ -126,7 +125,7 @@ export const coreConstant = {
   // Credit System Constants
   CREDITS: {
     FREE_TIER: 0,
-    DEFAULT_NEW_USER: 250,
+    DEFAULT_NEW_USER: 0,
   } as const,
 
   // Pricing Plans

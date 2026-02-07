@@ -25,36 +25,7 @@ CORE QUALITY CHECKLIST (Non-Negotiable):
 `;
 
 // ---------------------------------------------------------------------------
-// 2. STYLE ADAPTERS
-// ---------------------------------------------------------------------------
-const STYLE_ADAPTERS = `
-STYLE ADAPTERS (Apply based on User Request):
-
-A. **"Clean / Apple / Minimal"** (Default):
-   - Bg: 'bg-background'.
-   - Card: 'bg-card border border-border rounded-xl shadow-sm'.
-   - Spacing: 'p-4 gap-4'.
-
-B. **"Neon / Cyberpunk / Gen-Z / Dark"**:
-   - Bg: 'bg-background' (set to #09090b or slate-950).
-   - Card: 'bg-card/80 backdrop-blur-xl border border-white/10 rounded-xl'.
-   - Glows: 'shadow-[0_0_15px_rgba(168,85,247,0.3)]' on icons/cards.
-   - Text: Gradient titles with 'bg-clip-text text-transparent'.
-   - Decorative lines: 'h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent'.
-
-C. **"Bento Grid / Dashboard"**:
-   - Layout: 'grid grid-cols-2 gap-4'.
-   - Hero cards: 'col-span-2' with gradient borders.
-   - Small cards: 'col-span-1' with icons and stats.
-
-D. **"Premium / Luxury"**:
-   - Everything has depth: Layered shadows, blurs, gradient overlays.
-   - Profile images with gradient ring: 'absolute -inset-0.5 bg-gradient-to-r ... rounded-full blur'.
-   - Animated elements: Status dots, progress indicators.
-`;
-
-// ---------------------------------------------------------------------------
-// 3. LAYOUT SHELL (Competitor-inspired)
+// 2. LAYOUT SHELL (Competitor-inspired)
 // ---------------------------------------------------------------------------
 const LAYOUT_SHELL_INSTRUCTION = `
 MANDATORY ROOT CONTAINER (DO NOT wrap in html/body):
@@ -255,9 +226,8 @@ CONTEXT:
 ═══════════════════════════════════════════════════════════════════════════════
 STEP 1: SELECT YOUR VIBE
 ═══════════════════════════════════════════════════════════════════════════════
-` + STYLE_ADAPTERS + `
 
-*INSTRUCTION*: Match the vibe to the request. "Finance/Gen-Z/Neon" = Dark with glows. "Clean/Pro" = Minimal.
+*INSTRUCTION*: Invent a unique, high-end visual aesthetic tailored specifically to the user's intent. Do not use generic or repetitive styles.
 
 ═══════════════════════════════════════════════════════════════════════════════
 STEP 2: USE THE LAYOUT SHELL
@@ -306,16 +276,58 @@ OUTPUT FORMAT (JSON only):
 // 7. PLANNING TEMPLATE
 // ---------------------------------------------------------------------------
 export const planningTemplate = PromptTemplate.fromTemplate(
-  `You are a Lead Product Designer architecting a premium mobile experience.
+  `You are a Senior Product Designer at a top design agency (IDEO, Pentagram, or Apple). Your task is to architect a world-class mobile app experience.
 
 USER REQUEST: "{message}"
 
-STRATEGY:
-1.  **Vibe Check**: Professional tool (Clean) or lifestyle app (Neon/Gen-Z/Premium Dark)?
-2.  **Layout Logic**: 
-    - "Bento/Dashboard" -> Mention "Grid Layout with col-span-2 hero cards".
-    - "Feed/Social" -> Mention "Vertical List with transaction items".
-3.  **Flow**: 3-5 screens max. Quality over quantity.
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: CONTEXTUAL EXPANSION (MANDATORY)
+═══════════════════════════════════════════════════════════════════════════════
+If the user's request is simple (e.g., "recipe app", "fitness app"), you MUST expand it into a rich creative brief by answering these questions internally:
+- **Target User**: Who is the ideal sophisticated user? (e.g., "health-conscious urban professionals aged 25-40")
+- **Emotional Tone**: What feeling should the app evoke? (e.g., "fresh, organic, inviting, trustworthy")
+- **Color Temperature**: Warm organic tones, cool tech tones, or vibrant lifestyle tones?
+- **Photography Style**: Hero images, illustrations, or iconography-driven?
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: DESIGN SYSTEM FOUNDATION
+═══════════════════════════════════════════════════════════════════════════════
+Every screen prompt MUST define these core elements:
+1.  **Background**: Light (off-white, warm gray) or Dark (slate-950, zinc-900)?
+2.  **Primary Accent**: A context-appropriate color (e.g., olive green for food, coral for wellness, indigo for finance).
+3.  **Card Anatomy**: Define the exact structure of content cards:
+    - Hero Image Ratio (e.g., 4:3, 16:9, square)
+    - Title Style (e.g., "text-lg font-bold")
+    - Metadata Format (e.g., "time • calories • difficulty")
+    - Badge/Tag System (e.g., "NEW & IMPROVED" pill with accent background)
+4.  **Interaction Patterns**: Favorite hearts, bookmark icons, share buttons.
+5.  **Navigation Style**: Tab bar with icon+label, floating action button, or gesture-based.
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: SCREEN-BY-SCREEN PROMPTS
+═══════════════════════════════════════════════════════════════════════════════
+Each screen's "prompt" field MUST be a 100+ word visual specification including:
+- **Layout Grid**: "2-column masonry grid", "full-width stacked cards", "asymmetric bento"
+- **Hero Element**: What is the visually dominant element? (large image, stat, profile)
+- **Card Components**: Exact anatomy of each card type with all metadata fields.
+- **Filter/Chip System**: Horizontal scrolling category pills with active state styling.
+- **Floating Elements**: Summary bars, FABs, sticky headers.
+- **Real Data Examples**: Use premium, realistic names and values.
+  - Food: "Herb Salmon Bowl", "640 kcal", "32g Protein", "25 min"
+  - Fitness: "Morning Strength Flow", "45 min", "320 kcal burned"
+  - Finance: "Sterling Investment Portfolio", "+12.4% MTD", "$124,500.00"
+  - Social: "Sophia Chen", "Product Designer at Apple", "2.4k followers"
+
+═══════════════════════════════════════════════════════════════════════════════
+EXAMPLE PROMPT (For a Recipe App):
+═══════════════════════════════════════════════════════════════════════════════
+"Screen: Recipe Discovery Feed. Light background (bg-stone-50). Accent: Forest Green (bg-emerald-600). Layout: 2-column masonry grid with varying card heights. Cards: Large 4:3 hero food image (rounded-2xl), "NEW & IMPROVED" badge (bg-emerald-100 text-emerald-700), recipe title (text-lg font-bold), metadata row with icons (15m, 420 kcal, 32g protein). Heart icon in top-right of image. Horizontal filter chips at top: 'All Recipes' (active, filled), 'Easy Prep', 'Quick', 'Vegetarian'. Tab bar: Home, Recipes (active), Orders, Profile. Real data: 'Zesty Mediterranean Salmon Bowl', 'Creamy Roasted Pumpkin Ginger Soup', 'Rainbow Harvest Quinoa Salad'."
+
+═══════════════════════════════════════════════════════════════════════════════
+OUTPUT REQUIREMENTS
+═══════════════════════════════════════════════════════════════════════════════
+- Plan 3-5 screens. Quality over quantity.
+- Each screen prompt must be detailed enough that a developer could build it without asking questions.
 
 OUTPUT SCHEMA (JSON):
 {{
@@ -323,8 +335,8 @@ OUTPUT SCHEMA (JSON):
   "screenPrompts": [
     {{ 
       "id": "uuid",
-      "title": "Short Title", 
-      "prompt": "Detailed spec including VIBE (Neon/Clean/Premium Dark), LAYOUT (Grid/List), CONTENT sections, KEY COMPONENTS, and SPECIFIC DATA POINTS.", 
+      "title": "Short Title (e.g., 'Recipe Feed', 'Recipe Detail', 'User Profile')", 
+      "prompt": "100+ word detailed visual specification following the structure above.", 
       "order": number 
     }}
   ]
@@ -348,7 +360,7 @@ Current Screen Context:
 {previousScreensContext}
 
 INSTRUCTIONS:
-1.  **Preserve Style**: Keep existing vibe (Neon stays Neon, Clean stays Clean).
+1.  **Preserve Style**: Maintain the established bespoke visual aesthetic and mood.
 2.  **Preserve Layout**: Keep 'min-h-screen w-full overflow-x-hidden relative' on root container. Keep 'flex-1 overflow-y-auto pb-32' on main.
 3.  **Refine**: Make the specific requested change.
 4.  **NO BOILERPLATE**: No <!DOCTYPE>. Return fonts/styles + root div.

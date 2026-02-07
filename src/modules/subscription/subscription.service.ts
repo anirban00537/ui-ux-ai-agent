@@ -102,7 +102,7 @@ export class SubscriptionService {
       const FREE_STORAGE_LIMIT = 0;
 
       let slideLimit = FREE_SLIDE_LIMIT;
-      let planName = 'free';
+      let planName = 'No Active Plan';
       let storageLimit = FREE_STORAGE_LIMIT;
       let storageUsage = 0;
 
