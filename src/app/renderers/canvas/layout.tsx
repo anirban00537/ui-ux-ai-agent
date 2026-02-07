@@ -32,7 +32,7 @@ export default function CanvasLayout({
           rel="stylesheet"
         />
         <link
-          href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round|Material+Icons+Sharp"
           rel="stylesheet"
         />
 

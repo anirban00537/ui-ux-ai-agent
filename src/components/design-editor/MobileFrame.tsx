@@ -302,6 +302,7 @@ export const MobileFrame = React.memo(
 
     useEffect(() => {
       if (isLoaded && colorPalette && iframeRef.current?.contentWindow) {
+        console.log('[MobileFrame] Sending UPDATE_THEME, fontFamily:', colorPalette.fontFamily);
         iframeRef.current.contentWindow.postMessage(
           { type: "UPDATE_THEME", palette: colorPalette },
           "*"

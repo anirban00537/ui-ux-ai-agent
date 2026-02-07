@@ -19,6 +19,9 @@ interface ColorPalette {
   cardForeground: string;
   border: string;
   input: string;
+  fontFamily?: string;
+  fontHeading?: string;
+  fontBody?: string;
 }
 
 interface MobileFrameProps {

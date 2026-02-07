@@ -37,6 +37,9 @@ export interface ColorPalette {
   cardForeground: string;
   border: string;
   input: string;
+  fontFamily?: string;
+  fontHeading?: string;
+  fontBody?: string;
 }
 
 export interface Conversation {
@@ -179,7 +182,11 @@ const designEditorSlice = createSlice({
     },
     updateColorValue: (state, action: PayloadAction<{ key: keyof ColorPalette; value: string }>) => {
       if (state.conversation?.colorPalette) {
-        state.conversation.colorPalette[action.payload.key] = action.payload.value;
+        // Create new object to ensure React detects the change
+        state.conversation.colorPalette = {
+          ...state.conversation.colorPalette,
+          [action.payload.key]: action.payload.value,
+        };
       }
     },
     setCopiedId: (state, action: PayloadAction<string | null>) => {

@@ -565,10 +565,27 @@ export function useChatGenerator(designId?: string) {
   }, 1000);
 
   const updateColorPalette = useCallback((key: keyof ColorPalette, value: string) => {
+    console.log('[useChatGenerator] updateColorPalette called:', key, value);
     if (conversation?.colorPalette) {
-      const updatedPalette = { ...conversation.colorPalette, [key]: value };
+      // If updating main font family, also update heading/body fonts to match
+      // This ensures the single font selector controls the whole theme
+      let updatedPalette = { ...conversation.colorPalette, [key]: value };
+      
+      if (key === 'fontFamily') {
+        updatedPalette = {
+          ...updatedPalette,
+          fontHeading: value,
+          fontBody: value
+        };
+        // We also need to dispatch these updates to Redux
+        dispatch(updateColorValue({ key: 'fontHeading', value }));
+        dispatch(updateColorValue({ key: 'fontBody', value }));
+      }
+
       dispatch(updateColorValue({ key, value }));
       debouncedUpdate(conversation.id, updatedPalette);
+    } else {
+      console.warn('[useChatGenerator] No conversation or colorPalette found');
     }
   }, [dispatch, conversation, debouncedUpdate]);
 

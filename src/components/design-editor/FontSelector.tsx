@@ -1,0 +1,54 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { Type } from "lucide-react";
+
+const AVAILABLE_FONTS = [
+  { value: 'Inter', label: 'Inter', category: 'Sans-serif' },
+  { value: 'Plus Jakarta Sans', label: 'Plus Jakarta Sans', category: 'Sans-serif' },
+  { value: 'Space Grotesk', label: 'Space Grotesk', category: 'Sans-serif' },
+  { value: 'Outfit', label: 'Outfit', category: 'Sans-serif' },
+  { value: 'DM Sans', label: 'DM Sans', category: 'Sans-serif' },
+  { value: 'Poppins', label: 'Poppins', category: 'Sans-serif' },
+  { value: 'Playfair Display', label: 'Playfair Display', category: 'Serif' },
+  { value: 'Cormorant Garamond', label: 'Cormorant Garamond', category: 'Serif' },
+  { value: 'Lora', label: 'Lora', category: 'Serif' },
+  { value: 'Source Code Pro', label: 'Source Code Pro', category: 'Monospace' },
+];
+
+interface FontSelectorProps {
+  value: string;
+  onChange: (value: string) => void;
+  className?: string;
+}
+
+export function FontSelector({ value, onChange, className }: FontSelectorProps) {
+  return (
+    <div className={cn("space-y-2", className)}>
+      <div className="flex items-center gap-2 mb-1">
+        <Type className="w-3.5 h-3.5 text-zinc-500" />
+        <label className="text-xs font-medium text-zinc-400">
+          Primary Font
+        </label>
+      </div>
+      <div className="relative group">
+        <select
+          value={value || "Inter"}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-200 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all appearance-none cursor-pointer hover:border-zinc-700"
+        >
+          {AVAILABLE_FONTS.map((font) => (
+            <option key={font.value} value={font.value}>
+              {font.label} ({font.category})
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}

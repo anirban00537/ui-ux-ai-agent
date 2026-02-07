@@ -15,6 +15,7 @@ export interface ColorPalette {
   border: string;
   input: string;
   themeMode?: 'light' | 'dark';
+  fontFamily?: string;
   fontHeading?: string;
   fontBody?: string;
 }

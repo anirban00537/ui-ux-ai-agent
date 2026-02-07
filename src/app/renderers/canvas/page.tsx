@@ -39,6 +39,107 @@ function CanvasContent() {
 
     root.addEventListener("error", handleImageError, true);
 
+    // Strip hardcoded font definitions from AI-generated HTML
+    // This allows our theme fonts to take effect instead of the AI's defaults
+    const sanitizeHtmlFonts = (html: string): string => {
+      let sanitized = html;
+      
+      // If full HTML document, extract body content and style tags from head
+      if (sanitized.includes('<body') || sanitized.includes('<!DOCTYPE')) {
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(sanitized, 'text/html');
+          
+          // Extract styles from head that are NOT font definitions
+          const headStyles = Array.from(doc.head.querySelectorAll('style'))
+            .map(style => style.outerHTML)
+            .join(' ');
+            
+          // Extract link tags (e.g. for icons, external fonts)
+          const headLinks = Array.from(doc.head.querySelectorAll('link'))
+            .map(link => link.outerHTML)
+            .join(' ');
+            
+          // Get body innerHTML
+          const bodyContent = doc.body.innerHTML;
+          
+          sanitized = headLinks + headStyles + bodyContent;
+          console.log('[Canvas] Extracted body content and head links from full HTML document');
+        } catch (e) {
+          console.error('[Canvas] Failed to parse HTML:', e);
+        }
+      }
+      
+      // Remove font-family declarations from inline <style> tags
+      // Match patterns like: .font-heading{font-family:'DM Sans',sans-serif}
+      // and --font-heading: 'DM Sans', sans-serif; in :root
+      
+      // Remove .font-heading and .font-sans class definitions with font-family
+      // Handle both minified and spaced versions, and direct font-family setting
+      sanitized = sanitized.replace(
+        /\.font-heading\s*\{[^}]*font-family[^}]*\}/gi,
+        ''
+      );
+      sanitized = sanitized.replace(
+        /\.font-sans\s*\{[^}]*font-family[^}]*\}/gi,
+        ''
+      );
+      
+      // Also remove any generic rule setting font-family
+      sanitized = sanitized.replace(
+        /font-family\s*:\s*[^;\}]+[;\}]/gi,
+        match => {
+          // Keep if it's using var() as that might be valid logic
+          if (match.includes('var(')) return match;
+          console.log('[Canvas] Removed explicit font-family:', match);
+          return '';
+        }
+      );
+
+      // Remove CSS variable definitions for fonts
+      sanitized = sanitized.replace(
+        /--font-heading\s*:\s*[^;]+;/gi, 
+        (match) => {
+             console.log('[Canvas] Removed font var definition:', match);
+             return '--font-heading: inherit;';
+        }
+      );
+      sanitized = sanitized.replace(
+        /--font-sans\s*:\s*[^;]+;/gi, 
+        (match) => {
+             console.log('[Canvas] Removed font var definition:', match);
+             return '--font-sans: inherit;';
+        }
+      );
+      
+      // Remove font-family from body style definitions
+      sanitized = sanitized.replace(
+        /(body\s*\{[^}]*?)font-family\s*:\s*[^;]+;/gi,
+        '$1'
+      );
+      
+      if (sanitized !== html) {
+          console.log('[Canvas] sanitizeHtmlFonts modified content. Length diff:', sanitized.length - html.length);
+      }
+
+      return sanitized;
+    };
+
+    const stripExistingFontStyles = () => {
+      console.log('[Canvas] stripExistingFontStyles called');
+      // Find and modify style tags in the loaded content
+      const styleTags = document.querySelectorAll('style');
+      styleTags.forEach((tag) => {
+        if (tag.id === 'theme-font-override') return; // Skip our override
+        const originalCSS = tag.textContent || '';
+        const sanitizedCSS = sanitizeHtmlFonts(originalCSS);
+        if (sanitizedCSS !== originalCSS) {
+          console.log('[Canvas] Updating style tag content');
+          tag.textContent = sanitizedCSS;
+        }
+      });
+    };
+
     const applyTheme = (p: any) => {
       const docRoot = document.documentElement;
       if (!p) return;
@@ -65,18 +166,89 @@ function CanvasContent() {
       if (p.input != null) docRoot.style.setProperty("--input", p.input);
 
       // Dynamic Font Loading
-      if (p.fontHeading || p.fontBody) {
-        const headingFont = p.fontHeading || "Space Grotesk";
-        const bodyFont = p.fontBody || "Plus Jakarta Sans";
+      if (p.fontHeading || p.fontBody || p.fontFamily) {
+        console.log('[Canvas] Applying fonts:', { fontFamily: p.fontFamily, fontHeading: p.fontHeading, fontBody: p.fontBody });
+        
+        // First, strip any remaining hardcoded fonts from loaded content
+        stripExistingFontStyles();
+        
+        const mainFont = p.fontFamily;
+        const headingFont = p.fontHeading || mainFont || "Space Grotesk";
+        const bodyFont = p.fontBody || mainFont || "Plus Jakarta Sans";
+        console.log('[Canvas] Using fonts - body:', bodyFont, 'heading:', headingFont);
 
-        // 1. Set CSS variables for fonts
-        docRoot.style.setProperty(
-          "--font-heading",
-          `'${headingFont}', sans-serif`
-        );
-        docRoot.style.setProperty("--font-sans", `'${bodyFont}', sans-serif`);
+        // 1. Set CSS variables for fonts (set multiple variants for Tailwind 4 compatibility)
+        const bodyFontValue = `'${bodyFont}', sans-serif`;
+        const headingFontValue = `'${headingFont}', sans-serif`;
+        
+        // Standard variables
+        docRoot.style.setProperty("--font-heading", headingFontValue);
+        docRoot.style.setProperty("--font-sans", bodyFontValue);
+        
+        // Tailwind 4 internal variables (--font-font-xxx maps to font-xxx utility)
+        docRoot.style.setProperty("--font-font-sans", bodyFontValue);
+        docRoot.style.setProperty("--font-font-heading", headingFontValue);
+        
+        // Override Tailwind's default font family
+        docRoot.style.setProperty("--default-font-family", bodyFontValue);
 
-        // 2. Load the font from Google Fonts if not already loaded
+        // 2. Apply font directly to body and all content to override inline styles
+        document.body.style.fontFamily = bodyFontValue;
+        
+        // Also apply to the canvas design root if it exists
+        const designRoot = document.querySelector('.canvas-design-root');
+        if (designRoot) {
+          (designRoot as HTMLElement).style.fontFamily = bodyFontValue;
+        }
+        
+        // Create/update a style tag for font override with !important
+        // Don't use var() here to avoid circular references
+        let fontStyle = document.getElementById('theme-font-override');
+        if (!fontStyle) {
+          fontStyle = document.createElement('style');
+          fontStyle.id = 'theme-font-override';
+          document.head.appendChild(fontStyle);
+        }
+        
+        // Use high-specificity selectors to beat any inline styles or classes in the content
+        fontStyle.textContent = `
+          :root {
+            --font-sans: ${bodyFontValue} !important;
+            --font-heading: ${headingFontValue} !important;
+            --font-font-sans: ${bodyFontValue} !important;
+            --font-font-heading: ${headingFontValue} !important;
+            --default-font-family: ${bodyFontValue} !important;
+          }
+          /* High specificity selectors using ID */
+          #canvas-wrapper,
+          #canvas-wrapper *:not(.material-icons):not(.material-icons-outlined):not(.material-icons-round):not(.material-icons-sharp):not(.material-symbols-outlined),
+          .canvas-design-root,
+          .canvas-design-root *:not(.material-icons):not(.material-icons-outlined):not(.material-icons-round):not(.material-icons-sharp):not(.material-symbols-outlined) {
+            font-family: ${bodyFontValue} !important;
+          }
+          
+          /* EXPLICITLY Restore Icon Fonts to beat the global override just in case */
+          .material-icons { font-family: 'Material Icons' !important; }
+          .material-icons-outlined { font-family: 'Material Icons Outlined' !important; }
+          .material-icons-round { font-family: 'Material Icons Round' !important; }
+          .material-icons-sharp { font-family: 'Material Icons Sharp' !important; }
+          .material-symbols-outlined { font-family: 'Material Symbols Outlined' !important; }
+          
+          /* Target specific classes that might be in the content */
+          /* Target specific classes that might be in the content */
+          .font-sans, 
+          [class*="font-sans"] {
+            font-family: ${bodyFontValue} !important;
+          }
+          h1, h2, h3, h4, h5, h6, 
+          .font-heading,
+          [class*="font-heading"] {
+            font-family: ${headingFontValue} !important;
+          }
+        `;
+
+
+        // 3. Load the font from Google Fonts if not already loaded
         const fontId = `google-fonts-${headingFont}-${bodyFont}`
           .replace(/ /g, "-")
           .toLowerCase();
@@ -110,7 +282,9 @@ function CanvasContent() {
       if (!data) return;
 
       if (data.type === "UPDATE_CONTENT") {
-        const html = data.html || "";
+        const rawHtml = data.html || "";
+        // Sanitize fonts from AI-generated HTML so theme fonts can override
+        const html = sanitizeHtmlFonts(rawHtml);
         if (root) {
           // In preview mode, content scrolls inside a fixed frame
           // In editor mode, content grows and frame expands
@@ -121,6 +295,7 @@ function CanvasContent() {
               <div class="canvas-design-root flex-1 flex flex-col ${isPreview ? 'min-h-full' : ''} relative z-10">${html}</div>
             </div>
           `;
+
 
           // Measure actual content height - look for the first direct child of design root
           // which is the actual UI content, not the wrapper with min-height
@@ -169,6 +344,7 @@ function CanvasContent() {
       }
 
       if (data.type === "UPDATE_THEME" && data.palette) {
+        console.log('[Canvas] UPDATE_THEME received, fontFamily:', data.palette.fontFamily);
         applyTheme(data.palette);
       }
     };

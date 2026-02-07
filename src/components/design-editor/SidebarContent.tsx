@@ -11,9 +11,10 @@ import { SidebarPromptInput } from "@/components/design-editor/SidebarPromptInpu
 import { useCreditBalance } from "@/hooks/use-credit-balance";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Share2, Globe, Lock, Copy, Check, Loader2, Brain, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Share2, Globe, Lock, Copy, Check, Loader2, Brain, ChevronRight, CheckCircle2, MessageSquare, Palette } from "lucide-react";
 import { updateDesign } from "@/services/designs";
 import { toast } from "sonner";
+import { ThemePanel } from "./ThemePanel";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
@@ -202,6 +203,7 @@ export function SidebarContent({
     progress,
   } = useAppSelector((state) => state.designEditor);
 
+  const [activeTab, setActiveTab] = useState<"chat" | "theme">("chat");
   const [prompt, setPrompt] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -397,7 +399,48 @@ export function SidebarContent({
         </div>
       </div>
 
-      {/* Messages Area */}
+      {/* Tabs */}
+      <div className="flex border-b border-zinc-800/40 bg-background/50 backdrop-blur-sm z-10">
+        <button 
+          onClick={() => setActiveTab("chat")}
+          className={cn(
+            "flex-1 py-3 text-xs font-medium transition-all relative",
+            activeTab === "chat" 
+              ? "text-primary" 
+              : "text-zinc-500 hover:text-zinc-300"
+          )}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <MessageSquare className="w-3.5 h-3.5" />
+            Chat
+          </div>
+          {activeTab === "chat" && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-[0_0_8px_var(--primary)]" />
+          )}
+        </button>
+        <button 
+          onClick={() => setActiveTab("theme")}
+          className={cn(
+            "flex-1 py-3 text-xs font-medium transition-all relative",
+            activeTab === "theme" 
+              ? "text-primary" 
+              : "text-zinc-500 hover:text-zinc-300"
+          )}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <Palette className="w-3.5 h-3.5" />
+            Theme
+          </div>
+          {activeTab === "theme" && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-[0_0_8px_var(--primary)]" />
+          )}
+        </button>
+      </div>
+
+      {/* Content Area */}
+      {activeTab === "chat" ? (
+        <>
+          {/* Messages Area */}
       <div
         ref={chatContainerRef}
         className="flex-1 overflow-y-auto px-5 py-6 space-y-8 custom-scrollbar scroll-smooth"
@@ -553,6 +596,15 @@ export function SidebarContent({
           onCancel={onCancel}
         />
       </div>
+    </>
+  ) : (
+    <ThemePanel
+      colorPalette={conversation?.colorPalette}
+      onColorChange={(key, value) => onColorChange?.(key, value)}
+      onFontChange={(font) => onColorChange?.("fontFamily", font)}
+      currentFont={conversation?.colorPalette?.fontFamily}
+    />
+  )}
     </div>
   );
 }
