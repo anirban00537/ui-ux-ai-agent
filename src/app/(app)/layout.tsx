@@ -60,7 +60,7 @@ export const metadata: Metadata = {
       "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator. Turn ideas into professional screens in seconds.",
     images: [
       {
-        url: "/og-image.png",
+        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://butterfast.com"}/og-image.png`,
         width: 1200,
         height: 630,
         alt: "Butterfast - AI Mobile App Design Generator",
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     description:
       "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator. Turn ideas into professional screens in seconds.",
     creator: "@butterfast",
-    images: ["/og-image.png"],
+    images: [`${process.env.NEXT_PUBLIC_APP_URL || "https://butterfast.com"}/og-image.png`],
   },
   robots: {
     index: true,
