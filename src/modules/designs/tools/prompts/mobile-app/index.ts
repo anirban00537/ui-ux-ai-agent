@@ -276,58 +276,24 @@ OUTPUT FORMAT (JSON only):
 // 7. PLANNING TEMPLATE
 // ---------------------------------------------------------------------------
 export const planningTemplate = PromptTemplate.fromTemplate(
-  `You are a Senior Product Designer at a top design agency (IDEO, Pentagram, or Apple). Your task is to architect a world-class mobile app experience.
+  `You are a Lead Product Designer architecting a premium mobile experience.
 
 USER REQUEST: "{message}"
 
-═══════════════════════════════════════════════════════════════════════════════
-STEP 1: CONTEXTUAL EXPANSION (MANDATORY)
-═══════════════════════════════════════════════════════════════════════════════
-If the user's request is simple (e.g., "recipe app", "fitness app"), you MUST expand it into a rich creative brief by answering these questions internally:
-- **Target User**: Who is the ideal sophisticated user? (e.g., "health-conscious urban professionals aged 25-40")
-- **Emotional Tone**: What feeling should the app evoke? (e.g., "fresh, organic, inviting, trustworthy")
-- **Color Temperature**: Warm organic tones, cool tech tones, or vibrant lifestyle tones?
-- **Photography Style**: Hero images, illustrations, or iconography-driven?
+STRATEGY:
+1.  **Vibe Selection**: Design a bespoke, high-end visual aesthetic from scratch based on the user's unique industry and intent.
+2.  **Visual Hallucination**: If the user's request is simple, you MUST elaborate it into a high-end designer's vision. Never plan a "standard list"; plan a "dynamic feed with depth, layered blurs, and sophisticated typography."
+3.  **Layout Logic**: Be creative with layout grids. Use asymmetric grids, complex bento systems, or layered stacks to create visual interest.
+4.  **Flow**: 3-5 screens max. Quality over quantity.
 
-═══════════════════════════════════════════════════════════════════════════════
-STEP 2: DESIGN SYSTEM FOUNDATION
-═══════════════════════════════════════════════════════════════════════════════
-Every screen prompt MUST define these core elements:
-1.  **Background**: Light (off-white, warm gray) or Dark (slate-950, zinc-900)?
-2.  **Primary Accent**: A context-appropriate color (e.g., olive green for food, coral for wellness, indigo for finance).
-3.  **Card Anatomy**: Define the exact structure of content cards:
-    - Hero Image Ratio (e.g., 4:3, 16:9, square)
-    - Title Style (e.g., "text-lg font-bold")
-    - Metadata Format (e.g., "time • calories • difficulty")
-    - Badge/Tag System (e.g., "NEW & IMPROVED" pill with accent background)
-4.  **Interaction Patterns**: Favorite hearts, bookmark icons, share buttons.
-5.  **Navigation Style**: Tab bar with icon+label, floating action button, or gesture-based.
+MANDATORY PROMPT DEPTH (Every 'prompt' field MUST follow this structure):
+- **Visual Style**: Define the specific lighting, lighting effects, and depth.
+- **Layout Architecture**: Specify if it is Bento, Stacked, Layered, or Asymmetric.
+- **Micro-Details**: Mention specific shadow weights, gradient directions (e.g., to-tr), and blur values.
+- **Example Data**: Define the exactly premium-sounding data points (not just "user name", use "Alexander Sterling").
 
-═══════════════════════════════════════════════════════════════════════════════
-STEP 3: SCREEN-BY-SCREEN PROMPTS
-═══════════════════════════════════════════════════════════════════════════════
-Each screen's "prompt" field MUST be a 100+ word visual specification including:
-- **Layout Grid**: "2-column masonry grid", "full-width stacked cards", "asymmetric bento"
-- **Hero Element**: What is the visually dominant element? (large image, stat, profile)
-- **Card Components**: Exact anatomy of each card type with all metadata fields.
-- **Filter/Chip System**: Horizontal scrolling category pills with active state styling.
-- **Floating Elements**: Summary bars, FABs, sticky headers.
-- **Real Data Examples**: Use premium, realistic names and values.
-  - Food: "Herb Salmon Bowl", "640 kcal", "32g Protein", "25 min"
-  - Fitness: "Morning Strength Flow", "45 min", "320 kcal burned"
-  - Finance: "Sterling Investment Portfolio", "+12.4% MTD", "$124,500.00"
-  - Social: "Sophia Chen", "Product Designer at Apple", "2.4k followers"
-
-═══════════════════════════════════════════════════════════════════════════════
-EXAMPLE PROMPT (For a Recipe App):
-═══════════════════════════════════════════════════════════════════════════════
-"Screen: Recipe Discovery Feed. Light background (bg-stone-50). Accent: Forest Green (bg-emerald-600). Layout: 2-column masonry grid with varying card heights. Cards: Large 4:3 hero food image (rounded-2xl), "NEW & IMPROVED" badge (bg-emerald-100 text-emerald-700), recipe title (text-lg font-bold), metadata row with icons (15m, 420 kcal, 32g protein). Heart icon in top-right of image. Horizontal filter chips at top: 'All Recipes' (active, filled), 'Easy Prep', 'Quick', 'Vegetarian'. Tab bar: Home, Recipes (active), Orders, Profile. Real data: 'Zesty Mediterranean Salmon Bowl', 'Creamy Roasted Pumpkin Ginger Soup', 'Rainbow Harvest Quinoa Salad'."
-
-═══════════════════════════════════════════════════════════════════════════════
-OUTPUT REQUIREMENTS
-═══════════════════════════════════════════════════════════════════════════════
-- Plan 3-5 screens. Quality over quantity.
-- Each screen prompt must be detailed enough that a developer could build it without asking questions.
+DETAILED PROMPT EXAMPLE:
+"Style: Ultra-Premium Luxury Dark. Layout: Layered Bento Grid. Background uses a deep slate-950 with subtle radial gradients. Cards use 'bg-card/40 backdrop-blur-xl' with dual-layered shadows (one soft, one colored glow). Typography utilizes massive tracking-tighter headers. Content: A sophisticated investment dashboard showing real-time market delta (+12.4%), premium account stats for 'Sterling Private Vault', and sleek glassmorphic transaction cards with custom icon glows."
 
 OUTPUT SCHEMA (JSON):
 {{
@@ -335,8 +301,8 @@ OUTPUT SCHEMA (JSON):
   "screenPrompts": [
     {{ 
       "id": "uuid",
-      "title": "Short Title (e.g., 'Recipe Feed', 'Recipe Detail', 'User Profile')", 
-      "prompt": "100+ word detailed visual specification following the structure above.", 
+      "title": "Short Title", 
+      "prompt": "Detailed spec including a UNIQUE VISUAL AESTHETIC, bespoke LAYOUT structure, CONTENT sections, KEY COMPONENTS, and SPECIFIC DATA POINTS.", 
       "order": number 
     }}
   ]
