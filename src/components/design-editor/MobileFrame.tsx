@@ -262,13 +262,16 @@ export const MobileFrame = React.memo(
               const contentHeight = event.data.height;
               if (contentHeight && !isResizing && !isDragging) {
                 setSize((prev) => {
-                  const MAX_AUTO_HEIGHT = 5000;
+                  // More reasonable max height for mobile screens
+                  const MAX_AUTO_HEIGHT = 2500;
                   const MIN_HEIGHT = MIN_FRAME_HEIGHT;
                   const safeHeight = Math.min(
                     Math.max(contentHeight, MIN_HEIGHT),
                     MAX_AUTO_HEIGHT
                   );
-                  if (Math.abs(safeHeight - prev.height) > 5) {
+                  // Only update if difference is significant (more than 20px)
+                  // This prevents jitter from minor measurement variations
+                  if (Math.abs(safeHeight - prev.height) > 20) {
                     return { ...prev, height: safeHeight };
                   }
                   return prev;

@@ -114,24 +114,34 @@ function CanvasContent() {
         if (root) {
           // In preview mode, content scrolls inside a fixed frame
           // In editor mode, content grows and frame expands
+          // IMPORTANT: In editor mode, do NOT use min-h-full on design root - it causes incorrect height measurements
           root.innerHTML = `
-            <div id="canvas-wrapper" class="w-full ${isPreview ? 'h-full overflow-y-auto' : 'h-auto'} flex flex-col flex-1 min-h-full relative">
+            <div id="canvas-wrapper" class="w-full ${isPreview ? 'h-full overflow-y-auto' : 'h-auto'} flex flex-col flex-1 ${isPreview ? 'min-h-full' : ''} relative">
               <div id="canvas-dot-pattern" class="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style="background-size: 24px 24px; background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);"></div>
-              <div class="canvas-design-root flex-1 flex flex-col min-h-full relative z-10">${html}</div>
+              <div class="canvas-design-root flex-1 flex flex-col ${isPreview ? 'min-h-full' : ''} relative z-10">${html}</div>
             </div>
           `;
 
-          // Measure actual content height (not wrapper which has min-height)
+          // Measure actual content height - look for the first direct child of design root
+          // which is the actual UI content, not the wrapper with min-height
           const designRoot = root.querySelector('.canvas-design-root');
-          const contentHeight = designRoot ? designRoot.scrollHeight : 0;
-          if (contentHeight > 0) {
-            window.parent.postMessage(
-              {
-                type: "UPDATE_HEIGHT",
-                height: contentHeight,
-              },
-              "*"
-            );
+          if (designRoot && !isPreview) {
+            // Wait a tick for images and fonts to load before measuring
+            requestAnimationFrame(() => {
+              // Get the actual content element (first child that's not a style)
+              const contentEl = designRoot.querySelector(':scope > div:not(style)');
+              const contentHeight = contentEl ? contentEl.getBoundingClientRect().height : designRoot.scrollHeight;
+              
+              if (contentHeight > 0) {
+                window.parent.postMessage(
+                  {
+                    type: "UPDATE_HEIGHT",
+                    height: Math.ceil(contentHeight),
+                  },
+                  "*"
+                );
+              }
+            });
           }
 
           // 2. Attach fallback for images that fail to load
@@ -165,23 +175,29 @@ function CanvasContent() {
 
     // Watch for size changes with throttling (only really needed for editor mode to inform parent)
     const resizeObserver = new ResizeObserver(() => {
+      // Don't report height in preview mode - frame is fixed
+      if (isPreview) return;
+      
       clearTimeout(heightReportTimeout);
       heightReportTimeout = setTimeout(() => {
-        // Measure actual content height from the design root, not wrapper
+        // Measure actual content height from the first child of design root
         const designRoot = root?.querySelector('.canvas-design-root');
         if (!designRoot) return;
 
-        // Get the actual content height
-        const contentHeight = designRoot.scrollHeight;
+        // Get the actual content element (first child that's not a style)
+        const contentEl = designRoot.querySelector(':scope > div:not(style)');
+        const contentHeight = contentEl ? contentEl.getBoundingClientRect().height : 0;
         
-        window.parent.postMessage(
-          {
-            type: "UPDATE_HEIGHT",
-            height: contentHeight,
-          },
-          "*"
-        );
-      }, 150);
+        if (contentHeight > 0) {
+          window.parent.postMessage(
+            {
+              type: "UPDATE_HEIGHT",
+              height: Math.ceil(contentHeight),
+            },
+            "*"
+          );
+        }
+      }, 250); // Increased debounce to let content settle
     });
 
     resizeObserver.observe(document.body);
