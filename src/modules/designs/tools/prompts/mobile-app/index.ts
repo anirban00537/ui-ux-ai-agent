@@ -261,7 +261,8 @@ CRITICAL RULES:
 4.  **GRADIENT EVERYTHING**: Gradient text, gradient borders, gradient buttons.
 5.  **Real Images**: Use Unsplash IDs. Profile images need gradient ring effect.
 6.  **Navigation Consistency**: Copy bottom nav exactly from previousScreensContext if it exists.
-7.  **NO BOILERPLATE**: No <!DOCTYPE>, <html>, <body>. Return <link>, <style>, and the root div.
+7.  **NO BOILERPLATE**: STRICTLY NO '<!DOCTYPE>', '<html>', '<body>', '<head>'. Return ONLY the '<style>' tags and the root '<div>' content.
+8.  **NO HARDCODED FONTS**: Do NOT define 'font-family' in CSS rules. Use utility classes '.font-sans' and '.font-heading' ONLY. The environment handles font loading.
 
 OUTPUT FORMAT (JSON only):
 {{
