@@ -84,20 +84,20 @@ export const coreConstant = {
   } as const,
 AI_MODELS:{
   DESIGN: {
-    NAME: 'z-ai/glm-4.7',
+    NAME: 'minimax/minimax-m2.1:nitro',
     PRICING: { prompt: 1, completion: 4 },
     PROVIDER: {
       ENABLED: false,
-      ORDER: ['cerebras/fp16'] as any,
+      ORDER: ['nebius/fp8'] as any,
       ALLOW_FALLBACKS: true,
     },
   },
   AGENT: {
-    NAME: 'z-ai/glm-4.7',
+    NAME: 'minimax/minimax-m2.1:nitro',
     PRICING: { prompt: 1, completion: 4 },
     PROVIDER: {
       ENABLED: false,
-      ORDER: ['cerebras/fp16']as any,
+      ORDER: ['nebius/fp8']as any,
       ALLOW_FALLBACKS: true,
     },
   }
