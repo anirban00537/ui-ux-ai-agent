@@ -21,42 +21,45 @@ export const CreditBalanceCard: React.FC<CreditBalanceCardProps> = ({
       initial={{ opacity: 0, x: -15 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative flex flex-col p-6 rounded-2xl overflow-hidden group bg-card border border-border shadow-sm hover:shadow-depth-3 transition-all duration-300"
+      className="relative flex flex-col p-8 rounded-[32px] overflow-hidden group bg-card border border-border/50 shadow-2xl ring-1 ring-white/5 transition-all duration-300"
     >
-      <div className="relative z-10 flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 text-primary">
-            <IconSparkles size={20} />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-3xl rounded-full -mr-16 -mt-16 group-hover:bg-primary/10 transition-colors duration-500" />
+      
+      <div className="relative z-10 flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-primary/10 text-primary ring-1 ring-primary/20">
+            <IconSparkles size={24} />
           </div>
-          <h2 className="text-xl font-bold text-foreground tracking-tight">
+          <h2 className="text-2xl font-black text-foreground tracking-tighter uppercase italic">
             Credits
           </h2>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-0.5">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-1">
             Available Now
           </p>
-          <p className={`text-3xl font-bold tracking-tight ${getCreditColor(balance)}`}>
+          <p className={`text-4xl font-black tracking-tighter ${getCreditColor(balance)}`}>
             {formatCredits(balance)}
           </p>
         </div>
       </div>
 
-      <div className="relative z-10 grid grid-cols-1 gap-4 pt-0">
-        <div className="p-4 rounded-xl bg-secondary/5 border border-secondary/10 flex items-center justify-between">
+      <div className="relative z-10 grid grid-cols-1 gap-4 pt-0 text-white">
+        <div className="p-5 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between backdrop-blur-sm">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50 mb-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-1.5">
               Cycle Quota
             </p>
-            <p className="text-base font-bold text-foreground/80">
+            <p className="text-lg font-black text-foreground/90 tabular-nums">
               {quota.toLocaleString()}
             </p>
           </div>
+          <div className="w-px h-8 bg-white/5" />
           <div className="text-right">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/50 mb-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-1.5">
               Used This Cycle
             </p>
-            <p className="text-base font-bold text-foreground/80">
+            <p className="text-lg font-black text-foreground/90 tabular-nums">
               {Math.max(0, quota - balance).toLocaleString()}
             </p>
           </div>

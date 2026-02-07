@@ -111,11 +111,18 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-4 py-8 ">
-      <div className="relative z-10 w-full max-w-7xl flex flex-col gap-4">
+    <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-4 py-8 lg:py-12">
+      <div className="relative z-10 w-full max-w-6xl flex flex-col gap-10">
         <PageHeader
-          title={<>Subscription & <span className="text-primary italic">Billing</span></>}
-          subtitle="Manage your plan and usage."
+          title={
+            <div className="flex flex-col gap-2">
+              <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-none uppercase">
+                Subscription <span className="text-primary">&</span> Billing
+              </h1>
+              <div className="h-1 w-24 bg-primary/20 rounded-full" />
+            </div>
+          }
+          subtitle="View and manage your plan, usage, and billing history."
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
