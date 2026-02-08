@@ -84,7 +84,7 @@ export const coreConstant = {
   } as const,
 AI_MODELS:{
   DESIGN: {
-    NAME: 'minimax/minimax-m2.1:nitro',
+    NAME: 'google/gemini-3-flash-preview',
     PRICING: { prompt: 1, completion: 4 },
     PROVIDER: {
       ENABLED: false,
@@ -93,7 +93,7 @@ AI_MODELS:{
     },
   },
   AGENT: {
-    NAME: 'minimax/minimax-m2.1:nitro',
+    NAME: 'google/gemini-3-flash-preview',
     PRICING: { prompt: 1, completion: 4 },
     PROVIDER: {
       ENABLED: false,
