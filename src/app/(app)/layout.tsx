@@ -21,7 +21,7 @@ const libre = Libre_Baskerville({
 
 export const metadata: Metadata = {
   title: {
-    default: "Butterfast - AI Mobile App Design Generator",
+    default: "Butterfast - AI-Powered Mobile App Design Generator Tool",
     template: "%s | Butterfast",
   },
   description:
@@ -55,25 +55,25 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "/",
     siteName: "Butterfast",
-    title: "Butterfast - AI Mobile App Design Generator",
+    title: "Butterfast - AI-Powered Mobile App Design Generator Tool",
     description:
       "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator. Turn ideas into professional screens in seconds.",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://butterfast.com"}/og-image.png`,
+        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://butterfast.com"}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: "Butterfast - AI Mobile App Design Generator",
+        alt: "Butterfast - AI-Powered Mobile App Design Generator",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Butterfast - AI Mobile App Design Generator",
+    title: "Butterfast - AI-Powered Mobile App Design Generator Tool",
     description:
       "Create stunning mobile app designs effortlessly with Butterfast, an AI-powered UI/UX generator. Turn ideas into professional screens in seconds.",
     creator: "@butterfast",
-    images: [`${process.env.NEXT_PUBLIC_APP_URL || "https://butterfast.com"}/og-image.png`],
+    images: [`${process.env.NEXT_PUBLIC_APP_URL || "https://butterfast.com"}/og-image.jpg`],
   },
   robots: {
     index: true,
