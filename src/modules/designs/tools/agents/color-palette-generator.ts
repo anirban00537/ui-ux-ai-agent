@@ -39,49 +39,88 @@ const colorPaletteJsonSchema = {
 };
 
 const colorPaletteTemplate = PromptTemplate.fromTemplate(
-  `IDENTIY: World-Class Color Architect.
-MISSION: Generate the *perfect* color palette for a mobile app request.
+  `You are a MASTER COLOR STRATEGIST who understands that color is 
+the most powerful tool in a designer's arsenal. Color is emotion, 
+trust, and brand—all in a single choice.
 
 USER REQUEST: "{message}"
 
 ═══════════════════════════════════════════════════════════════════════════════
-LOGIC: DETERMINE THEME MODE
-═══════════════════════════════════════════════════════════════════════════════
-1. Does the user ask for "dark", "night", "cyberpunk", "midnight"? -> 'dark'
-2. Does the user ask for "clean", "white", "paper", "medical"? -> 'light'
-3. Default (if unspecified): 'light' for SaaS/Medical, 'dark' for Media/Gaming.
-(Explicitly set "themeMode" in output).
-
-═══════════════════════════════════════════════════════════════════════════════
-RULES: COLOR HARMONY (HEX CODES ONLY)
+STEP 1: UNDERSTAND THE EMOTIONAL CONTEXT
 ═══════════════════════════════════════════════════════════════════════════════
 
-[IF DARK MODE]:
-- background: #020617 (Slate 950) or #09090b (Zinc 950). NEVER PURE BLACK (#000000).
-- foreground: #f8fafc (Slate 50).
-- card: #0f172a (Slate 900) or #18181b (Zinc 900). Must be visible against background.
-- primary: VIBRANT & SATURATED (e.g., #3b82f6 Blue, #10b981 Emerald).
-- border: #1e293b (Slate 800).
+Before choosing ANY color, answer:
+- What EMOTION should this app evoke? (Calm, energetic, luxurious, playful, trustworthy?)
+- What industry does this serve? (Different industries have color expectations)
+- Who is the user? (Demographics influence color perception)
 
-[IF LIGHT MODE]:
-- background: #ffffff (White) or #f8fafc (Slate 50).
-- foreground: #0f172a (Slate 900).
-- card: #ffffff (White) with shadow.
-- primary: TRUSTWORTHY & CLEAR (e.g., #2563eb Blue, #059669 Green).
-- border: #e2e8f0 (Slate 200).
+THEME MODE DECISION:
+- Dark Mode: Gaming, entertainment, creative, nighttime apps, premium/luxury feel
+- Light Mode: Productivity, healthcare, finance, daytime apps, accessibility focus
+- If unclear: Light mode is safer for mainstream appeal
 
-[CONTRAST MANDATES]:
-- primaryForeground: IF primary is dark, use #ffffff. IF primary is light/neon, use #000000.
-- mutedForeground: Must be readable. Slate-500 (#64748b) usually works well.
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: CRAFT THE COLOR STORY
+═══════════════════════════════════════════════════════════════════════════════
 
-[RULES: TYPOGRAPHY (GOOGLE FONTS ONLY)]:
-1. **Tech/SaaS**: Heading='Space Grotesk' or 'Inter', Body='Plus Jakarta Sans' or 'Inter'.
-2. **Luxury/Fashion**: Heading='Playfair Display' or 'Cormorant Garamond', Body='Lato' or 'Montserrat'.
-3. **Cyber/Game**: Heading='Orbitron' or 'Rajdhani', Body='Roboto' or 'Exo 2'.
-4. **Clean/Minimal**: Heading='DM Sans' or 'Outfit', Body='DM Sans' or 'Inter'.
+Every great app has a color STORY, not just a palette.
 
-[OUTPUT STRUCTURE]:
-Return a single JSON object with all 11 keys + themeMode.
+THE FOUNDATION (Background & Foreground):
+- Dark themes: Rich, deep backgrounds (never pure #000000—too harsh)
+- Light themes: Clean, warm whites (pure white or slightly warm)
+- Foreground must have excellent contrast for readability
+
+THE HERO (Primary Color):
+- This is the brand color, the action color, the "look at me" color
+- It should FEEL right for the app's purpose
+- Must work as both filled backgrounds AND text/icons
+- Consider the emotional weight: Blue = trust, Green = growth, Purple = creativity...
+
+THE SUPPORT SYSTEM:
+- Secondary: Complements without competing, useful for subtle actions
+- Card: Slightly elevated from background, creates depth
+- Border: Subtle definition, never harsh
+- Muted: For secondary text, respects hierarchy
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: TYPOGRAPHY PAIRING
+═══════════════════════════════════════════════════════════════════════════════
+
+Typography is the other half of design identity. Choose fonts that:
+- Match the app's personality (tech, friendly, luxurious, minimal, bold)
+- Create clear hierarchy (heading vs body distinction)
+- Are highly readable (Google Fonts only for web compatibility)
+
+CONSIDER:
+- Geometric sans-serifs for modern/tech
+- Rounded fonts for friendly/approachable
+- Serif fonts for luxury/editorial
+- High x-height fonts for readability
+
+═══════════════════════════════════════════════════════════════════════════════
+TECHNICAL REQUIREMENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+OUTPUT FORMAT (JSON with 13 keys):
+- themeMode: "dark" or "light"
+- background: HEX code for page background
+- foreground: HEX code for primary text
+- primary: HEX code for main brand/action color
+- primaryForeground: HEX code for text ON primary color
+- secondary: HEX code for secondary surfaces
+- secondaryForeground: HEX code for text on secondary
+- mutedForeground: HEX code for subdued text
+- card: HEX code for card backgrounds
+- cardForeground: HEX code for card text
+- border: HEX code for borders
+- input: HEX code for input backgrounds
+- fontHeading: Google Font name for headings
+- fontBody: Google Font name for body text
+
+CONTRAST RULES:
+- All text must pass WCAG AA contrast (4.5:1 for normal text)
+- primaryForeground must be readable on primary background
+- Consider colorblind users—don't rely only on red/green for meaning
 `
 );
 

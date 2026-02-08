@@ -84,8 +84,8 @@ export const coreConstant = {
   } as const,
 AI_MODELS:{
   DESIGN: {
-    NAME: 'minimax/minimax-m2.1:nitro',
-    PRICING: { prompt: 1, completion: 4 },
+    NAME: 'moonshotai/kimi-k2.5:nitro',
+    PRICING: { prompt: 2, completion: 4.5 },
     PROVIDER: {
       ENABLED: false,
       ORDER: ['nebius/fp8'] as any,
@@ -93,8 +93,8 @@ AI_MODELS:{
     },
   },
   AGENT: {
-    NAME: 'google/gemini-3-flash-preview',
-    PRICING: { prompt: 1, completion: 4 },
+    NAME: 'moonshotai/kimi-k2.5:nitro',
+    PRICING: { prompt: 2, completion: 4.5 },
     PROVIDER: {
       ENABLED: false,
       ORDER: ['nebius/fp8']as any,
