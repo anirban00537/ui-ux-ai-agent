@@ -20,7 +20,8 @@ export const getAuth = async () => {
     database: prismaAdapter(prisma, {
       provider: "postgresql",
     }),
-    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001/api/auth",
+    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3001",
+    basePath: "/api/auth",
     emailAndPassword: {
       enabled: true,
       password: {
@@ -36,6 +37,14 @@ export const getAuth = async () => {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID!,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        redirectURI: (() => {
+          const uri = process.env.BETTER_AUTH_URL 
+            ? `${process.env.BETTER_AUTH_URL}/api/auth/callback/google`
+            : "http://localhost:3001/api/auth/callback/google";
+          console.log("[Auth] Google OAuth redirectURI:", uri);
+          console.log("[Auth] BETTER_AUTH_URL:", process.env.BETTER_AUTH_URL);
+          return uri;
+        })(),
       },
     },
     advanced: {
@@ -45,9 +54,13 @@ export const getAuth = async () => {
           ? ".butterfast.com"
           : undefined,
       },
-      defaultRedirectURL: process.env.BETTER_AUTH_URL?.includes("butterfast.com")
-        ? "https://butterfast.com/home"
-        : "http://localhost:3000/home",
+      cookiePrefix: "butterfast",
+    },
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 60 * 5, // 5 minutes
+      },
     },
     trustedOrigins: process.env.CORS_ORIGIN
       ? process.env.CORS_ORIGIN.split(",")
