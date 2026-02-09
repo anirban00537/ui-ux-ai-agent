@@ -649,6 +649,7 @@ model Artboard {
   y           Int      @default(0)
   width       Int      @default(440)
   height      Int      @default(800)
+  isHeightLocked Boolean? @default(false) // When true, user has manually set height - don't auto-resize
 
   design Design @relation(fields: [designId], references: [id], onDelete: Cascade)
 

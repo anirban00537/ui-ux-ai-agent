@@ -182,7 +182,7 @@ export class DesignsService {
   async updateArtboard(
     id: string,
     userId: string,
-    data: { x?: number; y?: number; width?: number; height?: number },
+    data: { x?: number; y?: number; width?: number; height?: number; isHeightLocked?: boolean },
   ): Promise<ResponseModel> {
     try {
       const artboard = await this.prisma.artboard.findUnique({
