@@ -34,6 +34,7 @@ export default function DesignEditorPage() {
     deleteArtboard,
     loadMoreMessages,
     hasMoreMessages,
+    updateArtboardHtml,
   } = useChatGenerator(currentDesignId);
 
   const { prompt: promptContext, type: typeContext, clearPrompt } = usePrompt();
@@ -138,6 +139,9 @@ export default function DesignEditorPage() {
           }}
           onSaveArtboard={(id, data) => {
             syncArtboardPosition({ id, data });
+          }}
+          onSaveArtboardHtml={(id, html) => {
+            updateArtboardHtml({ id, html });
           }}
         />
       </div>

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { Rnd } from "react-rnd";
 import { CodeViewerModal } from "./CodeViewerModal";
 import { FrameToolbar } from "./FrameToolbar";
+import { ElementStylePanel } from "./ElementStylePanel";
 import { Sparkles, ChevronRight } from "lucide-react";
 
 import { useExportArtboard } from "@/hooks/use-export";
@@ -23,6 +24,8 @@ interface ToolbarPortalContentProps {
   setShowUpdateInput: (show: boolean) => void;
   updateInputRef: React.RefObject<HTMLInputElement | null>;
   handleUpdateSubmit: () => void;
+  onToggleInspect: () => void;
+  isInspecting: boolean;
 }
 
 function ToolbarPortalContent({
@@ -37,6 +40,8 @@ function ToolbarPortalContent({
   setShowUpdateInput,
   updateInputRef,
   handleUpdateSubmit,
+  onToggleInspect,
+  isInspecting
 }: ToolbarPortalContentProps) {
   const [position, setPosition] = useState<{
     top: number;
@@ -87,6 +92,8 @@ function ToolbarPortalContent({
         onExportHtml={onExportHtml}
         showUpdateInput={showUpdateInput}
         setShowUpdateInput={setShowUpdateInput}
+        onToggleInspect={onToggleInspect}
+        isInspecting={isInspecting}
       />
 
       {/* Prompt Box */}
@@ -123,6 +130,44 @@ function ToolbarPortalContent({
   );
 }
 
+interface ElementStylePanelWrapperProps {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  element: any;
+  onUpdate: (id: string, styles: any, textContent?: string) => void;
+  onClose: () => void;
+}
+
+function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose }: ElementStylePanelWrapperProps) {
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    let rafId: number;
+    const updatePosition = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setPosition({
+          top: rect.top + 60,
+          left: rect.right + 20,
+        });
+      }
+      rafId = requestAnimationFrame(updatePosition);
+    };
+    updatePosition();
+    return () => cancelAnimationFrame(rafId);
+  }, [containerRef]);
+
+  if (!position) return null;
+
+  return (
+    <ElementStylePanel 
+      element={element}
+      onUpdate={onUpdate}
+      onClose={onClose}
+      position={position}
+    />
+  );
+}
+
 interface MobileFrameProps {
   id: string;
   htmlContent: string;
@@ -144,6 +189,7 @@ interface MobileFrameProps {
   ) => void;
   scale?: number;
   autoSave?: boolean;
+  onSaveHtml?: (id: string, html: string) => void;
 }
 
 export const MobileFrame = React.memo(
@@ -165,12 +211,20 @@ export const MobileFrame = React.memo(
     onSave,
     scale = 1,
     autoSave = false,
+    onSaveHtml,
   }: MobileFrameProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isLoaded, setIsLoaded] = useState(false);
     const [showCodeModal, setShowCodeModal] = useState(false);
     const [showUpdateInput, setShowUpdateInput] = useState(false);
+    const [isInspecting, setIsInspecting] = useState(false);
+    const [selectedElement, setSelectedElement] = useState<{
+        id: string;
+        tagName: string;
+        innerText: string;
+        styles: any;
+    } | null>(null);
 
     // State for dimensions - Large Mobile (480x1100 minimum)
     const MIN_FRAME_HEIGHT = 1100;
@@ -285,6 +339,12 @@ export const MobileFrame = React.memo(
                   return prev;
                 });
               }
+            } else if (event.data.type === "ELEMENT_SELECTED") {
+              setSelectedElement(event.data.element);
+            } else if (event.data.type === "SAVE_HTML_REQUEST") {
+              if (onSaveHtml && event.data.html) {
+                onSaveHtml(id, event.data.html);
+              }
             }
           }
         }
@@ -292,7 +352,7 @@ export const MobileFrame = React.memo(
 
       window.addEventListener("message", handleMessage);
       return () => window.removeEventListener("message", handleMessage);
-    }, [colorPalette, isResizing, isDragging, hasExplicitHeight]);
+    }, [colorPalette, isResizing, isDragging, hasExplicitHeight, onSaveHtml, id]);
 
     useEffect(() => {
       if (isLoaded && htmlContent && iframeRef.current?.contentWindow) {
@@ -334,10 +394,14 @@ export const MobileFrame = React.memo(
         }
 
         if (rndRef.current) {
+            // If dragging slider in style panel, don't deselect
+            // Actually simpler: preventing propagation on panel solves this
           const rndElement = rndRef.current.getSelfElement();
-          if (rndElement && !rndElement.contains(target)) {
+          if (rndElement && !rndElement.contains(target) && !document.getElementById(`style-panel-${id}`)) {
             setIsSelected(false);
             setShowUpdateInput(false);
+            // Don't turn off inspect mode automatically on outside click, but maybe deselect element?
+            // If user clicks outside frame, maybe deselect element inside?
           }
         }
       };
@@ -376,6 +440,30 @@ export const MobileFrame = React.memo(
         setShowUpdateInput(false);
       }
     };
+
+    const toggleInspect = useCallback(() => {
+        const newState = !isInspecting;
+        setIsInspecting(newState);
+        if (!newState) {
+            setSelectedElement(null);
+        } else {
+             // Make sure we are selected so toolbar stays visible
+             setIsSelected(true);
+        }
+        iframeRef.current?.contentWindow?.postMessage({
+            type: "TOGGLE_INSPECT",
+            enabled: newState
+        }, "*");
+    }, [isInspecting]);
+
+    const handleStyleUpdate = useCallback((elId: string, styles: any, textContent?: string) => {
+        iframeRef.current?.contentWindow?.postMessage({
+            type: "UPDATE_ELEMENT_STYLE",
+            id: elId,
+            styles,
+            textContent
+        }, "*");
+    }, []);
 
     return (
       <>
@@ -589,9 +677,33 @@ export const MobileFrame = React.memo(
               setShowUpdateInput={setShowUpdateInput}
               updateInputRef={updateInputRef}
               handleUpdateSubmit={handleUpdateSubmit}
+              onToggleInspect={toggleInspect}
+              isInspecting={isInspecting}
             />,
             document.body
           )}
+          
+        {/* Element Style Panel */}
+        {/* Render separate from portal to move with scrolling or fixed? 
+            Since Rnd uses transform, fixed children move with it ONLY if not using portal.
+            But we want it to be above everything.
+            Let's use a portal but position it next to the frame.
+         */}
+        {selectedElement && isInspecting && isSelected && containerRef.current && (
+             // We can just render it here if we want it to move with the Rnd component naturally?
+             // But Rnd has overflow: hidden sometimes? No.
+             // But z-index issues. Portal is safer.
+             // Let's compute position.
+             createPortal(
+                 <ElementStylePanelWrapper
+                    containerRef={containerRef}
+                    element={selectedElement}
+                    onUpdate={handleStyleUpdate}
+                    onClose={() => setSelectedElement(null)}
+                 />,
+                 document.body
+             )
+        )}
 
         <CodeViewerModal
           isOpen={showCodeModal}

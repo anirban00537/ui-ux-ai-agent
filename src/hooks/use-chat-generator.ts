@@ -131,6 +131,18 @@ export function useChatGenerator(designId?: string) {
     }
   });
 
+  const { mutate: updateArtboardHtml } = useMutation({
+    mutationFn: ({ id, html }: { id: string; html: string }) => apiUpdateArtboard(id, { html }),
+    onMutate: ({ id, html }) => {
+      dispatch(updateArtboard({ 
+        id, 
+        html, 
+        title: "", // these are required by type but we only update html, usually reducer handles partial with ID match
+        createdAt: new Date().toISOString() 
+      } as any)); 
+    }
+  });
+
   useEffect(() => {
     return () => {
       if (abortControllerRef.current) abortControllerRef.current.abort();
@@ -645,6 +657,7 @@ export function useChatGenerator(designId?: string) {
     clearConversation,
     updateColorPalette,
     syncArtboardPosition,
+    updateArtboardHtml,
     deleteArtboard,
     loadMoreMessages,
     hasMoreMessages: paginationRef.current.hasMore,

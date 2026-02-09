@@ -18,12 +18,14 @@ interface EditorProps {
   onDeleteArtboard?: (artboardId: string) => void;
   onUpdateArtboard?: (artboardId: string, prompt: string) => void;
   onSaveArtboard?: (id: string, data: { x?: number; y?: number; width?: number; height?: number }) => void;
+  onSaveArtboardHtml?: (id: string, html: string) => void;
 }
 
 export function Editor({
   onDeleteArtboard,
   onUpdateArtboard,
   onSaveArtboard,
+  onSaveArtboardHtml,
 }: EditorProps) {
   const dispatch = useAppDispatch();
   const { 
@@ -300,6 +302,7 @@ export function Editor({
                           onUpdate={handleUpdateArtboardInternal}
                           scale={instance?.transformState?.scale || 1}
                           autoSave={true}
+                          onSaveHtml={onSaveArtboardHtml}
                         />
                       );
                     }
@@ -322,6 +325,7 @@ export function Editor({
                         onSave={handleSaveInternal}
                         onUpdate={handleUpdateArtboardInternal}
                         scale={instance?.transformState?.scale || 1}
+                        onSaveHtml={onSaveArtboardHtml}
                       />
                     );
                   })}

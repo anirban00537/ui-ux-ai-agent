@@ -106,7 +106,7 @@ export async function updateDesign(
 
 export async function updateArtboard(
   artboardId: string,
-  data: { x?: number; y?: number; width?: number; height?: number; isHeightLocked?: boolean }
+  data: { x?: number; y?: number; width?: number; height?: number; isHeightLocked?: boolean; html?: string; title?: string; }
 ) {
   const response = await request.patch(`/designs/artboards/${artboardId}`, data);
   return response.data;
