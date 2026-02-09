@@ -353,6 +353,8 @@ function CanvasContent() {
           if (data.palette) {
             applyTheme(data.palette);
           }
+          // 6. Fix viewport units if infinite canvas
+          fixViewportUnits();
         }
       }
 
@@ -363,7 +365,55 @@ function CanvasContent() {
     };
 
     // Watch for size changes with throttling (only really needed for editor mode to inform parent)
+    // Polyfill for viewport units when using infinite canvas (Editor Mode)
+    // When user resizes frame to be very tall (>1000px), standard vh units break layout.
+    // We clamp them to standard mobile height (844px).
+    function fixViewportUnits() {
+      if (isPreview || !root) return;
+      
+      const viewportHeight = window.innerHeight;
+      const INFINITE_CANVAS_THRESHOLD = 1000;
+      const STANDARD_MOBILE_HEIGHT = 844;
+      const isBigScreen = viewportHeight > INFINITE_CANVAS_THRESHOLD;
+
+      // Find elements with vh classes
+      // We target the common patterns coming from AI: min-h-[...vh] and h-[...vh]
+      const vhElements = root.querySelectorAll('[class*="h-["]');
+      
+      vhElements.forEach((el) => {
+        const element = el as HTMLElement;
+        const classList = Array.from(element.classList);
+
+        // Pattern: min-h-[70vh]
+        const minHMatch = classList.find(c => /min-h-\[(\d+)vh\]/.test(c));
+        if (minHMatch) {
+          if (isBigScreen) {
+             const vh = parseInt(minHMatch.match(/min-h-\[(\d+)vh\]/)![1]);
+             const px = (STANDARD_MOBILE_HEIGHT * vh) / 100;
+             element.style.minHeight = `${px}px`;
+          } else {
+             element.style.minHeight = '';
+          }
+        }
+
+        // Pattern: h-[100vh]
+        const hMatch = classList.find(c => /^h-\[(\d+)vh\]/.test(c));
+        if (hMatch) {
+          if (isBigScreen) {
+             const vh = parseInt(hMatch.match(/^h-\[(\d+)vh\]/)![1]);
+             const px = (STANDARD_MOBILE_HEIGHT * vh) / 100;
+             element.style.height = `${px}px`;
+          } else {
+             element.style.height = '';
+          }
+        }
+      });
+    };
+
     const resizeObserver = new ResizeObserver(() => {
+      // Fix units on resize
+      fixViewportUnits();
+
       // Don't report height in preview mode - frame is fixed
       if (isPreview) return;
       
@@ -391,11 +441,15 @@ function CanvasContent() {
 
     resizeObserver.observe(document.body);
     window.addEventListener("message", handleMessage);
+    // Also listen to window resize for fixViewportUnits
+    window.addEventListener("resize", fixViewportUnits);
+    
     window.parent.postMessage({ type: "CANVAS_READY" }, "*");
 
     return () => {
       root.removeEventListener("error", handleImageError, true);
       window.removeEventListener("message", handleMessage);
+      window.removeEventListener("resize", fixViewportUnits);
       resizeObserver.disconnect();
       clearTimeout(heightReportTimeout);
     };
