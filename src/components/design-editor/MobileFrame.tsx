@@ -186,6 +186,10 @@ export const MobileFrame = React.memo(
     const [isSelected, setIsSelected] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    
+    // Track if height was explicitly set (from saved data or manual resize)
+    // When true, we don't auto-resize based on content height
+    const [hasExplicitHeight, setHasExplicitHeight] = useState(height !== undefined && height !== null);
 
     const { exportImage, exportHtml } = useExportArtboard();
     const lastWidthProp = useRef(width);
@@ -220,6 +224,8 @@ export const MobileFrame = React.memo(
       if (height !== undefined && height !== lastHeightProp.current) {
         setSize((prev) => ({ ...prev, height }));
         lastHeightProp.current = height;
+        // Mark as explicit when height comes from saved data
+        setHasExplicitHeight(true);
       }
       if (initialX !== lastXProp.current || initialY !== lastYProp.current) {
         setPosition({ x: initialX, y: initialY });
@@ -260,7 +266,8 @@ export const MobileFrame = React.memo(
               }
             } else if (event.data.type === "UPDATE_HEIGHT") {
               const contentHeight = event.data.height;
-              if (contentHeight && !isResizing && !isDragging) {
+              // Skip auto-height if user has explicitly set a height (via resize or saved data)
+              if (contentHeight && !isResizing && !isDragging && !hasExplicitHeight) {
                 setSize((prev) => {
                   // More reasonable max height for mobile screens
                   const MAX_AUTO_HEIGHT = 2500;
@@ -284,7 +291,7 @@ export const MobileFrame = React.memo(
 
       window.addEventListener("message", handleMessage);
       return () => window.removeEventListener("message", handleMessage);
-    }, [colorPalette, isResizing, isDragging]);
+    }, [colorPalette, isResizing, isDragging, hasExplicitHeight]);
 
     useEffect(() => {
       if (isLoaded && htmlContent && iframeRef.current?.contentWindow) {
@@ -412,6 +419,8 @@ export const MobileFrame = React.memo(
           }}
           onResizeStop={(e, direction, ref, delta, position) => {
             setIsResizing(false);
+            // Mark that user explicitly set the height - prevents auto-resize
+            setHasExplicitHeight(true);
             const newSize = {
               width: parseInt(ref.style.width),
               height: parseInt(ref.style.height),
