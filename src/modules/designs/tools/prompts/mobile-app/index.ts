@@ -76,38 +76,66 @@ const LAYOUT_ARCHITECTURE = `
 📐 LAYOUT ARCHITECTURE
 ═══════════════════════════════════════════════════════════════════════════════
 
+🚨 CRITICAL: FILL THE ENTIRE SCREEN 🚨
+Your design must COMPLETELY FILL the mobile viewport from top to bottom.
+The root container MUST expand to fill all available height. Never leave 
+empty white space at the bottom. If you have less content, spread it out
+with generous spacing or add complementary sections.
+
+🚨 CRITICAL: USE SEMANTIC COLORS ONLY 🚨
+NEVER use hardcoded hex colors like bg-[#0a0f12] or text-[#ffffff].
+ALWAYS use semantic Tailwind classes that reference the design system:
+- bg-background (NOT bg-[#hex] or bg-black or bg-white)
+- text-foreground (NOT text-white or text-black)
+- bg-card, bg-primary, bg-secondary, etc.
+The color palette provides ALL colors. Use ONLY semantic classes.
+
 MANDATORY STRUCTURE (Do NOT wrap in html/body/head):
 
 {fontInstructions}
 
-<div class="flex flex-col min-h-screen w-full bg-background text-foreground font-sans overflow-x-hidden relative">
+<div class="flex flex-col min-h-full h-full w-full bg-background text-foreground font-sans overflow-hidden relative">
 
   <!-- HEADER ZONE: Safe area padding, status bar consideration -->
-  <header class="px-6 pt-12 pb-4 z-10">
+  <header class="shrink-0 px-6 pt-12 pb-4 z-10">
     <!-- Your header content: greeting, title, avatar, actions -->
   </header>
 
-  <!-- CONTENT ZONE: Scrollable, flexible height -->
-  <main class="flex-1 overflow-y-auto px-6 pb-32 no-scrollbar">
+  <!-- CONTENT ZONE: MUST use flex-1 to expand and fill remaining space -->
+  <main class="flex-1 flex flex-col overflow-y-auto px-6 pb-28 no-scrollbar">
     <!-- Your main content: cards, lists, grids, heroes -->
+    <!-- Use flex-1 on child sections if needed to distribute space -->
   </main>
 
-  <!-- FLOATING ELEMENTS: FABs, toasts, overlays -->
-  <!-- Position with 'fixed' and appropriate z-index -->
-
-  <!-- NAVIGATION ZONE: Fixed bottom, blur backdrop -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t border-border z-40 pb-safe pt-3">
-    <!-- Your navigation: 4-5 items max, clear active state -->
+  <!-- NAVIGATION ZONE: Absolute bottom positioning within relative container -->
+  <!-- DO NOT use "fixed" - it doesn't work correctly in iframe context -->
+  <nav class="absolute bottom-0 left-0 right-0 bg-background/90 backdrop-blur-xl border-t border-border z-40 pb-6 pt-3">
+    <div class="flex justify-around items-center">
+      <!-- Your navigation: 4-5 items max, clear active state -->
+    </div>
   </nav>
 
 </div>
 
+HEIGHT FILLING RULES (CRITICAL - READ CAREFULLY):
+1. ROOT CONTAINER: Always use "min-h-full h-full relative" - defines the bounding box
+2. MAIN CONTENT: Always use "flex-1 flex flex-col pb-28" - expands and clears nav
+3. OVERFLOW: Root uses "overflow-hidden", main uses "overflow-y-auto"
+4. NO EMPTY SPACE: If content is sparse, add padding/margins or extra sections
+5. NAVIGATION: Use "absolute bottom-0" (NOT fixed!) - works correctly in iframe
+6. BACKGROUND: Always use "bg-background" on root - NEVER hardcoded hex colors
+
+⚠️ IMPORTANT: DO NOT USE "position: fixed" FOR NAVIGATION!
+In this rendering context, "fixed" positions relative to content height, not the frame.
+Always use "absolute bottom-0" within the relative root container.
+
 LAYOUT PRINCIPLES:
-• Root: min-h-screen to fill viewport, can grow beyond
-• Main: flex-1 to consume available space, overflow-y-auto for scrolling
-• Padding: pb-32 on main ensures content clears fixed navigation
+• Root: min-h-full h-full bg-background relative to COMPLETELY fill container
+• Main: flex-1 flex flex-col pb-28 to expand and clear navigation
+• Nav: absolute bottom-0 (NOT fixed!) for correct iframe positioning
 • Z-index: Header (10), Content (default), FAB (50), Nav (40)
 • No fixed widths: Use percentage, flex, or grid for responsive layouts
+• Colors: ONLY semantic classes (bg-background, text-foreground, bg-card, bg-primary, etc.)
 `;
 
 // ---------------------------------------------------------------------------
@@ -218,9 +246,14 @@ BEFORE YOU WRITE CODE, DECIDE:
 OUTPUT RULES:
 1. NO BOILERPLATE: Never include <!DOCTYPE>, <html>, <body>, <head>
 2. INCLUDE FONTS: Output the font instructions as provided
-3. USE SEMANTIC CLASSES: bg-primary, text-foreground, bg-card (never arbitrary hex values)
+3. USE SEMANTIC CLASSES ONLY: bg-background, text-foreground, bg-card, bg-primary 
+   NEVER use arbitrary values like bg-[#hex], text-white, text-black, bg-black, bg-white
 4. MINIFIED HTML: Compress the output for efficiency
 5. REAL CONTENT: Use realistic names, numbers, and data
+6. FILL THE SCREEN: Root must have "min-h-full h-full bg-background relative"
+   Main must have "flex-1 pb-28". The design MUST fill the entire container.
+7. NO FIXED POSITIONING: Navigation must use "absolute bottom-0" NOT "fixed bottom-0"
+   Fixed positioning doesn't work correctly in this iframe rendering context.
 
 OUTPUT FORMAT (JSON only):
 {{
