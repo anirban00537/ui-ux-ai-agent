@@ -290,6 +290,7 @@ export function Editor({
                           htmlContent={artboard.html}
                           width={artboard.width || 480}
                           height={artboard.height}
+                          isHeightLocked={artboard.isHeightLocked}
                           initialX={initialX}
                           initialY={1200}
                           colorPalette={colorPalette}
@@ -312,6 +313,7 @@ export function Editor({
                         htmlContent={artboard.html}
                         width={artboard.width || 480}
                         height={artboard.height}
+                        isHeightLocked={artboard.isHeightLocked}
                         initialX={Number(artboard.x)}
                         initialY={Number(artboard.y)}
                         colorPalette={colorPalette}

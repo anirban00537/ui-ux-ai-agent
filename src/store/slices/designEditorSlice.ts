@@ -12,6 +12,7 @@ export interface Artboard {
   y?: number;
   width?: number;
   height?: number;
+  isHeightLocked?: boolean; // When true, user has manually set height - don't auto-resize
 }
 
 export interface Message {

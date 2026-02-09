@@ -131,6 +131,7 @@ interface MobileFrameProps {
   className?: string;
   width?: number;
   height?: number;
+  isHeightLocked?: boolean; // When true, user has manually set height - don't auto-resize
   initialX?: number;
   initialY?: number;
   colorPalette?: ColorPalette;
@@ -139,7 +140,7 @@ interface MobileFrameProps {
   onUpdate?: (id: string, prompt: string) => void;
   onSave?: (
     id: string,
-    data: { x: number; y: number; width: number; height: number }
+    data: { x: number; y: number; width: number; height: number; isHeightLocked?: boolean }
   ) => void;
   scale?: number;
   autoSave?: boolean;
@@ -154,6 +155,7 @@ export const MobileFrame = React.memo(
     className = "",
     width = 480,
     height,
+    isHeightLocked = false,
     initialX = 0,
     initialY = 0,
     colorPalette,
@@ -187,9 +189,10 @@ export const MobileFrame = React.memo(
     const [isResizing, setIsResizing] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     
-    // Track if height was explicitly set (from saved data or manual resize)
+    // Track if height was explicitly set/locked by user (from saved flag or manual resize)
     // When true, we don't auto-resize based on content height
-    const [hasExplicitHeight, setHasExplicitHeight] = useState(height !== undefined && height !== null);
+    // Uses the explicit isHeightLocked prop from database for reliable state
+    const [hasExplicitHeight, setHasExplicitHeight] = useState(isHeightLocked);
 
     const { exportImage, exportHtml } = useExportArtboard();
     const lastWidthProp = useRef(width);
@@ -224,8 +227,6 @@ export const MobileFrame = React.memo(
       if (height !== undefined && height !== lastHeightProp.current) {
         setSize((prev) => ({ ...prev, height }));
         lastHeightProp.current = height;
-        // Mark as explicit when height comes from saved data
-        setHasExplicitHeight(true);
       }
       if (initialX !== lastXProp.current || initialY !== lastYProp.current) {
         setPosition({ x: initialX, y: initialY });
@@ -432,6 +433,7 @@ export const MobileFrame = React.memo(
               y: position.y,
               width: newSize.width,
               height: newSize.height,
+              isHeightLocked: true, // Persist the lock state to database
             });
           }}
           enableResizing={{

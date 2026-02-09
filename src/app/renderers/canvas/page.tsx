@@ -292,11 +292,14 @@ function CanvasContent() {
         if (root) {
           // In preview mode, content scrolls inside a fixed frame
           // In editor mode, content grows and frame expands, but maintains minimum height
-          // The frame has MIN_FRAME_HEIGHT of 1100px, so we need to fill at least that
+          // Use h-full and min-h-screen to ensure the wrapper fills the iframe viewport
+          // This fixes the issue where manual resizing left empty space at the bottom (Step Id: 561)
           root.innerHTML = `
-            <div id="canvas-wrapper" class="w-full ${isPreview ? 'h-full overflow-y-auto' : ''} flex flex-col flex-1 ${isPreview ? 'min-h-full' : ''} relative" style="${isPreview ? '' : 'min-height: 1100px;'}">
+            <div id="canvas-wrapper" class="w-full h-full min-h-full flex flex-col relative" style="${isPreview ? '' : 'min-height: 1100px;'}">
               <div id="canvas-dot-pattern" class="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style="background-size: 24px 24px; background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);"></div>
-              <div class="canvas-design-root flex-1 flex flex-col ${isPreview ? 'min-h-full' : ''} relative z-10" style="${isPreview ? '' : 'min-height: 1100px;'}">${html}</div>
+              <div class="canvas-design-root flex-1 flex flex-col h-full relative z-10">
+                ${html}
+              </div>
             </div>
           `;
 
@@ -446,7 +449,8 @@ function CanvasContent() {
         }
 
         #root {
-          ${isPreview ? 'min-height: 100%;' : 'min-height: 1100px;'}
+          /* Ensure root takes full height to fill the iframe */
+          min-height: 100%;
           display: flex;
           flex-direction: column;
           overflow-y: ${isPreview ? "auto" : "visible"} !important;
@@ -457,7 +461,8 @@ function CanvasContent() {
         #canvas-wrapper {
           flex: 1;
           ${isPreview ? 'height: 100%; overflow-y: auto;' : 'overflow: visible;'}
-          ${isPreview ? 'min-height: 100%;' : 'min-height: 1100px;'}
+          /* Ensure wrapper takes full height even in editor mode to match iframe */
+          min-height: 100%; 
           display: flex;
           flex-direction: column;
           align-items: stretch;
@@ -465,11 +470,40 @@ function CanvasContent() {
           background: var(--background, transparent);
         }
 
-        .canvas-design-root > div:not(style):first-of-type {
-          ${isPreview ? 'min-height: 100%;' : 'min-height: 1100px;'}
+        .canvas-design-root {
+          width: 100%;
+          /* Ensure it takes full height so absolute bottom-0 children sit at the bottom of the FRAME */
+          min-height: 100%;
           display: flex;
           flex-direction: column;
-          height: 100%;
+        }
+
+        .canvas-design-root > div:not(style):first-of-type {
+          display: flex;
+          flex-direction: column;
+          /* Force user code root to take full height */
+          min-height: 100%; 
+          flex: 1;
+        }
+
+        /* Bottom navigation bar should be FIXED to the bottom of the viewport */
+        /* This ensures it stays at the bottom even if content is short or frame is resized tall */
+        .canvas-design-root nav[class*="bottom-0"],
+        .canvas-design-root > div > nav:last-child,
+        .canvas-design-root > div:first-of-type > nav:last-child {
+          position: fixed !important; 
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          z-index: 50 !important;
+          margin-top: auto !important;
+          transform: none !important;
+        }
+
+        /* Make main content area flexible to push nav to bottom */
+        .canvas-design-root main,
+        .canvas-design-root > div > main {
+          flex: 1 1 auto !important;
         }
 
         /* In preview mode, allow internal elements to scroll naturally */
