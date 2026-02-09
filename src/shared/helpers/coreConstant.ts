@@ -84,7 +84,7 @@ export const coreConstant = {
   } as const,
 AI_MODELS:{
   DESIGN: {
-    NAME: 'moonshotai/kimi-k2.5:nitro',
+    NAME: 'deepseek/deepseek-v3.2:nitro',
     PRICING: { prompt: 2, completion: 4.5 },
     PROVIDER: {
       ENABLED: false,
@@ -93,7 +93,7 @@ AI_MODELS:{
     },
   },
   AGENT: {
-    NAME: 'moonshotai/kimi-k2.5:nitro',
+    NAME: 'google/gemini-3-flash-preview',
     PRICING: { prompt: 2, completion: 4.5 },
     PROVIDER: {
       ENABLED: false,
