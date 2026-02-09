@@ -86,12 +86,16 @@ function CanvasContent() {
       );
       
       // Also remove any generic rule setting font-family
+      // BUT preserve closing braces and Material Icons font declarations
+      // Match: font-family: value; OR font-family: value} (but don't consume the brace)
       sanitized = sanitized.replace(
-        /font-family\s*:\s*[^;\}]+[;\}]/gi,
-        match => {
+        /font-family\s*:\s*[^;}]+;?/gi,
+        (match) => {
           // Keep if it's using var() as that might be valid logic
           if (match.includes('var(')) return match;
-          console.log('[Canvas] Removed explicit font-family:', match);
+          // Keep Material Icons font-family declarations  
+          if (match.includes('Material')) return match;
+          console.log('[Canvas] Removed explicit font-family:', match.trim());
           return '';
         }
       );
@@ -296,6 +300,12 @@ function CanvasContent() {
             </div>
           `;
 
+          // Force a reflow to trigger Tailwind v4's MutationObserver to process new content
+          // This is necessary because innerHTML changes may not always trigger the observer immediately
+          void root.offsetHeight;
+          
+          // Also trigger a slight DOM modification to ensure MutationObserver fires
+          root.setAttribute('data-render-time', Date.now().toString());
 
           // Measure actual content height - look for the first direct child of design root
           // which is the actual UI content, not the wrapper with min-height
