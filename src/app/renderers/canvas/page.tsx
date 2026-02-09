@@ -287,12 +287,12 @@ function CanvasContent() {
         const html = sanitizeHtmlFonts(rawHtml);
         if (root) {
           // In preview mode, content scrolls inside a fixed frame
-          // In editor mode, content grows and frame expands
-          // IMPORTANT: In editor mode, do NOT use min-h-full on design root - it causes incorrect height measurements
+          // In editor mode, content grows and frame expands, but maintains minimum height
+          // The frame has MIN_FRAME_HEIGHT of 1100px, so we need to fill at least that
           root.innerHTML = `
-            <div id="canvas-wrapper" class="w-full ${isPreview ? 'h-full overflow-y-auto' : 'h-auto'} flex flex-col flex-1 ${isPreview ? 'min-h-full' : ''} relative">
+            <div id="canvas-wrapper" class="w-full ${isPreview ? 'h-full overflow-y-auto' : ''} flex flex-col flex-1 ${isPreview ? 'min-h-full' : ''} relative" style="${isPreview ? '' : 'min-height: 1100px;'}">
               <div id="canvas-dot-pattern" class="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style="background-size: 24px 24px; background-image: radial-gradient(var(--primary) 1.5px, transparent 1.5px);"></div>
-              <div class="canvas-design-root flex-1 flex flex-col ${isPreview ? 'min-h-full' : ''} relative z-10">${html}</div>
+              <div class="canvas-design-root flex-1 flex flex-col ${isPreview ? 'min-h-full' : ''} relative z-10" style="${isPreview ? '' : 'min-height: 1100px;'}">${html}</div>
             </div>
           `;
 
@@ -436,7 +436,7 @@ function CanvasContent() {
         }
 
         #root {
-          min-height: 100%;
+          ${isPreview ? 'min-height: 100%;' : 'min-height: 1100px;'}
           display: flex;
           flex-direction: column;
           overflow-y: ${isPreview ? "auto" : "visible"} !important;
@@ -446,8 +446,8 @@ function CanvasContent() {
 
         #canvas-wrapper {
           flex: 1;
-          ${isPreview ? 'height: 100%; overflow-y: auto;' : 'height: auto; overflow: visible;'}
-          ${isPreview ? 'min-height: 100%;' : ''}
+          ${isPreview ? 'height: 100%; overflow-y: auto;' : 'overflow: visible;'}
+          ${isPreview ? 'min-height: 100%;' : 'min-height: 1100px;'}
           display: flex;
           flex-direction: column;
           align-items: stretch;
@@ -456,9 +456,10 @@ function CanvasContent() {
         }
 
         .canvas-design-root > div:not(style):first-of-type {
-          min-height: auto !important;
+          ${isPreview ? 'min-height: 100%;' : 'min-height: 1100px;'}
           display: flex;
           flex-direction: column;
+          height: 100%;
         }
 
         /* In preview mode, allow internal elements to scroll naturally */

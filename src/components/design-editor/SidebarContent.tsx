@@ -384,7 +384,7 @@ export function SidebarContent({
       {/* Header - Minimal with transparency */}
       <div className="flex-shrink-0 px-5 py-3 border-b border-zinc-800/40 bg-background/50 backdrop-blur-sm z-10">
         <div className="flex items-center justify-between">
-          <Link href="/home" className="group flex items-center gap-1.5 -ml-2 px-2 py-1 rounded-md transition-colors hover:bg-zinc-800/50">
+          <Link href="/my-designs" className="group flex items-center gap-1.5 -ml-2 px-2 py-1 rounded-md transition-colors hover:bg-zinc-800/50">
             <svg className="w-4 h-4 text-zinc-500 group-hover:text-zinc-300 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
