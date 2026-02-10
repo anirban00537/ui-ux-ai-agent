@@ -307,11 +307,7 @@ export function Editor({
                   <div className="absolute inset-0 pointer-events-none opacity-[0.02]" 
                        style={{ backgroundImage: 'radial-gradient(circle, #64748b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                   
-                  {artboards.length === 0 && (
-                      <div className="absolute top-[1000px] left-[6000px] -translate-x-1/2 p-10 text-zinc-500 border border-white/10 rounded-2xl bg-zinc-900/50 backdrop-blur-xl">
-                          <p className="text-xl font-bold">No artboards in conversation</p>
-                      </div>
-                  )}
+                 
 
                   {artboards.map((artboard, index) => {
                     // Check if x or y is null, undefined, or 0 (treat 0,0 as new/unpositioned)
