@@ -251,7 +251,7 @@ export default function PreviewPage() {
                       isStatic={true}
                       disableDrag={true}
                       disableResize={true}
-                      width={480}
+                      width={500}
                       height={840}
                       scale={scale}
                     />

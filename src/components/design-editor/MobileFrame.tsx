@@ -134,30 +134,87 @@ function ToolbarPortalContent({
 
 interface ElementStylePanelWrapperProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
-  element: any;
+  element: {
+      id: string;
+      tagName: string;
+      innerText: string;
+      styles: any;
+      rect?: {
+          top: number;
+          left: number;
+          width: number;
+          height: number;
+      }
+  };
   onUpdate: (id: string, styles: any, textContent?: string) => void;
   onClose: () => void;
   onDelete: () => void;
+  scale: number;
 }
 
-function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, onDelete }: ElementStylePanelWrapperProps) {
+function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, onDelete, scale }: ElementStylePanelWrapperProps) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
     let rafId: number;
     const updatePosition = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
+      if (containerRef.current && element.rect) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        
+        // Panel Constants
+        const PANEL_WIDTH = 320; 
+        const PANEL_GAP = 12;
+        const ESTIMATED_HEIGHT = 450; // Rough estimate of panel height
+        const HEADER_HEIGHT = 70;
+        const VIEWPORT_PADDING = 16;
+
+        // Calculate initial target coordinates (Default: Right side of element, aligned to top)
+        const elementTop = containerRect.top + (element.rect.top * scale);
+        const elementRight = containerRect.left + (element.rect.left * scale) + (element.rect.width * scale);
+        const elementLeft = containerRect.left + (element.rect.left * scale);
+        
+        let targetLeft = elementRight + PANEL_GAP;
+        let targetTop = elementTop;
+
+        // Horizontal Constraint
+        // If placing on right overflows viewport, try placing on left
+        if (targetLeft + PANEL_WIDTH + VIEWPORT_PADDING > window.innerWidth) {
+            // Check if left side has space
+            if (elementLeft - PANEL_WIDTH - PANEL_GAP > VIEWPORT_PADDING) {
+                targetLeft = elementLeft - PANEL_WIDTH - PANEL_GAP;
+            } else {
+                // If neither fits perfectly, pin to right edge
+                targetLeft = window.innerWidth - PANEL_WIDTH - VIEWPORT_PADDING;
+            }
+        }
+
+        // Vertical Constraint
+        // Prevent going off bottom
+        if (targetTop + ESTIMATED_HEIGHT > window.innerHeight) {
+            targetTop = window.innerHeight - ESTIMATED_HEIGHT - VIEWPORT_PADDING;
+        }
+        
+        // Prevent going off top (under header)
+        targetTop = Math.max(targetTop, HEADER_HEIGHT + VIEWPORT_PADDING);
+        
         setPosition({
-          top: rect.top + 60,
-          left: rect.right + 20,
+          top: targetTop,
+          left: targetLeft,
         });
+      } else if (containerRef.current) {
+         // Fallback if no rect (legacy)
+         const rect = containerRef.current.getBoundingClientRect();
+         setPosition({
+            top: rect.top,
+            left: rect.right + 20,
+         });
       }
       rafId = requestAnimationFrame(updatePosition);
     };
+    
     updatePosition();
     return () => cancelAnimationFrame(rafId);
-  }, [containerRef]);
+  }, [containerRef, element.rect, scale]);
 
   if (!position) return null;
 
@@ -231,6 +288,12 @@ export const MobileFrame = React.memo(
         tagName: string;
         innerText: string;
         styles: any;
+        rect?: {
+            top: number;
+            left: number;
+            width: number;
+            height: number;
+        };
     } | null>(null);
 
     // Sync isInspecting with activeTool and selection state
@@ -759,6 +822,7 @@ export const MobileFrame = React.memo(
                         }, "*");
                         setSelectedElement(null);
                     }}
+                    scale={scale}
                  />,
                  document.body
              )

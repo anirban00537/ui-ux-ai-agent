@@ -206,13 +206,21 @@ export const useCanvasEditor = () => {
         const editorId = getElementPath(target);
         const styles = getComputedStyles(target);
   
+        const rect = target.getBoundingClientRect();
+        
         window.parent.postMessage({
           type: "ELEMENT_SELECTED",
           element: {
             id: editorId,
             tagName: target.tagName.toLowerCase(),
             innerText: (target.textContent || "").slice(0, 50),
-            styles: styles
+            styles: styles,
+            rect: {
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height
+            }
           }
         }, "*");
     }, [getComputedStyles, getElementPath]);
