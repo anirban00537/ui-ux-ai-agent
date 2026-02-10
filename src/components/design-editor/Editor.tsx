@@ -76,19 +76,37 @@ export function Editor({
   const [isSpacePressed, setIsSpacePressed] = useState(false);
   const effectiveTool = isSpacePressed ? 'hand' : activeTool;
   
+  // Debug: Log whenever activeTool or isSpacePressed changes
+  useEffect(() => {
+    console.log('[Editor] Tool State Changed:', { activeTool, isSpacePressed, effectiveTool });
+  }, [activeTool, isSpacePressed, effectiveTool]);
+  
   const [showExportMenu, setShowExportMenu] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+      // Don't trigger shortcuts if user is typing
+      if (
+        document.activeElement?.tagName === 'INPUT' || 
+        document.activeElement?.tagName === 'TEXTAREA' ||
+        (document.activeElement as HTMLElement)?.isContentEditable
+      ) return;
       
       if (e.key === ' ') {
         if (!isSpacePressed) setIsSpacePressed(true);
-      } else {
+        // Prevent scrolling with spacebar
+        e.preventDefault();
+      } else if (!isSpacePressed) { // Only handle shortcuts if not panning
         switch (e.key.toLowerCase()) {
-          case 'v': setActiveTool('select'); break;
-          case 'h': setActiveTool('hand'); break;
-          case 'i': setActiveTool('inspect'); break;
+          case 'v': 
+            console.log('[Editor] Keyboard: Setting tool to SELECT');
+            setActiveTool('select'); 
+            break;
+          case 'h': 
+            console.log('[Editor] Keyboard: Setting tool to HAND');
+            setActiveTool('hand'); 
+            break;
+          // Inspect (I) is now merged into Select (V) behavior
         }
       }
     };
@@ -97,11 +115,18 @@ export function Editor({
       if (e.key === ' ') setIsSpacePressed(false);
     };
 
+    const handleBlur = () => {
+      setIsSpacePressed(false);
+    };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
+    
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
     };
   }, [isSpacePressed]);
 
@@ -362,7 +387,10 @@ export function Editor({
 
             <CanvasToolbar 
               activeTool={activeTool}
-              onToolChange={setActiveTool}
+              onToolChange={(tool) => {
+                console.log('[Editor] CanvasToolbar clicked, changing tool to:', tool);
+                setActiveTool(tool);
+              }}
               zoomLevel={instance.transformState.scale}
               onZoomIn={() => zoomIn()}
               onZoomOut={() => zoomOut()}

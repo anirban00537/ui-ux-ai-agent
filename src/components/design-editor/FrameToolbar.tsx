@@ -102,19 +102,7 @@ export function FrameToolbar({
             <RotateCcw className="w-4 h-4" />
           </button> */}
 
-          <button 
-             onClick={(e) => {
-                e.stopPropagation();
-                onToggleInspect?.();
-             }}
-             className={cn(
-               "w-9 h-9 flex items-center justify-center hover:bg-white/[0.08] text-zinc-400 hover:text-white rounded-full transition-all active:scale-90",
-               isInspecting && "bg-blue-500/20 text-blue-400 hover:text-blue-300 ring-1 ring-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
-             )}
-             title="Inspect Element"
-          >
-            <MousePointerClick className="w-4 h-4" />
-          </button>
+
 
           <button 
             onClick={onViewCode}

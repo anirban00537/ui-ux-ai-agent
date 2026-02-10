@@ -59,12 +59,7 @@ export function CanvasToolbar({
             icon={<Hand className="w-4 h-4" />}
             label="Pan (H)"
           />
-           <ToolbarButton 
-            active={activeTool === 'inspect'} 
-            onClick={() => onToolChange('inspect')}
-            icon={<ScanEye className="w-4 h-4" />}
-            label="Inspect Element (I)"
-          />
+
         </div>
 
         {/* History Section */}

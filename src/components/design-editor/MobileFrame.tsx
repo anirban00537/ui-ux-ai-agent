@@ -219,6 +219,7 @@ export const MobileFrame = React.memo(
     onSaveHtml,
     activeTool = 'select',
   }: MobileFrameProps) => {
+    console.log(`[MobileFrame] Render id=${id} activeTool=${activeTool}`);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -232,15 +233,8 @@ export const MobileFrame = React.memo(
         styles: any;
     } | null>(null);
 
-    // Sync isInspecting with activeTool
-    useEffect(() => {
-        if (activeTool === 'inspect') {
-            setIsInspecting(true);
-        } else {
-            setIsInspecting(false);
-            setSelectedElement(null);
-        }
-    }, [activeTool]);
+    // Sync isInspecting with activeTool and selection state
+
 
     // Send toggle inspect message whenever isInspecting changes
     useEffect(() => {
@@ -268,6 +262,27 @@ export const MobileFrame = React.memo(
     const [isSelected, setIsSelected] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+
+    // Sync isInspecting with activeTool and selection state
+    useEffect(() => {
+        // If active tool is inspect, always inspect
+        // If active tool is select AND we are selected, allow inspect (click-through)
+        // BUT strict requirement: "after selecting the frame user can select element"
+        
+        if (activeTool === 'inspect') {
+            setIsInspecting(true);
+        } else if (activeTool === 'select' && isSelected) {
+             // We want to enable inspection when frame is selected, 
+             // BUT we need to be careful not to interfere with dragging/resizing too much.
+             // Rnd handles drag via drag-target class.
+             // Interaction with iframe requires pointer-events.
+             // If we enable inspect, clicks go to iframe.
+             setIsInspecting(true);
+        } else {
+            setIsInspecting(false);
+            setSelectedElement(null);
+        }
+    }, [activeTool, isSelected]);
 
     const isHandTool = activeTool === 'hand';
     const isSelectTool = activeTool === 'select';
@@ -504,6 +519,7 @@ export const MobileFrame = React.memo(
             className,
             isHandTool && "pointer-events-none"
           )}
+          style={{ pointerEvents: isHandTool ? 'none' : 'auto' }}
           disableDragging={!isSelectTool}
           size={{ width: size.width, height: size.height }}
           position={{ x: position.x, y: position.y }}
@@ -656,7 +672,12 @@ export const MobileFrame = React.memo(
                     className="absolute inset-0 z-40 drag-target cursor-grab active:cursor-grabbing"
                     title="Click to select or drag"
                     onClick={(e) => {
+                      e.stopPropagation();
                       setIsSelected(true);
+                    }}
+                    onMouseDown={(e) => {
+                      // Prevent TransformWrapper from capturing this event for panning
+                      e.stopPropagation();
                     }}
                   />
                 )}
@@ -771,7 +792,8 @@ export const MobileFrame = React.memo(
       prev.scale === next.scale &&
       prev.autoSave === next.autoSave &&
       // Deep compare color palette
-      JSON.stringify(prev.colorPalette) === JSON.stringify(next.colorPalette)
+      JSON.stringify(prev.colorPalette) === JSON.stringify(next.colorPalette) &&
+      prev.activeTool === next.activeTool  // CRITICAL: Must check activeTool for tool switching
     );
   }
 );
