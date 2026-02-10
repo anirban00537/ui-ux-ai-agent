@@ -8,10 +8,14 @@ import { cn } from "@/lib/utils";
 import { Plus, Minus, Maximize, Eye } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { 
-  removeArtboard
+  removeArtboard,
+  updateConversation 
 } from "@/store/slices/designEditorSlice";
+
 import { useExportDesign } from "@/hooks/use-export";
-import { Download, Image as ImageIcon, FileCode, ChevronDown } from "lucide-react";
+import { Download, Image as ImageIcon, FileCode, ChevronDown, Share2, Globe, Lock, Copy, Check, Loader2 } from "lucide-react";
+import { updateDesign } from "@/services/designs";
+import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { CanvasToolbar, CanvasTool } from "./CanvasToolbar";
 
@@ -174,62 +178,54 @@ export function Editor({
   }, [artboards]);
 
   return (
-    <div className="w-full h-full bg-background relative overflow-hidden">
-       {/* Grid Pattern */}
-      <div 
-        className="absolute inset-0 -z-20 opacity-[0.03] pointer-events-none" 
-        style={{ 
-          backgroundImage: `linear-gradient(to right, #64748b 1px, transparent 1px), linear-gradient(to bottom, #64748b 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
-        }} 
-      />
-      
-      {/* Dot Pattern with better fade */}
-      <DotPattern
-        className={cn(
-          "[mask-image:radial-gradient(ellipse_at_center,white_20%,transparent_90%)] opacity-30"
-        )}
-        width={24}
-        height={24}
-        cr={0.8}
-      />
-      
-      {/* Radial Glow */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03)_0%,transparent_70%)] pointer-events-none" />
+    <div className="flex flex-col w-full h-full bg-background relative overflow-hidden">
+        {/* Top Navbar */}
+        <header className="h-14 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-xl flex items-center justify-between px-5 z-40 shrink-0">
+             <div className="flex items-center gap-4">
+                 {/* Logo */}
+                 <img 
+                   src="/logo.svg" 
+                   alt="Butterfast Logo" 
+                   className="h-5 drop-shadow-sm opacity-90 hover:opacity-100 transition-opacity" 
+                 />
+                 
+                 {/* Divider */}
+                 <div className="h-4 w-px bg-white/10" />
+                 
+                 {/* Design Title */}
+                 <div className="flex flex-col">
+                     <span className="text-sm font-medium text-zinc-200 leading-none">
+                         {conversation?.title || "Untitled Design"}
+                     </span>
+                     <span className="text-[10px] text-zinc-500 font-mono mt-0.5">
+                         v1.0 • Auto-saved
+                     </span>
+                 </div>
+             </div>
 
-      <TransformWrapper
-        initialScale={0.4}
-        minScale={0.1}
-        maxScale={3}
-        initialPositionX={-1750} // Focus on start (4600 * 0.4 = 1840. Target ~90px margin -> -1750)
-        initialPositionY={-300}  // Focus on top (1000 * 0.4 = 400. Target ~100px margin -> -300)
-        centerOnInit={false}
-        limitToBounds={false}
-        panning={{ 
-          excluded: ["input", "textarea", "button", "select", "mobile-frame-container", "drag-target"],
-          disabled: effectiveTool !== 'hand'
-        }}
-        wheel={{ step: 0.1, disabled: effectiveTool === 'hand' }}
-        doubleClick={{ disabled: true }}
-        pinch={{ step: 5 }}
-      >
-        {({ zoomIn, zoomOut, resetTransform, instance }) => (
-          <>
-            {/* Branding - Top Left */}
-            <div className="absolute top-6 left-6 z-20">
-              <div className="flex items-center justify-center bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-2.5 shadow-2xl ring-1 ring-white/5">
-                <img 
-                  src="/logo.svg" 
-                  alt="Butterfast Logo" 
-                  className="w-28 h-5 drop-shadow-sm" 
-                />
-              </div>
-            </div>
+             <div className="flex items-center gap-2">
+                 {/* Preview Button */}
+                 {conversation?.id && (
+                    <button 
+                        onClick={() => window.open(`/preview/${conversation.id}`, '_blank')}
+                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg transition-all active:scale-95"
+                    >
+                        <Eye className="w-3.5 h-3.5" />
+                        Preview
+                    </button>
+                 )}
 
-            {/* Export Actions - Top Right (Reduced) */}
-            <div className="absolute top-6 right-6 z-20">
-               {/* Just Export button here, maybe Preview if preferred, but Preview is in toolbar now */}
-               {conversation?.id && (
+                 {/* Share Controls */}
+                 {conversation?.id && (
+                    <ShareControls 
+                      designId={conversation.id}
+                      isPublic={!!conversation.isPublic}
+                      onUpdate={(isPublic) => dispatch(updateConversation({ isPublic }))}
+                    />
+                 )}
+
+                 {/* Export & Actions */}
+                 {conversation?.id && (
                   <div className="relative">
                       <button
                         onClick={(e) => {
@@ -238,9 +234,8 @@ export function Editor({
                         }}
                         disabled={isExporting}
                         className={cn(
-                          "flex items-center gap-2 px-3 py-2 bg-zinc-950/50 hover:bg-zinc-950/80 backdrop-blur-xl border border-white/10 rounded-xl transition-all duration-200 text-zinc-400 hover:text-white active:scale-95 font-medium text-xs shadow-xl",
-                          showExportMenu && "bg-zinc-950/90 text-white border-white/20",
-                          isExporting && "opacity-50 cursor-not-allowed"
+                          "flex items-center gap-2 px-3 py-1.5 bg-primary text-primary-foreground hover:bg-primary/90 border border-white/10 rounded-lg transition-all duration-200 active:scale-95 font-medium text-xs shadow-lg shadow-primary/20",
+                          isExporting && "opacity-70 cursor-not-allowed"
                         )}
                         title="Export All"
                       >
@@ -287,140 +282,232 @@ export function Editor({
                   </div>
                )}
             </div>
+        </header>
 
-            <TransformComponent
-              wrapperStyle={{ 
-                width: "100%", 
-                height: "100%", 
-                flex: 1,
-              }}
-              contentStyle={{ width: "100%", height: "100%" }}
-            >
-                <div
-                  className="relative bg-zinc-900/5 border-2 border-dashed border-white/5"
-                  style={{ 
-                    width: "12000px", 
-                    height: "4000px",
-                    cursor: effectiveTool === 'hand' ? 'grab' : effectiveTool === 'inspect' ? 'crosshair' : 'default'
-                  }}
-                >
-                  <div className="absolute inset-0 pointer-events-none opacity-[0.02]" 
-                       style={{ backgroundImage: 'radial-gradient(circle, #64748b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-                  
-                 
-
-                  {artboards.map((artboard, index) => {
-                    // Check if x or y is null, undefined, or 0 (treat 0,0 as new/unpositioned)
-                    const isUnpositioned = artboard.x == null || artboard.y == null || (Number(artboard.x) === 0 && Number(artboard.y) === 0);
-                    
-                    if (isUnpositioned) {
-                      // Horizontal line layout starting from left-center of canvas
-                      const SPACING_X = 600;
-                      const col = index;
-                      // Center all artboards around the middle of the canvas (6000)
-                      // Calculate total width of this batch
-                      const totalWidth = artboards.length * SPACING_X;
-                      const startX = 6000 - (totalWidth / 2);
-                      
-                      const initialX = startX + (col * SPACING_X);
-                      const initialY = 1000;
-                      
-                      return (
-                        <MobileFrame
-                          id={artboard.id}
-                          key={artboard.id}
-                          title={artboard.title}
-                          subtitle={artboard.description}
-                          htmlContent={artboard.html}
-                          width={artboard.width || 480}
-                          height={artboard.height}
-                          isHeightLocked={artboard.isHeightLocked}
-                          initialX={initialX}
-                          initialY={initialY}
-                          colorPalette={colorPalette}
-                          isGenerating={artboard.status === "generating"}
-                          onDelete={handleDeleteArtboardInternal}
-                          onSave={handleSaveInternal}
-                          onUpdate={handleUpdateArtboardInternal}
-                          scale={instance?.transformState?.scale || 1}
-                          autoSave={true}
-                          onSaveHtml={onSaveArtboardHtml}
-                          activeTool={effectiveTool}
-                        />
-                      );
-                    }
-
-                    console.log(`[Editor] Using saved position for artboard ${artboard.id} (${artboard.title}):`, {
-                      x: artboard.x,
-                      y: artboard.y
-                    });
-
-                    return (
-                      <MobileFrame
-                        id={artboard.id}
-                        key={artboard.id}
-                        title={artboard.title}
-                        subtitle={artboard.description}
-                        htmlContent={artboard.html}
-                        width={artboard.width || 480}
-                        height={artboard.height}
-                        isHeightLocked={artboard.isHeightLocked}
-                        initialX={Number(artboard.x)}
-                        initialY={Number(artboard.y)}
-                        colorPalette={colorPalette}
-                        isGenerating={artboard.status === "generating"}
-                        onDelete={handleDeleteArtboardInternal}
-                        onSave={handleSaveInternal}
-                        onUpdate={handleUpdateArtboardInternal}
-                        scale={instance?.transformState?.scale || 1}
-                        onSaveHtml={onSaveArtboardHtml}
-                        activeTool={effectiveTool}
-                      />
-                    );
-                  })}
-                </div>
-              </TransformComponent>
-
-            <CanvasToolbar 
-              activeTool={activeTool}
-              onToolChange={(tool) => {
-                console.log('[Editor] CanvasToolbar clicked, changing tool to:', tool);
-                setActiveTool(tool);
-              }}
-              zoomLevel={instance.transformState.scale}
-              onZoomIn={() => zoomIn()}
-              onZoomOut={() => zoomOut()}
-              canUndo={false}
-              canRedo={false}
-              onUndo={() => {}}
-              onRedo={() => {}}
-              onPreview={() => conversation?.id && window.open(`/preview/${conversation.id}`, '_blank')}
+         {/* Main Canvas Area */}
+         <div className="flex-1 relative overflow-hidden bg-zinc-950/20">
+            {/* Grid Pattern */}
+            <div 
+                className="absolute inset-0 -z-20 opacity-[0.03] pointer-events-none" 
+                style={{ 
+                backgroundImage: `linear-gradient(to right, #64748b 1px, transparent 1px), linear-gradient(to bottom, #64748b 1px, transparent 1px)`,
+                backgroundSize: '40px 40px'
+                }} 
             />
+            
+            {/* Dot Pattern with better fade */}
+            <DotPattern
+                className={cn(
+                "[mask-image:radial-gradient(ellipse_at_center,white_20%,transparent_90%)] opacity-30"
+                )}
+                width={24}
+                height={24}
+                cr={0.8}
+            />
+            
+            {/* Radial Glow */}
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03)_0%,transparent_70%)] pointer-events-none" />
 
-              <div className="absolute bottom-6 left-6 z-20">
-                <div className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
-                  <p className="text-sm text-white/80 font-medium">
-                    {artboards.length} screen{artboards.length !== 1 ? "s" : ""}
-                  </p>
-                </div>
-              </div>
+             <TransformWrapper
+                initialScale={0.4}
+                minScale={0.1}
+                maxScale={3}
+                initialPositionX={-1750}
+                initialPositionY={-300}
+                centerOnInit={false}
+                limitToBounds={false}
+                panning={{ 
+                excluded: ["input", "textarea", "button", "select", "mobile-frame-container", "drag-target"],
+                disabled: effectiveTool !== 'hand'
+                }}
+                wheel={{ step: 0.1, disabled: effectiveTool === 'hand' }}
+                doubleClick={{ disabled: true }}
+                pinch={{ step: 5 }}
+            >
+                {({ zoomIn, zoomOut, resetTransform, instance }) => (
+                <>
+                  <TransformComponent
+                    wrapperStyle={{ 
+                      width: "100%", 
+                      height: "100%", 
+                      flex: 1,
+                    }}
+                    contentStyle={{ width: "100%", height: "100%" }}
+                  >
+                      <div
+                        className="relative"
+                        style={{ 
+                          width: "12000px", 
+                          height: "4000px",
+                          cursor: effectiveTool === 'hand' ? 'grab' : effectiveTool === 'inspect' ? 'crosshair' : 'default'
+                        }}
+                      >
+                        {/* Inner Canvas Background for Grid alignment */}
+                        <div className="absolute inset-0 pointer-events-none opacity-[0.02]" 
+                             style={{ backgroundImage: 'radial-gradient(circle, #64748b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-              {error && (
-                <div className="absolute top-4 left-4 right-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm z-50 backdrop-blur-md flex items-center justify-between gap-4">
-                  <div className="flex-1 font-medium select-text">{error}</div>
-                  {(error.toLowerCase().includes("credit") || error.toLowerCase().includes("plan")) && (
-                    <a
-                      href="/subscription"
-                      className="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-red-500/20"
-                    >
-                      Upgrade Plan
-                    </a>
+                        {artboards.map((artboard, index) => {
+                          const isUnpositioned = artboard.x == null || artboard.y == null || (Number(artboard.x) === 0 && Number(artboard.y) === 0);
+                          
+                          let initialX = Number(artboard.x);
+                          let initialY = Number(artboard.y);
+
+                          if (isUnpositioned) {
+                            // Horizontal line layout starting from left-center of canvas
+                            const SPACING_X = 600;
+                            const col = index;
+                            const totalWidth = artboards.length * SPACING_X;
+                            const startX = 6000 - (totalWidth / 2);
+                            
+                            initialX = startX + (col * SPACING_X);
+                            initialY = 1000;
+                          }
+
+                          return (
+                            <MobileFrame
+                              id={artboard.id}
+                              key={artboard.id}
+                              title={artboard.title}
+                              subtitle={artboard.description}
+                              htmlContent={artboard.html}
+                              width={artboard.width || 480}
+                              height={artboard.height}
+                              isHeightLocked={artboard.isHeightLocked}
+                              initialX={initialX}
+                              initialY={initialY}
+                              colorPalette={colorPalette}
+                              isGenerating={artboard.status === "generating"}
+                              onDelete={handleDeleteArtboardInternal}
+                              onSave={handleSaveInternal}
+                              onUpdate={handleUpdateArtboardInternal}
+                              scale={instance?.transformState?.scale || 1}
+                              autoSave={isUnpositioned} // Auto-save only if it was unpositioned
+                              onSaveHtml={onSaveArtboardHtml}
+                              activeTool={effectiveTool}
+                            />
+                          );
+                        })}
+                      </div>
+                  </TransformComponent>
+
+                  <CanvasToolbar 
+                    activeTool={activeTool}
+                    onToolChange={(tool) => {
+                      console.log('[Editor] CanvasToolbar clicked, changing tool to:', tool);
+                      setActiveTool(tool);
+                    }}
+                    zoomLevel={instance.transformState.scale}
+                    onZoomIn={() => zoomIn()}
+                    onZoomOut={() => zoomOut()}
+                    canUndo={false}
+                    canRedo={false}
+                    onUndo={() => {}}
+                    onRedo={() => {}}
+                    onPreview={() => conversation?.id && window.open(`/preview/${conversation.id}`, '_blank')}
+                  />
+
+                  <div className="absolute bottom-6 left-6 z-20">
+                    <div className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
+                      <p className="text-sm text-white/80 font-medium">
+                        {artboards.length} screen{artboards.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </div>
+
+                  {error && (
+                    <div className="absolute top-4 left-4 right-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm z-50 backdrop-blur-md flex items-center justify-between gap-4">
+                      <div className="flex-1 font-medium select-text">{error}</div>
+                      {(error.toLowerCase().includes("credit") || error.toLowerCase().includes("plan")) && (
+                        <a
+                          href="/subscription"
+                          className="px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-red-500/20"
+                        >
+                          Upgrade Plan
+                        </a>
+                      )}
+                    </div>
                   )}
-                </div>
-              )}
-            </>
-          )}
-        </TransformWrapper>
+                </>
+                )}
+            </TransformWrapper>
+         </div>
+    </div>
+  );
+}
+
+function ShareControls({ 
+  designId, 
+  isPublic,
+  onUpdate 
+}: { 
+  designId: string; 
+  isPublic: boolean;
+  onUpdate: (isPublic: boolean) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleToggle = async () => {
+    setLoading(true);
+    try {
+      const resp = await updateDesign(designId, { isPublic: !isPublic });
+      if (resp.success) {
+        onUpdate(!isPublic);
+        toast.success(!isPublic ? "Design is now public" : "Design is now private");
+      }
+    } catch (error) {
+      toast.error("Failed to update share settings");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyLink = () => {
+    // Construct the preview URL
+    const url = `${window.location.origin}/preview/${designId}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast.success("Share link copied!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={handleToggle}
+        disabled={loading}
+        className={cn(
+          "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all border outline-none active:scale-95",
+          isPublic 
+            ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20" 
+            : "bg-white/5 border-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
+        )}
+        title={isPublic ? "Public - Anyone with link can view" : "Private - Only you can view"}
+      >
+        {loading ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+        ) : isPublic ? (
+          <Globe className="w-3.5 h-3.5" />
+        ) : (
+          <Lock className="w-3.5 h-3.5" />
+        )}
+        <span className="text-[11px] font-bold uppercase tracking-wider">
+          {isPublic ? "Public" : "Private"}
+        </span>
+      </button>
+
+      <button
+        onClick={copyLink}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 hover:text-white transition-all active:scale-95 group"
+        title="Copy Preview Link"
+      >
+        {copied ? (
+          <Check className="w-3.5 h-3.5 text-emerald-400" />
+        ) : (
+          <Share2 className="w-3.5 h-3.5 group-hover:text-blue-400 transition-colors" />
+        )}
+        <span className="text-[11px] font-medium tracking-wide">Share</span>
+      </button>
     </div>
   );
 }

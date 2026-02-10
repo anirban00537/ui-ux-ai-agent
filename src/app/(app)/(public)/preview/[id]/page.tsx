@@ -297,11 +297,12 @@ function ShareControls({
           onClick={handleToggle}
           disabled={loading}
           className={cn(
-            "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all border outline-none",
-            design.isPublic 
-              ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20" 
-              : "bg-zinc-800/50 border-white/5 text-white/40 hover:text-white/60 hover:bg-zinc-800"
-          )}
+             "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all border outline-none active:scale-95",
+             design.isPublic 
+               ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20" 
+               : "bg-white/5 border-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
+           )}
+           title={design.isPublic ? "Public - Anyone with link can view" : "Private - Only you can view"}
         >
           {loading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -310,22 +311,30 @@ function ShareControls({
           ) : (
             <Lock className="w-3.5 h-3.5" />
           )}
-          <span className="text-[11px] font-black uppercase tracking-wider">
+          <span className="text-[11px] font-bold uppercase tracking-wider">
             {design.isPublic ? "Public" : "Private"}
           </span>
         </button>
       )}
 
+      {!isOwner && !design.isPublic && (
+         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 text-zinc-500 cursor-not-allowed">
+            <Lock className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-bold uppercase tracking-wider">Private</span>
+         </div>
+      )}
+
       <button
         onClick={copyLink}
-        className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-white text-black hover:bg-zinc-200 transition-all shadow-lg active:scale-95"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 hover:text-white transition-all active:scale-95 group"
+        title="Copy Page Link"
       >
         {copied ? (
-          <Check className="w-3.5 h-3.5" />
+          <Check className="w-3.5 h-3.5 text-emerald-400" />
         ) : (
-          <Share2 className="w-3.5 h-3.5" />
+          <Share2 className="w-3.5 h-3.5 group-hover:text-blue-400 transition-colors" />
         )}
-        <span className="text-[11px] font-black uppercase tracking-wider">Copy URL</span>
+        <span className="text-[11px] font-medium tracking-wide">Share</span>
       </button>
     </div>
   );

@@ -598,12 +598,14 @@ export function SidebarContent({
       </div>
     </>
   ) : (
-    <ThemePanel
-      colorPalette={conversation?.colorPalette}
-      onColorChange={(key, value) => onColorChange?.(key, value)}
-      onFontChange={(font) => onColorChange?.("fontFamily", font)}
-      currentFont={conversation?.colorPalette?.fontFamily}
-    />
+    <div className="flex-1 min-h-0 relative">
+      <ThemePanel
+        colorPalette={conversation?.colorPalette}
+        onColorChange={(key, value) => onColorChange?.(key, value)}
+        onFontChange={(font) => onColorChange?.("fontFamily", font)}
+        currentFont={conversation?.colorPalette?.fontFamily}
+      />
+    </div>
   )}
     </div>
   );

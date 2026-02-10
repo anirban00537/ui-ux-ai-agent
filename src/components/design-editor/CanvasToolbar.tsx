@@ -59,23 +59,6 @@ export function CanvasToolbar({
             icon={<Hand className="w-4 h-4" />}
             label="Pan (H)"
           />
-
-        </div>
-
-        {/* History Section */}
-        <div className="flex items-center gap-1 px-2 border-r border-white/10">
-          <ToolbarButton 
-            onClick={onUndo}
-            disabled={!canUndo}
-            icon={<Undo2 className="w-4 h-4" />}
-            label="Undo (Cmd+Z)"
-          />
-          <ToolbarButton 
-            onClick={onRedo}
-            disabled={!canRedo}
-            icon={<Redo2 className="w-4 h-4" />}
-            label="Redo (Cmd+Shift+Z)"
-          />
         </div>
 
         {/* Zoom Section */}
@@ -95,24 +78,14 @@ export function CanvasToolbar({
           />
         </div>
 
-        {/* Extra Features Section (optional, if room) */}
-        {(onPreview || onTheme) && (
+        {/* Extra Features Section (Theme only now) */}
+        {onTheme && (
              <div className="flex items-center gap-1 pl-2 ml-2 border-l border-white/10">
-                 {onPreview && (
-                     <ToolbarButton 
-                        onClick={onPreview}
-                        icon={<Play className="w-3.5 h-3.5 fill-current" />}
-                        label="Preview"
-                        className="text-green-400 hover:text-green-300 hover:bg-green-500/10"
-                     />
-                 )}
-                  {onTheme && (
-                     <ToolbarButton 
-                        onClick={onTheme}
-                        icon={<Palette className="w-4 h-4" />}
-                        label="Theme"
-                     />
-                 )}
+                  <ToolbarButton 
+                    onClick={onTheme}
+                    icon={<Palette className="w-4 h-4" />}
+                    label="Theme"
+                  />
              </div>
         )}
 
