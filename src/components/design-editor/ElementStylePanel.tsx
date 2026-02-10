@@ -60,32 +60,40 @@ export function ElementStylePanel({ element, onUpdate, onClose, onDelete, positi
 
   return (
     <div 
-      className="fixed z-[99999] flex flex-col gap-2 items-start"
+      className="fixed z-[99999] flex flex-col gap-3 items-start pointer-events-auto"
       style={{ top: position.top, left: position.left }}
-      onMouseDown={e => e.stopPropagation()}
+      data-style-panel="true"
     >
       {/* Main Panel Popover */}
       {activeTab && (
-        <div className="bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-2xl p-4 w-[280px] backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200 mb-2">
-            <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
-                <span className="text-xs font-bold text-zinc-400 flex items-center gap-2">
-                    {activeTab === 'spacing' && <Box className="w-3.5 h-3.5" />}
-                    {activeTab === 'typography' && <Type className="w-3.5 h-3.5" />}
-                    {activeTab === 'appearance' && <Palette className="w-3.5 h-3.5" />}
-                    <span className="capitalize">{activeTab}</span>
+        <div className="bg-[#121212]/95 border border-white/10 rounded-2xl shadow-2xl p-4 w-[300px] backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-300 pointer-events-auto">
+            <div className="flex items-center justify-between mb-5 border-b border-white/5 pb-3">
+                <span className="text-[10px] font-bold text-zinc-500 flex items-center gap-2 uppercase tracking-widest">
+                    {activeTab === 'spacing' && <Box className="w-3.5 h-3.5 text-primary" />}
+                    {activeTab === 'typography' && <Type className="w-3.5 h-3.5 text-primary" />}
+                    {activeTab === 'appearance' && <Palette className="w-3.5 h-3.5 text-primary" />}
+                    {activeTab}
                 </span>
-                <button onClick={() => setActiveTab(null)} className="text-zinc-500 hover:text-white"><X className="w-3.5 h-3.5" /></button>
+                <button 
+                  onClick={() => setActiveTab(null)} 
+                  className="w-6 h-6 flex items-center justify-center rounded-full bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10 transition-all"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
             </div>
-            {currentTabContent()}
+            <div className="max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+              {currentTabContent()}
+            </div>
         </div>
       )}
 
       {/* Floating Toolbar */}
-      <div className="flex items-center gap-1 p-1.5 bg-[#1a1a1a] border border-white/10 rounded-full shadow-2xl backdrop-blur-xl">
-        <button className="w-8 h-8 flex items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors">
-            <ArrowRight className="w-4 h-4" />
-        </button>
-        <div className="w-px h-4 bg-white/10 mx-1" />
+      <div className="flex items-center gap-1.5 p-1.5 bg-[#121212]/90 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl pointer-events-auto ring-1 ring-white/5">
+        <div className="bg-primary/20 p-2 rounded-xl text-primary">
+            {element.tagName === 'svg' || element.tagName === 'path' ? <Box className="w-4 h-4" /> : <Type className="w-4 h-4" />}
+        </div>
+        
+        <div className="w-px h-6 bg-white/10 mx-1" />
         
         <ToolbarButton 
             active={activeTab === 'spacing'} 
@@ -106,15 +114,32 @@ export function ElementStylePanel({ element, onUpdate, onClose, onDelete, positi
             label="Appearance"
         />
         
-        <div className="w-px h-4 bg-white/10 mx-1" />
+        <div className="w-px h-6 bg-white/10 mx-1" />
         
         <button 
             onClick={onDelete}
-            className="w-8 h-8 flex items-center justify-center rounded-full text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+            title="Delete Element"
+            className="w-9 h-9 flex items-center justify-center rounded-xl text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all"
         >
             <Trash2 className="w-4 h-4" />
         </button>
       </div>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
     </div>
   );
 }

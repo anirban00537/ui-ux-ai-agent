@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { cn } from "@/lib/utils";
+import { HexAlphaColorPicker } from "react-colorful";
+import * as Popover from "@radix-ui/react-popover";
 
 interface ColorPickerInputProps {
   label: string;
@@ -12,47 +14,108 @@ interface ColorPickerInputProps {
 }
 
 export function ColorPickerInput({ label, value, onChange, className }: ColorPickerInputProps) {
-  const [localValue, setLocalValue] = useState(value);
+  // Ensure we have a valid hex starting point. react-colorful needs valid hex.
+  const sanitizeHex = (val: string) => {
+    if (!val || val === "transparent") return "#000000";
+    if (val.startsWith("rgba") || val.startsWith("rgb")) return val; // Should have been converted by parent but safety first
+    return val;
+  };
+
+  const [localValue, setLocalValue] = useState(sanitizeHex(value));
   
-  // Debounce the onChange callback
-  const debouncedOnChange = useDebouncedCallback(onChange, 300);
+  const debouncedOnChange = useDebouncedCallback(onChange, 100);
   
   const handleChange = (newValue: string) => {
     setLocalValue(newValue);
     debouncedOnChange(newValue);
   };
 
-  // Sync local value when prop changes (from external sources like reset or API updates)
   useEffect(() => {
     if (value) setLocalValue(value);
   }, [value]);
 
   return (
     <div className={cn("flex items-center justify-between gap-3", className)}>
-      <label className="text-xs font-medium text-zinc-400 capitalize">
-        {label.replace(/([A-Z])/g, ' $1').trim()}
-      </label>
+      {label && (
+        <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">
+          {label.replace(/([A-Z])/g, ' $1').trim()}
+        </label>
+      )}
+      
       <div className="flex items-center gap-2">
-        <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-zinc-700 shadow-sm flex-shrink-0">
-          <input 
-            type="color" 
-            value={localValue || "#000000"}
-            onChange={(e) => handleChange(e.target.value)}
-            className="absolute -top-2 -left-2 w-16 h-16 p-0 border-0 cursor-pointer opacity-0"
-          />
-          <div 
-            className="w-full h-full pointer-events-none" 
-            style={{ backgroundColor: localValue || "#000000" }} 
-          />
-        </div>
+        <Popover.Root>
+          <Popover.Trigger asChild>
+            <button 
+              className="w-8 h-8 rounded-lg overflow-hidden border border-white/10 shadow-sm flex-shrink-0 relative group"
+              style={{ backgroundColor: localValue }}
+            >
+              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
+            </button>
+          </Popover.Trigger>
+          
+          <Popover.Portal>
+            <Popover.Content 
+              className="z-[1000001] bg-zinc-900 border border-white/10 rounded-xl p-3 shadow-2xl animate-in fade-in zoom-in duration-200" 
+              sideOffset={10}
+              align="end"
+              data-style-panel="true"
+            >
+              <div className="space-y-3 custom-color-picker">
+                <HexAlphaColorPicker 
+                  color={localValue.startsWith('#') ? localValue : '#000000'} 
+                  onChange={handleChange} 
+                />
+                
+                <div className="flex items-center gap-2">
+                   <div className="flex-1 bg-black/40 border border-white/5 rounded-lg px-2 py-1.5 flex items-center gap-2">
+                      <span className="text-[10px] text-zinc-600 font-mono">HEX</span>
+                      <input 
+                        type="text"
+                        value={localValue}
+                        onChange={(e) => handleChange(e.target.value)}
+                        className="bg-transparent border-none text-[11px] font-mono text-white focus:outline-none w-full uppercase"
+                      />
+                   </div>
+                </div>
+              </div>
+              <Popover.Arrow className="fill-zinc-900" />
+            </Popover.Content>
+          </Popover.Portal>
+        </Popover.Root>
+
         <input 
           type="text"
-          value={localValue || ""}
+          value={localValue}
           onChange={(e) => handleChange(e.target.value)}
-          className="w-20 px-2 py-1.5 text-[11px] font-mono bg-zinc-900 border border-zinc-800 rounded text-zinc-300 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all uppercase"
+          className="w-24 px-2 py-1.5 text-[11px] font-mono bg-black/20 border border-white/10 rounded-lg text-white focus:border-primary/50 outline-none uppercase"
           placeholder="#000000"
         />
       </div>
+
+      <style jsx global>{`
+        .custom-color-picker .react-colorful {
+          width: 200px;
+          height: 160px;
+          cursor: crosshair;
+        }
+        .custom-color-picker .react-colorful__saturation {
+          border-radius: 8px;
+          margin-bottom: 12px;
+        }
+        .custom-color-picker .react-colorful__hue,
+        .custom-color-picker .react-colorful__alpha {
+          height: 12px;
+          border-radius: 6px;
+          margin-bottom: 8px;
+        }
+        .custom-color-picker .react-colorful__last-control {
+          margin-bottom: 0;
+        }
+        .custom-color-picker .react-colorful__pointer {
+          width: 16px;
+          height: 16px;
+        }
+      `}</style>
     </div>
   );
 }

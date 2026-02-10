@@ -13,14 +13,36 @@ const applyFallback = (img: HTMLImageElement) => {
   img.style.objectPosition = "center";
 };
 
-const testImageUrl = (url: string): Promise<boolean> =>
-  new Promise((resolve) => {
+const testImageUrl = (url: string): Promise<boolean> => {
+  return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => resolve(true);
     img.onerror = () => resolve(false);
     img.src = url;
   });
+};
 
+const rgbaToHex = (rgba: string) => {
+  if (!rgba) return "#000000";
+  if (rgba.startsWith("#")) return rgba;
+  if (rgba === "transparent") return "transparent";
+  
+  const match = rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
+  if (!match) return rgba;
+  
+  const r = parseInt(match[1]);
+  const g = parseInt(match[2]);
+  const b = parseInt(match[3]);
+  const a = match[4] ? parseFloat(match[4]) : 1;
+  
+  const toHex = (n: number) => n.toString(16).padStart(2, "0");
+  
+  if (a < 1) {
+    const alpha = Math.round(a * 255).toString(16).padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}${alpha}`;
+  }
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
 
 function CanvasContent() {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -478,19 +500,19 @@ function CanvasContent() {
     };
 
     const getComputedStyles = (element: Element) => {
-      const computed = window.getComputedStyle(element);
-      return {
-        color: computed.color,
-        backgroundColor: computed.backgroundColor,
-        fontSize: computed.fontSize,
-        fontWeight: computed.fontWeight,
-        textAlign: computed.textAlign,
-        
-        // Borders
-        borderRadius: computed.borderRadius,
-        borderColor: computed.borderColor,
-        borderWidth: computed.borderWidth,
-        borderStyle: computed.borderStyle,
+  const computed = window.getComputedStyle(element);
+  return {
+    color: rgbaToHex(computed.color),
+    backgroundColor: rgbaToHex(computed.backgroundColor),
+    fontSize: computed.fontSize,
+    fontWeight: computed.fontWeight,
+    textAlign: computed.textAlign,
+    
+    // Borders
+    borderRadius: computed.borderRadius,
+    borderColor: rgbaToHex(computed.borderColor),
+    borderWidth: computed.borderWidth,
+    borderStyle: computed.borderStyle,
         
         // Spacing Shorthands
         padding: computed.padding,
@@ -513,10 +535,10 @@ function CanvasContent() {
         height: computed.height,
         
         // SVG
-        fill: computed.fill,
-        stroke: computed.stroke,
-      };
-    };
+    fill: rgbaToHex(computed.fill),
+    stroke: rgbaToHex(computed.stroke),
+  };
+};
 
     const handleInspectHover = (e: MouseEvent) => {
       if (!inspectMode) return;
@@ -594,14 +616,15 @@ function CanvasContent() {
              const el = document.querySelector(`[data-editor-id="${id}"]`) as HTMLElement;
              if (el) {
                  if (styles) {
-                     Object.entries(styles).forEach(([key, value]) => {
-                         // Convert camelCase to kebab-case for style property
-                         // Actually el.style accepts camelCase
-                         if (value) {
-                             el.style[key as any] = value as string;
-                         }
-                     });
-                 }
+                 Object.entries(styles).forEach(([key, value]) => {
+                     if (value !== undefined) {
+                         // Convert camelCase to kebab-case for setProperty
+                         const kebabKey = key.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
+                         // Use !important to override any Tailwind or AI-generated classes
+                         el.style.setProperty(kebabKey, value as string, 'important');
+                     }
+                 });
+             }
                  if (textContent !== undefined) {
                      // Be careful replacing textContent if it has children
                      if (el.children.length === 0) {

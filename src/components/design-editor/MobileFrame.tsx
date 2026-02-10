@@ -438,14 +438,12 @@ export const MobileFrame = React.memo(
         }
 
         if (rndRef.current) {
-            // If dragging slider in style panel, don't deselect
-            // Actually simpler: preventing propagation on panel solves this
           const rndElement = rndRef.current.getSelfElement();
-          if (rndElement && !rndElement.contains(target) && !document.getElementById(`style-panel-${id}`)) {
+          const isInsideStylePanel = target.closest('[data-style-panel="true"]');
+          
+          if (rndElement && !rndElement.contains(target) && !isInsideStylePanel) {
             setIsSelected(false);
             setShowUpdateInput(false);
-            // Don't turn off inspect mode automatically on outside click, but maybe deselect element?
-            // If user clicks outside frame, maybe deselect element inside?
           }
         }
       };
