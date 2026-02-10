@@ -42,9 +42,14 @@ const isEmbedPath = (pathname: string) => {
   return pathname.startsWith("/embed/");
 };
 
+// Check if path is a preview route (publicly accessible, internal auth logic handles privacy)
+const isPreviewPath = (pathname: string) => {
+  return pathname.startsWith("/preview/");
+};
+
 // Check if path requires authentication to view
 const isProtectedPath = (pathname: string): boolean => {
-  return !isPublicPath(pathname) && !isDocsPath(pathname) && !isEmbedPath(pathname);
+  return !isPublicPath(pathname) && !isDocsPath(pathname) && !isEmbedPath(pathname) && !isPreviewPath(pathname);
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({

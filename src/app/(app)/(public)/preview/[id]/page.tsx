@@ -134,122 +134,141 @@ export default function PreviewPage() {
 
   return (
     <div className={cn(
-      "fixed inset-0 z-50 flex flex-col transition-colors duration-500 bg-[#0a0a0a]"
+      "fixed inset-0 z-50 flex flex-col transition-colors duration-500 bg-[#0a0a0a] font-sans"
     )}>
+      {/* Background Gradients */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-zinc-900/50 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none" />
+      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] pointer-events-none mix-blend-overlay" />
+
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 px-6 py-4 flex items-center justify-between z-50 bg-transparent">
-        <div className="flex items-center gap-4">
+      <div className="fixed top-0 left-0 right-0 px-6 py-5 flex items-center justify-between z-50 pointer-events-none">
+        <div className="flex items-center gap-4 pointer-events-auto">
           {user?.id === design?.userId ? (
             <Link 
               href={`/designs/${designId}`}
-              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 text-white transition-all border border-white/5 backdrop-blur-md"
+              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-black/40 hover:bg-black/60 text-zinc-300 hover:text-white transition-all border border-white/5 hover:border-white/10 backdrop-blur-xl shadow-sm"
             >
-              <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all duration-300">
                 <ArrowLeft className="w-4 h-4" />
               </div>
-              <span className="text-sm font-bold tracking-tight">Back to Design</span>
+              <span className="text-xs font-medium tracking-wide">Back to Editor</span>
             </Link>
-          ) : (
+          ) : user ? (
             <Link 
               href="/home"
-              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-xl bg-zinc-900/50 hover:bg-zinc-800/80 text-white transition-all border border-white/5 backdrop-blur-md"
+              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-black/40 hover:bg-black/60 text-zinc-300 hover:text-white transition-all border border-white/5 hover:border-white/10 backdrop-blur-xl shadow-sm"
             >
-              <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-                <ArrowLeft className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all duration-300">
+                <LayoutDashboard className="w-4 h-4" />
               </div>
-              <span className="text-sm font-bold tracking-tight">Back to Projects</span>
+              <span className="text-xs font-medium tracking-wide">Dashboard</span>
+            </Link>
+          ) : (
+             <Link 
+              href="/"
+              className="flex items-center gap-3 group"
+            >
+               <img src="/logo.svg" alt="Butterfast" className="w-28 h-8 opacity-90 group-hover:opacity-100 transition-opacity" />
             </Link>
           )}
         </div>
 
-        <div className="flex items-center gap-2 bg-zinc-900/50 backdrop-blur-md p-1 rounded-xl border border-white/5 scale-90 sm:scale-100">
-          
-          <div className="w-px h-4 bg-white/10 mx-1" />
-          
-          <ShareControls 
-            design={design} 
-            isOwner={user?.id === design.userId} 
-            onUpdate={(isPublic) => setDesign(prev => prev ? { ...prev, isPublic } : null)}
-          />
+        <div className="flex items-center gap-3 pointer-events-auto">
+           {/* Design Title (Optional, if we want to show it) */}
+           {design?.title && (
+             <div className="hidden sm:block px-4 py-1.5 rounded-full bg-black/20 border border-white/5 backdrop-blur-md">
+                <span className="text-xs font-medium text-white/70">{design.title}</span>
+             </div>
+           )}
+
+           <ShareControls 
+             design={design} 
+             isOwner={user?.id === design.userId} 
+             onUpdate={(isPublic) => setDesign(prev => prev ? { ...prev, isPublic } : null)}
+           />
         </div>
       </div>
 
       {/* Main Preview Container - Center content perfectly */}
-      <div className="flex-1 relative flex items-center justify-center min-h-0 overflow-y-auto overflow-x-hidden p-0 py-20">
+      <div className="flex-1 relative flex items-center justify-center min-h-0 overflow-hidden p-0">
+        
         {/* Navigation Arrows */}
         {design.artboards.length > 1 && (
           <>
             <button 
               onClick={prevScreen}
-              className="fixed left-4 sm:left-12 lg:left-24 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-zinc-900/80 border border-white/5 text-white/50 hover:text-white hover:scale-110 transition-all backdrop-blur-xl shadow-2xl"
+              className="fixed left-6 md:left-12 top-1/2 -translate-y-1/2 z-40 p-4 rounded-full bg-black/20 hover:bg-black/60 border border-white/5 hover:border-white/20 text-white/40 hover:text-white transition-all backdrop-blur-sm group active:scale-95 duration-300"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-8 h-8 group-hover:-translate-x-0.5 transition-transform" />
             </button>
             <button 
               onClick={nextScreen}
-              className="fixed right-4 sm:right-12 lg:right-24 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-zinc-900/80 border border-white/5 text-white/50 hover:text-white hover:scale-110 transition-all backdrop-blur-xl shadow-2xl"
+              className="fixed right-6 md:right-12 top-1/2 -translate-y-1/2 z-40 p-4 rounded-full bg-black/20 hover:bg-black/60 border border-white/5 hover:border-white/20 text-white/40 hover:text-white transition-all backdrop-blur-sm group active:scale-95 duration-300"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-8 h-8 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </>
         )}
 
         {/* Mobile Frame Container */}
-        <div className="relative group perspective-1000 animate-in fade-in zoom-in duration-700 flex flex-col items-center justify-center shrink-0 my-auto">
-           {/* Glow Effect */}
+        <div className="relative z-10 flex flex-col items-center justify-center">
+           {/* Ambient Glow */}
            <div 
-              className="absolute bg-primary/20 blur-[120px] opacity-20 pointer-events-none group-hover:opacity-40 transition-opacity"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary/30 blur-[100px] opacity-0 animate-in fade-in duration-1000 delay-500 fill-mode-forwards"
               style={{
-                 width: 480 * scale,
-                 minHeight: 840 * scale,
-                 height: "auto",
+                 width: "60vw",
+                 height: "60vh",
+                 borderRadius: "100%"
               }}
            />
-           
-           {/* Screen Title Label - Proportional Gap */}
-           <div 
-             className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[11px] font-mono tracking-[0.2em] text-zinc-500/80 uppercase transition-all duration-300 pointer-events-none"
-             style={{ top: `-${25 * scale}px` }}
-           >
-              {currentArtboard?.title || `Screen ${currentIndex + 1}`}
-           </div>
 
-           <div 
-             className="flex items-center justify-center transition-all duration-300"
-             style={{
+           {/* Mobile Frame with Reflection */}
+           <div className="relative group perspective-1000 animate-in fade-in zoom-in duration-700 flex flex-col items-center justify-center">
+               
+               {/* Screen Title Label */}
+               <div 
+                 className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-black/40 border border-white/10 rounded-full backdrop-blur-md opacity-0 animate-in slide-in-from-bottom-4 fade-in duration-700 delay-700 fill-mode-forwards"
+               >
+                  <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
+                    {currentArtboard?.title || `Screen ${currentIndex + 1}`}
+                  </span>
+               </div>
+
+               <div 
+                 className="relative transition-all duration-500 ease-out will-change-transform shadow-2xl shadow-black/50"
+                style={{
                 width: 480 * scale,
                 minHeight: 840 * scale,
                 height: "auto",
              }}
-           >
-              {currentArtboard && (
-                <PreviewMobileFrame
-                  id={currentArtboard.id}
-                  htmlContent={currentArtboard.html}
-                  title={currentArtboard.title}
-                  colorPalette={design.colorPalette}
-                  isStatic={true}
-                  disableDrag={true}
-                  disableResize={true}
-                  width={480}
-                  height={840}
-                  scale={scale}
-                />
-              )}
+               >
+                  {currentArtboard && (
+                    <PreviewMobileFrame
+                      id={currentArtboard.id}
+                      htmlContent={currentArtboard.html}
+                      title={currentArtboard.title}
+                      colorPalette={design.colorPalette}
+                      isStatic={true}
+                      disableDrag={true}
+                      disableResize={true}
+                      width={480}
+                      height={840}
+                      scale={scale}
+                    />
+                  )}
+               </div>
            </div>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes gradient-flow {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient-flow {
-          animation: gradient-flow 3s linear infinite;
-        }
-      `}</style>
+      
+      {/* Footer Branding (Optional) */}
+      {!user && (
+        <div className="fixed bottom-6 right-6 z-40 opacity-50 hover:opacity-100 transition-opacity">
+           <Link href="/" className="flex items-center gap-2 text-[10px] font-medium text-white/40 hover:text-white uppercase tracking-widest p-2 bg-black/20 rounded-lg backdrop-blur-sm border border-transparent hover:border-white/10 transition-all">
+              Made with Butterfast.com
+           </Link>
+        </div>
+      )}
     </div>
   );
 }
@@ -286,20 +305,20 @@ function ShareControls({
     const url = window.location.href;
     navigator.clipboard.writeText(url);
     setCopied(true);
-    toast.success("Share link copied!");
+    toast.success("Link copied to clipboard");
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="flex items-center gap-2 px-1">
+    <div className="flex items-center gap-2 p-1 rounded-full bg-black/40 border border-white/5 backdrop-blur-xl shadow-lg">
       {isOwner && (
         <button
           onClick={handleToggle}
           disabled={loading}
           className={cn(
-             "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all border outline-none active:scale-95",
+             "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all border outline-none active:scale-95",
              design.isPublic 
-               ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20" 
+               ? "bg-primary/10 border-primary/20 text-primary hover:bg-primary/20" 
                : "bg-white/5 border-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
            )}
            title={design.isPublic ? "Public - Anyone with link can view" : "Private - Only you can view"}
@@ -311,30 +330,40 @@ function ShareControls({
           ) : (
             <Lock className="w-3.5 h-3.5" />
           )}
-          <span className="text-[11px] font-bold uppercase tracking-wider">
+          <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline-block">
             {design.isPublic ? "Public" : "Private"}
           </span>
         </button>
       )}
 
       {!isOwner && !design.isPublic && (
-         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 text-zinc-500 cursor-not-allowed">
+         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/5 text-zinc-500 cursor-not-allowed">
             <Lock className="w-3.5 h-3.5" />
-            <span className="text-[11px] font-bold uppercase tracking-wider">Private</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline-block">Private</span>
          </div>
       )}
 
       <button
         onClick={copyLink}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-300 hover:text-white transition-all active:scale-95 group"
+        className={cn(
+            "flex items-center gap-2 px-4 py-1.5 rounded-full transition-all active:scale-95 group font-medium text-xs",
+            copied 
+                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
+                : "bg-white text-black hover:bg-zinc-200 border border-transparent shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+        )}
         title="Copy Page Link"
       >
         {copied ? (
-          <Check className="w-3.5 h-3.5 text-emerald-400" />
+          <>
+            <Check className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline-block">Copied</span>
+          </>
         ) : (
-          <Share2 className="w-3.5 h-3.5 group-hover:text-blue-400 transition-colors" />
+          <>
+            <Share2 className="w-3.5 h-3.5" />
+            <span>Share</span>
+          </>
         )}
-        <span className="text-[11px] font-medium tracking-wide">Share</span>
       </button>
     </div>
   );
