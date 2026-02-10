@@ -69,8 +69,12 @@ export const useCanvasEditor = () => {
           
           // Layout
           display: computed.display,
+          flexDirection: computed.flexDirection,
+          justifyContent: computed.justifyContent,
+          alignItems: computed.alignItems,
           width: computed.width,
           height: computed.height,
+          opacity: computed.opacity,
           
           // SVG
           fill: rgbaToHex(computed.fill),
@@ -78,30 +82,28 @@ export const useCanvasEditor = () => {
         };
     }, [rgbaToHex]);
 
-    const saveDesign = useCallback(() => {
-        setTimeout(() => {
-            const designRoot = document.querySelector('.canvas-design-root');
-            if (designRoot) {
-                const clone = designRoot.cloneNode(true) as HTMLElement;
-                
-                // Clean up inspector artifacts
-                clone.querySelectorAll('.inspector-hover').forEach(el => el.classList.remove('inspector-hover'));
-                clone.querySelectorAll('.inspector-selected').forEach(el => el.classList.remove('inspector-selected'));
-                clone.querySelectorAll('.inspector-editing').forEach(el => {
-                    el.classList.remove('inspector-editing');
-                    el.removeAttribute('contenteditable');
-                });
-                
-                // Clean class attributes
-                const html = clone.innerHTML.replace(/class="\s*"/g, '');
-                
-                window.parent.postMessage({
-                    type: "SAVE_HTML_REQUEST",
-                    html: html
-                }, "*");
-            }
-        }, 500);
-    }, []);
+    const saveDesign = useDebouncedCallback(() => {
+        const designRoot = document.querySelector('.canvas-design-root');
+        if (designRoot) {
+            const clone = designRoot.cloneNode(true) as HTMLElement;
+            
+            // Clean up inspector artifacts
+            clone.querySelectorAll('.inspector-hover').forEach(el => el.classList.remove('inspector-hover'));
+            clone.querySelectorAll('.inspector-selected').forEach(el => el.classList.remove('inspector-selected'));
+            clone.querySelectorAll('.inspector-editing').forEach(el => {
+                el.classList.remove('inspector-editing');
+                el.removeAttribute('contenteditable');
+            });
+            
+            // Clean class attributes
+            const html = clone.innerHTML.replace(/class="\s*"/g, '');
+            
+            window.parent.postMessage({
+                type: "SAVE_HTML_REQUEST",
+                html: html
+            }, "*");
+        }
+    }, 1000);
 
     const debouncedSync = useDebouncedCallback((target: HTMLElement) => {
         const editorId = getElementPath(target);
@@ -135,7 +137,7 @@ export const useCanvasEditor = () => {
             isLiveEdit: true
         }, "*");
         
-        saveDesign();
+        saveDesign.flush();
     }, [getElementPath, handleContentEditInput, saveDesign]);
 
     const handleInspectDoubleClick = useCallback((e: MouseEvent) => {
