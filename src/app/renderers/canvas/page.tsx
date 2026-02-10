@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, Suspense } from "react";
+import { useCanvasEditor } from "@/hooks/useCanvasEditor";
 
 const FALLBACK_IMAGE = "https://picsum.photos/seed/placeholder/400/600";
 
@@ -49,6 +50,7 @@ function CanvasContent() {
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode") || "editor";
   const isPreview = mode === "preview";
+  const { handleMessage: handleEditorMessage } = useCanvasEditor();
 
   useEffect(() => {
     const root = rootRef.current;
@@ -304,6 +306,8 @@ function CanvasContent() {
     let heightReportTimeout: NodeJS.Timeout;
 
     const handleMessage = (event: MessageEvent) => {
+      handleEditorMessage(event);
+      
       const data = event.data;
       if (!data) return;
 
@@ -461,19 +465,9 @@ function CanvasContent() {
       }, 250); // Increased debounce to let content settle
     });
 
-    resizeObserver.observe(document.body);
-    resizeObserver.observe(document.body);
-    window.addEventListener("message", handleMessage);
-    // Also listen to window resize for fixViewportUnits
-    window.addEventListener("resize", fixViewportUnits);
-    
     // -------------------------------------------------------------------------
-    // INSPECTOR LOGIC
+    // INSPECTOR STYLES (Keep purely for visual feedback logic in hook)
     // -------------------------------------------------------------------------
-    let inspectMode = false;
-    let hoveredElement: HTMLElement | null = null;
-    let selectedElement: HTMLElement | null = null;
-
     const highlightStyleId = "inspector-styles";
     if (!document.getElementById(highlightStyleId)) {
       const style = document.createElement("style");
@@ -486,217 +480,30 @@ function CanvasContent() {
         .inspector-selected {
           outline: 2px solid #ef4444 !important;
         }
+        .inspector-editing {
+            outline: 2px dashed #22c55e !important;
+            cursor: text !important;
+            min-width: 10px;
+        }
       `;
       document.head.appendChild(style);
     }
 
-    const getElementPath = (element: HTMLElement): string => {
-       // Generate a unique selector or rely on a data-id if we attach one
-       // For simplicity, let's use a data-editor-id which we can inject on hover/click if missing
-       if (!element.dataset.editorId) {
-         element.dataset.editorId = Math.random().toString(36).substr(2, 9);
-       }
-       return element.dataset.editorId;
-    };
-
-    const getComputedStyles = (element: Element) => {
-  const computed = window.getComputedStyle(element);
-  return {
-    color: rgbaToHex(computed.color),
-    backgroundColor: rgbaToHex(computed.backgroundColor),
-    fontSize: computed.fontSize,
-    fontWeight: computed.fontWeight,
-    textAlign: computed.textAlign,
+    resizeObserver.observe(document.body);
+    window.addEventListener("message", handleMessage);
+    // Also listen to window resize for fixViewportUnits
+    window.addEventListener("resize", fixViewportUnits);
     
-    // Borders
-    borderRadius: computed.borderRadius,
-    borderColor: rgbaToHex(computed.borderColor),
-    borderWidth: computed.borderWidth,
-    borderStyle: computed.borderStyle,
-        
-        // Spacing Shorthands
-        padding: computed.padding,
-        margin: computed.margin,
-        
-        // Individual Spacing
-        paddingTop: computed.paddingTop,
-        paddingRight: computed.paddingRight,
-        paddingBottom: computed.paddingBottom,
-        paddingLeft: computed.paddingLeft,
-        
-        marginTop: computed.marginTop,
-        marginRight: computed.marginRight,
-        marginBottom: computed.marginBottom,
-        marginLeft: computed.marginLeft,
-        
-        // Layout
-        display: computed.display,
-        width: computed.width,
-        height: computed.height,
-        
-        // SVG
-    fill: rgbaToHex(computed.fill),
-    stroke: rgbaToHex(computed.stroke),
-  };
-};
-
-    const handleInspectHover = (e: MouseEvent) => {
-      if (!inspectMode) return;
-      e.stopPropagation();
-      e.preventDefault();
-
-      const target = e.target as HTMLElement;
-      if (target === hoveredElement) return;
-      if (target.id === "root" || target.id === "canvas-wrapper") return;
-
-      if (hoveredElement) {
-        hoveredElement.classList.remove("inspector-hover");
-      }
-      
-      hoveredElement = target;
-      target.classList.add("inspector-hover");
-    };
-
-    const handleInspectClick = (e: MouseEvent) => {
-      if (!inspectMode) return;
-      e.stopPropagation();
-      e.preventDefault();
-
-      const target = e.target as HTMLElement;
-      if (target.id === "root" || target.id === "canvas-wrapper") return;
-
-      if (selectedElement) {
-        selectedElement.classList.remove("inspector-selected");
-      }
-
-      selectedElement = target;
-      target.classList.add("inspector-selected");
-
-      const editorId = getElementPath(target);
-      const styles = getComputedStyles(target);
-
-      window.parent.postMessage({
-        type: "ELEMENT_SELECTED",
-        element: {
-          id: editorId,
-          tagName: target.tagName.toLowerCase(),
-          innerText: (target.textContent || "").slice(0, 50),
-          styles: styles
-        }
-      }, "*");
-    };
-
-    const EXTENDED_handleMessage = (event: MessageEvent) => {
-        handleMessage(event); // Call original handler
-
-        const data = event.data;
-        if (!data) return;
-
-        if (data.type === "TOGGLE_INSPECT") {
-            inspectMode = data.enabled;
-            if (inspectMode) {
-                document.addEventListener("mouseover", handleInspectHover, true);
-                document.addEventListener("click", handleInspectClick, true);
-                document.body.style.cursor = "crosshair";
-            } else {
-                document.removeEventListener("mouseover", handleInspectHover, true);
-                document.removeEventListener("click", handleInspectClick, true);
-                
-                if (hoveredElement) hoveredElement.classList.remove("inspector-hover");
-                if (selectedElement) selectedElement.classList.remove("inspector-selected");
-                hoveredElement = null;
-                selectedElement = null;
-                document.body.style.cursor = "";
-            }
-        }
-
-        if (data.type === "UPDATE_ELEMENT_STYLE") {
-             const { id, styles, textContent } = data;
-             // Find element by data-editor-id
-             const el = document.querySelector(`[data-editor-id="${id}"]`) as HTMLElement;
-             if (el) {
-                 if (styles) {
-                 Object.entries(styles).forEach(([key, value]) => {
-                     if (value !== undefined) {
-                         // Convert camelCase to kebab-case for setProperty
-                         const kebabKey = key.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
-                         // Use !important to override any Tailwind or AI-generated classes
-                         el.style.setProperty(kebabKey, value as string, 'important');
-                     }
-                 });
-             }
-                 if (textContent !== undefined) {
-                     // Be careful replacing textContent if it has children
-                     if (el.children.length === 0) {
-                         el.textContent = textContent;
-                     }
-                 }
-                 
-                 // Send update to persist
-                 // Wait a bit for render
-                 setTimeout(() => {
-                     const designRoot = document.querySelector('.canvas-design-root');
-                     if (designRoot) {
-                         // Clean up inspector classes before saving
-                         const cleanHtml = designRoot.innerHTML
-                             .replace(/inspector-hover/g, '')
-                             .replace(/inspector-selected/g, '')
-                             .replace(/class="\s*"/g, '');
-                         
-                         window.parent.postMessage({
-                             type: "SAVE_HTML_REQUEST",
-                             html: cleanHtml
-                         }, "*");
-                     }
-                 }, 100);
-             }
-        }
-
-        if (data.type === "DELETE_ELEMENT") {
-             const { id } = data;
-             const el = document.querySelector(`[data-editor-id="${id}"]`);
-             if (el && el.parentNode) {
-                 el.parentNode.removeChild(el);
-                 
-                 // Deselect
-                 if (selectedElement === el) selectedElement = null;
-                 if (hoveredElement === el) hoveredElement = null;
-                 
-                 // Save
-                 setTimeout(() => {
-                     const designRoot = document.querySelector('.canvas-design-root');
-                     if (designRoot) {
-                         const cleanHtml = designRoot.innerHTML
-                             .replace(/inspector-hover/g, '')
-                             .replace(/inspector-selected/g, '')
-                             .replace(/class="\s*"/g, '');
-                         
-                         window.parent.postMessage({
-                             type: "SAVE_HTML_REQUEST",
-                             html: cleanHtml
-                         }, "*");
-                     }
-                 }, 100);
-             }
-        }
-    };
-
-    // Replace the listener with our extended one
-    window.removeEventListener("message", handleMessage);
-    window.addEventListener("message", EXTENDED_handleMessage);
-
     window.parent.postMessage({ type: "CANVAS_READY" }, "*");
 
     return () => {
       root.removeEventListener("error", handleImageError, true);
-      window.removeEventListener("message", EXTENDED_handleMessage);
+      window.removeEventListener("message", handleMessage);
       window.removeEventListener("resize", fixViewportUnits);
-      document.removeEventListener("mouseover", handleInspectHover, true);
-      document.removeEventListener("click", handleInspectClick, true);
       resizeObserver.disconnect();
-      clearTimeout(heightReportTimeout);
     };
-  }, []);
+  }, [isPreview, handleEditorMessage]); // Added handleEditorMessage dependency
+
 
 
   return (

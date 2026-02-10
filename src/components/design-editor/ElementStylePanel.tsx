@@ -50,7 +50,7 @@ export function ElementStylePanel({ element, onUpdate, onClose, onDelete, positi
       case 'spacing':
         return <SpacingEditor styles={styles} onChange={handleChange} />;
       case 'typography':
-        return <TypographyEditor styles={styles} onChange={handleChange} text={element.innerText} onTextChange={(val) => onUpdate(element.id, {}, val)} />;
+        return <TypographyEditor styles={styles} onChange={handleChange} />;
       case 'appearance':
         return <AppearanceEditor styles={styles} onChange={handleChange} tagName={element.tagName} />;
       default:
@@ -262,19 +262,9 @@ function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string
     );
 }
 
-function TypographyEditor({ styles, text, onChange, onTextChange }: { styles: any, text: string, onChange: (k: string, v: string) => void, onTextChange: (v: string) => void }) {
+function TypographyEditor({ styles, onChange }: { styles: any, onChange: (k: string, v: string) => void }) {
     return (
         <div className="space-y-4">
-             {/* Content Input */}
-             <div className="space-y-1.5">
-                <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Content</label>
-                <textarea 
-                    value={text}
-                    onChange={e => onTextChange(e.target.value)}
-                    className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-primary/50 outline-none min-h-[60px] resize-none"
-                    placeholder="Type element content here..."
-                />
-            </div>
 
             <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
