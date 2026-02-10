@@ -173,11 +173,11 @@ export function Editor({
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03)_0%,transparent_70%)] pointer-events-none" />
 
       <TransformWrapper
-        initialScale={0.5}
+        initialScale={0.4}
         minScale={0.1}
         maxScale={3}
-        initialPositionX={-2000} // Focus on start of artboards (4600 * 0.5 = 2300. Target X=300 -> -2000)
-        initialPositionY={-400}  // Focus on top of artboards (1200 * 0.5 = 600. Target Y=200 -> -400)
+        initialPositionX={-1750} // Focus on start (4600 * 0.4 = 1840. Target ~90px margin -> -1750)
+        initialPositionY={-300}  // Focus on top (1000 * 0.4 = 400. Target ~100px margin -> -300)
         centerOnInit={false}
         limitToBounds={false}
         panning={{ 
