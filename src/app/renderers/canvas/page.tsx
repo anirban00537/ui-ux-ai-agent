@@ -477,17 +477,44 @@ function CanvasContent() {
        return element.dataset.editorId;
     };
 
-    const getComputedStyles = (element: HTMLElement) => {
+    const getComputedStyles = (element: Element) => {
       const computed = window.getComputedStyle(element);
       return {
         color: computed.color,
         backgroundColor: computed.backgroundColor,
         fontSize: computed.fontSize,
+        fontWeight: computed.fontWeight,
+        textAlign: computed.textAlign,
+        
+        // Borders
+        borderRadius: computed.borderRadius,
+        borderColor: computed.borderColor,
+        borderWidth: computed.borderWidth,
+        borderStyle: computed.borderStyle,
+        
+        // Spacing Shorthands
         padding: computed.padding,
         margin: computed.margin,
-        textAlign: computed.textAlign,
-        borderRadius: computed.borderRadius,
-        fontWeight: computed.fontWeight,
+        
+        // Individual Spacing
+        paddingTop: computed.paddingTop,
+        paddingRight: computed.paddingRight,
+        paddingBottom: computed.paddingBottom,
+        paddingLeft: computed.paddingLeft,
+        
+        marginTop: computed.marginTop,
+        marginRight: computed.marginRight,
+        marginBottom: computed.marginBottom,
+        marginLeft: computed.marginLeft,
+        
+        // Layout
+        display: computed.display,
+        width: computed.width,
+        height: computed.height,
+        
+        // SVG
+        fill: computed.fill,
+        stroke: computed.stroke,
       };
     };
 
@@ -531,7 +558,7 @@ function CanvasContent() {
         element: {
           id: editorId,
           tagName: target.tagName.toLowerCase(),
-          innerText: target.innerText.slice(0, 50),
+          innerText: (target.textContent || "").slice(0, 50),
           styles: styles
         }
       }, "*");

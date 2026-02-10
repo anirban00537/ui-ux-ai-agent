@@ -135,9 +135,10 @@ interface ElementStylePanelWrapperProps {
   element: any;
   onUpdate: (id: string, styles: any, textContent?: string) => void;
   onClose: () => void;
+  onDelete: () => void;
 }
 
-function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose }: ElementStylePanelWrapperProps) {
+function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, onDelete }: ElementStylePanelWrapperProps) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
@@ -163,6 +164,7 @@ function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose }: 
       element={element}
       onUpdate={onUpdate}
       onClose={onClose}
+      onDelete={onDelete}
       position={position}
     />
   );
@@ -700,6 +702,13 @@ export const MobileFrame = React.memo(
                     element={selectedElement}
                     onUpdate={handleStyleUpdate}
                     onClose={() => setSelectedElement(null)}
+                    onDelete={() => {
+                        iframeRef.current?.contentWindow?.postMessage({
+                            type: "DELETE_ELEMENT",
+                            id: selectedElement.id
+                        }, "*");
+                        setSelectedElement(null);
+                    }}
                  />,
                  document.body
              )

@@ -51,7 +51,7 @@ export function ElementStylePanel({ element, onUpdate, onClose, position }: Elem
       case 'typography':
         return <TypographyEditor styles={styles} onChange={handleChange} text={element.innerText} onTextChange={(val) => onUpdate(element.id, {}, val)} />;
       case 'appearance':
-        return <AppearanceEditor styles={styles} onChange={handleChange} />;
+        return <AppearanceEditor styles={styles} onChange={handleChange} tagName={element.tagName} />;
       default:
         return null;
     }
@@ -309,17 +309,39 @@ function TypographyEditor({ styles, text, onChange, onTextChange }: { styles: an
     );
 }
 
-function AppearanceEditor({ styles, onChange }: { styles: any, onChange: (k: string, v: string) => void }) {
+const SVG_TAGS = ['svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'ellipse', 'g'];
+
+function AppearanceEditor({ styles, onChange, tagName }: { styles: any, onChange: (k: string, v: string) => void, tagName: string }) {
+    const isSvg = SVG_TAGS.includes(tagName);
+
     return (
         <div className="space-y-4">
-             <div className="space-y-1.5">
-                  <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Background</label>
-                  <ColorPickerInput 
-                     label="" 
-                     value={styles.backgroundColor} 
-                     onChange={(val) => onChange('backgroundColor', val)}
-                  />
-            </div>
+             {isSvg ? (
+                 <div className="space-y-1.5">
+                     <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Fill</label>
+                     <ColorPickerInput 
+                        label="" 
+                        value={styles.fill} 
+                        onChange={(val) => onChange('fill', val)}
+                     />
+                     <div className="h-2" />
+                     <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Stroke</label>
+                     <ColorPickerInput 
+                        label="" 
+                        value={styles.stroke} 
+                        onChange={(val) => onChange('stroke', val)}
+                     />
+                </div>
+            ) : (
+                 <div className="space-y-1.5">
+                      <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Background</label>
+                      <ColorPickerInput 
+                         label="" 
+                         value={styles.backgroundColor} 
+                         onChange={(val) => onChange('backgroundColor', val)}
+                      />
+                </div>
+            )}
 
             <div className="bg-white/5 h-px w-full" />
 
