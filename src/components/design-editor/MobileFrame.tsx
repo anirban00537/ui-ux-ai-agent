@@ -1,9 +1,11 @@
+
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Rnd } from "react-rnd";
 import { CodeViewerModal } from "./CodeViewerModal";
+import { cn } from "@/lib/utils";
 import { FrameToolbar } from "./FrameToolbar";
 import { ElementStylePanel } from "./ElementStylePanel";
 import { Sparkles, ChevronRight } from "lucide-react";
@@ -170,7 +172,7 @@ function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, on
   );
 }
 
-interface MobileFrameProps {
+export interface MobileFrameProps {
   id: string;
   htmlContent: string;
   title?: string;
@@ -192,6 +194,7 @@ interface MobileFrameProps {
   scale?: number;
   autoSave?: boolean;
   onSaveHtml?: (id: string, html: string) => void;
+  activeTool?: 'select' | 'hand' | 'inspect';
 }
 
 export const MobileFrame = React.memo(
@@ -214,6 +217,7 @@ export const MobileFrame = React.memo(
     scale = 1,
     autoSave = false,
     onSaveHtml,
+    activeTool = 'select',
   }: MobileFrameProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -227,6 +231,26 @@ export const MobileFrame = React.memo(
         innerText: string;
         styles: any;
     } | null>(null);
+
+    // Sync isInspecting with activeTool
+    useEffect(() => {
+        if (activeTool === 'inspect') {
+            setIsInspecting(true);
+        } else {
+            setIsInspecting(false);
+            setSelectedElement(null);
+        }
+    }, [activeTool]);
+
+    // Send toggle inspect message whenever isInspecting changes
+    useEffect(() => {
+        if (iframeRef.current?.contentWindow) {
+            iframeRef.current.contentWindow.postMessage({
+                type: "TOGGLE_INSPECT",
+                enabled: isInspecting
+            }, "*");
+        }
+    }, [isInspecting]);
 
     // State for dimensions - Large Mobile (480x1100 minimum)
     const MIN_FRAME_HEIGHT = 1100;
@@ -244,6 +268,9 @@ export const MobileFrame = React.memo(
     const [isSelected, setIsSelected] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+
+    const isHandTool = activeTool === 'hand';
+    const isSelectTool = activeTool === 'select';
     
     // Track if height was explicitly set/locked by user (from saved flag or manual resize)
     // When true, we don't auto-resize based on content height
@@ -471,9 +498,13 @@ export const MobileFrame = React.memo(
       <>
         <Rnd
           ref={rndRef}
-          className={`mobile-frame-container z-10 ${
-            isSelected ? "z-50" : ""
-          } ${className}`}
+          className={cn(
+            "mobile-frame-container z-10",
+            isSelected && "z-50",
+            className,
+            isHandTool && "pointer-events-none"
+          )}
+          disableDragging={!isSelectTool}
           size={{ width: size.width, height: size.height }}
           position={{ x: position.x, y: position.y }}
           scale={scale}
@@ -526,7 +557,7 @@ export const MobileFrame = React.memo(
               isHeightLocked: true, // Persist the lock state to database
             });
           }}
-          enableResizing={{
+          enableResizing={isSelectTool ? {
             bottomRight: true,
             bottomLeft: true,
             topRight: true,
@@ -535,7 +566,7 @@ export const MobileFrame = React.memo(
             top: false,
             left: false,
             right: false,
-          }}
+          } : false}
           resizeHandleComponent={
             isSelected
               ? {

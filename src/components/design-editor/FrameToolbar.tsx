@@ -58,12 +58,12 @@ export function FrameToolbar({
   return (
     <div 
       className={cn(
-        "absolute -top-14 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-1.5 p-1 rounded-full border border-white/5 bg-zinc-950/80 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group/toolbar",
+        "relative flex items-center gap-1.5 p-1 rounded-full border border-white/10 bg-zinc-950/80 backdrop-blur-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group/toolbar ring-1 ring-white/5",
         "min-w-fit px-2 py-1.5"
       )}
     >
       {/* Drag Handle */}
-      <div className="w-8 h-8 flex items-center justify-center text-zinc-600 hover:text-zinc-400 transition-colors cursor-grab active:cursor-grabbing">
+      <div className="w-8 h-8 flex items-center justify-center text-zinc-600 hover:text-zinc-400 transition-colors cursor-grab active:cursor-grabbing drag-target">
         <GripVertical className="w-4 h-4" />
       </div>
 

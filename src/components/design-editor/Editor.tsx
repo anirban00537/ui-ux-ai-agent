@@ -13,6 +13,7 @@ import {
 import { useExportDesign } from "@/hooks/use-export";
 import { Download, Image as ImageIcon, FileCode, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
+import { CanvasToolbar, CanvasTool } from "./CanvasToolbar";
 
 interface EditorProps {
   onDeleteArtboard?: (artboardId: string) => void;
@@ -71,7 +72,38 @@ export function Editor({
     handleSave(id, data);
   }, [handleSave]);
 
+  const [activeTool, setActiveTool] = useState<CanvasTool>('select');
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
+  const effectiveTool = isSpacePressed ? 'hand' : activeTool;
+  
   const [showExportMenu, setShowExportMenu] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+      
+      if (e.key === ' ') {
+        if (!isSpacePressed) setIsSpacePressed(true);
+      } else {
+        switch (e.key.toLowerCase()) {
+          case 'v': setActiveTool('select'); break;
+          case 'h': setActiveTool('hand'); break;
+          case 'i': setActiveTool('inspect'); break;
+        }
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === ' ') setIsSpacePressed(false);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isSpacePressed]);
 
   useEffect(() => {
     if (!showExportMenu) return;
@@ -98,8 +130,26 @@ export function Editor({
     setShowExportMenu(false);
   }, [conversation, exportAllImages]);
 
+  // Debug logging for artboard positions
+  useEffect(() => {
+    if (artboards.length > 0) {
+      console.log('[Editor] Artboards updated:', {
+        count: artboards.length,
+        artboards: artboards.map(a => ({
+          id: a.id,
+          title: a.title,
+          x: a.x,
+          y: a.y,
+          width: a.width,
+          height: a.height,
+          isUnpositioned: a.x == null || a.y == null || (Number(a.x) === 0 && Number(a.y) === 0)
+        }))
+      });
+    }
+  }, [artboards]);
+
   return (
-    <div className="w-full h-full bg-background relative overflow-hidden isolate">
+    <div className="w-full h-full bg-background relative overflow-hidden">
        {/* Grid Pattern */}
       <div 
         className="absolute inset-0 -z-20 opacity-[0.03] pointer-events-none" 
@@ -126,12 +176,15 @@ export function Editor({
         initialScale={0.5}
         minScale={0.1}
         maxScale={3}
-        centerOnInit={true}
+        initialPositionX={-2000} // Focus on start of artboards (4600 * 0.5 = 2300. Target X=300 -> -2000)
+        initialPositionY={-400}  // Focus on top of artboards (1200 * 0.5 = 600. Target Y=200 -> -400)
+        centerOnInit={false}
         limitToBounds={false}
         panning={{ 
-          excluded: ["input", "textarea", "button", "select", "mobile-frame-container", "drag-target"] 
+          excluded: ["input", "textarea", "button", "select", "mobile-frame-container", "drag-target"],
+          disabled: effectiveTool !== 'hand'
         }}
-        wheel={{ step: 0.1 }}
+        wheel={{ step: 0.1, disabled: effectiveTool === 'hand' }}
         doubleClick={{ disabled: true }}
         pinch={{ step: 5 }}
       >
@@ -148,39 +201,11 @@ export function Editor({
               </div>
             </div>
 
+            {/* Export Actions - Top Right (Reduced) */}
             <div className="absolute top-6 right-6 z-20">
-              <div className="flex items-center gap-1.5 bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl p-1.5 shadow-2xl ring-1 ring-white/5">
-                <button
-                  onClick={() => zoomOut()}
-                  className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
-                  title="Zoom Out"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <div className="flex flex-col items-center justify-center min-w-[3.5rem] px-1 group cursor-default">
-                  <span className="text-[11px] font-bold text-foreground/90 tracking-tight">
-                    {Math.round((instance?.transformState?.scale ?? 1) * 100)}%
-                  </span>
-                </div>
-                <button
-                  onClick={() => zoomIn()}
-                  className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
-                  title="Zoom In"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-                <div className="w-px h-4 bg-border/50 mx-1" />
-                <button
-                  onClick={() => resetTransform()}
-                  className="p-2.5 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95"
-                  title="Reset View"
-                >
-                  <Maximize className="w-4 h-4" />
-                </button>
-                {conversation?.id && (
-                  <>
-                    <div className="w-px h-4 bg-border/50 mx-1" />
-                    <div className="relative">
+               {/* Just Export button here, maybe Preview if preferred, but Preview is in toolbar now */}
+               {conversation?.id && (
+                  <div className="relative">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -188,27 +213,27 @@ export function Editor({
                         }}
                         disabled={isExporting}
                         className={cn(
-                          "flex items-center gap-2 px-3 py-2 hover:bg-white/5 rounded-xl transition-all duration-200 text-muted-foreground hover:text-foreground active:scale-95 font-bold text-xs ring-1 ring-white/5",
-                          showExportMenu && "bg-white/5 text-foreground",
+                          "flex items-center gap-2 px-3 py-2 bg-zinc-950/50 hover:bg-zinc-950/80 backdrop-blur-xl border border-white/10 rounded-xl transition-all duration-200 text-zinc-400 hover:text-white active:scale-95 font-medium text-xs shadow-xl",
+                          showExportMenu && "bg-zinc-950/90 text-white border-white/20",
                           isExporting && "opacity-50 cursor-not-allowed"
                         )}
                         title="Export All"
                       >
                         <Download className={cn("w-3.5 h-3.5", isExporting && "animate-bounce")} />
-                        <span>{isExporting ? "Exporting..." : "Export All"}</span>
+                        <span>{isExporting ? "Exporting..." : "Export"}</span>
                         <ChevronDown className="w-3 h-3 opacity-50" />
                       </button>
 
-                      {/* Global Export Dropdown */}
+                      {/* Export Dropdown */}
                       {showExportMenu && (
                         <div 
-                          className="absolute top-full right-0 mt-2 w-56 bg-background border border-border/50 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[70] ring-1 ring-white/5"
+                          className="absolute top-full right-0 mt-2 w-56 bg-zinc-950 border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[70]"
                           onMouseDown={(e) => e.stopPropagation()}
                         >
                           <div className="p-1.5 flex flex-col gap-1">
                             <button
                               onClick={() => handleExportAllImages()}
-                              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold text-foreground hover:bg-white/10 rounded-lg transition-all active:scale-[0.98] group"
+                              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold text-zinc-300 hover:bg-white/10 hover:text-white rounded-lg transition-all active:scale-[0.98] group"
                             >
                               <div className="w-7 h-7 rounded-md bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
                                 <ImageIcon className="w-3.5 h-3.5" />
@@ -221,7 +246,7 @@ export function Editor({
                             
                             <button
                               onClick={() => handleExportAllHtml()}
-                              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold text-foreground hover:bg-white/10 rounded-lg transition-all active:scale-[0.98] group"
+                              className="flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold text-zinc-300 hover:bg-white/10 hover:text-white rounded-lg transition-all active:scale-[0.98] group"
                             >
                               <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
                                 <FileCode className="w-3.5 h-3.5" />
@@ -234,54 +259,50 @@ export function Editor({
                           </div>
                         </div>
                       )}
-                    </div>
-                    <div className="w-px h-4 bg-border/50 mx-1" />
-                    <button
-                      onClick={() => window.open(`/preview/${conversation.id}`, '_blank')}
-                      className="flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition-all duration-200 active:scale-95 group font-bold text-xs ring-1 ring-primary/20"
-                      title="Preview Design"
-                    >
-                      <Eye className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
-                      <span>Preview</span>
-                    </button>
-                  </>
-                )}
-              </div>
+                  </div>
+               )}
             </div>
 
             <TransformComponent
               wrapperStyle={{ 
                 width: "100%", 
-                height: "calc(100svh - var(--header-height, 3.5rem))", 
+                height: "100%", 
                 flex: 1,
-                overflow: "hidden" 
               }}
-              contentStyle={{ width: "max-content", height: "max-content" }}
+              contentStyle={{ width: "100%", height: "100%" }}
             >
                 <div
-                  className="relative"
+                  className="relative bg-zinc-900/5 border-2 border-dashed border-white/5"
                   style={{ 
                     width: "12000px", 
-                    height: "3200px",
+                    height: "4000px",
+                    cursor: effectiveTool === 'hand' ? 'grab' : effectiveTool === 'inspect' ? 'crosshair' : 'default'
                   }}
                 >
-                  {artboards.map((artboard, index) => {
-                    // Check if x or y is null or undefined (both handled by == null)
-                    const isNew = artboard.x == null || artboard.y == null;
-                    
-                    if (isNew) {
-                      // Single horizontal line layout
-                      const SPACING_X = 600;
-                      
-                      const col = index;
-                      const row = 0;
+                  <div className="absolute inset-0 pointer-events-none opacity-[0.02]" 
+                       style={{ backgroundImage: 'radial-gradient(circle, #64748b 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                  
+                  {artboards.length === 0 && (
+                      <div className="absolute top-[1000px] left-[6000px] -translate-x-1/2 p-10 text-zinc-500 border border-white/10 rounded-2xl bg-zinc-900/50 backdrop-blur-xl">
+                          <p className="text-xl font-bold">No artboards in conversation</p>
+                      </div>
+                  )}
 
-                      // Start from the visual left edge of the centered view
-                      // Canvas is 12000px, centered at 6000px.
-                      // Visual view at start is approx 6000 +/- 1400.
-                      // Left edge ~4600px.
-                      const initialX = 4600 + (col * SPACING_X);
-                      // Let's stick to fixed Y: 1200 was previous "row 0".
+                  {artboards.map((artboard, index) => {
+                    // Check if x or y is null, undefined, or 0 (treat 0,0 as new/unpositioned)
+                    const isUnpositioned = artboard.x == null || artboard.y == null || (Number(artboard.x) === 0 && Number(artboard.y) === 0);
+                    
+                    if (isUnpositioned) {
+                      // Horizontal line layout starting from left-center of canvas
+                      const SPACING_X = 600;
+                      const col = index;
+                      // Center all artboards around the middle of the canvas (6000)
+                      // Calculate total width of this batch
+                      const totalWidth = artboards.length * SPACING_X;
+                      const startX = 6000 - (totalWidth / 2);
+                      
+                      const initialX = startX + (col * SPACING_X);
+                      const initialY = 1000;
                       
                       return (
                         <MobileFrame
@@ -294,7 +315,7 @@ export function Editor({
                           height={artboard.height}
                           isHeightLocked={artboard.isHeightLocked}
                           initialX={initialX}
-                          initialY={1200}
+                          initialY={initialY}
                           colorPalette={colorPalette}
                           isGenerating={artboard.status === "generating"}
                           onDelete={handleDeleteArtboardInternal}
@@ -303,9 +324,15 @@ export function Editor({
                           scale={instance?.transformState?.scale || 1}
                           autoSave={true}
                           onSaveHtml={onSaveArtboardHtml}
+                          activeTool={effectiveTool}
                         />
                       );
                     }
+
+                    console.log(`[Editor] Using saved position for artboard ${artboard.id} (${artboard.title}):`, {
+                      x: artboard.x,
+                      y: artboard.y
+                    });
 
                     return (
                       <MobileFrame
@@ -326,11 +353,25 @@ export function Editor({
                         onUpdate={handleUpdateArtboardInternal}
                         scale={instance?.transformState?.scale || 1}
                         onSaveHtml={onSaveArtboardHtml}
+                        activeTool={effectiveTool}
                       />
                     );
                   })}
                 </div>
               </TransformComponent>
+
+            <CanvasToolbar 
+              activeTool={activeTool}
+              onToolChange={setActiveTool}
+              zoomLevel={instance.transformState.scale}
+              onZoomIn={() => zoomIn()}
+              onZoomOut={() => zoomOut()}
+              canUndo={false}
+              canRedo={false}
+              onUndo={() => {}}
+              onRedo={() => {}}
+              onPreview={() => conversation?.id && window.open(`/preview/${conversation.id}`, '_blank')}
+            />
 
               <div className="absolute bottom-6 left-6 z-20">
                 <div className="bg-zinc-950/80 backdrop-blur-md border border-zinc-800/50 rounded-xl px-4 py-3 shadow-xl ring-1 ring-white/5">
