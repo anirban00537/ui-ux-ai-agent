@@ -628,6 +628,34 @@ function CanvasContent() {
                  }, 100);
              }
         }
+
+        if (data.type === "DELETE_ELEMENT") {
+             const { id } = data;
+             const el = document.querySelector(`[data-editor-id="${id}"]`);
+             if (el && el.parentNode) {
+                 el.parentNode.removeChild(el);
+                 
+                 // Deselect
+                 if (selectedElement === el) selectedElement = null;
+                 if (hoveredElement === el) hoveredElement = null;
+                 
+                 // Save
+                 setTimeout(() => {
+                     const designRoot = document.querySelector('.canvas-design-root');
+                     if (designRoot) {
+                         const cleanHtml = designRoot.innerHTML
+                             .replace(/inspector-hover/g, '')
+                             .replace(/inspector-selected/g, '')
+                             .replace(/class="\s*"/g, '');
+                         
+                         window.parent.postMessage({
+                             type: "SAVE_HTML_REQUEST",
+                             html: cleanHtml
+                         }, "*");
+                     }
+                 }, 100);
+             }
+        }
     };
 
     // Replace the listener with our extended one

@@ -25,12 +25,13 @@ interface ElementStylePanelProps {
   };
   onUpdate: (id: string, styles: any, textContent?: string) => void;
   onClose: () => void;
+  onDelete?: () => void;
   position: { top: number; left: number };
 }
 
 type Tab = 'spacing' | 'typography' | 'appearance' | null;
 
-export function ElementStylePanel({ element, onUpdate, onClose, position }: ElementStylePanelProps) {
+export function ElementStylePanel({ element, onUpdate, onClose, onDelete, position }: ElementStylePanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('appearance');
   const [styles, setStyles] = useState(element.styles);
 
@@ -108,7 +109,7 @@ export function ElementStylePanel({ element, onUpdate, onClose, position }: Elem
         <div className="w-px h-4 bg-white/10 mx-1" />
         
         <button 
-            onClick={onClose}
+            onClick={onDelete}
             className="w-8 h-8 flex items-center justify-center rounded-full text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
         >
             <Trash2 className="w-4 h-4" />
