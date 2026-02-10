@@ -133,44 +133,34 @@ function ToolbarButton({ active, onClick, icon, label }: { active: boolean, onCl
     )
 }
 
+// --- Helper for Arrow Keys ---
+const onArrowKey = (e: React.KeyboardEvent, value: string, onUpdate: (val: string) => void) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const num = parseInt(value?.toString().replace(/[^0-9-]/g, '')) || 0;
+        const step = e.shiftKey ? 10 : 1;
+        const next = e.key === 'ArrowUp' ? num + step : num - step;
+        onUpdate(next.toString());
+    }
+};
+
 // --- Sub-Editors ---
 
 function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string, v: string) => void }) {
     const [mode, setMode] = useState<'padding' | 'margin'>('padding');
 
-    // Helper to parse "10px" -> 10, or "10px 20px" etc.
-    // For simplicity, we just use raw strings for now or 4 individual inputs that map to padding-top etc.
-    
-    // We will use specialized properties if they exist, or parse the shorthand
-    // Actually, editing individual sides is cleaner if we map to unique properties.
-    // CSSStyleDeclaration usually has properties for 'paddingTop', 'paddingRight' etc.
-    
     const getValue = (side: string) => {
-        // Try precise first
         const key = mode + side; // paddingLeft
         if (styles[key]) return styles[key].replace('px', '');
         
-        // Fallback to shorthand parsing (very basic)
-        const shorthand = styles[mode]; // "10px" or "10px 20px"
+        const shorthand = styles[mode]; 
         if (!shorthand) return '0';
         return shorthand.split(' ')[0].replace('px', '');
     };
 
     const updateValue = (side: string, val: string) => {
-        // We update specific properties to ensure generated code is specific
-        // paddingTop, paddingRight, paddingBottom, paddingLeft
-        const key = mode + side; // paddingLeft...
+        const key = mode + side; 
         onChange(key, val + 'px');
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, side: string) => {
-        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-            e.preventDefault();
-            const currentVal = parseInt(getValue(side)) || 0;
-            const step = e.shiftKey ? 10 : 1;
-            const newVal = e.key === 'ArrowUp' ? currentVal + step : currentVal - step;
-            updateValue(side, newVal.toString());
-        }
     };
 
     return (
@@ -203,7 +193,7 @@ function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string
                         className="w-10 bg-black/40 border border-white/10 rounded px-1 py-0.5 text-center text-xs text-white focus:border-primary/50 outline-none" 
                         value={getValue('Top')}
                         onChange={e => updateValue('Top', e.target.value)}
-                        onKeyDown={e => handleKeyDown(e, 'Top')}
+                        onKeyDown={e => onArrowKey(e, getValue('Top'), (val) => updateValue('Top', val))}
                     />
                 </div>
                 {/* Bottom */}
@@ -212,7 +202,7 @@ function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string
                         className="w-10 bg-black/40 border border-white/10 rounded px-1 py-0.5 text-center text-xs text-white focus:border-primary/50 outline-none" 
                         value={getValue('Bottom')}
                         onChange={e => updateValue('Bottom', e.target.value)}
-                        onKeyDown={e => handleKeyDown(e, 'Bottom')}
+                        onKeyDown={e => onArrowKey(e, getValue('Bottom'), (val) => updateValue('Bottom', val))}
                     />
                     <span className="text-[9px] text-zinc-500 mt-0.5">B</span>
                 </div>
@@ -223,7 +213,7 @@ function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string
                         className="w-10 bg-black/40 border border-white/10 rounded px-1 py-0.5 text-center text-xs text-white focus:border-primary/50 outline-none" 
                         value={getValue('Left')}
                         onChange={e => updateValue('Left', e.target.value)}
-                        onKeyDown={e => handleKeyDown(e, 'Left')}
+                        onKeyDown={e => onArrowKey(e, getValue('Left'), (val) => updateValue('Left', val))}
                     />
                 </div>
                 {/* Right */}
@@ -233,7 +223,7 @@ function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string
                         className="w-10 bg-black/40 border border-white/10 rounded px-1 py-0.5 text-center text-xs text-white focus:border-primary/50 outline-none" 
                         value={getValue('Right')}
                         onChange={e => updateValue('Right', e.target.value)}
-                        onKeyDown={e => handleKeyDown(e, 'Right')}
+                        onKeyDown={e => onArrowKey(e, getValue('Right'), (val) => updateValue('Right', val))}
                     />
                 </div>
 
@@ -267,6 +257,7 @@ function TypographyEditor({ styles, text, onChange, onTextChange }: { styles: an
                         <input 
                             value={styles.fontSize}
                             onChange={e => onChange('fontSize', e.target.value)}
+                            onKeyDown={e => onArrowKey(e, styles.fontSize, (val) => onChange('fontSize', val + 'px'))}
                             className="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-primary/50 outline-none"
                         />
                     </div>
@@ -322,43 +313,45 @@ function AppearanceEditor({ styles, onChange }: { styles: any, onChange: (k: str
     return (
         <div className="space-y-4">
              <div className="space-y-1.5">
-                 <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Background</label>
-                 <ColorPickerInput 
-                    label="" 
-                    value={styles.backgroundColor} 
-                    onChange={(val) => onChange('backgroundColor', val)}
-                 />
+                  <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Background</label>
+                  <ColorPickerInput 
+                     label="" 
+                     value={styles.backgroundColor} 
+                     onChange={(val) => onChange('backgroundColor', val)}
+                  />
             </div>
 
             <div className="bg-white/5 h-px w-full" />
 
              <div className="space-y-3">
-                 <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Border & Radius</label>
-                 <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                        <label className="text-[9px] text-zinc-600">Radius</label>
-                        <input 
-                            value={styles.borderRadius}
-                            onChange={e => onChange('borderRadius', e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-primary/50 outline-none"
-                            placeholder="0px"
-                        />
-                    </div>
+                  <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">Border & Radius</label>
+                  <div className="grid grid-cols-2 gap-3">
                      <div className="space-y-1">
-                        <label className="text-[9px] text-zinc-600">Width</label>
-                        <input 
-                            value={styles.borderWidth}
-                            onChange={e => onChange('borderWidth', e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-primary/50 outline-none"
-                            placeholder="0px"
-                        />
-                    </div>
-                 </div>
-                  <ColorPickerInput 
-                    label="Border Color" 
-                    value={styles.borderColor} 
-                    onChange={(val) => onChange('borderColor', val)}
-                 />
+                         <label className="text-[9px] text-zinc-600">Radius</label>
+                         <input 
+                             value={styles.borderRadius}
+                             onChange={e => onChange('borderRadius', e.target.value)}
+                             onKeyDown={e => onArrowKey(e, styles.borderRadius, (val) => onChange('borderRadius', val + 'px'))}
+                             className="w-full bg-black/20 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-primary/50 outline-none"
+                             placeholder="0px"
+                         />
+                     </div>
+                      <div className="space-y-1">
+                         <label className="text-[9px] text-zinc-600">Width</label>
+                         <input 
+                             value={styles.borderWidth}
+                             onChange={e => onChange('borderWidth', e.target.value)}
+                             onKeyDown={e => onArrowKey(e, styles.borderWidth, (val) => onChange('borderWidth', val + 'px'))}
+                             className="w-full bg-black/20 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-primary/50 outline-none"
+                             placeholder="0px"
+                         />
+                     </div>
+                  </div>
+                   <ColorPickerInput 
+                     label="Border Color" 
+                     value={styles.borderColor} 
+                     onChange={(val) => onChange('borderColor', val)}
+                  />
             </div>
         </div>
     );
