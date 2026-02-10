@@ -309,15 +309,15 @@ export function Editor({
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03)_0%,transparent_70%)] pointer-events-none" />
 
              <TransformWrapper
-                initialScale={0.4}
+                initialScale={0.6}
                 minScale={0.1}
                 maxScale={3}
-                initialPositionX={-1750}
-                initialPositionY={-300}
+                initialPositionX={-50}
+                initialPositionY={-850}
                 centerOnInit={false}
                 limitToBounds={false}
                 panning={{ 
-                excluded: ["input", "textarea", "button", "select", "mobile-frame-container", "drag-target"],
+                excluded: ["input", "textarea", "button", "select", "drag-target"],
                 disabled: effectiveTool !== 'hand'
                 }}
                 wheel={{ step: 0.1, disabled: effectiveTool === 'hand' }}
@@ -355,12 +355,17 @@ export function Editor({
                           if (isUnpositioned) {
                             // Horizontal line layout starting from left-center of canvas
                             const SPACING_X = 600;
-                            const col = index;
-                            const totalWidth = artboards.length * SPACING_X;
-                            const startX = 6000 - (totalWidth / 2);
+                            // Use index relative to unpositioned items to ensure clean stacking
+                            const unpositionedIndex = artboards
+                                .slice(0, index)
+                                .filter(a => a.x == null || a.y == null || (Number(a.x) === 0 && Number(a.y) === 0))
+                                .length;
+                                
+                            // Start position at Left Center (x=100)
+                            const startX = 100;
                             
-                            initialX = startX + (col * SPACING_X);
-                            initialY = 1000;
+                            initialX = startX + (unpositionedIndex * SPACING_X);
+                            initialY = 1500; // Center vertically in 4000px canvas
                           }
 
                           return (

@@ -57,7 +57,7 @@ function ToolbarPortalContent({
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
         setPosition({
-          top: rect.top - 16,
+          top: rect.top - 48,
           left: rect.left + rect.width / 2,
         });
       }
@@ -668,8 +668,11 @@ export const MobileFrame = React.memo(
             className="relative w-full h-full flex flex-col items-center select-none"
           >
             {/* Unselected Title (Legacy/Hover) */}
-            {!isSelected && title && (
-              <div className="absolute -top-10 w-full text-center opacity-0 group-hover:opacity-100 transition-opacity drag-target cursor-grab">
+            {title && (
+              <div className={cn(
+                "absolute -top-10 w-full text-center transition-opacity drag-target cursor-grab z-20",
+                isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+              )}>
                 <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider bg-zinc-950/80 px-2 py-1 rounded shadow-sm border border-white/10 backdrop-blur-sm">
                   {title}
                 </span>
