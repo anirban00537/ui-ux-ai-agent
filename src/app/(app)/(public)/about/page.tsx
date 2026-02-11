@@ -73,7 +73,7 @@ export default function AboutPage() {
     return (
         <>
             <Navbar />
-            <main className="relative min-h-screen overflow-auto bg-background">
+            <main className="relative min-h-screen">
                 <div>
                     {/* Hero Section */}
                     <section className="relative pt-32 pb-24">

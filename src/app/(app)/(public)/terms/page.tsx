@@ -9,7 +9,7 @@ export default function TermsPage() {
     return (
         <>
             <Navbar />
-            <main className="relative min-h-screen overflow-auto bg-background">
+            <main className="relative min-h-screen">
                 <div>
                     <section className="pt-32 pb-24">
                         <div className="container mx-auto px-4">

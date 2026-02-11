@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen h-full w-full bg-background">
+      <main className="min-h-screen h-full w-full relative">
         <HeroSection />
         <DemoSection />
         <FeaturesSection />

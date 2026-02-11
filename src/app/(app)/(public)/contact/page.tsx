@@ -56,7 +56,7 @@ export default function ContactPage() {
     return (
         <>
             <Navbar />
-            <main className="relative min-h-screen overflow-auto bg-background">
+            <main className="relative min-h-screen">
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
                 
                 {/* Breadcrumbs */}

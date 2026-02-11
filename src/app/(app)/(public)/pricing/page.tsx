@@ -94,7 +94,7 @@ export default function PricingPage() {
   });
 
   return (
-    <div className="relative flex-1 min-h-screen overflow-auto bg-background">
+    <div className="relative flex-1 min-h-screen">
       <div className="flex flex-col items-center px-4 py-16 min-h-full w-full">
         <div className="w-full mt-16 max-w-7xl flex flex-col gap-16">
           <PricingHeader />

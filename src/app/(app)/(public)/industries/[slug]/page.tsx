@@ -86,7 +86,7 @@ export default async function IndustryPage({ params }: PageProps) {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background relative overflow-hidden">
+      <main className="min-h-screen relative overflow-hidden">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
 

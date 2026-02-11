@@ -17,6 +17,7 @@ import {
 import { PageSkeleton, PageHeader } from "@/components/shared";
 import { Skeleton, Button } from "@/components/ui";
 import { trackEvent } from "@/components/analytics/trackEvent";
+import { IconPlus } from "@tabler/icons-react";
 
 // Sub-components
 import {
@@ -111,18 +112,25 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-4 py-8 lg:py-12">
-      <div className="relative z-10 w-full max-w-6xl flex flex-col gap-10">
+    <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-6 py-12 lg:py-20">
+      <div className="relative z-10 w-full max-w-5xl flex flex-col gap-12">
         <PageHeader
           title={
-            <div className="flex flex-col gap-2">
-              <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight leading-none uppercase">
-                Subscription <span className="text-primary">&</span> Billing
-              </h1>
-              <div className="h-1 w-24 bg-primary/20 rounded-full" />
-            </div>
+            <>
+              Subscription <span className="text-primary italic">& Billing</span>
+            </>
           }
           subtitle="View and manage your plan, usage, and billing history."
+          action={
+            <Button
+              onClick={() => router.push("/home")}
+              variant="default"
+              className="shadow-coral-glow hover:scale-105 transition-transform"
+            >
+              <IconPlus size={18} className="mr-2" />
+              New Design
+            </Button>
+          }
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

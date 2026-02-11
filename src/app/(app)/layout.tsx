@@ -129,6 +129,8 @@ const jsonLd = {
   ]
 };
 
+import { TorchLights } from "@/components/shared/TorchLights";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -143,7 +145,14 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="relative isolate min-h-screen">
+            <TorchLights />
+            <div className="relative z-10">
+              {children}
+            </div>
+          </div>
+        </Providers>
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
           <Suspense fallback={null}>

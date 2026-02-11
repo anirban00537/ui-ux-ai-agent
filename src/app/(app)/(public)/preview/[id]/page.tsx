@@ -134,10 +134,9 @@ export default function PreviewPage() {
 
   return (
     <div className={cn(
-      "fixed inset-0 z-50 flex flex-col transition-colors duration-500 bg-[#0a0a0a] font-sans"
+      "relative flex-1 flex flex-col transition-colors duration-500 font-sans"
     )}>
-      {/* Background Gradients */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-zinc-900/50 via-[#0a0a0a] to-[#0a0a0a] pointer-events-none" />
+      {/* Background Gradients removed - using global TorchLights from layout */}
       <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] pointer-events-none mix-blend-overlay" />
 
       {/* Header */}

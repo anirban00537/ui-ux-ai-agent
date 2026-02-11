@@ -29,7 +29,7 @@ export default async function BlogPage() {
   const posts = postsResponse?.data?.posts || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen relative">
       <div className="pt-28 pb-20">
         <div className="container max-w-7xl mx-auto px-6">
           {/* Header */}

@@ -22,7 +22,7 @@ export default function IndustriesIndexPage() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background">
+      <main className="min-h-screen relative">
         {/* Hero */}
         <section className="pt-32 pb-16 px-4">
           <div className="container mx-auto text-center max-w-4xl">

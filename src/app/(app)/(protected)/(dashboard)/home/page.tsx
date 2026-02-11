@@ -18,16 +18,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 overflow-hidden">
-      {/* Torch Light Effect */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[700px] pointer-events-none z-0">
-        {/* Core spotlight beam - Increased intensity */}
-        <div className="absolute inset-0 bg-[radial-gradient(50%_50%_at_50%_0%,var(--color-primary)_0%,transparent_100%)] blur-[100px] opacity-[0.3]" />
-        {/* Secondary glow - Wider spread */}
-        <div className="absolute inset-0 h-[500px] -top-[100px] bg-[radial-gradient(50%_50%_at_50%_0%,var(--color-primary)_0%,transparent_100%)] blur-[80px] opacity-[0.2]" />
-        {/* Center hot spot - Brightest point */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[600px] h-[300px] bg-[radial-gradient(50%_50%_at_50%_0%,var(--color-primary)_0%,transparent_100%)] blur-[50px] opacity-[0.4]" />
-      </div>
+    <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4">
 
       {/* Content */}
       <div className="relative w-full max-w-4xl flex flex-col gap-10 z-10 py-12">

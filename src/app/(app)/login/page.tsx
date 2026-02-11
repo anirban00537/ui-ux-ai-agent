@@ -11,7 +11,7 @@ export default function LoginPage() {
   return (
     <div className="grid min-h-screen w-full lg:grid-cols-2">
       {/* Left Column - Login Form */}
-      <div className="flex flex-col justify-center items-center px-8 py-12 md:px-16 lg:px-24 bg-background relative">
+      <div className="flex flex-col justify-center items-center px-8 py-12 md:px-16 lg:px-24 relative">
         <div className="w-full max-w-sm space-y-10">
           {/* Logo & Header */}
           <div className="flex flex-col items-center text-center space-y-4">
@@ -79,7 +79,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right Column - Visuals */}
-      <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-black">
+      <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden">
         <Image 
           src="/background.png" 
           alt="Butterfast Experience" 
