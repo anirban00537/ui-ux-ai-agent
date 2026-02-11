@@ -132,20 +132,18 @@ function ToolbarPortalContent({
   );
 }
 
+
+
 interface ElementStylePanelWrapperProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
+  iframeRef: React.RefObject<HTMLIFrameElement | null>;
   element: {
-      id: string;
-      tagName: string;
-      innerText: string;
-      styles: any;
-      rect?: {
-          top: number;
-          left: number;
-          width: number;
-          height: number;
-      }
-      outerHTML?: string;
+    id: string;
+    tagName: string;
+    innerText: string;
+    styles: any;
+    rect?: { top: number; left: number; width: number; height: number };
+    outerHTML?: string;
   };
   onUpdate: (id: string, styles: any, textContent?: string, outerHTML?: string) => void;
   onClose: () => void;
@@ -153,38 +151,42 @@ interface ElementStylePanelWrapperProps {
   scale: number;
 }
 
-function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, onDelete, scale }: ElementStylePanelWrapperProps) {
+function ElementStylePanelWrapper({ containerRef, iframeRef, element, onUpdate, onClose, onDelete, scale }: ElementStylePanelWrapperProps) {
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
   useEffect(() => {
     let rafId: number;
     const updatePosition = () => {
-      if (containerRef.current && element.rect) {
-        const containerRect = containerRef.current.getBoundingClientRect();
+      // Use iframeRef for more accurate screen positioning relative to standard anchor
+      const anchorEl = iframeRef.current || containerRef.current;
+      
+      if (anchorEl && element.rect) {
+        const anchorRect = anchorEl.getBoundingClientRect();
         
         // Panel Constants
         const PANEL_WIDTH = 320; 
         const PANEL_GAP = 12;
-        const ESTIMATED_HEIGHT = 450; // Rough estimate of panel height
-        const HEADER_HEIGHT = 70;
         const VIEWPORT_PADDING = 16;
 
-        // Calculate initial target coordinates (Default: Right side of element, aligned to top)
-        const elementTop = containerRect.top + (element.rect.top * scale);
+        // Calculate initial target coordinates
+        // element.rect is relative to the IFRAME content window (unscaled).
+        // scale is the zoom level of the iframe.
+        // anchorRect is the screen position of the iframe (scaled by transform).
+        const elementTop = anchorRect.top + (element.rect.top * scale);
         const elementHeight = element.rect.height * scale;
         const elementWidth = element.rect.width * scale;
-        const elementLeft = containerRect.left + (element.rect.left * scale);
+        const elementLeft = anchorRect.left + (element.rect.left * scale);
         
-        // Strategy: Try to place BELOW first (Best for wide elements/context menu feel)
+        // Strategy: Try to place BELOW first
         // If not enough space below, try ABOVE.
-        // If not enough space above, try RIGHT (original behavior).
+        // If not enough space above, try RIGHT.
         
         const BAR_HEIGHT = 60; // Approximate height of the collapsed bar
         const TAG_HEIGHT = 32; // Height of the tag label + padding
-        const VISUAL_GAP = 16; // Visual gap between element and tool
+        const VISUAL_GAP = 20; // Visual gap
 
         let targetLeft = elementLeft;
-        // Position below: Element Bottom + Gap + Tag Space (since tag floats above panel)
+        // Position below: Element Bottom + Gap + Tag Space
         let targetTop = elementTop + elementHeight + VISUAL_GAP + TAG_HEIGHT;
 
         // 1. Vertical Constraint
@@ -194,19 +196,16 @@ function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, on
             targetTop = elementTop - BAR_HEIGHT - VISUAL_GAP;
             
             // If Top also overflows (too high), fallback to RIGHT side
-            if (targetTop < HEADER_HEIGHT) {
+            if (targetTop < 70) {
                 targetLeft = elementLeft + elementWidth + VISUAL_GAP;
                 targetTop = elementTop;
             }
         }
 
         // 2. Horizontal Constraint
-        // Prevent going off right edge
         if (targetLeft + PANEL_WIDTH + VIEWPORT_PADDING > window.innerWidth) {
              targetLeft = window.innerWidth - PANEL_WIDTH - VIEWPORT_PADDING;
         }
-        
-        // Prevent going off left edge
         targetLeft = Math.max(VIEWPORT_PADDING, targetLeft);
         
         setPosition({
@@ -214,7 +213,7 @@ function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, on
           left: targetLeft,
         });
       } else if (containerRef.current) {
-         // Fallback if no rect (legacy)
+         // Fallback
          const rect = containerRef.current.getBoundingClientRect();
          setPosition({
             top: rect.top,
@@ -226,7 +225,7 @@ function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, on
     
     updatePosition();
     return () => cancelAnimationFrame(rafId);
-  }, [containerRef, element.rect, scale]);
+  }, [containerRef, iframeRef, element.rect, scale]);
 
   if (!position) return null;
 
@@ -835,6 +834,7 @@ export const MobileFrame = React.memo(
              createPortal(
                  <ElementStylePanelWrapper
                     containerRef={containerRef}
+                    iframeRef={iframeRef}
                     element={selectedElement}
                     onUpdate={handleStyleUpdate}
                     onClose={() => setSelectedElement(null)}
