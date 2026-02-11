@@ -10,12 +10,17 @@ import { coreConstant } from '../../shared/helpers/coreConstant';
 import { StreamMessenger } from './tools/streaming';
 import { CreditManager } from './tools/credits';
 import { AiUsageService } from '../subscription/services/ai-usage.service';
+import { ResponseModel } from 'src/shared/models/response.model';
+import { successResponse, errorResponse } from 'src/shared/helpers/functions';
+import { getOpenRouterClient } from './tools/llm/llm-client';
 import {
   buildChatContext,
   checkCredits,
   runThemePhase,
   runCreatePhase,
 } from './chat';
+import { updateElementTemplate } from './tools/prompts/mobile-app';
+import { generateColorPaletteInstructions, generateFontInstructions } from './tools/prompts/prompt-helpers';
 import { IntentAnalyzer } from './tools/agents/intent-analyzer';
 import { ChatAgent } from './tools/agents/chat-agent';
 
@@ -519,5 +524,73 @@ export class DesignsChatService {
         }
       };
     });
+  }
+  async updateElementWithAi(
+    designId: string,
+    userId: string,
+    data: { prompt: string; elementHtml: string; screenContext?: string },
+  ): Promise<ResponseModel> {
+    try {
+      // 1. Verify ownership (standard check)
+      const design = await this.prisma.design.findUnique({ where: { id: designId } });
+      if (!design || design.userId !== userId) {
+        return errorResponse('User does not have permission');
+      }
+
+      // 2. Prepare prompt
+      const client = getOpenRouterClient();
+      
+      const formattedPrompt = await updateElementTemplate.format({
+        prompt: data.prompt,
+        elementHtml: data.elementHtml,
+        screenContext: data.screenContext || 'No additional context provided.',
+        colorPaletteInstructions: generateColorPaletteInstructions(design.colorPalette),
+        fontInstructions: generateFontInstructions(design.colorPalette),
+      });
+
+      // 3. Call LLM
+      const response = await (client.chat as any).send({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: [
+          { role: 'system', content: formattedPrompt },
+        ],
+      });
+
+      // 4. Calculate Usage & Deduct Credits
+      const usage = response.usage as any || { totalTokens: 0, promptTokens: 0, completionTokens: 0 };
+      const tokenUsage = {
+          inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
+          outputTokens: usage.completionTokens || usage.completion_tokens || 0,
+          totalTokens: usage.totalTokens || usage.total_tokens || 0,
+          reasoningTokens: 0,
+      };
+
+      try {
+          await this.aiUsageService.logUsage({
+              userId,
+              modelName: coreConstant.AI_MODELS.AGENT.NAME,
+              inputTokens: tokenUsage.inputTokens,
+              outputTokens: tokenUsage.outputTokens,
+              type: 'element_edit', 
+              designId,
+          } as any);
+
+          const creditManager = new CreditManager(this.prisma);
+          await creditManager.deductCredits(userId, designId, 'element_edit', tokenUsage);
+      } catch (creditError) {
+          console.error("Credit deduction failed:", creditError);
+      }
+
+      let newHtml = response.choices[0]?.message?.content || data.elementHtml;
+      
+      // Cleanup cleanup markdown if present
+      newHtml = newHtml.replace(/```html/g, '').replace(/```/g, '').trim();
+
+      return successResponse('Element updated', { html: newHtml });
+
+    } catch (error) {
+      console.error("AI Element Update Error:", error);
+      return errorResponse("Failed to update element with AI");
+    }
   }
 }

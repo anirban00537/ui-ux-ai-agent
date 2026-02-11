@@ -220,4 +220,13 @@ export class DesignsController {
       data: { html, title }
     };
   }
+
+  @Post(':id/element/edit')
+  async updateElementWithAi(
+    @Param('id') id: string,
+    @Body() body: { prompt: string; elementHtml: string; screenContext?: string },
+    @UserInfo() user: User,
+  ): Promise<ResponseModel> {
+    return this.designsChatService.updateElementWithAi(id, user.id, body);
+  }
 }

@@ -392,6 +392,62 @@ Output (JSON):
 );
 
 // ---------------------------------------------------------------------------
+// 7. ELEMENT UPDATE TEMPLATE
+// ---------------------------------------------------------------------------
+export const updateElementTemplate = PromptTemplate.fromTemplate(
+  `You are an expert Frontend Developer and UI Designer.
+Your task is to surgically modify a specific HTML element based on a user's request,
+maintaining the overall design integrity.
+
+═══════════════════════════════════════════════════════════════════════════════
+THE TASK
+═══════════════════════════════════════════════════════════════════════════════
+
+Request: "{prompt}"
+
+Context:
+{screenContext}
+
+Design System:
+{colorPaletteInstructions}
+{fontInstructions}
+
+Current HTML Element:
+{elementHtml}
+
+═══════════════════════════════════════════════════════════════════════════════
+RULES
+═══════════════════════════════════════════════════════════════════════════════
+
+1. RETURN ONLY THE HTML
+   Do not include any explanation, markdown formatting (\`\`\`html), or block quotes.
+   The output must be the raw HTML string for the modified element only.
+
+2. SURGICAL MODIFICATION
+   - Maintain the original structure and relevant classes unless checking them is part of the request.
+   - Use Tailwind CSS for styling.
+   - If the request implies a style change, update the classes accordingly.
+   - If the request implies a content change, update the inner content.
+
+3. VALID HTML
+   - Ensure the returned HTML is syntactically correct.
+   - Do not include <html>, <body>, or <head> tags.
+   - Ensure all tags are properly closed.
+
+4. DESIGN INTEGRITY
+   - Respect the existing design language (colors, spacing, typography) inferred from the context.
+   - Use semantic Tailwind classes where possible (e.g., bg-primary, text-foreground).
+
+5. INTERACTIVITY
+   - If adding interactivity, use inline event handlers strictly or standard HTML attributes.
+   - Do not add external script tags.
+
+Output:
+[MODIFIED_HTML_STRING]
+`
+);
+
+// ---------------------------------------------------------------------------
 // 7. EXPORTS
 // ---------------------------------------------------------------------------
 export const designSystemInstructions = DESIGN_EXCELLENCE;
