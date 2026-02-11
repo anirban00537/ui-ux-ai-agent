@@ -137,7 +137,7 @@ export function useChatGenerator(designId?: string) {
       dispatch(updateArtboard({ 
         id, 
         html, 
-        title: "", // these are required by type but we only update html, usually reducer handles partial with ID match
+        // title kept existing if not provided
         createdAt: new Date().toISOString() 
       } as any)); 
     }

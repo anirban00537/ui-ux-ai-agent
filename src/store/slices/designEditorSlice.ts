@@ -132,7 +132,7 @@ const designEditorSlice = createSlice({
         }
       }
     },
-    updateArtboard: (state, action: PayloadAction<Artboard & { tempId?: string }>) => {
+    updateArtboard: (state, action: PayloadAction<Partial<Artboard> & { id: string; tempId?: string }>) => {
       if (state.conversation) {
         if (!state.conversation.artboards) state.conversation.artboards = [];
         
@@ -142,7 +142,7 @@ const designEditorSlice = createSlice({
         const index = state.conversation.artboards.findIndex(s => 
           s.id === id || 
           (tempId && s.id === tempId) || 
-          s.title === title
+          (title && s.title === title) // Only match by title if title is provided & non-empty
         );
 
         if (index !== -1) {
@@ -152,7 +152,9 @@ const designEditorSlice = createSlice({
             state.conversation.artboards[index].id = id;
           }
         } else {
-          state.conversation.artboards.push(action.payload);
+          // Only push if we have enough info to create a new artboard (at least html/title implied)
+          // Since it's Partial, we cast it, but in practice creation usually provides full data.
+          state.conversation.artboards.push(action.payload as Artboard);
         }
       }
     },

@@ -167,3 +167,14 @@ export async function getArtboardCode(artboardId: string) {
   }>(`/designs/artboards/${artboardId}/code`);
   return response.data;
 }
+
+export async function updateElementWithAi(
+  designId: string,
+  data: { prompt: string; elementHtml: string; screenContext?: string }
+) {
+  const response = await request.post<{
+      success: boolean;
+      data: { html: string };
+  }>(`/designs/${designId}/element/edit`, data);
+  return response.data;
+}

@@ -17,8 +17,14 @@ import {
   Grid,
   Layers,
   Check,
-  ChevronDown
+  ChevronDown,
+  Sparkles,
+  ChevronRight,
+  Loader2
 } from "lucide-react";
+import { updateElementWithAi } from "@/services/designs";
+import { toast } from "sonner";
+import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ColorPickerInput } from "./ColorPickerInput";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,8 +36,9 @@ interface ElementStylePanelProps {
     tagName: string;
     innerText: string;
     styles: any;
+    outerHTML?: string;
   };
-  onUpdate: (id: string, styles: any, textContent?: string) => void;
+  onUpdate: (id: string, styles: any, textContent?: string, outerHTML?: string) => void;
   onClose: () => void;
   onDelete?: () => void;
   position: { top: number; left: number };
@@ -40,13 +47,23 @@ interface ElementStylePanelProps {
 type Tab = 'layout' | 'spacing' | 'typography' | 'appearance';
 
 export function ElementStylePanel({ element, onUpdate, onClose, onDelete, position }: ElementStylePanelProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('layout');
+  const [activeTab, setActiveTab] = useState<Tab | null>(null);
   const [styles, setStyles] = useState(element.styles);
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const params = useParams();
 
   useEffect(() => {
     setStyles(element.styles);
   }, [element]);
+
+  // Focus input on mount if no tab active
+  useEffect(() => {
+    if (!activeTab && inputRef.current) {
+        inputRef.current.focus();
+    }
+  }, [activeTab]);
 
   const handleChange = (key: string, value: string) => {
     const newStyles = { ...styles, [key]: value };
@@ -54,120 +71,209 @@ export function ElementStylePanel({ element, onUpdate, onClose, onDelete, positi
     onUpdate(element.id, { [key]: value });
   };
 
+  const toggleTab = (tab: Tab) => {
+      setActiveTab(activeTab === tab ? null : tab);
+  };
+
+  const handleAiSubmit = async () => {
+      if (!prompt.trim() || !element.outerHTML) return;
+      
+      setIsAiLoading(true);
+      try {
+          const designId = params.id as string;
+          const result = await updateElementWithAi(designId, {
+              prompt: prompt,
+              elementHtml: element.outerHTML
+          });
+
+          if (result.success && result.data.html) {
+             // Pass updated HTML as outerHTML
+             onUpdate(element.id, {}, undefined, result.data.html);
+             setPrompt("");
+             toast.success("Element updated successfully");
+          }
+      } catch (error) {
+          console.error("AI Update failed:", error);
+          toast.error("Failed to update element");
+      } finally {
+          setIsAiLoading(false);
+      }
+  };
+
   return (
     <Tooltip.Provider>
-        <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        transition={{ duration: 0.2 }}
-        className={cn(
-            "fixed z-[1000] flex flex-col bg-[#09090b]/95 border border-white/10 shadow-2xl backdrop-blur-xl rounded-2xl overflow-hidden font-sans border-t border-t-white/10 ring-1 ring-black/50 select-none",
-            isMinimized ? "w-auto" : "w-[320px]"
-        )}
-        style={{ 
-            top: position.top, 
-            left: position.left,
-            maxHeight: '85vh'
-        }}
-        data-style-panel="true"
+        <div 
+            className="fixed z-[1000] flex flex-col items-start gap-3 pointer-events-auto"
+            style={{ 
+                top: position.top, 
+                left: position.left,
+            }}
+            data-style-panel="true"
         >
-        {/* Header */}
-        <div className="flex items-center justify-between px-3 py-2.5 bg-white/[0.03] border-b border-white/5">
-            <div className="flex items-center gap-2">
-                <div className="bg-primary/20 p-1.5 rounded-lg text-primary">
-                    {element.tagName === 'svg' || element.tagName === 'path' ? <Box className="w-3.5 h-3.5" /> : <Type className="w-3.5 h-3.5" />}
+            {/* COMPACT TOOLBAR */}
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 5 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 5 }}
+                className={cn(
+                    "flex items-center gap-1 p-1.5 rounded-full bg-[#09090b]/90 backdrop-blur-xl border border-white/10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] ring-1 ring-white/5",
+                    "min-w-[320px]"
+                )}
+            >
+                {/* AI Input Section */}
+                <div className="flex-1 flex items-center gap-2 pl-3 pr-2 group/input">
+                    <Sparkles className={cn("w-4 h-4 text-purple-400 group-focus-within/input:text-purple-300 transition-colors", isAiLoading && "animate-spin")} />
+                    <input 
+                        ref={inputRef}
+                        type="text"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        placeholder={isAiLoading ? "Generating..." : "Edit with AI..."}
+                        disabled={isAiLoading}
+                        className="w-full bg-transparent border-none outline-none text-sm text-zinc-200 placeholder:text-zinc-500 font-medium h-8 min-w-[120px]"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAiSubmit();
+                        }}
+                    />
+                    {prompt.length > 0 && (
+                        <button 
+                            onClick={handleAiSubmit}
+                            className="p-1.5 rounded-full bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white transition-all animate-in zoom-in duration-200"
+                        >
+                            {isAiLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                        </button>
+                    )}
                 </div>
-                <span className="text-xs font-semibold text-zinc-300 capitalize tracking-tight">
-                    {element.tagName}
-                </span>
-                <span className="text-[10px] text-zinc-600 font-mono hidden sm:inline-block truncate max-w-[100px]">
-                    #{element.id.slice(0, 6)}
-                </span>
-            </div>
-            <div className="flex items-center gap-1">
-                <button 
-                    onClick={() => setIsMinimized(!isMinimized)}
-                    className="p-1.5 hover:bg-white/5 rounded-md text-zinc-500 hover:text-zinc-300 transition-colors"
-                >
-                    {isMinimized ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
-                </button>
-                <button 
-                    onClick={onClose}
-                    className="p-1.5 hover:bg-red-500/10 rounded-md text-zinc-500 hover:text-red-400 transition-colors"
-                >
-                    <X className="w-3.5 h-3.5" />
-                </button>
-            </div>
-        </div>
 
-        {!isMinimized && (
-            <>
-                {/* Tabs */}
-                <div className="flex items-center p-1.5 gap-1 border-b border-white/5 bg-black/20">
-                    <TabButton 
+                {/* Divider */}
+                <div className="w-px h-5 bg-white/10 mx-1" />
+
+                {/* Manual Tools */}
+                <div className="flex items-center gap-0.5">
+                    <ToolButton 
                         active={activeTab === 'layout'} 
-                        onClick={() => setActiveTab('layout')} 
-                        icon={<Layout className="w-4 h-4" />} 
+                        onClick={() => toggleTab('layout')} 
+                        icon={<Box className="w-4 h-4" />} 
                         label="Layout" 
                     />
-                    <TabButton 
-                        active={activeTab === 'spacing'} 
-                        onClick={() => setActiveTab('spacing')} 
-                        icon={<Box className="w-4 h-4" />} 
-                        label="Spacing" 
-                    />
-                    <TabButton 
+                    <ToolButton 
                         active={activeTab === 'typography'} 
-                        onClick={() => setActiveTab('typography')} 
+                        onClick={() => toggleTab('typography')} 
                         icon={<Type className="w-4 h-4" />} 
                         label="Text" 
                     />
-                    <TabButton 
+                    <ToolButton 
                         active={activeTab === 'appearance'} 
-                        onClick={() => setActiveTab('appearance')} 
+                        onClick={() => toggleTab('appearance')} 
                         icon={<Palette className="w-4 h-4" />} 
                         label="Style" 
                     />
                 </div>
 
-                {/* Content Area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar bg-transparent">
-                    <div className="p-4 space-y-6">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={activeTab}
-                                initial={{ opacity: 0, x: 10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                transition={{ duration: 0.15 }}
-                            >
-                                {activeTab === 'layout' && <LayoutEditor styles={styles} onChange={handleChange} />}
-                                {activeTab === 'spacing' && <SpacingEditor styles={styles} onChange={handleChange} />}
+                {/* Divider */}
+                <div className="w-px h-5 bg-white/10 mx-1" />
+
+                {/* Actions */}
+                <div className="flex items-center px-1">
+                    <button 
+                        onClick={onDelete}
+                        className="p-2 rounded-full hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-colors group"
+                        title="Delete Element"
+                    >
+                        <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    </button>
+                </div>
+            </motion.div>
+
+            {/* EXPANDABLE DETAIL PANEL */}
+            <AnimatePresence>
+                {activeTab && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -10, height: 0 }}
+                        animate={{ opacity: 1, y: 0, height: 'auto' }}
+                        exit={{ opacity: 0, y: -10, height: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="w-[340px] overflow-hidden"
+                    >
+                        <div className="bg-[#09090b]/95 border border-white/10 backdrop-blur-xl rounded-2xl shadow-2xl ring-1 ring-black/50 p-4 pt-3 mt-1">
+                             <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+                                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-2">
+                                    {activeTab === 'layout' && <><Box className="w-3 h-3"/> Layout Properties</>}
+                                    {activeTab === 'typography' && <><Type className="w-3 h-3"/> Typography</>}
+                                    {activeTab === 'appearance' && <><Palette className="w-3 h-3"/> Appearance</>}
+                                </span>
+                                <button 
+                                    onClick={() => setActiveTab(null)}
+                                    className="p-1 hover:bg-white/10 rounded-full text-zinc-500 hover:text-white transition-colors"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                             </div>
+
+                             <div className="custom-scrollbar max-h-[60vh] overflow-y-auto pr-1">
+                                {activeTab === 'layout' && (
+                                    <>
+                                        <LayoutEditor styles={styles} onChange={handleChange} />
+                                        <div className="h-4" />
+                                        <SpacingEditor styles={styles} onChange={handleChange} />
+                                    </>
+                                )}
                                 {activeTab === 'typography' && <TypographyEditor styles={styles} onChange={handleChange} />}
                                 {activeTab === 'appearance' && <AppearanceEditor styles={styles} onChange={handleChange} tagName={element.tagName} />}
-                            </motion.div>
-                        </AnimatePresence>
-
-                        <div className="border-t border-white/5 pt-4 mt-6">
-                            <button 
-                                onClick={onDelete}
-                                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 transition-all text-xs font-semibold border border-red-500/10"
-                            >
-                                <Trash2 className="w-3.5 h-3.5" />
-                                Delete Element
-                            </button>
+                             </div>
                         </div>
-                    </div>
-                </div>
-            </>
-        )}
-        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
         
-        {/* Render Global Styles */}
+        {/* Helper to show tag name above the bar */}
+        <div 
+            className="fixed pointer-events-none z-[999]"
+            style={{ 
+                top: position.top - 28, 
+                left: position.left,
+            }}
+        >
+            <div className="px-2 py-0.5 rounded-full bg-purple-500 text-white text-[10px] font-bold font-mono tracking-wide shadow-lg flex items-center gap-1.5 animate-in fade-in slide-in-from-bottom-1">
+                <span>{element.tagName}</span>
+                <span className="opacity-50 font-normal">#{element.id.slice(0,4)}</span>
+            </div>
+        </div>
+
         <GlobalStyles />
     </Tooltip.Provider>
   );
+}
+
+// Helper Components
+function ToolButton({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
+    return (
+        <Tooltip.Root>
+            <Tooltip.Trigger asChild>
+                <button
+                    onClick={onClick}
+                    className={cn(
+                        "w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200",
+                        active 
+                            ? "bg-white text-black shadow-lg shadow-white/10 scale-105" 
+                            : "text-zinc-400 hover:text-white hover:bg-white/10"
+                    )}
+                >
+                    {icon}
+                </button>
+            </Tooltip.Trigger>
+            <Tooltip.Portal>
+                <Tooltip.Content 
+                    className="z-[10001] bg-black border border-white/20 text-xs px-2 py-1 rounded-md text-white font-medium animate-in fade-in zoom-in-95 duration-100"
+                    side="top"
+                    sideOffset={5}
+                >
+                    {label}
+                </Tooltip.Content>
+            </Tooltip.Portal>
+        </Tooltip.Root>
+    );
 }
 
 // ----------------------------------------------------------------------------

@@ -215,6 +215,14 @@ export const useCanvasEditor = () => {
             tagName: target.tagName.toLowerCase(),
             innerText: (target.textContent || "").slice(0, 50),
             styles: styles,
+            outerHTML: (() => {
+                // Return cleaned HTML for context
+                const clone = target.cloneNode(true) as HTMLElement;
+                clone.removeAttribute('data-editor-id');
+                clone.classList.remove('inspector-selected', 'inspector-hover', 'inspector-editing');
+                if (clone.getAttribute('class') === '') clone.removeAttribute('class');
+                return clone.outerHTML;
+            })(),
             rect: {
                 top: rect.top,
                 left: rect.left,
@@ -250,9 +258,18 @@ export const useCanvasEditor = () => {
         }
 
         if (data.type === "UPDATE_ELEMENT_STYLE") {
-             const { id, styles, textContent } = data;
+             const { id, styles, textContent, outerHTML } = data;
              const el = document.querySelector(`[data-editor-id="${id}"]`) as HTMLElement;
              if (el) {
+                 if (outerHTML) {
+                     // Full element replacement (AI Edit)
+                     el.outerHTML = outerHTML;
+                     // After replacement, the 'el' reference is lost from DOM.
+                     // But saveDesign will grab the new innerHTML of root.
+                     saveDesign();
+                     return; 
+                 }
+
                  if (styles) {
                     Object.entries(styles).forEach(([key, value]) => {
                         if (value !== undefined) {
@@ -278,10 +295,10 @@ export const useCanvasEditor = () => {
                          }
                      }
                  }
-                 
                  saveDesign();
              }
         }
+
 
         if (data.type === "DELETE_ELEMENT") {
              const { id } = data;

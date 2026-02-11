@@ -145,8 +145,9 @@ interface ElementStylePanelWrapperProps {
           width: number;
           height: number;
       }
+      outerHTML?: string;
   };
-  onUpdate: (id: string, styles: any, textContent?: string) => void;
+  onUpdate: (id: string, styles: any, textContent?: string, outerHTML?: string) => void;
   onClose: () => void;
   onDelete: () => void;
   scale: number;
@@ -170,32 +171,40 @@ function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, on
 
         // Calculate initial target coordinates (Default: Right side of element, aligned to top)
         const elementTop = containerRect.top + (element.rect.top * scale);
-        const elementRight = containerRect.left + (element.rect.left * scale) + (element.rect.width * scale);
+        const elementHeight = element.rect.height * scale;
+        const elementWidth = element.rect.width * scale;
         const elementLeft = containerRect.left + (element.rect.left * scale);
         
-        let targetLeft = elementRight + PANEL_GAP;
-        let targetTop = elementTop;
+        // Strategy: Try to place BELOW first (Best for wide elements/context menu feel)
+        // If not enough space below, try ABOVE.
+        // If not enough space above, try RIGHT (original behavior).
+        
+        const BAR_HEIGHT = 60; // Approximate height of the collapsed bar
+        
+        let targetLeft = elementLeft;
+        let targetTop = elementTop + elementHeight + PANEL_GAP;
 
-        // Horizontal Constraint
-        // If placing on right overflows viewport, try placing on left
-        if (targetLeft + PANEL_WIDTH + VIEWPORT_PADDING > window.innerWidth) {
-            // Check if left side has space
-            if (elementLeft - PANEL_WIDTH - PANEL_GAP > VIEWPORT_PADDING) {
-                targetLeft = elementLeft - PANEL_WIDTH - PANEL_GAP;
-            } else {
-                // If neither fits perfectly, pin to right edge
-                targetLeft = window.innerWidth - PANEL_WIDTH - VIEWPORT_PADDING;
+        // 1. Vertical Constraint
+        // Check if Bottom overflows viewport
+        if (targetTop + BAR_HEIGHT > window.innerHeight - VIEWPORT_PADDING) {
+            // Try ABOVE
+            targetTop = elementTop - BAR_HEIGHT - PANEL_GAP;
+            
+            // If Top also overflows (too high), fallback to RIGHT side
+            if (targetTop < HEADER_HEIGHT) {
+                targetLeft = elementLeft + elementWidth + PANEL_GAP;
+                targetTop = elementTop;
             }
         }
 
-        // Vertical Constraint
-        // Prevent going off bottom
-        if (targetTop + ESTIMATED_HEIGHT > window.innerHeight) {
-            targetTop = window.innerHeight - ESTIMATED_HEIGHT - VIEWPORT_PADDING;
+        // 2. Horizontal Constraint
+        // Prevent going off right edge
+        if (targetLeft + PANEL_WIDTH + VIEWPORT_PADDING > window.innerWidth) {
+             targetLeft = window.innerWidth - PANEL_WIDTH - VIEWPORT_PADDING;
         }
         
-        // Prevent going off top (under header)
-        targetTop = Math.max(targetTop, HEADER_HEIGHT + VIEWPORT_PADDING);
+        // Prevent going off left edge
+        targetLeft = Math.max(VIEWPORT_PADDING, targetLeft);
         
         setPosition({
           top: targetTop,
@@ -294,6 +303,7 @@ export const MobileFrame = React.memo(
             width: number;
             height: number;
         };
+        outerHTML?: string;
     } | null>(null);
 
     // Sync isInspecting with activeTool and selection state
@@ -561,13 +571,20 @@ export const MobileFrame = React.memo(
         }, "*");
     }, [isInspecting]);
 
-    const handleStyleUpdate = useCallback((elId: string, styles: any, textContent?: string) => {
+    const handleStyleUpdate = useCallback((elId: string, styles: any, textContent?: string, outerHTML?: string) => {
         iframeRef.current?.contentWindow?.postMessage({
             type: "UPDATE_ELEMENT_STYLE",
             id: elId,
             styles,
-            textContent
+            textContent,
+            outerHTML
         }, "*");
+
+        // If replacing element via AI, deselect to avoid stale reference
+        if (outerHTML) {
+            setSelectedElement(null);
+            // We keep the frame selected, but no specific element
+        }
     }, []);
 
     return (
