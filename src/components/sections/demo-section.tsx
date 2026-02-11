@@ -1,7 +1,27 @@
 export function DemoSection() {
   return (
-    <section className="w-full py-12 md:py-24 bg-background">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="w-full py-12 md:py-24 relative">
+      {/* Torch Light Effect */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[1200px] pointer-events-none z-0">
+        {/* Core spotlight beam - Increased intensity */}
+        <div className="absolute inset-0 bg-[radial-gradient(50%_50%_at_50%_0%,var(--color-primary)_0%,transparent_100%)] blur-[100px] opacity-[0.3]" />
+        {/* Secondary glow - Wider spread */}
+        <div className="absolute inset-0 h-[800px] -top-[100px] bg-[radial-gradient(50%_50%_at_50%_0%,var(--color-primary)_0%,transparent_100%)] blur-[80px] opacity-[0.2]" />
+        {/* Center hot spot - Brightest point */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 w-[800px] h-[400px] bg-[radial-gradient(50%_50%_at_50%_0%,var(--color-primary)_0%,transparent_100%)] blur-[50px] opacity-[0.4]" />
+      </div>
+
+      {/* Torch Light Effect - Bottom */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-[1200px] pointer-events-none z-0">
+        {/* Core spotlight beam */}
+        <div className="absolute inset-0 bg-[radial-gradient(50%_50%_at_50%_100%,var(--color-primary)_0%,transparent_100%)] blur-[100px] opacity-[0.3]" />
+        {/* Secondary glow */}
+        <div className="absolute inset-0 h-[800px] -bottom-[100px] bg-[radial-gradient(50%_50%_at_50%_100%,var(--color-primary)_0%,transparent_100%)] blur-[80px] opacity-[0.2]" />
+        {/* Center hot spot */}
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[800px] h-[400px] bg-[radial-gradient(50%_50%_at_50%_100%,var(--color-primary)_0%,transparent_100%)] blur-[50px] opacity-[0.4]" />
+      </div>
+
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6">
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></span>
