@@ -94,13 +94,13 @@ export default function PreviewPage() {
       const vh = window.innerHeight;
       const vw = window.innerWidth;
       
-      // Target height is 844px. Leave 200px for header/margins.
-      const availableHeight = vh - 200;
-      const heightScale = Math.min(availableHeight / 844, 0.9);
+      // Target height is 844px + bezel. Leave 220px for header/margins.
+      const availableHeight = vh - 220;
+      const heightScale = Math.min(availableHeight / 854, 0.9);
       
-      // Also ensure it doesn't overflow horizontally. Increase margin for navigation arrows.
-      const availableWidth = vw - 140; 
-      const widthScale = Math.min(availableWidth / 390, 0.9);
+      // Also ensure it doesn't overflow horizontally. Increase margin for navigation arrows and bezel.
+      const availableWidth = vw - 160; 
+      const widthScale = Math.min(availableWidth / 400, 0.9);
       
       setScale(Math.min(heightScale, widthScale));
     };

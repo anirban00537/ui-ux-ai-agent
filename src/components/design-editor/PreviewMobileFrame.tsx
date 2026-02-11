@@ -202,12 +202,15 @@ export const PreviewMobileFrame = React.memo(({
         </div>
       )}
 
-      {/* Unselected Title (Legacy/Hover) */}
-      {!isSelected && !isStatic && title && (
-        <div className="absolute -top-10 w-full text-center opacity-0 group-hover:opacity-100 transition-opacity drag-target cursor-grab">
-           <span className="text-xs font-medium text-gray-400 uppercase tracking-wider bg-background/80 px-2 py-1 rounded shadow-sm border border-border">
-              {title}
-           </span>
+      {/* Floating Title (Dark Premium) */}
+      {title && !isStatic && (
+        <div className={cn(
+          "absolute -top-10 w-full text-center transition-opacity drag-target cursor-grab z-[60]",
+          isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+        )}>
+          <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider bg-zinc-950/80 px-2 py-1 rounded shadow-sm border border-white/10 backdrop-blur-sm">
+            {title}
+          </span>
         </div>
       )}
 
@@ -217,13 +220,13 @@ export const PreviewMobileFrame = React.memo(({
       >
            {/* Selection Border - Rectangular Bounding Box */}
           {isSelected && !isStatic && (
-            <div className="absolute -inset-[1px] border border-primary z-20 pointer-events-none" />
+            <div className="absolute -inset-[1.5px] border-2 border-primary/50 z-20 pointer-events-none rounded-[40px]" />
           )}
 
           {/* Generating Animation */}
           {isGenerating && (
             <div 
-                className="absolute -inset-1 rounded-[34px] opacity-75 blur-md pointer-events-none"
+                className="absolute -inset-1.5 rounded-[34px] opacity-75 blur-md pointer-events-none transition-all duration-500"
                 style={{
                   background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
                   backgroundSize: "300% 100%",
@@ -239,12 +242,14 @@ export const PreviewMobileFrame = React.memo(({
               !isSelected && !isStatic ? 'drag-target cursor-grab active:cursor-grabbing' : ''
             )}
             style={{
-              borderRadius: "32px", 
+              borderRadius: "36px", 
               background: colorPalette?.background || "#ffffff",
-              border: "6px solid #1a1a1a",
+              border: `6px solid ${colorPalette?.border || "#1a1a1a"}`,
               boxShadow: isStatic 
-                ? "0 0 0 1px #262626"
-                : "0 0 0 1px #262626"
+                ? "0 25px 50px -12px rgba(0,0,0,0.5)"
+                : isSelected
+                  ? "0 20px 45px rgba(0,0,0,0.25)"
+                  : "0 8px 16px rgba(0,0,0,0.15)"
             }}
           >
 
@@ -274,12 +279,21 @@ export const PreviewMobileFrame = React.memo(({
             )}
 
             {!isLoaded && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 text-gray-500 pointer-events-none">
-                <div className="w-8 h-8 rounded-full border-2 border-current border-t-transparent animate-spin mb-4 text-primary" />
-                <p className="text-[10px] font-mono uppercase tracking-widest opacity-50">Loading</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 border border-white/5 rounded-[26px]">
+                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-lg shadow-primary/20" />
+                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 animate-pulse">
+                  Initializing
+                </p>
               </div>
             )}
           </div>
+
+          {/* Dimensions Label (Bottom) */}
+          {isSelected && !isStatic && (
+            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full bg-zinc-950/80 backdrop-blur-xl border border-white/10 px-3 py-1 text-zinc-100 text-[10px] shadow-2xl font-bold tracking-widest tabular-nums z-[60] pointer-events-none uppercase whitespace-nowrap">
+              {Math.round(frameWidth)} <span className="text-zinc-500 mx-1">×</span> {Math.round(frameHeight)}
+            </div>
+          )}
         </div>
 
 

@@ -515,13 +515,18 @@ function CanvasContent() {
         ::-webkit-scrollbar {
           width: 0px;
           background: transparent;
-          display: none;
         }
 
+        /* Hide scrollbars globally except for preview root */
+        ${isPreview ? "" : `
         * {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        `}
 
         #root::-webkit-scrollbar {
           width: ${isPreview ? "6px" : "0px"};
@@ -549,7 +554,7 @@ function CanvasContent() {
           padding: 0;
           height: 100%;
           width: 100%;
-          overflow: ${isPreview ? "hidden" : "auto"} !important;
+          overflow: ${isPreview ? "auto" : "hidden"} !important;
           background: var(--background, transparent);
         }
 
@@ -558,14 +563,14 @@ function CanvasContent() {
           min-height: 100%;
           display: flex;
           flex-direction: column;
-          overflow-y: ${isPreview ? "auto" : "visible"} !important;
+          overflow-y: ${isPreview ? "visible" : "visible"} !important;
           overflow-x: hidden;
           background: var(--background, transparent);
         }
 
         #canvas-wrapper {
           flex: 1;
-          ${isPreview ? 'height: 100%; overflow-y: auto;' : 'overflow: visible;'}
+          ${isPreview ? 'min-height: 100%;' : 'overflow: visible;'}
           /* Ensure wrapper takes full height even in editor mode to match iframe */
           min-height: 100%; 
           display: flex;
