@@ -94,7 +94,7 @@ export default function PreviewPage() {
       const vh = window.innerHeight;
       const vw = window.innerWidth;
       
-      // Target height is 844px + bezel. Leave 220px for header/margins.
+      // Target height is 1000px + bezel. Leave 220px for header/margins.
       const availableHeight = vh - 220;
       const heightScale = Math.min(availableHeight / 854, 0.9);
       
@@ -236,8 +236,8 @@ export default function PreviewPage() {
                <div 
                  className="relative transition-all duration-500 ease-out will-change-transform"
                 style={{
-                width: 390 * scale,
-                minHeight: 844 * scale,
+                width: 480 * scale,
+                minHeight: 1000 * scale,
                 height: "auto",
              }}
                >
@@ -250,8 +250,8 @@ export default function PreviewPage() {
                       isStatic={true}
                       disableDrag={true}
                       disableResize={true}
-                      width={390}
-                      height={844}
+                      width={480}
+                      height={1000}
                       scale={scale}
                     />
                   )}
