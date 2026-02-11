@@ -52,7 +52,7 @@ export const PreviewMobileFrame = React.memo(({
   title,
   subtitle,
   className = "",
-  width = 480,
+  width = 390,
   height,
   initialX = 0,
   initialY = 0,
@@ -72,11 +72,11 @@ export const PreviewMobileFrame = React.memo(({
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showUpdateInput, setShowUpdateInput] = useState(false);
 
-  // State for dimensions - Large Mobile (480x1100 minimum)
-  const MIN_FRAME_HEIGHT = 1100;
-  const standardRatio = 1100 / 480;
-  const frameWidth = width;
-  const frameHeight = height || Math.max(Math.floor(width * standardRatio), MIN_FRAME_HEIGHT);
+  // State for dimensions - Standard Mobile (390x844)
+  const MIN_FRAME_HEIGHT = 844;
+  const standardRatio = 844 / 390;
+  const frameWidth = width || 390;
+  const frameHeight = height || Math.max(Math.floor(frameWidth * standardRatio), MIN_FRAME_HEIGHT);
 
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [isSelected, setIsSelected] = useState(false);
@@ -235,7 +235,7 @@ export const PreviewMobileFrame = React.memo(({
           {/* Inner Frame Container (The Phone) */}
           <div
             className={cn(
-              "relative overflow-hidden isolate shadow-2xl w-full h-full",
+              "relative overflow-hidden isolate w-full h-full",
               !isSelected && !isStatic ? 'drag-target cursor-grab active:cursor-grabbing' : ''
             )}
             style={{
@@ -243,8 +243,8 @@ export const PreviewMobileFrame = React.memo(({
               background: colorPalette?.background || "#ffffff",
               border: "6px solid #1a1a1a",
               boxShadow: isStatic 
-                ? "0 0 0 1px #262626, 0 40px 80px -20px rgba(0,0,0,0.5)"
-                : "0 0 0 1px #262626, 0 10px 30px rgba(0,0,0,0.2)"
+                ? "0 0 0 1px #262626"
+                : "0 0 0 1px #262626"
             }}
           >
 
@@ -303,10 +303,12 @@ export const PreviewMobileFrame = React.memo(({
         }}
       >
         <div 
-          className="relative transition-all duration-300 origin-center"
+          className="relative transition-all duration-300 origin-center flex-shrink-0"
           style={{ 
             width: frameWidth, 
             height: frameHeight, 
+            minWidth: frameWidth,
+            minHeight: frameHeight,
             transform: `scale(${scale})`
           }}
         >

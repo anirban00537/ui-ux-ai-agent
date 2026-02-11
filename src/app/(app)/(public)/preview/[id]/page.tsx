@@ -94,13 +94,13 @@ export default function PreviewPage() {
       const vh = window.innerHeight;
       const vw = window.innerWidth;
       
-      // Target height is 840px. Leave 180px for header/margins.
-      const availableHeight = vh - 180;
-      const heightScale = Math.min(availableHeight / 840, 0.9);
+      // Target height is 844px. Leave 200px for header/margins.
+      const availableHeight = vh - 200;
+      const heightScale = Math.min(availableHeight / 844, 0.9);
       
-      // Also ensure it doesn't overflow horizontally
-      const availableWidth = vw - 80; // Margin
-      const widthScale = Math.min(availableWidth / 480, 0.9);
+      // Also ensure it doesn't overflow horizontally. Increase margin for navigation arrows.
+      const availableWidth = vw - 140; 
+      const widthScale = Math.min(availableWidth / 390, 0.9);
       
       setScale(Math.min(heightScale, widthScale));
     };
@@ -235,10 +235,10 @@ export default function PreviewPage() {
                </div>
 
                <div 
-                 className="relative transition-all duration-500 ease-out will-change-transform shadow-2xl shadow-black/50"
+                 className="relative transition-all duration-500 ease-out will-change-transform"
                 style={{
-                width: 480 * scale,
-                minHeight: 840 * scale,
+                width: 390 * scale,
+                minHeight: 844 * scale,
                 height: "auto",
              }}
                >
@@ -251,8 +251,8 @@ export default function PreviewPage() {
                       isStatic={true}
                       disableDrag={true}
                       disableResize={true}
-                      width={500}
-                      height={840}
+                      width={390}
+                      height={844}
                       scale={scale}
                     />
                   )}
