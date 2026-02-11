@@ -141,6 +141,42 @@ export function Editor({
     return () => window.removeEventListener("mousedown", handleClickOutside);
   }, [showExportMenu]);
 
+  // Ref to access React Zoom Pan Pinch controls
+  const transformRef = useRef<any>(null);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    // If holding Ctrl or Meta, let the library handle Zoom
+    if (e.ctrlKey || e.metaKey) return;
+
+    if (transformRef.current) {
+        // Access current state
+        const { positionX, positionY, scale } = transformRef.current.instance.transformState;
+        
+        // Settings
+        const speed = 1.0; 
+
+        let newX = positionX;
+        let newY = positionY;
+
+        // If Shift is held, we prioritize Horizontal Panning.
+        // Some browsers automatically swap X/Y deltas when Shift is held.
+        // We handle both cases to ensure consistent behavior.
+        if (e.shiftKey && e.deltaX === 0) {
+            // Case 1: Browser reported Vertical Delta + Shift. We manually swap to X.
+            newX -= e.deltaY * speed;
+        } else {
+            // Case 2: Browser reported Horizontal Delta (Shift auto-swapped)
+            // OR Case 3: Normal vertical scroll (Shift not held)
+            // OR Case 4: Trackpad 2D scroll
+            newX -= e.deltaX * speed;
+            newY -= e.deltaY * speed;
+        }
+
+        // Apply transform immediately (0 duration)
+        transformRef.current.setTransform(newX, newY, scale, 0);
+    }
+  }, []);
+
   const handleExportAllHtml = useCallback(() => {
     if (!conversation?.id) return;
     exportAllHtml.mutate({ 
@@ -285,7 +321,10 @@ export function Editor({
         </header>
 
          {/* Main Canvas Area */}
-         <div className="flex-1 relative overflow-hidden bg-zinc-950/20">
+         <div 
+            className="flex-1 relative overflow-hidden bg-zinc-950/20"
+            onWheelCapture={handleWheel}
+         >
             {/* Grid Pattern */}
             <div 
                 className="absolute inset-0 -z-20 opacity-[0.03] pointer-events-none" 
@@ -309,6 +348,7 @@ export function Editor({
             <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.03)_0%,transparent_70%)] pointer-events-none" />
 
              <TransformWrapper
+                ref={transformRef}
                 initialScale={0.6}
                 minScale={0.1}
                 maxScale={3}
@@ -320,7 +360,7 @@ export function Editor({
                 excluded: ["input", "textarea", "button", "select", "drag-target"],
                 disabled: effectiveTool !== 'hand'
                 }}
-                wheel={{ step: 0.1, disabled: effectiveTool === 'hand' }}
+                wheel={{ step: 0.1, activationKeys: ['Meta', 'Control'] }}
                 doubleClick={{ disabled: true }}
                 pinch={{ step: 5 }}
             >
