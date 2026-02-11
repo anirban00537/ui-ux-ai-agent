@@ -180,19 +180,22 @@ function ElementStylePanelWrapper({ containerRef, element, onUpdate, onClose, on
         // If not enough space above, try RIGHT (original behavior).
         
         const BAR_HEIGHT = 60; // Approximate height of the collapsed bar
-        
+        const TAG_HEIGHT = 32; // Height of the tag label + padding
+        const VISUAL_GAP = 16; // Visual gap between element and tool
+
         let targetLeft = elementLeft;
-        let targetTop = elementTop + elementHeight + PANEL_GAP;
+        // Position below: Element Bottom + Gap + Tag Space (since tag floats above panel)
+        let targetTop = elementTop + elementHeight + VISUAL_GAP + TAG_HEIGHT;
 
         // 1. Vertical Constraint
         // Check if Bottom overflows viewport
         if (targetTop + BAR_HEIGHT > window.innerHeight - VIEWPORT_PADDING) {
             // Try ABOVE
-            targetTop = elementTop - BAR_HEIGHT - PANEL_GAP;
+            targetTop = elementTop - BAR_HEIGHT - VISUAL_GAP;
             
             // If Top also overflows (too high), fallback to RIGHT side
             if (targetTop < HEADER_HEIGHT) {
-                targetLeft = elementLeft + elementWidth + PANEL_GAP;
+                targetLeft = elementLeft + elementWidth + VISUAL_GAP;
                 targetTop = elementTop;
             }
         }
