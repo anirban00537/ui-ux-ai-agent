@@ -83,6 +83,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <article className="min-h-screen pt-10 relative">
+      <Navbar />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       {/* Featured Image - Full Width Hero */}

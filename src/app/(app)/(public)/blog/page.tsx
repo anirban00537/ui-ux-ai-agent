@@ -30,6 +30,7 @@ export default async function BlogPage() {
 
   return (
     <div className="min-h-screen relative">
+      <Navbar />
       <div className="pt-28 pb-20">
         <div className="container max-w-7xl mx-auto px-6">
           {/* Header */}

@@ -1,5 +1,3 @@
-import { Navbar } from "@/components/navbar";
-
 export default function PublicLayout({
   children,
 }: {
@@ -7,7 +5,6 @@ export default function PublicLayout({
 }) {
   return (
     <>
-      <Navbar />
       {children}
     </>
   );
