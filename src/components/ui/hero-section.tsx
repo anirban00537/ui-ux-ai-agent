@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PromptBox, type PromptMode } from "@/components/ui";
-import { trackEvent } from "@/components/analytics/trackEvent";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const spinningWord = "Mobile App";
 
 export default function HeroSection() {
-  const [error, setError] = useState<string | null>(null);
-
   return (
     <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center isolate">
       {/* Background Image Layer */}
@@ -24,21 +22,25 @@ export default function HeroSection() {
         }}
       />
       {/* Refined overlay for depth and readability */}
-      {/* Refined overlay for depth and readability */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/10 to-black" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/40 to-background" />
       
-   
-    
       <div className="container relative z-10 px-4 flex flex-col items-center">
-        <div className="w-full max-w-4xl flex flex-col gap-3">
+        <div className="w-full max-w-5xl flex flex-col gap-8 items-center">
           {/* Headline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-8"
+            className="text-center flex flex-col items-center gap-6"
           >
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground leading-[1.1] mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-md">
+              <Sparkles className="w-3 h-3 text-primary" />
+              <span className="text-xs font-medium tracking-wide uppercase text-primary">
+                AI-Powered Design
+              </span>
+            </div>
+
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight text-foreground leading-[1.1] max-w-4xl text-center">
               Design{" "}
               <span className="relative inline-block text-left">
                 <AnimatePresence mode="wait">
@@ -60,51 +62,45 @@ export default function HeroSection() {
               </span>{" "}
               in Seconds
             </h1>
-            <p className="text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Transform your prompts into stunning mobile app
-              designs. No design skills needed.
+            
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-center">
+              Transform your prompts into stunning mobile app designs instantly. 
+              No design skills needed—just describe what you want.
             </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 mt-2">
+              <Button size="lg" className="rounded-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all hover:scale-105" asChild>
+                <Link href="/home">
+                  Start Building for Free
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </Button>
+            </div>
           </motion.div>
 
-
-          {/* Prompt Box */}
+          {/* Video / Demo Area */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="relative w-full max-w-2xl mx-auto"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="relative w-full max-w-5xl mx-auto mt-12"
           >
-            <PromptBox
-              name="message"
-              onError={(errorMessage: string) => setError(errorMessage)}
-            />
-
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-500 text-center font-medium"
-              >
-                {error}
-              </motion.div>
-            )}
-          </motion.div>
-
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 flex justify-center"
-          >
-            <a href="https://twelve.tools" target="_blank" rel="noreferrer">
-              <img
-                src="https://twelve.tools/badge0-light.svg"
-                alt="Featured on Twelve Tools"
-                width={200}
-                height={54}
-              />
-            </a>
+            {/* Glow Effect */}
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-blue-600/30 rounded-[2rem] blur-2xl opacity-50 dark:opacity-40" />
+            
+            <div className="relative rounded-xl md:rounded-2xl border border-white/20 dark:border-white/10 bg-white/50 dark:bg-black/50 backdrop-blur-sm p-2 shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
+              <div className="relative w-full aspect-video overflow-hidden rounded-lg md:rounded-xl border border-white/10 bg-black/5">
+                <iframe
+                  src="https://www.youtube.com/embed/rogYPw2uZjo?autoplay=1&mute=1&loop=1&playlist=rogYPw2uZjo&controls=0&rel=0&modestbranding=1&playsinline=1"
+                  title="Butterfast Demo"
+                  className="absolute inset-0 w-full h-full border-0 pointer-events-none scale-[1.02]"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+                
+                {/* Overlay for better integration */}
+                <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/5 pointer-events-none rounded-lg md:rounded-xl" />
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
