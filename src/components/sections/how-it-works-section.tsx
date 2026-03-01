@@ -26,31 +26,26 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section className="py-32 relative overflow-hidden">
+    <section className="py-24 md:py-32 relative overflow-hidden bg-slate-950" id="how-it-works">
       <div className="container mx-auto px-4 relative z-10">
-        <div className="mb-24 text-center max-w-3xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/40 border border-border backdrop-blur-md mb-6 shadow-sm"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,157,241,0.5)]"></span>
-            <span className="text-xs font-medium tracking-widest uppercase text-foreground/60">
-              Seamless Workflow
-            </span>
-          </motion.div>
-          <h2 className="font-serif text-5xl md:text-7xl text-foreground mb-6 tracking-tight leading-[1]">
-            From idea to design <br />
-            <span className="italic text-primary/60">in seconds.</span>
+        <div className="mb-20 text-center max-w-3xl mx-auto flex flex-col items-center">
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-tight">
+            Getting started?
+          </h3>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight leading-tight">
+            Oh, that's easy!
           </h2>
-          <p className="text-xl text-muted-foreground font-light leading-relaxed">
-            Three simple steps to generate professional mobile app UI.
+          <p className="text-lg md:text-xl text-white/70 font-medium leading-relaxed max-w-xl mx-auto mb-8">
+            Three simple steps to generate professional mobile app UI. No learning curve, just pure creation.
           </p>
+          <a href="/home" className="inline-flex items-center justify-center rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 font-semibold text-lg transition-all hover:scale-105 shadow-lg shadow-primary/20">
+            Start Building Free
+          </a>
         </div>
 
-        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {/* Connecting Line (Desktop) */}
-          <div className="hidden md:block absolute top-24 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
+          <div className="hidden md:block absolute top-1/2 left-0 w-full h-px bg-white/10 -translate-y-1/2" />
 
           {steps.map((step, i) => (
             <motion.div
@@ -60,26 +55,25 @@ export function HowItWorksSection() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
               className={cn(
-                "group relative z-10 flex flex-col gap-6 p-8 rounded-3xl bg-secondary/20 backdrop-blur-sm border border-border shadow-sm transition-all duration-500 hover:bg-white hover:border-primary/20 hover:shadow-xl hover:scale-[1.02]",
+                "group relative z-10 flex flex-col gap-4 p-8 rounded-[24px] bg-white border border-black/5 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl",
                 step.align === "center" ? "md:items-center md:text-center" :
                   step.align === "right" ? "md:items-end md:text-right" : "md:items-start md:text-left"
               )}
             >
-              <div className="relative">
-                <span className="font-serif text-[100px] leading-none text-primary/5 select-none absolute -top-12 -left-4 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                  {step.id}
-                </span>
-                <div className="relative z-10 w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xl mb-4 group-hover:scale-110 transition-transform duration-500">
+              <div className="relative w-full flex flex-col">
+                <div className={cn("w-14 h-14 flex items-center justify-center rounded-2xl bg-primary/10 text-primary font-bold text-2xl mb-6 shadow-inner",
+                  step.align === "center" && "mx-auto",
+                  step.align === "right" && "ml-auto"
+                )}>
                   {step.id}
                 </div>
-                <h3 className="relative z-10 text-2xl font-serif font-medium text-foreground">
+                <h3 className="text-2xl font-bold text-foreground tracking-tight mb-2">
                   {step.title}
                 </h3>
+                <p className="text-muted-foreground/90 text-[16px] leading-relaxed font-medium">
+                  {step.description}
+                </p>
               </div>
-
-              <p className="text-muted-foreground text-sm relative z-10 leading-relaxed font-light">
-                {step.description}
-              </p>
             </motion.div>
           ))}
         </div>

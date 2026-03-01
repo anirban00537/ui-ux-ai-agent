@@ -28,54 +28,52 @@ export function Navbar() {
 
   return (
     <motion.header
-      className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none"
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-8 transition-all duration-300 pointer-events-none",
+        isScrolled ? "bg-white/90 backdrop-blur-md border-b border-border/50 py-3" : "bg-transparent py-5"
+      )}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div
-        className={cn(
-          "pointer-events-auto flex items-center justify-between gap-8 h-14 pl-6 pr-2 rounded-full transition-all duration-500",
-          "bg-white/70 backdrop-blur-xl border-3d shadow-xl",
-          isScrolled ? "w-full max-w-4xl" : "w-full max-w-5xl"
-        )}
-      >
-        <Link
-          href="/"
-          onClick={() => trackEvent('nav_logo_click', 'engagement', 'header')}
-          className="group flex items-center gap-2"
-        >
-          <Image
-            src="/logo.svg"
-            alt="Butterfast Logo"
-            width={130}
-            height={32}
-            className="h-8 w-auto"
-          />
-        </Link>
+      <div className="pointer-events-auto flex items-center justify-between w-full max-w-7xl mx-auto">
+        <div className="flex items-center min-w-[150px]">
+          <Link
+            href="/"
+            onClick={() => trackEvent('nav_logo_click', 'engagement', 'header')}
+            className="group flex items-center gap-2"
+          >
+            <Image
+              src="/logo.svg"
+              alt="Butterfast Logo"
+              width={130}
+              height={32}
+              className="h-8 w-auto"
+            />
+          </Link>
+        </div>
 
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex items-center gap-1">
+        {/* Desktop Menu - Centered */}
+        <nav className="hidden md:flex items-center justify-center gap-6 flex-1">
           {menuItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors relative group"
+              className="text-[15px] font-medium text-foreground/70 hover:text-foreground transition-colors relative group py-2"
             >
               {item.name}
-              <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary rounded-full transition-all duration-300 group-hover:w-4" />
             </Link>
           ))}
         </nav>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2">
+        {/* Action Buttons - Right */}
+        <div className="flex items-center justify-end min-w-[150px] gap-3">
           {user ? (
             <Link href="/home">
               <Button
                 size="sm"
                 onClick={() => trackEvent("button_click", "engagement", "nav_dashboard")}
-                className="rounded-full bg-primary hover:bg-primary/90 text-white px-5 shadow-coral-glow transition-all hover:scale-105"
+                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-6 shadow-sm transition-all hover:scale-[1.02]"
               >
                 Dashboard
               </Button>
@@ -87,18 +85,18 @@ export function Navbar() {
                   variant="ghost"
                   size="sm"
                   onClick={() => trackEvent("button_click", "engagement", "nav_login")}
-                  className="hidden sm:inline-flex text-foreground/70 hover:text-foreground hover:bg-foreground/5 rounded-full px-5"
+                  className="hidden sm:inline-flex text-[15px] font-medium text-foreground/80 hover:text-foreground hover:bg-transparent px-2"
                 >
-                  Log in
+                  Log In
                 </Button>
               </Link>
               <Link href="/home">
                 <Button
                   size="sm"
                   onClick={() => trackEvent("button_click", "engagement", "nav_get_started")}
-                  className="rounded-full bg-primary hover:bg-primary/90 text-white px-5 shadow-coral-glow transition-all hover:scale-105"
+                  className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-6 w-auto h-10 shadow-sm transition-all hover:scale-[1.02] text-[15px] font-medium"
                 >
-                  Get Started
+                  Sign Up
                 </Button>
               </Link>
             </>

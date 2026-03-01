@@ -1,6 +1,7 @@
 "use client";
 
 import { IconLayoutDashboard, IconWand, IconFileText, IconPalette, IconTypography, IconCheck } from "@tabler/icons-react";
+import { Sparkles } from "lucide-react";
 
 const features = [
   {
@@ -37,41 +38,35 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-32 relative overflow-hidden" id="features">
+    <section className="py-32 relative overflow-hidden bg-muted/50" id="features">
       <div className="container mx-auto px-4 relative z-10">
         {/* Header Section */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/50 border border-border backdrop-blur-md mb-6 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,157,241,0.5)]"></span>
-            <span className="text-xs font-medium tracking-widest uppercase text-foreground/60">
-              Powerful Capabilities
-            </span>
-          </div>
-          <h2 className="font-serif text-5xl md:text-6xl text-foreground mb-6 tracking-tight leading-[1.1]">
-            Everything you need, <br />
-            <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-400 to-blue-400">
-              nothing you don't.
+        <div className="text-center max-w-4xl mx-auto mb-20 flex flex-col items-center">
+          <h2 className="text-5xl md:text-[64px] font-bold tracking-tight text-foreground mb-6 leading-[1.1]">
+            Everything you need <br />
+            <span className="flex items-center justify-center gap-3">
+              nothing you don't <Sparkles className="w-10 h-10 text-primary" />
             </span>
           </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto font-light">
+          <p className="text-xl md:text-[22px] text-muted-foreground/90 font-medium leading-relaxed max-w-2xl mx-auto">
             A complete suite of design tools designed to eliminate the friction between your ideas and a finished mobile app design.
           </p>
         </div>
 
         {/* Features Grid - Clean & Minimal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group p-8 rounded-3xl bg-secondary/20 backdrop-blur-sm border border-border shadow-sm transition-all duration-500 hover:border-primary/20 hover:bg-white hover:shadow-xl hover:scale-[1.02]"
+              className="group p-10 rounded-[32px] bg-white border border-border/50 shadow-sm transition-all duration-500 hover:border-primary/20 hover:shadow-lg hover:-translate-y-1"
             >
-              <div className="mb-6 inline-flex p-3 rounded-2xl bg-primary/5 border border-primary/10 text-primary group-hover:scale-110 transition-all duration-500">
+              <div className="mb-8 inline-flex p-4 rounded-2xl bg-primary/10 text-primary shadow-sm">
                 {feature.icon}
               </div>
-              <h3 className="font-serif text-2xl text-foreground mb-3 font-medium group-hover:text-primary transition-colors duration-300">
+              <h3 className="text-[22px] text-foreground mb-4 font-bold tracking-tight">
                 {feature.title}
               </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
+              <p className="text-muted-foreground/90 text-[17px] leading-relaxed font-medium">
                 {feature.description}
               </p>
             </div>

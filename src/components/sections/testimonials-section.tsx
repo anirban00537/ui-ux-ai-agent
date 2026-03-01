@@ -28,26 +28,16 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section className="py-32 relative overflow-hidden">
-      <div className="container mx-auto px-4 mb-20 text-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/40 border border-border backdrop-blur-md mb-6 shadow-sm"
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,157,241,0.5)]"></span>
-          <span className="text-xs font-medium tracking-widest uppercase text-foreground/60">
-            Community Love
-          </span>
-        </motion.div>
-        <h2 className="font-serif text-5xl md:text-7xl text-foreground tracking-tight">
-          Love letters from <span className="text-primary/70 italic">creators.</span>
+    <section className="py-24 md:py-32 relative overflow-hidden bg-muted/30">
+      <div className="container mx-auto px-4 mb-20 text-center relative z-10 flex flex-col items-center">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground leading-tight max-w-2xl">
+          Love letters from creators
         </h2>
       </div>
 
       <div className="relative w-full overflow-hidden mask-linear-fade">
-        <div className="absolute left-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-r from-background to-transparent" />
-        <div className="absolute right-0 top-0 bottom-0 w-20 z-10 bg-gradient-to-l from-background to-transparent" />
+        <div className="absolute left-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-r from-muted/30 to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 z-10 bg-gradient-to-l from-muted/30 to-transparent pointer-events-none" />
 
         <motion.div
           className="flex gap-8 w-max pl-4"
@@ -64,12 +54,12 @@ export function TestimonialsSection() {
               className="relative w-[350px] md:w-[450px] p-10 bg-secondary/20 backdrop-blur-sm rounded-[32px] shadow-sm border border-border shrink-0 hover:bg-white hover:shadow-xl hover:scale-[1.01] transition-all duration-500"
             >
               {/* Giant Quote Mark */}
-              <span className="absolute top-4 left-6 text-9xl text-primary/5 font-serif leading-none select-none">
+              <span className="absolute top-4 left-6 text-9xl text-foreground/5 font-serif leading-none select-none">
                 &ldquo;
               </span>
 
               <div className="relative z-10">
-                <p className="font-serif text-xl md:text-2xl text-foreground leading-relaxed mb-6 italic font-light">
+                <p className="text-[19px] md:text-[21px] text-foreground leading-relaxed mb-8 font-medium">
                   {t.quote}
                 </p>
                 <div className="flex items-center gap-3">

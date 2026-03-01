@@ -11,11 +11,11 @@ export default function LoginPage() {
    return (
       <div className="grid min-h-screen w-full lg:grid-cols-2">
          {/* Left Column - Login Form */}
-         <div className="flex flex-col justify-center items-center px-8 py-12 md:px-16 lg:px-24 relative">
+         <div className="flex flex-col justify-center items-center px-8 py-12 md:px-16 lg:px-24 relative bg-gradient-to-br from-[#fbfcff] to-[#e8f0fe] z-10 shadow-[20px_0_40px_-15px_rgba(0,0,0,0.05)]">
             <div className="w-full max-w-sm space-y-10">
                {/* Logo & Header */}
-               <div className="flex flex-col items-center text-center space-y-4">
-                  <Link href="/" className="relative mb-4 w-40 h-40 transition-transform hover:scale-105">
+               <div className="flex flex-col items-center text-center space-y-2">
+                  <Link href="/" className="relative mb-6 w-48 h-12 transition-transform hover:scale-105">
                      <Image
                         src="/logo.svg"
                         alt="Butterfast Logo"
@@ -24,19 +24,19 @@ export default function LoginPage() {
                         priority
                      />
                   </Link>
-                  <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                  <h1 className="text-[32px] font-bold tracking-tight text-[#0a0f1c]">
                      Welcome back
                   </h1>
-                  <p className="text-muted-foreground text-sm max-w-[280px]">
+                  <p className="text-muted-foreground/90 text-[15px] font-medium max-w-[280px] leading-relaxed mt-2">
                      Enter your details to access your designs and start creating.
                   </p>
                </div>
 
                {/* Login Actions */}
-               <div className="space-y-6">
+               <div className="space-y-8">
                   <button
                      onClick={() => handleGoogleLogin()}
-                     className="group flex w-full items-center justify-center gap-3 rounded-xl border border-border bg-card px-8 py-3.5 text-sm font-semibold text-foreground shadow-sm transition-all hover:bg-muted hover:border-border focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                     className="group flex w-full items-center justify-center gap-3 rounded-full border border-black/[0.06] bg-white px-8 py-4 text-[15px] font-semibold text-[#0a0f1c] shadow-[0_4px_20px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(0,0,0,0.08)] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   >
                      <svg className="h-5 w-5 transition-transform group-hover:scale-110" viewBox="0 0 24 24">
                         <path
@@ -61,10 +61,10 @@ export default function LoginPage() {
 
                   <div className="relative">
                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-border" />
+                        <span className="w-full border-t border-black/5" />
                      </div>
                      <div className="relative flex justify-center text-[10px] uppercase">
-                        <span className="bg-background px-2 text-muted-foreground tracking-wider font-medium">
+                        <span className="bg-[#f2f6ff] px-3 text-muted-foreground/70 tracking-widest font-bold">
                            Secure Authentication
                         </span>
                      </div>
@@ -72,41 +72,42 @@ export default function LoginPage() {
                </div>
 
                {/* Footer Terms */}
-               <p className="text-center text-xs text-muted-foreground">
-                  By clicking continue, you agree to our <a href="#" className="underline hover:text-foreground">Terms of Service</a> and <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
+               <p className="text-center text-[13px] font-medium text-muted-foreground/80 leading-relaxed">
+                  By clicking continue, you agree to our <a href="#" className="underline hover:text-[#0a0f1c] transition-colors">Terms of Service</a> and <a href="#" className="underline hover:text-[#0a0f1c] transition-colors">Privacy Policy</a>.
                </p>
             </div>
          </div>
 
          {/* Right Column - Visuals */}
-         <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden">
+         <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-[#050a14]">
             <Image
-               src="/background.png"
+               src="/background.jpg"
                alt="Butterfast Experience"
                fill
-               className="object-cover opacity-60"
+               className="object-cover opacity-80"
                priority
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent z-[5]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050a14] via-transparent to-[#050a14]/60 z-[5]" />
+            <div className="absolute inset-0 bg-[#5338ff]/10 mix-blend-overlay z-[6]" />
 
-            <div className="relative z-10 w-full max-w-[480px] p-8">
-               <h2 className="text-4xl font-bold tracking-tight text-foreground mb-12 font-serif text-center drop-shadow-sm leading-tight">
+            <div className="relative z-10 w-full max-w-[500px] p-8 -mt-10">
+               <h2 className="text-4xl md:text-[48px] font-[900] tracking-[-0.04em] text-white mb-14 text-center leading-[1] drop-shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
                   From prompt<br />to mobile app.
                </h2>
 
                <div className="space-y-6 relative">
                   {/* Connecting Line */}
-                  <div className="absolute left-[27px] top-8 bottom-8 w-[2px] bg-gradient-to-b from-transparent via-primary/20 to-transparent"></div>
+                  <div className="absolute left-[47px] top-10 bottom-10 w-[2px] bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
 
                   {/* Step 1 */}
-                  <div className="relative group rounded-3xl bg-white/60 border border-border p-6 backdrop-blur-xl shadow-lg transition-all duration-500 hover:bg-white/80 hover:border-primary/20 hover:translate-x-1">
+                  <div className="relative group rounded-[32px] bg-white/[0.08] border border-white/10 p-8 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all duration-500 hover:bg-white/[0.12] hover:-translate-y-1 hover:border-white/20">
                      <div className="flex items-start gap-6">
-                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/50 shadow-inner border border-border group-hover:scale-110 transition-transform duration-500 hover:bg-secondary/70">
-                           <span className="text-2xl filter drop-shadow-[0_0_8px_rgba(30,157,241,0.2)]">💡</span>
+                        <div className="relative z-10 flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-[20px] bg-white/10 shadow-[inner_0_2px_4px_rgba(255,255,255,0.1)] border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                           <span className="text-2xl">💡</span>
                         </div>
                         <div>
-                           <h3 className="text-lg font-bold text-foreground mb-1.5 tracking-tight group-hover:text-primary transition-colors">Describe your app</h3>
-                           <p className="text-muted-foreground text-sm leading-relaxed font-normal">
+                           <h3 className="text-[20px] font-bold text-white mb-2 tracking-tight group-hover:text-primary transition-colors">Describe your app</h3>
+                           <p className="text-white/70 text-[14px] leading-relaxed font-medium">
                               Simply type a topic or paste your requirements. Our AI understands context and structure instantly.
                            </p>
                         </div>
@@ -114,14 +115,14 @@ export default function LoginPage() {
                   </div>
 
                   {/* Step 2 */}
-                  <div className="relative group rounded-3xl bg-white/60 border border-border p-6 backdrop-blur-xl shadow-lg transition-all duration-500 hover:bg-white/80 hover:border-primary/20 hover:translate-x-1">
+                  <div className="relative group rounded-[32px] bg-white/[0.08] border border-white/10 p-8 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all duration-500 hover:bg-white/[0.12] hover:-translate-y-1 hover:border-white/20">
                      <div className="flex items-start gap-6">
-                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/50 shadow-inner border border-border group-hover:scale-110 transition-transform duration-500 hover:bg-secondary/70">
-                           <Sparkles className="w-6 h-6 text-primary filter drop-shadow-[0_0_8px_rgba(30,157,241,0.3)]" />
+                        <div className="relative z-10 flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-[20px] bg-primary/20 shadow-[inner_0_2px_4px_rgba(83,56,255,0.2)] border border-primary/30 group-hover:scale-110 transition-transform duration-500">
+                           <Sparkles className="w-6 h-6 text-primary filter drop-shadow-[0_0_8px_rgba(83,56,255,0.5)]" />
                         </div>
                         <div>
-                           <h3 className="text-lg font-bold text-foreground mb-1.5 tracking-tight group-hover:text-primary transition-colors">AI generates UI</h3>
-                           <p className="text-muted-foreground text-sm leading-relaxed font-normal">
+                           <h3 className="text-[20px] font-bold text-white mb-2 tracking-tight group-hover:text-primary transition-colors">AI generates UI</h3>
+                           <p className="text-white/70 text-[14px] leading-relaxed font-medium">
                               Watch as layouts, images, and components are generated automatically in our premium design system.
                            </p>
                         </div>
@@ -129,14 +130,14 @@ export default function LoginPage() {
                   </div>
 
                   {/* Step 3 */}
-                  <div className="relative group rounded-3xl bg-white/60 border border-border p-6 backdrop-blur-xl shadow-lg transition-all duration-500 hover:bg-white/80 hover:border-primary/20 hover:translate-x-1">
+                  <div className="relative group rounded-[32px] bg-white/[0.08] border border-white/10 p-8 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all duration-500 hover:bg-white/[0.12] hover:-translate-y-1 hover:border-white/20">
                      <div className="flex items-start gap-6">
-                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-secondary/50 shadow-inner border border-border group-hover:scale-110 transition-transform duration-500 hover:bg-secondary/70">
-                           <Zap className="w-6 h-6 text-primary filter drop-shadow-[0_0_8px_rgba(30,157,241,0.3)]" />
+                        <div className="relative z-10 flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-[20px] bg-white/10 shadow-[inner_0_2px_4px_rgba(255,255,255,0.1)] border border-white/10 group-hover:scale-110 transition-transform duration-500">
+                           <Zap className="w-6 h-6 text-primary filter drop-shadow-[0_0_8px_rgba(83,56,255,0.5)]" />
                         </div>
                         <div>
-                           <h3 className="text-lg font-bold text-foreground mb-1.5 tracking-tight group-hover:text-primary transition-colors">Export & Share</h3>
-                           <p className="text-muted-foreground text-sm leading-relaxed font-normal">
+                           <h3 className="text-[20px] font-bold text-white mb-2 tracking-tight group-hover:text-primary transition-colors">Export & Share</h3>
+                           <p className="text-white/70 text-[14px] leading-relaxed font-medium">
                               Get production-ready code, export to design tools, or share a live prototype with your team.
                            </p>
                         </div>

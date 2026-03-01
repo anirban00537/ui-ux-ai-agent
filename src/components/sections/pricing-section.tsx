@@ -11,23 +11,13 @@ export function PricingSection() {
   const displayPlans = products || [];
 
   return (
-    <section className="py-32 relative overflow-hidden" id="pricing">
+    <section className="py-24 md:py-32 relative overflow-hidden bg-secondary/30" id="pricing">
       <div className="container mx-auto px-4 relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-border backdrop-blur-md mb-6"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,157,241,0.5)]"></span>
-            <span className="text-xs font-medium tracking-widest uppercase text-foreground/70">
-              Simple Investment
-            </span>
-          </motion.div>
-          <h2 className="font-serif text-5xl md:text-7xl text-foreground mb-6 tracking-tight leading-[1]">
-            Invest in your <span className="italic text-primary/70">impact.</span>
+        <div className="text-center max-w-2xl mx-auto mb-20 flex flex-col items-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight leading-tight">
+            Invest in your impact
           </h2>
-          <p className="text-xl text-muted-foreground/80 font-light leading-relaxed">
+          <p className="text-lg md:text-[20px] text-muted-foreground/90 font-medium leading-relaxed max-w-xl mx-auto">
             Simple, transparent pricing that grows with you. No hidden fees, ever.
           </p>
         </div>
