@@ -31,7 +31,7 @@ const updatedArtboardJsonSchema = {
 const generateFontInstructions = (colorPalette?: any | null): string => {
   const headingFont = colorPalette?.fontHeading || 'Space Grotesk';
   const bodyFont = colorPalette?.fontBody || 'Plus Jakarta Sans';
-  
+
   const googleFontsUrl = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
 
   return `
@@ -50,7 +50,7 @@ export default class ArtboardUpdater {
     private prisma: PrismaService,
     private creditManager: CreditManager,
     private aiUsageService: AiUsageService,
-  ) {}
+  ) { }
 
   /**
    * Refines or updates an *existing* single artboard's HTML using the LLM.
@@ -102,7 +102,7 @@ Provide the response in the following JSON format:
 
     // 2. Call LLM
     const client = getOpenRouterClient();
-    
+
     const messages = [
       { role: 'system' as const, content: systemPrompt },
       ...contextMessages.slice(-15) as any,
@@ -125,11 +125,11 @@ Provide the response in the following JSON format:
           temperature: 0.5,
           ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
             ? {
-                provider: {
-                  order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
-                  allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
-                },
-              }
+              provider: {
+                order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
+                allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
+              },
+            }
             : {}),
         },
         {},
@@ -140,9 +140,14 @@ Provide the response in the following JSON format:
     );
 
     // 3. Parse Response
-    const content = response.choices[0]?.message?.content;
-    if (!content || typeof content !== 'string') {
+    const rawContent = response.choices[0]?.message?.content;
+    if (!rawContent || typeof rawContent !== 'string') {
       throw new Error('No valid content received from LLM for update');
+    }
+
+    let content = rawContent.trim();
+    if (content.startsWith('```')) {
+      content = content.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
     }
 
     let result;
@@ -193,14 +198,14 @@ Provide the response in the following JSON format:
       credits,
     };
   }
-  
+
   private formatPreviousScreens(screens: PreviousScreenContext[]): string {
     if (!screens || screens.length === 0) return '';
-    
+
     const contextStr = screens
       .map((s, i) => `Screen ${i + 1} (${s.title}):\n${s.html.substring(0, 500)}...`) // Truncate for token efficiency
       .join('\n\n');
-      
+
     return `\nCONTEXT (Other screens in user flow - maintain consistency):\n${contextStr}\n`;
   }
 }

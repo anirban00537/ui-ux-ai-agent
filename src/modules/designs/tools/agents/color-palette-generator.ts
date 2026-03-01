@@ -10,9 +10,9 @@ const colorPaletteJsonSchema = {
   type: 'object',
   properties: {
     themeMode: {
-       type: 'string', 
-       enum: ['light', 'dark'],
-       description: 'The detected or chosen theme mode best suited for the user request.' 
+      type: 'string',
+      enum: ['light', 'dark'],
+      description: 'The detected or chosen theme mode best suited for the user request.'
     },
     background: { type: 'string', description: 'Page background. Dark mode: #020617 (Slate-950). Light mode: #ffffff.' },
     foreground: { type: 'string', description: 'Body text. Dark mode: #f8fafc (Slate-50). Light mode: #0f172a (Slate-900).' },
@@ -130,7 +130,7 @@ export class ColorPaletteGenerator {
   constructor(
     private creditManager: CreditManager,
     private aiUsageService: AiUsageService,
-  ) {}
+  ) { }
 
   async generateColorPalette(
     message: string,
@@ -168,11 +168,11 @@ export class ColorPaletteGenerator {
           temperature: 0.5,
           ...(coreConstant.AI_MODELS.AGENT.PROVIDER.ENABLED
             ? {
-                provider: {
-                  order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
-                  allowFallbacks: coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
-                },
-              }
+              provider: {
+                order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
+                allowFallbacks: coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
+              },
+            }
             : {}),
         },
         {}, // Options
@@ -182,8 +182,14 @@ export class ColorPaletteGenerator {
       signal,
     ) as any;
 
-    const content = response.choices?.[0]?.message?.content;
-    const colorPalette = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ColorPalette;
+    let contentForParsing = response.choices?.[0]?.message?.content;
+    if (typeof contentForParsing === 'string') {
+      contentForParsing = contentForParsing.trim();
+      if (contentForParsing.startsWith('```')) {
+        contentForParsing = contentForParsing.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
+      }
+    }
+    const colorPalette = (typeof contentForParsing === 'object' ? contentForParsing : JSON.parse(contentForParsing || '{}')) as ColorPalette;
 
     const usage = response.usage as any || {
       promptTokens: 0,

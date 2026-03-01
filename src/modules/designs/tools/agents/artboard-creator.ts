@@ -67,7 +67,7 @@ export class ArtboardCreator {
     private prisma: PrismaService,
     private creditManager: CreditManager,
     private aiUsageService: AiUsageService,
-  ) {}
+  ) { }
 
   /**
    * Generate an artboard with streaming support
@@ -133,11 +133,11 @@ export class ArtboardCreator {
         },
         ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
           ? {
-              provider: {
-                order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
-                allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
-              },
-            }
+            provider: {
+              order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
+              allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
+            },
+          }
           : {}),
       },
       {}, // Options
@@ -146,10 +146,19 @@ export class ArtboardCreator {
     let accumulatedContent = '';
     let usageData: any = null;
     let lastChunkTime = Date.now();
+    let chunkCount = 0;
 
     for await (const chunk of stream) {
       // Chunk must be cast to any to access choices/delta
       const c = chunk as any;
+
+      // Debug: log the first 3 chunks to understand the structure
+      if (chunkCount < 3) {
+        console.log(`[ArtboardCreator] Chunk #${chunkCount} keys:`, Object.keys(c));
+        console.log(`[ArtboardCreator] Chunk #${chunkCount} sample:`, JSON.stringify(c).substring(0, 500));
+      }
+      chunkCount++;
+
       // Check for cancellation during streaming
       if (signal?.aborted) {
         console.log(`[ArtboardCreator] Stream cancelled for "${promptData.title}"`);
@@ -163,11 +172,16 @@ export class ArtboardCreator {
       }
       lastChunkTime = now;
 
-      const delta = c.choices?.[0]?.delta?.content;
-      
+      // Extract content from multiple possible chunk structures
+      const delta =
+        c.choices?.[0]?.delta?.content ??   // Standard OpenAI SSE format
+        c.delta?.content ??                  // Some SDKs flatten it
+        c.choices?.[0]?.message?.content ??  // Non-streaming style chunk
+        (typeof c === 'string' ? c : null);  // Raw string chunk
+
       if (delta) {
         accumulatedContent += delta;
-        
+
         // Yield chunk for real-time streaming
         yield {
           type: 'chunk',
@@ -185,21 +199,29 @@ export class ArtboardCreator {
         usageData = c.usage;
       }
     }
-    
+
+    console.log(`[ArtboardCreator] Stream finished. Total chunks: ${chunkCount}, Content length: ${accumulatedContent.length}`);
+
     // Start artboard parsing (Clean clean-up)
     let artboard: SingleScreen;
+    let cleanContent = accumulatedContent.trim();
+    if (cleanContent.startsWith('```')) {
+      cleanContent = cleanContent.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
+    }
+
     try {
-      artboard = JSON.parse(accumulatedContent) as SingleScreen;
-    } catch {
+      artboard = JSON.parse(cleanContent) as SingleScreen;
+    } catch (e) {
+      console.error('[ArtboardCreator] JSON Parse Error:', e, 'CleanContent length:', cleanContent.length);
       // Fallback: extract fields from partial JSON (e.g. unterminated html string)
       const unescapeJsonStr = (s: string) =>
         (s ?? '')
           .replace(/\\n/g, '\n')
           .replace(/\\"/g, '"')
           .replace(/\\\\/g, '\\');
-      const titleMatch = accumulatedContent.match(/"title"\s*:\s*"((?:\\.|[^"\\])*?)"/);
-      const descMatch = accumulatedContent.match(/"description"\s*:\s*"((?:\\.|[^"\\])*?)"/);
-      const htmlMatch = accumulatedContent.match(/"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"\s*[,}]|$)/);
+      const titleMatch = cleanContent.match(/"title"\s*:\s*"((?:\\.|[^"\\])*?)"/);
+      const descMatch = cleanContent.match(/"description"\s*:\s*"((?:\\.|[^"\\])*?)"/);
+      const htmlMatch = cleanContent.match(/"html"\s*:\s*"((?:\\.|[^"\\])*?)(?:"\s*[,}]|$)/);
       const title = titleMatch?.[1] ? unescapeJsonStr(titleMatch[1]) : promptData.title;
       const description = descMatch?.[1] ? unescapeJsonStr(descMatch[1]) : '';
       const html = htmlMatch?.[1] ? unescapeJsonStr(htmlMatch[1]) : '';
@@ -305,11 +327,11 @@ export class ArtboardCreator {
           temperature: 0.7,
           ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
             ? {
-                provider: {
-                  order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
-                  allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
-                },
-              }
+              provider: {
+                order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
+                allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
+              },
+            }
             : {}),
         },
         {}, // Options
@@ -319,8 +341,15 @@ export class ArtboardCreator {
       signal,
     ) as any;
 
-    const content = response.choices[0]?.message?.content;
-    const artboard = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as SingleScreen;
+    const rawContent = response.choices[0]?.message?.content;
+    let contentForParsing = rawContent;
+    if (typeof contentForParsing === 'string') {
+      contentForParsing = contentForParsing.trim();
+      if (contentForParsing.startsWith('```')) {
+        contentForParsing = contentForParsing.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
+      }
+    }
+    const artboard = (typeof contentForParsing === 'object' ? contentForParsing : JSON.parse(contentForParsing || '{}')) as SingleScreen;
 
     const usage = response.usage as any || {
       promptTokens: 0,

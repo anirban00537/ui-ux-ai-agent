@@ -33,7 +33,7 @@ export const LLM_CONFIG = {
   STREAM_FIRST_CHUNK_TIMEOUT_MS: 60000, // 60 seconds
 
   /** Maximum time to wait between streaming chunks (ms) */
-  STREAM_CHUNK_TIMEOUT_MS: 15000, // 15 seconds
+  STREAM_CHUNK_TIMEOUT_MS: 50000, // 50 seconds
 
   /** Maximum concurrent screen generations */
   MAX_CONCURRENT_SCREENS: 3,

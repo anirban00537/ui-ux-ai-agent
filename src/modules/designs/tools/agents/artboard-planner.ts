@@ -54,7 +54,7 @@ export class ArtboardPlanner {
     private prisma: PrismaService,
     private creditManager: CreditManager,
     private aiUsageService: AiUsageService,
-  ) {}
+  ) { }
 
   /**
    * Plan artboards with integrated image queries - single AI call for both!
@@ -107,11 +107,11 @@ export class ArtboardPlanner {
           temperature: 0.5,
           ...(coreConstant.AI_MODELS.AGENT.PROVIDER.ENABLED
             ? {
-                provider: {
-                  order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
-                  allowFallbacks: coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
-                },
-              }
+              provider: {
+                order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
+                allowFallbacks: coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
+              },
+            }
             : {}),
         },
         {}, // Options
@@ -122,9 +122,15 @@ export class ArtboardPlanner {
     ) as any;
 
     const messageObj = response.choices[0]?.message;
-    const content = messageObj?.content;
-    const plan = (typeof content === 'object' ? content : JSON.parse(content ?? '{}')) as ScreenPlan;
-    
+    let contentForParsing = messageObj?.content;
+    if (typeof contentForParsing === 'string') {
+      contentForParsing = contentForParsing.trim();
+      if (contentForParsing.startsWith('```')) {
+        contentForParsing = contentForParsing.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
+      }
+    }
+    const plan = (typeof contentForParsing === 'object' ? contentForParsing : JSON.parse(contentForParsing || '{}')) as ScreenPlan;
+
     // Capture native reasoning or JSON-based
     plan.thinking = messageObj?.reasoning || plan.thinking;
 
