@@ -297,12 +297,12 @@ function TabButton({ active, onClick, icon, label }: { active: boolean, onClick:
             </Tooltip.Trigger>
             <Tooltip.Portal>
                 <Tooltip.Content
-                    className="z-[10001] bg-zinc-900 border border-white/10 text-xs px-2 py-1 rounded-md text-zinc-300 animate-in fade-in zoom-in-95 duration-100"
+                    className="z-[10001] bg-white border border-black/10 shadow-sm text-xs px-2 py-1 rounded-md text-slate-800 animate-in fade-in zoom-in-95 duration-100"
                     side="bottom"
                     sideOffset={5}
                 >
                     {label}
-                    <Tooltip.Arrow className="fill-zinc-900/90" />
+                    <Tooltip.Arrow className="fill-white" />
                 </Tooltip.Content>
             </Tooltip.Portal>
         </Tooltip.Root>
@@ -373,12 +373,12 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
 
                     <SectionLabel>Alignment</SectionLabel>
                     <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] text-zinc-500 font-medium">Justify</label>
+                        <div className="space-y-1.5 relative">
+                            <label className="text-[10px] text-slate-500 font-bold ml-1">Justify</label>
                             <select
                                 value={styles.justifyContent}
                                 onChange={e => onChange('justifyContent', e.target.value)}
-                                className="w-full bg-black/20 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-primary/50 outline-none appearance-none"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none appearance-none"
                             >
                                 <option value="flex-start">Start</option>
                                 <option value="center">Center</option>
@@ -386,13 +386,14 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                                 <option value="space-between">Space Between</option>
                                 <option value="space-around">Space Around</option>
                             </select>
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
                         </div>
-                        <div className="space-y-1.5">
-                            <label className="text-[9px] text-zinc-500 font-medium">Align</label>
+                        <div className="space-y-1.5 relative">
+                            <label className="text-[10px] text-slate-500 font-bold ml-1">Align</label>
                             <select
                                 value={styles.alignItems}
                                 onChange={e => onChange('alignItems', e.target.value)}
-                                className="w-full bg-black/20 border border-white/10 rounded-lg px-2 py-1.5 text-xs text-white focus:border-primary/50 outline-none appearance-none"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none appearance-none"
                             >
                                 <option value="flex-start">Start</option>
                                 <option value="center">Center</option>
@@ -400,6 +401,7 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                                 <option value="stretch">Stretch</option>
                                 <option value="baseline">Baseline</option>
                             </select>
+                            <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-2.5 pointer-events-none" />
                         </div>
                     </div>
                 </div>
@@ -409,7 +411,7 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                 <SectionLabel>Size</SectionLabel>
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1 relative">
-                        <label className="text-[9px] text-zinc-500 font-medium pl-1">Width</label>
+                        <label className="text-[10px] text-slate-500 font-bold ml-1">Width</label>
                         <div className="relative">
                             <input
                                 value={styles.width}
@@ -421,7 +423,7 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                         </div>
                     </div>
                     <div className="space-y-1 relative">
-                        <label className="text-[9px] text-zinc-500 font-medium pl-1">Height</label>
+                        <label className="text-[10px] text-slate-500 font-bold ml-1">Height</label>
                         <div className="relative">
                             <input
                                 value={styles.height}
@@ -512,8 +514,8 @@ function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string
                     />
 
                     {/* Content Box */}
-                    <div className="w-[40%] h-[40%] bg-zinc-800 rounded border border-zinc-700 flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)] animate-pulse" />
+                    <div className="w-[40%] h-[40%] bg-slate-100 rounded border border-black/5 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary/80 shadow-[0_0_8px_rgba(59,130,246,0.3)] animate-pulse" />
                     </div>
                 </div>
             </div>
