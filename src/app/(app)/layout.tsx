@@ -137,7 +137,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full dark">
+    <html lang="en" className="h-full">
       <body className={`${poppins.variable} ${libre.variable} font-sans antialiased h-full`}>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
         <Script

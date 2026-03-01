@@ -52,8 +52,8 @@ export function PricingCard({
   const targetHref = onSelect
     ? undefined
     : isAuthenticated
-    ? "/subscription"
-    : href;
+      ? "/subscription"
+      : href;
 
   const primaryPrice = product.prices?.[0];
 
@@ -63,8 +63,8 @@ export function PricingCard({
     product.features && product.features.length > 0
       ? product.features
       : (product.benefits
-          ?.map((b) => b.description)
-          .filter(Boolean) as string[]) || [];
+        ?.map((b) => b.description)
+        .filter(Boolean) as string[]) || [];
 
   const handleClick = () => {
     trackEvent('plan_selection_click', 'engagement', product.name);
@@ -86,8 +86,8 @@ export function PricingCard({
       className={cn(
         "relative rounded-[40px] p-8 transition-all duration-500 transform",
         isPopular
-          ? "bg-white/[0.03] backdrop-blur-xl border-3d shadow-2xl md:scale-105 z-10"
-          : "bg-black/10 backdrop-blur-md border-3d shadow-sm hover:border-border/80 hover:bg-black/20",
+          ? "bg-white border-border shadow-2xl md:scale-105 z-10"
+          : "bg-secondary/20 border border-border shadow-sm hover:border-primary/20 hover:bg-white hover:shadow-lg hover:scale-[1.01]",
         className
       )}
     >
@@ -170,7 +170,7 @@ export function PricingCard({
                   : "border-secondary/20 hover:bg-secondary/10 text-foreground"
               )}
             >
-              <Link 
+              <Link
                 href={targetHref || "#"}
                 onClick={() => trackEvent('plan_selection_click', 'engagement', product.name)}
               >
@@ -189,19 +189,19 @@ export function PricingCard({
                 isCurrentPlan && !isCanceled
                   ? "bg-secondary/20 text-secondary-foreground cursor-not-allowed hover:bg-secondary/20 border-transparent"
                   : isPopular
-                  ? "bg-primary hover:bg-primary/90 text-white shadow-coral-glow"
-                  : "border-secondary/20 hover:bg-secondary/10 text-foreground"
+                    ? "bg-primary hover:bg-primary/90 text-white shadow-coral-glow"
+                    : "border-secondary/20 hover:bg-secondary/10 text-foreground"
               )}
             >
               {loading
                 ? "Loading..."
                 : isCurrentPlan
-                ? isCanceled
-                  ? cta || "Renew Plan"
-                  : "Current Plan"
-                : primaryPrice
-                ? cta || `Choose ${product.name}`
-                : "Contact for Quote"}
+                  ? isCanceled
+                    ? cta || "Renew Plan"
+                    : "Current Plan"
+                  : primaryPrice
+                    ? cta || `Choose ${product.name}`
+                    : "Contact for Quote"}
             </Button>
           )}
         </div>

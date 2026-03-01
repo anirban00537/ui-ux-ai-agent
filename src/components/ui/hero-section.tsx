@@ -12,7 +12,7 @@ export default function HeroSection() {
   return (
     <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center isolate">
       {/* Background Image Layer */}
-      <div 
+      <div
         className="absolute inset-0 -z-10"
         style={{
           backgroundImage: "url('/background.png')",
@@ -23,7 +23,7 @@ export default function HeroSection() {
       />
       {/* Refined overlay for depth and readability */}
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-background/40 to-background" />
-      
+
       <div className="container relative z-10 px-4 flex flex-col items-center">
         <div className="w-full max-w-5xl flex flex-col gap-8 items-center">
           {/* Headline */}
@@ -62,9 +62,9 @@ export default function HeroSection() {
               </span>{" "}
               in Seconds
             </h1>
-            
+
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-center">
-              Transform your prompts into stunning mobile app designs instantly. 
+              Transform your prompts into stunning mobile app designs instantly.
               No design skills needed—just describe what you want.
             </p>
 
@@ -86,19 +86,19 @@ export default function HeroSection() {
             className="relative w-full max-w-5xl mx-auto mt-12"
           >
             {/* Glow Effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-blue-600/30 rounded-[2rem] blur-2xl opacity-50 dark:opacity-40" />
-            
-            <div className="relative rounded-xl md:rounded-2xl border border-white/20 dark:border-white/10 bg-white/50 dark:bg-black/50 backdrop-blur-sm p-2 shadow-2xl ring-1 ring-black/5 dark:ring-white/5">
-              <div className="relative w-full aspect-video overflow-hidden rounded-lg md:rounded-xl border border-white/10 bg-black/5">
+            <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-[2rem] blur-2xl opacity-40" />
+
+            <div className="relative rounded-xl md:rounded-2xl border border-border bg-white p-2 shadow-2xl ring-1 ring-black/5">
+              <div className="relative w-full aspect-video overflow-hidden rounded-lg md:rounded-xl border border-border bg-secondary/10">
                 <iframe
                   src="https://www.youtube.com/embed/rogYPw2uZjo?autoplay=1&mute=1&loop=1&playlist=rogYPw2uZjo&controls=0&rel=0&modestbranding=1&playsinline=1"
                   title="Butterfast Demo"
                   className="absolute inset-0 w-full h-full border-0 pointer-events-none scale-[1.02]"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 />
-                
+
                 {/* Overlay for better integration */}
-                <div className="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/5 pointer-events-none rounded-lg md:rounded-xl" />
+                <div className="absolute inset-0 ring-1 ring-inset ring-black/5 pointer-events-none rounded-lg md:rounded-xl" />
               </div>
             </div>
           </motion.div>

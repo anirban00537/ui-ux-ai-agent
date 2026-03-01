@@ -36,12 +36,12 @@ export function Navbar() {
       <div
         className={cn(
           "pointer-events-auto flex items-center justify-between gap-8 h-14 pl-6 pr-2 rounded-full transition-all duration-500",
-          "bg-black/10 backdrop-blur-xl border-3d shadow-2xl",
+          "bg-white/70 backdrop-blur-xl border-3d shadow-xl",
           isScrolled ? "w-full max-w-4xl" : "w-full max-w-5xl"
         )}
       >
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           onClick={() => trackEvent('nav_logo_click', 'engagement', 'header')}
           className="group flex items-center gap-2"
         >

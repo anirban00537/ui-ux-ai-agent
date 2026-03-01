@@ -32,10 +32,10 @@ export function HowItWorksSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-border backdrop-blur-md mb-6"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/40 border border-border backdrop-blur-md mb-6 shadow-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,157,241,0.5)]"></span>
-            <span className="text-xs font-medium tracking-widest uppercase text-foreground/70">
+            <span className="text-xs font-medium tracking-widest uppercase text-foreground/60">
               Seamless Workflow
             </span>
           </motion.div>
@@ -43,7 +43,7 @@ export function HowItWorksSection() {
             From idea to design <br />
             <span className="italic text-primary/60">in seconds.</span>
           </h2>
-          <p className="text-xl text-muted-foreground/80 font-light leading-relaxed">
+          <p className="text-xl text-muted-foreground font-light leading-relaxed">
             Three simple steps to generate professional mobile app UI.
           </p>
         </div>
@@ -60,7 +60,7 @@ export function HowItWorksSection() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
               className={cn(
-                "group relative z-10 flex flex-col gap-6 p-8 rounded-3xl bg-black/5 backdrop-blur-sm border-3d transition-all duration-500 hover:bg-black/10 hover:border-primary/20",
+                "group relative z-10 flex flex-col gap-6 p-8 rounded-3xl bg-secondary/20 backdrop-blur-sm border border-border shadow-sm transition-all duration-500 hover:bg-white hover:border-primary/20 hover:shadow-xl hover:scale-[1.02]",
                 step.align === "center" ? "md:items-center md:text-center" :
                   step.align === "right" ? "md:items-end md:text-right" : "md:items-start md:text-left"
               )}

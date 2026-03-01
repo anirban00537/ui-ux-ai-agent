@@ -42,7 +42,7 @@ export default function PreviewPage() {
       try {
         // Try public first
         let resp = await getPublicDesignById(designId);
-        
+
         // If public fails, try private if logged in
         if (!resp.success && user) {
           resp = await getDesignById(designId);
@@ -93,15 +93,15 @@ export default function PreviewPage() {
     const calculateScale = () => {
       const vh = window.innerHeight;
       const vw = window.innerWidth;
-      
+
       // Target height is 1000px + bezel. Leave 220px for header/margins.
       const availableHeight = vh - 220;
       const heightScale = Math.min(availableHeight / 854, 0.9);
-      
+
       // Also ensure it doesn't overflow horizontally. Increase margin for navigation arrows and bezel.
-      const availableWidth = vw - 160; 
+      const availableWidth = vw - 160;
       const widthScale = Math.min(availableWidth / 400, 0.9);
-      
+
       setScale(Math.min(heightScale, widthScale));
     };
 
@@ -112,10 +112,10 @@ export default function PreviewPage() {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#0a0a0a]">
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm font-medium text-white/50">Loading preview...</p>
+          <p className="text-sm font-medium text-muted-foreground/50">Loading preview...</p>
         </div>
       </div>
     );
@@ -123,10 +123,10 @@ export default function PreviewPage() {
 
   if (!design) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-[#0a0a0a]">
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="text-center">
-          <h1 className="text-xl font-bold text-white mb-2">Design Not Found</h1>
-          <p className="text-sm text-white/50">This design may be private or does not exist.</p>
+          <h1 className="text-xl font-bold text-foreground mb-2">Design Not Found</h1>
+          <p className="text-sm text-muted-foreground/50">This design may be private or does not exist.</p>
         </div>
       </div>
     );
@@ -143,66 +143,66 @@ export default function PreviewPage() {
       <div className="fixed top-0 left-0 right-0 px-6 py-5 flex items-center justify-between z-50 pointer-events-none">
         <div className="flex items-center gap-4 pointer-events-auto">
           {user?.id === design?.userId ? (
-            <Link 
+            <Link
               href={`/designs/${designId}`}
-              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-black/40 hover:bg-black/60 text-zinc-300 hover:text-white transition-all border border-white/5 hover:border-white/10 backdrop-blur-xl shadow-sm"
+              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-white/60 hover:bg-white/80 text-foreground transition-all border border-border shadow-md backdrop-blur-xl"
             >
-              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all duration-300">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
                 <ArrowLeft className="w-4 h-4" />
               </div>
               <span className="text-xs font-medium tracking-wide">Back to Editor</span>
             </Link>
           ) : user ? (
-            <Link 
+            <Link
               href="/home"
-              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-black/40 hover:bg-black/60 text-zinc-300 hover:text-white transition-all border border-white/5 hover:border-white/10 backdrop-blur-xl shadow-sm"
+              className="group flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-white/60 hover:bg-white/80 text-foreground transition-all border border-border shadow-md backdrop-blur-xl"
             >
-              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-black transition-all duration-300">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
                 <LayoutDashboard className="w-4 h-4" />
               </div>
               <span className="text-xs font-medium tracking-wide">Dashboard</span>
             </Link>
           ) : (
-             <Link 
+            <Link
               href="/"
-              className="flex items-center gap-3 group"
+              className="flex items-center gap-3 group px-4 py-2 rounded-full bg-white/60 border border-border"
             >
-               <img src="/logo.svg" alt="Butterfast" className="w-28 h-8 opacity-90 group-hover:opacity-100 transition-opacity" />
+              <img src="/logo.svg" alt="Butterfast" className="w-28 h-8 opacity-90 group-hover:opacity-100 transition-opacity" />
             </Link>
           )}
         </div>
 
         <div className="flex items-center gap-3 pointer-events-auto">
-           {/* Design Title (Optional, if we want to show it) */}
-           {design?.title && (
-             <div className="hidden sm:block px-4 py-1.5 rounded-full bg-black/20 border border-white/5 backdrop-blur-md">
-                <span className="text-xs font-medium text-white/70">{design.title}</span>
-             </div>
-           )}
+          {/* Design Title (Optional, if we want to show it) */}
+          {design?.title && (
+            <div className="hidden sm:block px-4 py-1.5 rounded-full bg-white/60 border border-border backdrop-blur-md shadow-sm">
+              <span className="text-xs font-medium text-foreground/70">{design.title}</span>
+            </div>
+          )}
 
-           <ShareControls 
-             design={design} 
-             isOwner={user?.id === design.userId} 
-             onUpdate={(isPublic) => setDesign(prev => prev ? { ...prev, isPublic } : null)}
-           />
+          <ShareControls
+            design={design}
+            isOwner={user?.id === design.userId}
+            onUpdate={(isPublic) => setDesign(prev => prev ? { ...prev, isPublic } : null)}
+          />
         </div>
       </div>
 
       {/* Main Preview Container - Center content perfectly */}
       <div className="flex-1 relative flex items-center justify-center min-h-0 overflow-hidden p-0">
-        
+
         {/* Navigation Arrows */}
         {design.artboards.length > 1 && (
           <>
-            <button 
+            <button
               onClick={prevScreen}
-              className="fixed left-6 md:left-12 top-1/2 -translate-y-1/2 z-40 p-4 rounded-full bg-black/20 hover:bg-black/60 border border-white/5 hover:border-white/20 text-white/40 hover:text-white transition-all backdrop-blur-sm group active:scale-95 duration-300"
+              className="fixed left-6 md:left-12 top-1/2 -translate-y-1/2 z-40 p-4 rounded-full bg-white/40 hover:bg-white/80 border border-border text-foreground transition-all backdrop-blur-sm group active:scale-95 duration-300 shadow-xl"
             >
               <ChevronLeft className="w-8 h-8 group-hover:-translate-x-0.5 transition-transform" />
             </button>
-            <button 
+            <button
               onClick={nextScreen}
-              className="fixed right-6 md:right-12 top-1/2 -translate-y-1/2 z-40 p-4 rounded-full bg-black/20 hover:bg-black/60 border border-white/5 hover:border-white/20 text-white/40 hover:text-white transition-all backdrop-blur-sm group active:scale-95 duration-300"
+              className="fixed right-6 md:right-12 top-1/2 -translate-y-1/2 z-40 p-4 rounded-full bg-white/40 hover:bg-white/80 border border-border text-foreground transition-all backdrop-blur-sm group active:scale-95 duration-300 shadow-xl"
             >
               <ChevronRight className="w-8 h-8 group-hover:translate-x-0.5 transition-transform" />
             </button>
@@ -211,73 +211,73 @@ export default function PreviewPage() {
 
         {/* Mobile Frame Container */}
         <div className="relative z-10 flex flex-col items-center justify-center">
-           {/* Ambient Glow */}
-           <div 
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary/30 blur-[100px] opacity-0 animate-in fade-in duration-1000 delay-500 fill-mode-forwards"
+          {/* Ambient Glow */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary/20 blur-[100px] opacity-0 animate-in fade-in duration-1000 delay-500 fill-mode-forwards"
+            style={{
+              width: "60vw",
+              height: "60vh",
+              borderRadius: "100%"
+            }}
+          />
+
+          {/* Mobile Frame with Reflection */}
+          <div className="relative group perspective-1000 animate-in fade-in zoom-in duration-700 flex flex-col items-center justify-center">
+
+            {/* Screen Title Label */}
+            <div
+              className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-white/80 border border-border rounded-full backdrop-blur-md opacity-0 animate-in slide-in-from-bottom-4 fade-in duration-700 delay-700 shadow-sm fill-mode-forwards"
+            >
+              <span className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">
+                {currentArtboard?.title || `Screen ${currentIndex + 1}`}
+              </span>
+            </div>
+
+            <div
+              className="relative transition-all duration-500 ease-out will-change-transform"
               style={{
-                 width: "60vw",
-                 height: "60vh",
-                 borderRadius: "100%"
-              }}
-           />
-
-           {/* Mobile Frame with Reflection */}
-           <div className="relative group perspective-1000 animate-in fade-in zoom-in duration-700 flex flex-col items-center justify-center">
-               
-               {/* Screen Title Label */}
-               <div 
-                 className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1 bg-black/40 border border-white/10 rounded-full backdrop-blur-md opacity-0 animate-in slide-in-from-bottom-4 fade-in duration-700 delay-700 fill-mode-forwards"
-               >
-                  <span className="text-[10px] font-mono tracking-widest text-zinc-400 uppercase">
-                    {currentArtboard?.title || `Screen ${currentIndex + 1}`}
-                  </span>
-               </div>
-
-               <div 
-                 className="relative transition-all duration-500 ease-out will-change-transform"
-                style={{
                 width: 480 * scale,
                 minHeight: 1000 * scale,
                 height: "auto",
-             }}
-               >
-                  {currentArtboard && (
-                    <PreviewMobileFrame
-                      id={currentArtboard.id}
-                      htmlContent={currentArtboard.html}
-                      title={currentArtboard.title}
-                      colorPalette={design.colorPalette}
-                      isStatic={true}
-                      disableDrag={true}
-                      disableResize={true}
-                      width={480}
-                      height={1000}
-                      scale={scale}
-                    />
-                  )}
-               </div>
-           </div>
+              }}
+            >
+              {currentArtboard && (
+                <PreviewMobileFrame
+                  id={currentArtboard.id}
+                  htmlContent={currentArtboard.html}
+                  title={currentArtboard.title}
+                  colorPalette={design.colorPalette}
+                  isStatic={true}
+                  disableDrag={true}
+                  disableResize={true}
+                  width={480}
+                  height={1000}
+                  scale={scale}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
-      
+
       {/* Footer Branding (Optional) */}
       {!user && (
-        <div className="fixed bottom-6 right-6 z-40 opacity-50 hover:opacity-100 transition-opacity">
-           <Link href="/" className="flex items-center gap-2 text-[10px] font-medium text-white/40 hover:text-white uppercase tracking-widest p-2 bg-black/20 rounded-lg backdrop-blur-sm border border-transparent hover:border-white/10 transition-all">
-              Made with Butterfast.com
-           </Link>
+        <div className="fixed bottom-6 right-6 z-40">
+          <Link href="/" className="flex items-center gap-2 text-[10px] font-medium text-foreground/40 hover:text-primary uppercase tracking-widest p-2 bg-white/60 rounded-lg backdrop-blur-sm border border-border hover:border-primary/20 hover:bg-white transition-all shadow-sm">
+            Made with Butterfast.com
+          </Link>
         </div>
       )}
     </div>
   );
 }
 
-function ShareControls({ 
-  design, 
+function ShareControls({
+  design,
   isOwner,
-  onUpdate 
-}: { 
-  design: Design; 
+  onUpdate
+}: {
+  design: Design;
   isOwner: boolean;
   onUpdate: (isPublic: boolean) => void;
 }) {
@@ -309,18 +309,18 @@ function ShareControls({
   };
 
   return (
-    <div className="flex items-center gap-2 p-1 rounded-full bg-black/40 border border-white/5 backdrop-blur-xl shadow-lg">
+    <div className="flex items-center gap-2 p-1 rounded-full bg-white/60 border border-border backdrop-blur-xl shadow-lg">
       {isOwner && (
         <button
           onClick={handleToggle}
           disabled={loading}
           className={cn(
-             "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all border outline-none active:scale-95",
-             design.isPublic 
-               ? "bg-primary/10 border-primary/20 text-primary hover:bg-primary/20" 
-               : "bg-white/5 border-white/5 text-zinc-400 hover:text-white hover:bg-white/10"
-           )}
-           title={design.isPublic ? "Public - Anyone with link can view" : "Private - Only you can view"}
+            "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all border outline-none active:scale-95",
+            design.isPublic
+              ? "bg-primary/10 border-primary/20 text-primary hover:bg-primary/20"
+              : "bg-secondary/50 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/80"
+          )}
+          title={design.isPublic ? "Public - Anyone with link can view" : "Private - Only you can view"}
         >
           {loading ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -336,19 +336,19 @@ function ShareControls({
       )}
 
       {!isOwner && !design.isPublic && (
-         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-white/5 text-zinc-500 cursor-not-allowed">
-            <Lock className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline-block">Private</span>
-         </div>
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/30 text-muted-foreground/50 cursor-not-allowed">
+          <Lock className="w-3.5 h-3.5" />
+          <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline-block">Private</span>
+        </div>
       )}
 
       <button
         onClick={copyLink}
         className={cn(
-            "flex items-center gap-2 px-4 py-1.5 rounded-full transition-all active:scale-95 group font-medium text-xs",
-            copied 
-                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" 
-                : "bg-white text-black hover:bg-zinc-200 border border-transparent shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+          "flex items-center gap-2 px-4 py-1.5 rounded-full transition-all active:scale-95 group font-medium text-xs",
+          copied
+            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+            : "bg-white text-black hover:bg-zinc-200 border border-transparent shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]"
         )}
         title="Copy Page Link"
       >
