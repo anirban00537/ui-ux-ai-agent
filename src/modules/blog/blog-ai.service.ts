@@ -6,16 +6,17 @@ import { successResponse, processException, errorResponse } from 'src/shared/hel
 import slugify from 'slugify';
 import { AiUsageService } from '../subscription/services/ai-usage.service';
 import { User } from '@prisma/client';
+import OpenAI from 'openai';
 
 @Injectable()
 export class BlogAiService implements OnModuleInit {
   private readonly logger = new Logger(BlogAiService.name);
-  private openRouter: any = null;
+  private client: OpenAI | null = null;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly aiUsageService: AiUsageService
-  ) {}
+  ) { }
 
   async onModuleInit() {
     const apiKey = this.configService.get<string>('OPENROUTER_API_KEY');
@@ -23,20 +24,21 @@ export class BlogAiService implements OnModuleInit {
       this.logger.warn('OPENROUTER_API_KEY is not set - AI features disabled');
       return;
     }
-    
+
     try {
-      // Dynamic import for ESM-only package
-      const { OpenRouter } = await import('@openrouter/sdk');
-      this.openRouter = new OpenRouter({ apiKey });
-      this.logger.log('OpenRouter SDK initialized');
+      this.client = new OpenAI({
+        baseURL: 'https://openrouter.ai/api/v1',
+        apiKey,
+      });
+      this.logger.log('OpenAI client initialized for OpenRouter');
     } catch (error) {
-      this.logger.error('Failed to initialize OpenRouter SDK:', error);
+      this.logger.error('Failed to initialize OpenAI client:', error);
     }
   }
 
   async generateBlogContent(user: User, prompt: string): Promise<ResponseModel> {
     try {
-      if (!this.openRouter) {
+      if (!this.client) {
         return errorResponse('AI service not configured');
       }
 
@@ -62,30 +64,34 @@ export class BlogAiService implements OnModuleInit {
         4. Return ONLY the JSON object.
       `;
 
-      const response = await this.openRouter.chat.send({
+      const response = await this.client.chat.completions.create({
         model: coreConstant.AI_MODELS.AGENT.NAME,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: prompt }
         ],
-        responseFormat: { type: 'json_object' }
+        response_format: { type: 'json_object' },
       });
 
-      const content = (response as any).choices[0].message.content;
+      let content = response.choices[0]?.message?.content || '{}';
+      // Strip markdown code blocks if present
+      if (content.trim().startsWith('```')) {
+        content = content.trim().replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
+      }
       const blogData = JSON.parse(content);
 
       // Log usage
-      const usage = (response as any).usage;
+      const usage = response.usage;
       if (usage) {
         await this.aiUsageService.logUsage({
           userId: user.id,
           modelName: coreConstant.AI_MODELS.AGENT.NAME,
           type: 'blog_generation',
-          inputTokens: usage.prompt_tokens || usage.promptTokens || usage.total_tokens || 0,
-          outputTokens: usage.completion_tokens || usage.completionTokens || 0,
+          inputTokens: usage.prompt_tokens || 0,
+          outputTokens: usage.completion_tokens || 0,
         });
       }
-      
+
       // Auto-generate slug if not provided by AI (though we can trust slugify)
       blogData.slug = slugify(blogData.title, { lower: true, strict: true });
 

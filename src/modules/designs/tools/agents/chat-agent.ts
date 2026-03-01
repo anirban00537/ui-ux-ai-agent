@@ -4,12 +4,12 @@ import { CreditManager } from '../credits';
 import { AiUsageService } from '../../../subscription/services/ai-usage.service';
 
 export class ChatAgent {
-  private openrouter = getOpenRouterClient();
+  private client = getOpenRouterClient();
 
   constructor(
     private creditManager: CreditManager,
     private aiUsageService: AiUsageService,
-  ) {}
+  ) { }
 
   async respond(
     prompt: string,
@@ -41,34 +41,33 @@ Instructions:
 4. Do NOT generate HTML or code unless explicitly asked for a snippet.
 5. Your goal is to guide the user and answer questions, while the DESIGN engine handles the actual screen building.`;
 
-    const messages = [
+    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       { role: 'system' as const, content: systemPrompt },
       ...contextMessages.slice(-10),
       { role: 'user' as const, content: prompt },
     ];
 
     const response = await withTimeout(
-      // @ts-ignore
-      this.openrouter.chat.send({
+      this.client.chat.completions.create({
         model: coreConstant.AI_MODELS.AGENT.NAME,
         messages,
         temperature: 0.7,
-      }, {}),
+      }),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Chat Response',
       signal,
-    ) as any;
+    );
 
     const messageObj = response.choices[0]?.message;
     const responseText = messageObj?.content || "I'm here to help with your designs!";
-    const thinking = messageObj?.reasoning;
+    const thinking = (messageObj as any)?.reasoning;
 
     // Log usage and deduct credits (chat is cheaper)
-    const usage = response.usage as any || { totalTokens: 0, promptTokens: 0, completionTokens: 0 };
+    const usage = response.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 };
     const tokenUsage = {
-      inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-      outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-      totalTokens: usage.totalTokens || usage.total_tokens || 0,
+      inputTokens: usage.prompt_tokens || 0,
+      outputTokens: usage.completion_tokens || 0,
+      totalTokens: usage.total_tokens || 0,
       reasoningTokens: 0,
     };
 

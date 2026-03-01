@@ -125,7 +125,7 @@ CONTRAST RULES:
 );
 
 export class ColorPaletteGenerator {
-  private openrouter = getOpenRouterClient();
+  private client = getOpenRouterClient();
 
   constructor(
     private creditManager: CreditManager,
@@ -149,62 +149,47 @@ export class ColorPaletteGenerator {
     checkAborted(signal, 'color_palette_generation');
 
     const response = await withTimeout(
-      // @ts-ignore - OpenRouter SDK 'chat.send'
-      this.openrouter.chat.send(
-        {
-          model: coreConstant.AI_MODELS.AGENT.NAME,
-          messages: [
-            { role: 'system', content: colorPrompt },
-            { role: 'user', content: message },
-          ],
-          responseFormat: {
-            type: 'json_schema',
-            jsonSchema: {
-              name: 'colorPalette',
-              strict: true,
-              schema: colorPaletteJsonSchema,
-            },
+      this.client.chat.completions.create({
+        model: coreConstant.AI_MODELS.AGENT.NAME,
+        messages: [
+          { role: 'system', content: colorPrompt },
+          { role: 'user', content: message },
+        ],
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'colorPalette',
+            strict: true,
+            schema: colorPaletteJsonSchema,
           },
-          temperature: 0.5,
-          ...(coreConstant.AI_MODELS.AGENT.PROVIDER.ENABLED
-            ? {
-              provider: {
-                order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
-                allowFallbacks: coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
-              },
-            }
-            : {}),
         },
-        {}, // Options
-      ),
+        temperature: 0.5,
+      } as any),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Color Palette LLM Call',
       signal,
-    ) as any;
+    );
 
-    let contentForParsing = response.choices?.[0]?.message?.content;
-    if (typeof contentForParsing === 'string') {
-      contentForParsing = contentForParsing.trim();
-      if (contentForParsing.startsWith('```')) {
-        contentForParsing = contentForParsing.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
-      }
+    let content = response.choices?.[0]?.message?.content || '{}';
+    // Strip markdown code blocks if present
+    if (content.trim().startsWith('```')) {
+      content = content.trim().replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
     }
-    const colorPalette = (typeof contentForParsing === 'object' ? contentForParsing : JSON.parse(contentForParsing || '{}')) as ColorPalette;
+    const colorPalette = JSON.parse(content) as ColorPalette;
 
-    const usage = response.usage as any || {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
+    const usage = response.usage || {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
     };
 
     const tokenUsage = {
-      inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-      outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-      totalTokens: usage.totalTokens || usage.total_tokens || 0,
-      reasoningTokens: usage.completionTokensDetails?.reasoningTokens || usage.completion_tokens_details?.reasoning_tokens || 0,
+      inputTokens: usage.prompt_tokens || 0,
+      outputTokens: usage.completion_tokens || 0,
+      totalTokens: usage.total_tokens || 0,
+      reasoningTokens: (usage as any).completion_tokens_details?.reasoning_tokens || 0,
     };
 
-    // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (ColorPalette):', JSON.stringify(usage, null, 2));
     console.log('[ColorPaletteGenerator] Deducting credits:', tokenUsage);
 
     // Fire-and-forget for non-critical logging

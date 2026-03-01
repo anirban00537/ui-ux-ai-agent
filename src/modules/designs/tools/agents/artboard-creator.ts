@@ -60,8 +60,7 @@ export interface ScreenGenerationResult {
 }
 
 export class ArtboardCreator {
-  // Using OpenAI SDK pointed at OpenRouter for full streaming support
-  private openrouter = getOpenRouterClient();
+  private client = getOpenRouterClient();
 
   constructor(
     private prisma: PrismaService,
@@ -105,7 +104,7 @@ export class ArtboardCreator {
     });
 
     const userContent = `Original request: ${message}\n\nSpecific artboard prompt: ${promptData.prompt}`;
-    const allMessages = [
+    const allMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       { role: 'system' as const, content: systemPrompt },
       ...contextMessages.slice(-15),
       { role: 'user' as const, content: userContent },
@@ -113,52 +112,30 @@ export class ArtboardCreator {
 
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
-    // Use the singleton OpenRouter client for streaming
-    const stream = await this.openrouter.chat.send(
-      {
-        model: coreConstant.AI_MODELS.DESIGN.NAME,
-        messages: allMessages,
-        responseFormat: {
-          type: 'json_schema',
-          jsonSchema: {
-            name: 'artboard',
-            strict: true,
-            schema: singleArtboardJsonSchema,
-          },
+    // Use OpenAI SDK for reliable streaming
+    const stream = await this.client.chat.completions.create({
+      model: coreConstant.AI_MODELS.DESIGN.NAME,
+      messages: allMessages as any,
+      response_format: {
+        type: 'json_schema' as const,
+        json_schema: {
+          name: 'artboard',
+          strict: true,
+          schema: singleArtboardJsonSchema,
         },
-        temperature: 0.7,
-        stream: true,
-        streamOptions: {
-          includeUsage: true,
-        },
-        ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
-          ? {
-            provider: {
-              order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
-              allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
-            },
-          }
-          : {}),
       },
-      {}, // Options
-    ) as any;
+      temperature: 0.7,
+      stream: true as const,
+      stream_options: {
+        include_usage: true,
+      },
+    });
 
     let accumulatedContent = '';
     let usageData: any = null;
     let lastChunkTime = Date.now();
-    let chunkCount = 0;
 
     for await (const chunk of stream) {
-      // Chunk must be cast to any to access choices/delta
-      const c = chunk as any;
-
-      // Debug: log the first 3 chunks to understand the structure
-      if (chunkCount < 3) {
-        console.log(`[ArtboardCreator] Chunk #${chunkCount} keys:`, Object.keys(c));
-        console.log(`[ArtboardCreator] Chunk #${chunkCount} sample:`, JSON.stringify(c).substring(0, 500));
-      }
-      chunkCount++;
-
       // Check for cancellation during streaming
       if (signal?.aborted) {
         console.log(`[ArtboardCreator] Stream cancelled for "${promptData.title}"`);
@@ -172,12 +149,7 @@ export class ArtboardCreator {
       }
       lastChunkTime = now;
 
-      // Extract content from multiple possible chunk structures
-      const delta =
-        c.choices?.[0]?.delta?.content ??   // Standard OpenAI SSE format
-        c.delta?.content ??                  // Some SDKs flatten it
-        c.choices?.[0]?.message?.content ??  // Non-streaming style chunk
-        (typeof c === 'string' ? c : null);  // Raw string chunk
+      const delta = chunk.choices?.[0]?.delta?.content;
 
       if (delta) {
         accumulatedContent += delta;
@@ -195,14 +167,12 @@ export class ArtboardCreator {
       }
 
       // Capture usage data
-      if (c.usage) {
-        usageData = c.usage;
+      if (chunk.usage) {
+        usageData = chunk.usage;
       }
     }
 
-    console.log(`[ArtboardCreator] Stream finished. Total chunks: ${chunkCount}, Content length: ${accumulatedContent.length}`);
-
-    // Start artboard parsing (Clean clean-up)
+    // Parse the accumulated artboard content
     let artboard: SingleScreen;
     let cleanContent = accumulatedContent.trim();
     if (cleanContent.startsWith('```')) {
@@ -212,7 +182,7 @@ export class ArtboardCreator {
     try {
       artboard = JSON.parse(cleanContent) as SingleScreen;
     } catch (e) {
-      console.error('[ArtboardCreator] JSON Parse Error:', e, 'CleanContent length:', cleanContent.length);
+      console.error('[ArtboardCreator] JSON Parse Error:', e, 'Content length:', cleanContent.length);
       // Fallback: extract fields from partial JSON (e.g. unterminated html string)
       const unescapeJsonStr = (s: string) =>
         (s ?? '')
@@ -233,13 +203,12 @@ export class ArtboardCreator {
 
     // Handle token usage and credits
     const tokenUsage = {
-      inputTokens: usageData?.promptTokens || usageData?.prompt_tokens || 0,
-      outputTokens: usageData?.completionTokens || usageData?.completion_tokens || 0,
-      totalTokens: usageData?.totalTokens || usageData?.total_tokens || 0,
-      reasoningTokens: usageData?.completionTokensDetails?.reasoningTokens || usageData?.completion_tokens_details?.reasoning_tokens || 0,
+      inputTokens: usageData?.prompt_tokens || 0,
+      outputTokens: usageData?.completion_tokens || 0,
+      totalTokens: usageData?.total_tokens || 0,
+      reasoningTokens: usageData?.completion_tokens_details?.reasoning_tokens || 0,
     };
 
-    // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Streaming):', JSON.stringify(usageData, null, 2));
     console.log('[ArtboardCreator] Deducting credits for artboard generation:', tokenUsage);
 
     // Fire-and-forget for non-critical logging
@@ -302,7 +271,7 @@ export class ArtboardCreator {
     });
 
     const userContent = `Original request: ${message}\n\nSpecific artboard prompt: ${promptData.prompt}`;
-    const allMessages = [
+    const allMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       { role: 'system' as const, content: systemPrompt },
       ...contextMessages.slice(-15),
       { role: 'user' as const, content: userContent },
@@ -311,60 +280,44 @@ export class ArtboardCreator {
     checkAborted(signal, `screen_generation:${promptData.title}`);
 
     const response = await withTimeout(
-      // @ts-ignore - OpenRouter SDK 'chat.send'
-      this.openrouter.chat.send(
-        {
-          model: coreConstant.AI_MODELS.DESIGN.NAME,
-          messages: allMessages,
-          responseFormat: {
-            type: 'json_schema',
-            jsonSchema: {
-              name: 'artboard',
-              strict: true,
-              schema: singleArtboardJsonSchema,
-            },
+      this.client.chat.completions.create({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages: allMessages,
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'artboard',
+            strict: true,
+            schema: singleArtboardJsonSchema,
           },
-          temperature: 0.7,
-          ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
-            ? {
-              provider: {
-                order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
-                allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
-              },
-            }
-            : {}),
         },
-        {}, // Options
-      ),
+        temperature: 0.7,
+      } as any),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       `Screen Generation: ${promptData.title}`,
       signal,
-    ) as any;
+    );
 
-    const rawContent = response.choices[0]?.message?.content;
-    let contentForParsing = rawContent;
-    if (typeof contentForParsing === 'string') {
-      contentForParsing = contentForParsing.trim();
-      if (contentForParsing.startsWith('```')) {
-        contentForParsing = contentForParsing.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
-      }
+    const content = response.choices[0]?.message?.content;
+    let cleanContent = content || '{}';
+    if (cleanContent.startsWith('```')) {
+      cleanContent = cleanContent.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
     }
-    const artboard = (typeof contentForParsing === 'object' ? contentForParsing : JSON.parse(contentForParsing || '{}')) as SingleScreen;
+    const artboard = JSON.parse(cleanContent) as SingleScreen;
 
-    const usage = response.usage as any || {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
+    const usage = response.usage || {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
     };
 
     const tokenUsage = {
-      inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-      outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-      totalTokens: usage.totalTokens || usage.total_tokens || 0,
-      reasoningTokens: usage.completionTokensDetails?.reasoningTokens || usage.completion_tokens_details?.reasoning_tokens || 0,
+      inputTokens: usage.prompt_tokens || 0,
+      outputTokens: usage.completion_tokens || 0,
+      totalTokens: usage.total_tokens || 0,
+      reasoningTokens: (usage as any).completion_tokens_details?.reasoning_tokens || 0,
     };
 
-    // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Non-Streaming):', JSON.stringify(usage, null, 2));
     console.log(`[ArtboardCreator] Deducting credits for "${promptData.title}":`, tokenUsage);
 
     // Fire-and-forget for non-critical logging

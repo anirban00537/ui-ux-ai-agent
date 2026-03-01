@@ -32,7 +32,7 @@ const generateFontInstructions = (colorPalette?: any | null): string => {
   const headingFont = colorPalette?.fontHeading || 'Space Grotesk';
   const bodyFont = colorPalette?.fontBody || 'Plus Jakarta Sans';
 
-  const googleFontsUrl = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
+  const googleFontsUrl = `https://fonts.googleapis.com/css2?family=${headingFont.replace(/ /g, '+')}&family=${bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700&display=swap`;
 
   return `
 <link href="${googleFontsUrl}" rel="stylesheet">
@@ -103,49 +103,39 @@ Provide the response in the following JSON format:
     // 2. Call LLM
     const client = getOpenRouterClient();
 
-    const messages = [
+    const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       { role: 'system' as const, content: systemPrompt },
-      ...contextMessages.slice(-15) as any,
+      ...contextMessages.slice(-15),
       { role: 'user' as const, content: userPrompt },
     ];
 
     const response = await withTimeout(
-      client.chat.send(
-        {
-          model: coreConstant.AI_MODELS.DESIGN.NAME,
-          messages,
-          responseFormat: {
-            type: 'json_schema',
-            jsonSchema: {
-              name: 'updated_artboard',
-              strict: true,
-              schema: updatedArtboardJsonSchema,
-            },
+      client.chat.completions.create({
+        model: coreConstant.AI_MODELS.DESIGN.NAME,
+        messages,
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'updated_artboard',
+            strict: true,
+            schema: updatedArtboardJsonSchema,
           },
-          temperature: 0.5,
-          ...(coreConstant.AI_MODELS.DESIGN.PROVIDER.ENABLED
-            ? {
-              provider: {
-                order: coreConstant.AI_MODELS.DESIGN.PROVIDER.ORDER as any,
-                allowFallbacks: coreConstant.AI_MODELS.DESIGN.PROVIDER.ALLOW_FALLBACKS,
-              },
-            }
-            : {}),
         },
-        {},
-      ),
+        temperature: 0.5,
+      } as any),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Artboard Update LLM Call',
       signal,
     );
 
     // 3. Parse Response
-    const rawContent = response.choices[0]?.message?.content;
-    if (!rawContent || typeof rawContent !== 'string') {
+    let content = response.choices[0]?.message?.content;
+    if (!content || typeof content !== 'string') {
       throw new Error('No valid content received from LLM for update');
     }
 
-    let content = rawContent.trim();
+    // Strip markdown code blocks if present
+    content = content.trim();
     if (content.startsWith('```')) {
       content = content.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
     }
@@ -161,12 +151,12 @@ Provide the response in the following JSON format:
     // 4. Record Usage and Deduct Credits
     let credits = 0;
     if (response.usage) {
-      const usage = response.usage as any;
+      const usage = response.usage;
       const tokenUsage = {
-        inputTokens: usage.prompt_tokens || usage.promptTokens || 0,
-        outputTokens: usage.completion_tokens || usage.completionTokens || 0,
-        totalTokens: usage.total_tokens || usage.totalTokens || 0,
-        reasoningTokens: usage.completion_tokens_details?.reasoning_tokens || usage.completionTokensDetails?.reasoningTokens || 0,
+        inputTokens: usage.prompt_tokens || 0,
+        outputTokens: usage.completion_tokens || 0,
+        totalTokens: usage.total_tokens || 0,
+        reasoningTokens: (usage as any).completion_tokens_details?.reasoning_tokens || 0,
       };
 
       try {

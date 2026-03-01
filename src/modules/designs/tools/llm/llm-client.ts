@@ -1,25 +1,26 @@
-import { OpenRouter } from '@openrouter/sdk';
+import OpenAI from 'openai';
 
 
 /**
- * Singleton OpenRouter client for all LLM operations.
+ * Singleton OpenAI client pointed at OpenRouter for all LLM operations.
  */
 
-// Singleton OpenRouter client instance
-let openrouterClientInstance: OpenRouter | null = null;
+// Singleton client instance
+let openaiClientInstance: OpenAI | null = null;
 
 /**
- * Get the singleton OpenRouter client.
+ * Get the singleton OpenAI client pointed at OpenRouter.
  * 
- * @returns OpenRouter client
+ * @returns OpenAI client configured for OpenRouter
  */
-export function getOpenRouterClient(): OpenRouter {
-  if (!openrouterClientInstance) {
-    openrouterClientInstance = new OpenRouter({
+export function getOpenRouterClient(): OpenAI {
+  if (!openaiClientInstance) {
+    openaiClientInstance = new OpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
       apiKey: process.env.OPENROUTER_API_KEY,
     });
   }
-  return openrouterClientInstance;
+  return openaiClientInstance;
 }
 
 /**
@@ -33,7 +34,7 @@ export const LLM_CONFIG = {
   STREAM_FIRST_CHUNK_TIMEOUT_MS: 60000, // 60 seconds
 
   /** Maximum time to wait between streaming chunks (ms) */
-  STREAM_CHUNK_TIMEOUT_MS: 50000, // 50 seconds
+  STREAM_CHUNK_TIMEOUT_MS: 15000, // 15 seconds
 
   /** Maximum concurrent screen generations */
   MAX_CONCURRENT_SCREENS: 3,

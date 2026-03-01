@@ -48,7 +48,7 @@ const artboardPlanJsonSchema = {
 };
 
 export class ArtboardPlanner {
-  private openrouter = getOpenRouterClient();
+  private client = getOpenRouterClient();
 
   constructor(
     private prisma: PrismaService,
@@ -82,7 +82,7 @@ export class ArtboardPlanner {
       message,
     })) + screensContext;
 
-    const allMessages = [
+    const allMessages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
       { role: 'system' as const, content: planningPrompt },
       ...contextMessages.slice(-15),
       { role: 'user' as const, content: message },
@@ -91,48 +91,34 @@ export class ArtboardPlanner {
     checkAborted(signal, 'screen_planning');
 
     const response = await withTimeout(
-      // @ts-ignore - OpenRouter SDK 'send'
-      this.openrouter.chat.send(
-        {
-          model: coreConstant.AI_MODELS.AGENT.NAME,
-          messages: allMessages,
-          responseFormat: {
-            type: 'json_schema',
-            jsonSchema: {
-              name: 'artboardPlan',
-              strict: true,
-              schema: artboardPlanJsonSchema,
-            },
+      this.client.chat.completions.create({
+        model: coreConstant.AI_MODELS.AGENT.NAME,
+        messages: allMessages,
+        response_format: {
+          type: 'json_schema',
+          json_schema: {
+            name: 'artboardPlan',
+            strict: true,
+            schema: artboardPlanJsonSchema,
           },
-          temperature: 0.5,
-          ...(coreConstant.AI_MODELS.AGENT.PROVIDER.ENABLED
-            ? {
-              provider: {
-                order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
-                allowFallbacks: coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
-              },
-            }
-            : {}),
         },
-        {}, // Options
-      ),
+        temperature: 0.5,
+      } as any),
       LLM_CONFIG.REQUEST_TIMEOUT_MS,
       'Screen Planning LLM Call',
       signal,
-    ) as any;
+    );
 
     const messageObj = response.choices[0]?.message;
-    let contentForParsing = messageObj?.content;
-    if (typeof contentForParsing === 'string') {
-      contentForParsing = contentForParsing.trim();
-      if (contentForParsing.startsWith('```')) {
-        contentForParsing = contentForParsing.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
-      }
+    let content = messageObj?.content || '{}';
+    // Strip markdown code blocks if present
+    if (content.trim().startsWith('```')) {
+      content = content.trim().replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
     }
-    const plan = (typeof contentForParsing === 'object' ? contentForParsing : JSON.parse(contentForParsing || '{}')) as ScreenPlan;
+    const plan = JSON.parse(content) as ScreenPlan;
 
     // Capture native reasoning or JSON-based
-    plan.thinking = messageObj?.reasoning || plan.thinking;
+    plan.thinking = (messageObj as any)?.reasoning || plan.thinking;
 
     console.log(`[ArtboardPlanner] Plan screens: ${plan.totalScreens}, Thinking Length: ${plan.thinking?.length || 0}`);
 
@@ -151,20 +137,19 @@ export class ArtboardPlanner {
     }
 
     // Extract token usage from completion
-    const usage = response.usage as any || {
-      promptTokens: 0,
-      completionTokens: 0,
-      totalTokens: 0,
+    const usage = response.usage || {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
     };
 
     const tokenUsage = {
-      inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-      outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-      totalTokens: usage.totalTokens || usage.total_tokens || 0,
-      reasoningTokens: usage.completionTokensDetails?.reasoningTokens || usage.completion_tokens_details?.reasoning_tokens || 0,
+      inputTokens: usage.prompt_tokens || 0,
+      outputTokens: usage.completion_tokens || 0,
+      totalTokens: usage.total_tokens || 0,
+      reasoningTokens: (usage as any).completion_tokens_details?.reasoning_tokens || 0,
     };
 
-    // console.log('>>>>>>>>>>>>>>>>>>> RAW USAGE DATA (Planner):', JSON.stringify(usage, null, 2));
     console.log('[ArtboardPlanner] Deducting credits for planning:', tokenUsage);
 
     // Fire-and-forget for non-critical logging

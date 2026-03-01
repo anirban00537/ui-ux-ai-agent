@@ -29,7 +29,7 @@ export class DesignsChatService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly aiUsageService: AiUsageService,
-  ) {}
+  ) { }
 
   async chatStream(
     prompt: string,
@@ -377,14 +377,14 @@ export class DesignsChatService {
           const { hasEnough, required, balance } = await creditManager.hasEnoughCredits(userId, estimatedCredits);
 
           if (!hasEnough) {
-             const errMsg = `Insufficient credits. Required: ${required}, Available: ${balance?.remainingCredits || 0}`;
-             await activeMessenger.emit(
-               { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
-               `Error: ${errMsg}`,
-               false,
+            const errMsg = `Insufficient credits. Required: ${required}, Available: ${balance?.remainingCredits || 0}`;
+            await activeMessenger.emit(
+              { type: coreConstant.STREAM_EVENT.STATUS_UPDATE },
+              `Error: ${errMsg}`,
+              false,
             );
-             subscriber.complete();
-             return;
+            subscriber.complete();
+            return;
           }
 
           // Save the user's update prompt message to the database
@@ -421,7 +421,7 @@ export class DesignsChatService {
           const prevScreens = await this.prisma.artboard.findMany({
             where: {
               designId: designId,
-              id: { not: artboardId }, 
+              id: { not: artboardId },
             },
             take: 3,
             orderBy: { createdAt: 'asc' },
@@ -539,7 +539,7 @@ export class DesignsChatService {
 
       // 2. Prepare prompt
       const client = getOpenRouterClient();
-      
+
       const formattedPrompt = await updateElementTemplate.format({
         prompt: data.prompt,
         elementHtml: data.elementHtml,
@@ -549,7 +549,7 @@ export class DesignsChatService {
       });
 
       // 3. Call LLM
-      const response = await (client.chat as any).send({
+      const response = await client.chat.completions.create({
         model: coreConstant.AI_MODELS.DESIGN.NAME,
         messages: [
           { role: 'system', content: formattedPrompt },
@@ -557,32 +557,32 @@ export class DesignsChatService {
       });
 
       // 4. Calculate Usage & Deduct Credits
-      const usage = response.usage as any || { totalTokens: 0, promptTokens: 0, completionTokens: 0 };
+      const usage = response.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 };
       const tokenUsage = {
-          inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-          outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-          totalTokens: usage.totalTokens || usage.total_tokens || 0,
-          reasoningTokens: 0,
+        inputTokens: usage.prompt_tokens || 0,
+        outputTokens: usage.completion_tokens || 0,
+        totalTokens: usage.total_tokens || 0,
+        reasoningTokens: 0,
       };
 
       try {
-          await this.aiUsageService.logUsage({
-              userId,
-              modelName: coreConstant.AI_MODELS.AGENT.NAME,
-              inputTokens: tokenUsage.inputTokens,
-              outputTokens: tokenUsage.outputTokens,
-              type: 'element_edit', 
-              designId,
-          } as any);
+        await this.aiUsageService.logUsage({
+          userId,
+          modelName: coreConstant.AI_MODELS.AGENT.NAME,
+          inputTokens: tokenUsage.inputTokens,
+          outputTokens: tokenUsage.outputTokens,
+          type: 'element_edit',
+          designId,
+        } as any);
 
-          const creditManager = new CreditManager(this.prisma);
-          await creditManager.deductCredits(userId, designId, 'element_edit', tokenUsage);
+        const creditManager = new CreditManager(this.prisma);
+        await creditManager.deductCredits(userId, designId, 'element_edit', tokenUsage);
       } catch (creditError) {
-          console.error("Credit deduction failed:", creditError);
+        console.error("Credit deduction failed:", creditError);
       }
 
       let newHtml = response.choices[0]?.message?.content || data.elementHtml;
-      
+
       // Cleanup cleanup markdown if present
       newHtml = newHtml.replace(/```html/g, '').replace(/```/g, '').trim();
 

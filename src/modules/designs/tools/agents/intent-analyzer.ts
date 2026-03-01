@@ -18,13 +18,13 @@ const intentSchema = {
 };
 
 export class IntentAnalyzer {
-  private openrouter = getOpenRouterClient();
+  private client = getOpenRouterClient();
 
   constructor(
     private prisma: PrismaService,
     private creditManager: CreditManager,
     private aiUsageService: AiUsageService,
-  ) {}
+  ) { }
 
   async analyze(
     prompt: string,
@@ -72,66 +72,56 @@ export class IntentAnalyzer {
 
 Output JSON Format: {"intent": "CHAT" | "DESIGN"}`;
 
-    const messages = [
+    const messages: Array<{ role: 'system' | 'user'; content: string }> = [
       { role: 'system' as const, content: systemPrompt },
       { role: 'user' as const, content: prompt },
     ];
 
     try {
-      const response = (await withTimeout(
-        // @ts-ignore
-        this.openrouter.chat.send(
-          {
-            model: coreConstant.AI_MODELS.AGENT.NAME,
-            messages,
-            responseFormat: {
-              type: 'json_schema',
-              jsonSchema: {
-                name: 'intentAnalysis',
-                strict: true,
-                schema: intentSchema,
-              },
+      const response = await withTimeout(
+        this.client.chat.completions.create({
+          model: coreConstant.AI_MODELS.AGENT.NAME,
+          messages,
+          response_format: {
+            type: 'json_schema',
+            json_schema: {
+              name: 'intentAnalysis',
+              strict: true,
+              schema: intentSchema,
             },
-            temperature: 0,
-            ...(coreConstant.AI_MODELS.AGENT.PROVIDER.ENABLED
-              ? {
-                  provider: {
-                    order: coreConstant.AI_MODELS.AGENT.PROVIDER.ORDER as any,
-                    allowFallbacks:
-                      coreConstant.AI_MODELS.AGENT.PROVIDER.ALLOW_FALLBACKS,
-                  },
-                }
-              : {}),
           },
-          {},
-        ),
+          temperature: 0,
+        } as any),
         LLM_CONFIG.REQUEST_TIMEOUT_MS,
         'Intent Analysis',
         signal,
-      )) as any;
+      );
 
       const message = response.choices[0]?.message;
-      const content = message?.content;
-      const result =
-        typeof content === 'object' ? content : JSON.parse(content || '{}');
+      let content = message?.content || '{}';
+      // Strip markdown code blocks if present
+      if (content.trim().startsWith('```')) {
+        content = content.trim().replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
+      }
+      const result = JSON.parse(content);
 
       // Native reasoning or fallback
-      const thinking = message?.reasoning || result.thinking || result.reasoning;
+      const thinking = (message as any)?.reasoning || result.thinking || result.reasoning;
 
       console.log(
         `[IntentAnalyzer] Intent: ${result.intent}, Thinking Length: ${thinking?.length || 0}`,
       );
 
       // Deduct credits
-      const usage = (response.usage as any) || {
-        totalTokens: 0,
-        promptTokens: 0,
-        completionTokens: 0,
+      const usage = response.usage || {
+        total_tokens: 0,
+        prompt_tokens: 0,
+        completion_tokens: 0,
       };
       const tokenUsage = {
-        inputTokens: usage.promptTokens || usage.prompt_tokens || 0,
-        outputTokens: usage.completionTokens || usage.completion_tokens || 0,
-        totalTokens: usage.totalTokens || usage.total_tokens || 0,
+        inputTokens: usage.prompt_tokens || 0,
+        outputTokens: usage.completion_tokens || 0,
+        totalTokens: usage.total_tokens || 0,
         reasoningTokens: 0,
       };
 
