@@ -47,7 +47,7 @@ export function CustomResizableSidebar({
         )}
         onMouseDown={handleMouseDown}
       >
-        <div className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-white/20 group-hover:bg-blue-400 transition-all duration-300 group-hover:w-1 group-hover:shadow-lg group-hover:shadow-blue-400/50" />
+        <div className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-black/10 group-hover:bg-blue-500 transition-all duration-300 group-hover:w-1 group-hover:shadow-lg group-hover:shadow-blue-500/20" />
       </div>
       <div className="h-full overflow-hidden flex flex-col">{children}</div>
     </div>

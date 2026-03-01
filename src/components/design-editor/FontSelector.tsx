@@ -26,8 +26,8 @@ export function FontSelector({ value, onChange, className }: FontSelectorProps) 
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center gap-2 mb-1">
-        <Type className="w-3.5 h-3.5 text-zinc-500" />
-        <label className="text-xs font-medium text-zinc-400">
+        <Type className="w-3.5 h-3.5 text-slate-400" />
+        <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest">
           Primary Font
         </label>
       </div>
@@ -35,7 +35,7 @@ export function FontSelector({ value, onChange, className }: FontSelectorProps) 
         <select
           value={value || "Inter"}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-200 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all appearance-none cursor-pointer hover:border-zinc-700"
+          className="w-full px-3 py-2 text-[13px] font-semibold bg-white border border-black/10 rounded-lg text-slate-800 focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all appearance-none cursor-pointer hover:border-black/20 shadow-sm"
         >
           {AVAILABLE_FONTS.map((font) => (
             <option key={font.value} value={font.value}>
@@ -43,9 +43,9 @@ export function FontSelector({ value, onChange, className }: FontSelectorProps) 
             </option>
           ))}
         </select>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-500">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </div>

@@ -22,9 +22,9 @@ export function ColorPickerInput({ label, value, onChange, className }: ColorPic
   };
 
   const [localValue, setLocalValue] = useState(sanitizeHex(value));
-  
+
   const debouncedOnChange = useDebouncedCallback(onChange, 100);
-  
+
   const handleChange = (newValue: string) => {
     setLocalValue(newValue);
     debouncedOnChange(newValue);
@@ -37,57 +37,57 @@ export function ColorPickerInput({ label, value, onChange, className }: ColorPic
   return (
     <div className={cn("flex items-center justify-between gap-3", className)}>
       {label && (
-        <label className="text-[10px] text-zinc-500 font-bold uppercase tracking-wide">
+        <label className="text-[10px] text-slate-500 font-bold uppercase tracking-wide">
           {label.replace(/([A-Z])/g, ' $1').trim()}
         </label>
       )}
-      
+
       <div className="flex items-center gap-2">
         <Popover.Root>
           <Popover.Trigger asChild>
-            <button 
-              className="w-8 h-8 rounded-lg overflow-hidden border border-white/10 shadow-sm flex-shrink-0 relative group"
+            <button
+              className="w-8 h-8 rounded-lg overflow-hidden border border-black/10 shadow-sm flex-shrink-0 relative group"
               style={{ backgroundColor: localValue }}
             >
-              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
             </button>
           </Popover.Trigger>
-          
+
           <Popover.Portal>
-            <Popover.Content 
-              className="z-[1000001] bg-zinc-900 border border-white/10 rounded-xl p-3 shadow-2xl animate-in fade-in zoom-in duration-200" 
+            <Popover.Content
+              className="z-[1000001] bg-white border border-black/10 rounded-xl p-3 shadow-2xl animate-in fade-in zoom-in duration-200"
               sideOffset={10}
               align="end"
               data-style-panel="true"
             >
               <div className="space-y-3 custom-color-picker">
-                <HexAlphaColorPicker 
-                  color={localValue.startsWith('#') ? localValue : '#000000'} 
-                  onChange={handleChange} 
+                <HexAlphaColorPicker
+                  color={localValue.startsWith('#') ? localValue : '#000000'}
+                  onChange={handleChange}
                 />
-                
+
                 <div className="flex items-center gap-2">
-                   <div className="flex-1 bg-black/40 border border-white/5 rounded-lg px-2 py-1.5 flex items-center gap-2">
-                      <span className="text-[10px] text-zinc-600 font-mono">HEX</span>
-                      <input 
-                        type="text"
-                        value={localValue}
-                        onChange={(e) => handleChange(e.target.value)}
-                        className="bg-transparent border-none text-[11px] font-mono text-white focus:outline-none w-full uppercase"
-                      />
-                   </div>
+                  <div className="flex-1 bg-slate-50 border border-black/5 rounded-lg px-2 py-1.5 flex items-center gap-2">
+                    <span className="text-[10px] text-slate-400 font-mono">HEX</span>
+                    <input
+                      type="text"
+                      value={localValue}
+                      onChange={(e) => handleChange(e.target.value)}
+                      className="bg-transparent border-none text-[11px] font-mono text-slate-800 font-semibold focus:outline-none w-full uppercase"
+                    />
+                  </div>
                 </div>
               </div>
-              <Popover.Arrow className="fill-zinc-900" />
+              <Popover.Arrow className="fill-white" />
             </Popover.Content>
           </Popover.Portal>
         </Popover.Root>
 
-        <input 
+        <input
           type="text"
           value={localValue}
           onChange={(e) => handleChange(e.target.value)}
-          className="w-24 px-2 py-1.5 text-[11px] font-mono bg-black/20 border border-white/10 rounded-lg text-white focus:border-primary/50 outline-none uppercase"
+          className="w-24 px-2 py-1.5 text-[11px] font-mono font-semibold bg-white border border-black/10 rounded-lg text-slate-800 shadow-sm focus:border-primary/50 outline-none uppercase"
           placeholder="#000000"
         />
       </div>

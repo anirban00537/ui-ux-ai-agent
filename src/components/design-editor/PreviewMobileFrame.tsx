@@ -116,7 +116,7 @@ export const PreviewMobileFrame = React.memo(({
                 "*"
               );
             }
-          } 
+          }
         }
       }
     };
@@ -128,11 +128,11 @@ export const PreviewMobileFrame = React.memo(({
   useEffect(() => {
     if (isLoaded && htmlContent && iframeRef.current?.contentWindow) {
       iframeRef.current.contentWindow.postMessage(
-        { 
-          type: "UPDATE_CONTENT", 
+        {
+          type: "UPDATE_CONTENT",
           html: htmlContent,
           // Send theme as well during content updates to ensure consistency
-          palette: colorPalette 
+          palette: colorPalette
         },
         "*"
       );
@@ -166,12 +166,12 @@ export const PreviewMobileFrame = React.memo(({
     };
 
     const timer = setTimeout(() => {
-        window.addEventListener('mousedown', handleClickOutside);
+      window.addEventListener('mousedown', handleClickOutside);
     }, 10);
 
     return () => {
-        clearTimeout(timer);
-        window.removeEventListener('mousedown', handleClickOutside);
+      clearTimeout(timer);
+      window.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isSelected]);
 
@@ -182,7 +182,7 @@ export const PreviewMobileFrame = React.memo(({
   }, [isSelected, isStatic]);
 
   const frameContent = (
-    <div 
+    <div
       className={cn(
         "relative flex flex-col items-center select-none",
         isStatic ? "w-full h-full" : ""
@@ -191,14 +191,14 @@ export const PreviewMobileFrame = React.memo(({
       {/* Toolbar (Floating Top) */}
       {isSelected && !isStatic && (
         <div className="absolute -top-14 left-0 w-full flex justify-center z-[60]">
-           <FrameToolbar
-              title={title}
-              onDelete={() => onDelete?.(id)}
-              onViewCode={() => setShowCodeModal(true)}
-              onUpdate={(prompt) => onUpdate?.(id, prompt)}
-              showUpdateInput={showUpdateInput}
-              setShowUpdateInput={setShowUpdateInput}
-            />
+          <FrameToolbar
+            title={title}
+            onDelete={() => onDelete?.(id)}
+            onViewCode={() => setShowCodeModal(true)}
+            onUpdate={(prompt) => onUpdate?.(id, prompt)}
+            showUpdateInput={showUpdateInput}
+            setShowUpdateInput={setShowUpdateInput}
+          />
         </div>
       )}
 
@@ -208,93 +208,93 @@ export const PreviewMobileFrame = React.memo(({
           "absolute -top-10 w-full text-center transition-opacity drag-target cursor-grab z-[60]",
           isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
         )}>
-          <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider bg-zinc-950/80 px-2 py-1 rounded shadow-sm border border-white/10 backdrop-blur-sm">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest bg-white/95 px-2 py-1 rounded shadow-sm border border-black/[0.04] backdrop-blur-sm">
             {title}
           </span>
         </div>
       )}
 
       {/* Frame Wrapper */}
-      <div 
-         className="relative w-full h-full group"
+      <div
+        className="relative w-full h-full group"
       >
-           {/* Selection Border - Rectangular Bounding Box */}
-          {isSelected && !isStatic && (
-            <div className="absolute -inset-[1.5px] border-2 border-primary/50 z-20 pointer-events-none rounded-[40px]" />
-          )}
+        {/* Selection Border - Rectangular Bounding Box */}
+        {isSelected && !isStatic && (
+          <div className="absolute -inset-[1.5px] border-2 border-primary/50 z-20 pointer-events-none rounded-[40px]" />
+        )}
 
-          {/* Generating Animation */}
-          {isGenerating && (
-            <div 
-                className="absolute -inset-1.5 rounded-[34px] opacity-75 blur-md pointer-events-none transition-all duration-500"
-                style={{
-                  background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
-                  backgroundSize: "300% 100%",
-                  animation: "gradient-flow 2s linear infinite",
-                }}
-             />
-          )}
-
-          {/* Inner Frame Container (The Phone) */}
+        {/* Generating Animation */}
+        {isGenerating && (
           <div
-            className={cn(
-              "relative overflow-hidden isolate w-full h-full",
-              !isSelected && !isStatic ? 'drag-target cursor-grab active:cursor-grabbing' : ''
-            )}
+            className="absolute -inset-1.5 rounded-[34px] opacity-75 blur-md pointer-events-none transition-all duration-500"
             style={{
-              borderRadius: "36px", 
-              background: colorPalette?.background || "#ffffff",
-              border: `6px solid ${colorPalette?.border || "#1a1a1a"}`,
-              boxShadow: isStatic 
-                ? "0 25px 50px -12px rgba(0,0,0,0.5)"
-                : isSelected
-                  ? "0 20px 45px rgba(0,0,0,0.25)"
-                  : "0 8px 16px rgba(0,0,0,0.15)"
+              background: "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
+              backgroundSize: "300% 100%",
+              animation: "gradient-flow 2s linear infinite",
             }}
-          >
+          />
+        )}
 
-            <iframe
-              ref={iframeRef}
-              src="/renderers/canvas?mode=preview"
-              className={cn(
-                "size-full border-0 block transition-opacity duration-500",
-                isLoaded ? 'opacity-100' : 'opacity-0'
-              )}
-              title="Canvas Frame"
-              style={{ 
-                pointerEvents: (isResizing || isDragging) ? 'none' : 'auto',
+        {/* Inner Frame Container (The Phone) */}
+        <div
+          className={cn(
+            "relative overflow-hidden isolate w-full h-full",
+            !isSelected && !isStatic ? 'drag-target cursor-grab active:cursor-grabbing' : ''
+          )}
+          style={{
+            borderRadius: "36px",
+            background: colorPalette?.background || "#ffffff",
+            border: `6px solid ${colorPalette?.border || "#1a1a1a"}`,
+            boxShadow: isStatic
+              ? "0 25px 50px -12px rgba(0,0,0,0.5)"
+              : isSelected
+                ? "0 20px 45px rgba(0,0,0,0.25)"
+                : "0 8px 16px rgba(0,0,0,0.15)"
+          }}
+        >
+
+          <iframe
+            ref={iframeRef}
+            src="/renderers/canvas?mode=preview"
+            className={cn(
+              "size-full border-0 block transition-opacity duration-500",
+              isLoaded ? 'opacity-100' : 'opacity-0'
+            )}
+            title="Canvas Frame"
+            style={{
+              pointerEvents: (isResizing || isDragging) ? 'none' : 'auto',
+            }}
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+          />
+
+          {/* Click Shield (Unselected) - Draggable */}
+          {!isSelected && !isStatic && (
+            <div
+              className="absolute inset-0 z-40 drag-target cursor-grab active:cursor-grabbing"
+              title="Click to select or drag"
+              onClick={(e) => {
+                setIsSelected(true);
               }}
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
             />
+          )}
 
-            {/* Click Shield (Unselected) - Draggable */}
-            {!isSelected && !isStatic && (
-               <div 
-                 className="absolute inset-0 z-40 drag-target cursor-grab active:cursor-grabbing"
-                 title="Click to select or drag"
-                 onClick={(e) => {
-                   setIsSelected(true);
-                 }}
-               />
-            )}
-
-            {!isLoaded && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 border border-white/5 rounded-[26px]">
-                <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-lg shadow-primary/20" />
-                <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 animate-pulse">
-                  Initializing
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Dimensions Label (Bottom) */}
-          {isSelected && !isStatic && (
-            <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full bg-zinc-950/80 backdrop-blur-xl border border-white/10 px-3 py-1 text-zinc-100 text-[10px] shadow-2xl font-bold tracking-widest tabular-nums z-[60] pointer-events-none uppercase whitespace-nowrap">
-              {Math.round(frameWidth)} <span className="text-zinc-500 mx-1">×</span> {Math.round(frameHeight)}
+          {!isLoaded && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white border border-black/5 rounded-[26px]">
+              <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-sm shadow-primary/10" />
+              <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-400 font-bold animate-pulse">
+                Initializing
+              </p>
             </div>
           )}
         </div>
+
+        {/* Dimensions Label (Bottom) */}
+        {isSelected && !isStatic && (
+          <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full bg-white/95 backdrop-blur-xl border border-black/[0.04] px-3 py-1 text-slate-600 text-[10px] shadow-sm font-bold tracking-widest tabular-nums z-[60] pointer-events-none uppercase whitespace-nowrap">
+            {Math.round(frameWidth)} <span className="text-slate-400 mx-1">×</span> {Math.round(frameHeight)}
+          </div>
+        )}
+      </div>
 
 
       {/* Generating Badge */}
@@ -309,18 +309,18 @@ export const PreviewMobileFrame = React.memo(({
 
   if (isStatic) {
     return (
-      <div 
+      <div
         className={cn("relative flex items-center justify-center isolation-auto", className)}
-        style={{ 
-          width: '100%', 
+        style={{
+          width: '100%',
           height: '100%',
         }}
       >
-        <div 
+        <div
           className="relative transition-all duration-300 origin-center flex-shrink-0"
-          style={{ 
-            width: frameWidth, 
-            height: frameHeight, 
+          style={{
+            width: frameWidth,
+            height: frameHeight,
             minWidth: frameWidth,
             minHeight: frameHeight,
             transform: `scale(${scale})`
@@ -334,71 +334,71 @@ export const PreviewMobileFrame = React.memo(({
 
   return (
     <>
-    <Rnd
-      ref={rndRef}
-      className={`mobile-frame-container z-10 ${isSelected ? 'z-50' : ''} ${className}`}
-      size={{ width: frameWidth, height: frameHeight }}
-      position={{ x: position.x, y: position.y }}
-      disableDragging={disableDrag}
-      enableResizing={disableResize ? false : {
-        bottomRight: true,
-        bottomLeft: true,
-        topRight: true,
-        topLeft: true,
-        bottom: false,
-        top: false,
-        left: false,
-        right: false,
-      }}
-      scale={scale}
-      dragHandleClassName="drag-target"
-      onDragStart={() => {
-        setIsDragging(true);
-        setIsSelected(true);
-      }}
-      onDrag={(e, d) => {
-        setPosition({ x: d.x, y: d.y });
-      }}
-    
-      onResizeStart={() => {
-        setIsResizing(true);
-        setIsSelected(true);
-      }}
-  
-      onResizeStop={(e, direction, ref, delta, position) => {
-        setIsResizing(false);
-        const newSize = { 
-          width: parseInt(ref.style.width), 
-          height: parseInt(ref.style.height) 
-        };
-        setPosition(position);
-        onSave?.(id, { x: position.x, y: position.y, width: newSize.width, height: newSize.height });
-      }}
-      resizeHandleComponent={isSelected && !disableResize ? {
-        bottomRight: (
-          <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-        ),
-        bottomLeft: (
-          <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-        ),
-        topRight: (
-          <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-        ),
-        topLeft: (
-          <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-        ),
-      } : {}}
-    >
-      {frameContent}
-    </Rnd>
-    
-    <CodeViewerModal 
-      isOpen={showCodeModal}
-      onClose={() => setShowCodeModal(false)}
-      title={title || 'Design'}
-      htmlContent={htmlContent}
-      colorPalette={colorPalette}
-    />
+      <Rnd
+        ref={rndRef}
+        className={`mobile-frame-container z-10 ${isSelected ? 'z-50' : ''} ${className}`}
+        size={{ width: frameWidth, height: frameHeight }}
+        position={{ x: position.x, y: position.y }}
+        disableDragging={disableDrag}
+        enableResizing={disableResize ? false : {
+          bottomRight: true,
+          bottomLeft: true,
+          topRight: true,
+          topLeft: true,
+          bottom: false,
+          top: false,
+          left: false,
+          right: false,
+        }}
+        scale={scale}
+        dragHandleClassName="drag-target"
+        onDragStart={() => {
+          setIsDragging(true);
+          setIsSelected(true);
+        }}
+        onDrag={(e, d) => {
+          setPosition({ x: d.x, y: d.y });
+        }}
+
+        onResizeStart={() => {
+          setIsResizing(true);
+          setIsSelected(true);
+        }}
+
+        onResizeStop={(e, direction, ref, delta, position) => {
+          setIsResizing(false);
+          const newSize = {
+            width: parseInt(ref.style.width),
+            height: parseInt(ref.style.height)
+          };
+          setPosition(position);
+          onSave?.(id, { x: position.x, y: position.y, width: newSize.width, height: newSize.height });
+        }}
+        resizeHandleComponent={isSelected && !disableResize ? {
+          bottomRight: (
+            <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+          ),
+          bottomLeft: (
+            <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+          ),
+          topRight: (
+            <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+          ),
+          topLeft: (
+            <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+          ),
+        } : {}}
+      >
+        {frameContent}
+      </Rnd>
+
+      <CodeViewerModal
+        isOpen={showCodeModal}
+        onClose={() => setShowCodeModal(false)}
+        title={title || 'Design'}
+        htmlContent={htmlContent}
+        colorPalette={colorPalette}
+      />
     </>
   );
 });

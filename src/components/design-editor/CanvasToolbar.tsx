@@ -1,10 +1,10 @@
 import React from 'react';
-import { 
-  MousePointer2, 
-  Hand, 
-  Undo2, 
-  Redo2, 
-  Minus, 
+import {
+  MousePointer2,
+  Hand,
+  Undo2,
+  Redo2,
+  Minus,
   Plus,
   Play,
   Palette,
@@ -43,18 +43,18 @@ export function CanvasToolbar({
 }: CanvasToolbarProps) {
   return (
     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-center gap-1 bg-zinc-950/80 backdrop-blur-xl border border-white/10 rounded-full p-1.5 shadow-2xl ring-1 ring-black/50">
-        
+      <div className="flex items-center gap-1 bg-white/95 backdrop-blur-xl border border-black/[0.04] rounded-[24px] p-2 shadow-[0_12px_40px_rgba(0,0,0,0.08)]">
+
         {/* Tools Section */}
-        <div className="flex items-center gap-1 pr-2 border-r border-white/10">
-          <ToolbarButton 
-            active={activeTool === 'select'} 
+        <div className="flex items-center gap-1 pr-2 border-r border-black/[0.06]">
+          <ToolbarButton
+            active={activeTool === 'select'}
             onClick={() => onToolChange('select')}
             icon={<MousePointer2 className="w-4 h-4 fill-current" />}
             label="Select (V)"
           />
-          <ToolbarButton 
-            active={activeTool === 'hand'} 
+          <ToolbarButton
+            active={activeTool === 'hand'}
             onClick={() => onToolChange('hand')}
             icon={<Hand className="w-4 h-4" />}
             label="Pan (H)"
@@ -63,15 +63,15 @@ export function CanvasToolbar({
 
         {/* Zoom Section */}
         <div className="flex items-center gap-1 pl-2">
-          <ToolbarButton 
+          <ToolbarButton
             onClick={onZoomOut}
             icon={<Minus className="w-4 h-4" />}
             label="Zoom Out"
           />
-          <div className="w-12 text-center text-xs font-semibold text-zinc-400 tabular-nums select-none">
+          <div className="w-12 text-center text-[13px] font-bold text-slate-500 tabular-nums select-none">
             {Math.round(zoomLevel * 100)}%
           </div>
-          <ToolbarButton 
+          <ToolbarButton
             onClick={onZoomIn}
             icon={<Plus className="w-4 h-4" />}
             label="Zoom In"
@@ -80,13 +80,13 @@ export function CanvasToolbar({
 
         {/* Extra Features Section (Theme only now) */}
         {onTheme && (
-             <div className="flex items-center gap-1 pl-2 ml-2 border-l border-white/10">
-                  <ToolbarButton 
-                    onClick={onTheme}
-                    icon={<Palette className="w-4 h-4" />}
-                    label="Theme"
-                  />
-             </div>
+          <div className="flex items-center gap-1 pl-2 ml-2 border-l border-black/[0.06]">
+            <ToolbarButton
+              onClick={onTheme}
+              icon={<Palette className="w-4 h-4" />}
+              label="Theme"
+            />
+          </div>
         )}
 
       </div>
@@ -106,11 +106,11 @@ function ToolbarButton({ active, icon, label, className, ...props }: ToolbarButt
       type="button"
       title={label}
       className={cn(
-        "w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50",
-        active 
-          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
-          : "text-zinc-400 hover:text-zinc-100 hover:bg-white/10",
-        props.disabled && "opacity-30 cursor-not-allowed hover:bg-transparent hover:text-zinc-400",
+        "w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50",
+        active
+          ? "bg-[#e0e8ff] text-primary font-bold shadow-sm"
+          : "text-slate-500 hover:text-[#0a0f1c] hover:bg-slate-100",
+        props.disabled && "opacity-30 cursor-not-allowed hover:bg-transparent hover:text-slate-500",
         className
       )}
       {...props}

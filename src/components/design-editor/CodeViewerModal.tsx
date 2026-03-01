@@ -3,11 +3,11 @@
 import React, { useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 import { Editor as MonacoEditor } from "@monaco-editor/react";
-import { 
-  Download, 
-  Check, 
-  X, 
-  Copy 
+import {
+  Download,
+  Check,
+  X,
+  Copy
 } from "lucide-react";
 
 interface ColorPalette {
@@ -39,7 +39,7 @@ interface CodeViewerModalProps {
 const constructFullHtml = (html: string, title: string, palette?: ColorPalette) => {
   const headingFont = palette?.fontHeading || 'Space Grotesk';
   const bodyFont = palette?.fontBody || 'Plus Jakarta Sans';
-  
+
   // Dynamic secondary/accent colors if missing
   const primaryColor = palette?.primary || '#3b82f6';
   const secondaryColor = palette?.secondary || '#f1f5f9';
@@ -147,7 +147,7 @@ export function CodeViewerModal({
   colorPalette,
 }: CodeViewerModalProps) {
   const [isCopied, setIsCopied] = useState(false);
-  
+
   // Use React.useMemo to generate the full HTML once per prop change
   const finalHtml = React.useMemo(() => {
     if (!isOpen) return "";
@@ -175,52 +175,52 @@ export function CodeViewerModal({
   if (!isOpen || typeof document === 'undefined') return null;
 
   return createPortal(
-    <div 
+    <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
       onMouseDown={(e) => e.stopPropagation()}
     >
-      <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+      <div
+        className="absolute inset-0 bg-white/60 backdrop-blur-sm"
         onClick={onClose}
       />
-      
-      <div className="relative w-full max-w-5xl h-full max-h-[85vh] bg-background border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
-           <div className="flex items-center gap-3">
-             <h2 className="text-xl font-semibold text-foreground tracking-tight">
-               {title || 'Design'} Code
-             </h2>
-           </div>
-           
-           <div className="flex items-center gap-3">
-              <button 
-                 onClick={handleDownloadCode}
-                 className="flex items-center gap-2 px-4 py-1.5 bg-primary hover:opacity-90 disabled:opacity-50 text-primary-foreground rounded-lg text-sm font-semibold transition-all active:scale-95 shadow-lg shadow-primary/20"
-              >
-                <Download className="w-4 h-4" />
-                <span>Download</span>
-             </button>
 
-             <button 
+      <div className="relative w-full max-w-5xl h-full max-h-[85vh] bg-white border border-black/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black/5 shrink-0 bg-slate-50">
+          <div className="flex items-center gap-3">
+            <h2 className="text-[15px] font-bold text-slate-800 tracking-tight">
+              {title || 'Design'} Code
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleDownloadCode}
+              className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-lg text-[13px] font-bold transition-all active:scale-95 shadow-sm"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download</span>
+            </button>
+
+            <button
               onClick={onClose}
-              className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors ml-2"
-             >
+              className="p-2 hover:bg-black/5 rounded-lg text-slate-500 hover:text-slate-800 transition-colors ml-2"
+            >
               <X className="w-5 h-5" />
-             </button>
-           </div>
+            </button>
+          </div>
         </div>
 
-        <div className="flex-1 overflow-hidden relative group">
+        <div className="flex-1 overflow-hidden relative group bg-white">
           <div className="absolute top-4 right-6 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button 
-                onClick={handleCopyCode}
-                className="p-2.5 bg-background border border-border hover:bg-muted rounded-xl text-foreground transition-all active:scale-90 shadow-xl"
-                title="Copy Code"
-              >
-                {isCopied ? <Check className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5" />}
-              </button>
+            <button
+              onClick={handleCopyCode}
+              className="p-2.5 bg-white border border-black/10 hover:bg-slate-50 rounded-xl text-slate-600 transition-all active:scale-90 shadow-sm"
+              title="Copy Code"
+            >
+              {isCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+            </button>
           </div>
-          
+
           <div className="w-full h-full">
             <MonacoEditor
               height="100%"
@@ -243,18 +243,18 @@ export function CodeViewerModal({
                 contextmenu: false,
               }}
               beforeMount={(monaco) => {
-                monaco.editor.defineTheme('custom-dark', {
-                  base: 'vs-dark',
+                monaco.editor.defineTheme('custom-light', {
+                  base: 'vs',
                   inherit: true,
                   rules: [],
                   colors: {
-                    'editor.background': '#02040a',
-                    'editor.lineHighlightBackground': '#0a0f1e',
-                    'editorLineNumber.foreground': '#64748b',
+                    'editor.background': '#ffffff',
+                    'editor.lineHighlightBackground': '#f8fafc',
+                    'editorLineNumber.foreground': '#94a3b8',
                   }
                 });
               }}
-              theme="custom-dark"
+              theme="custom-light"
             />
           </div>
         </div>

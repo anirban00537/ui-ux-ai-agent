@@ -102,16 +102,16 @@ function ToolbarPortalContent({
       {showUpdateInput && (
         <div className="w-[400px] animate-in slide-in-from-top-2 duration-300">
           <div
-            className="flex items-center gap-3 p-2 bg-zinc-950/90 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/5"
+            className="flex items-center gap-3 p-2 bg-white/95 backdrop-blur-2xl border border-black/[0.04] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-white/[0.03] rounded-xl border border-white/[0.05] focus-within:border-primary/50 transition-all">
+            <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-slate-50 rounded-xl border border-black/5 focus-within:border-primary/50 transition-all">
               <Sparkles className="w-4 h-4 text-primary animate-pulse shrink-0" />
               <input
                 ref={updateInputRef}
                 type="text"
                 placeholder="Ask me to change anything..."
-                className="bg-transparent border-none outline-none text-[13px] w-full text-white placeholder:text-zinc-500 font-medium"
+                className="bg-transparent border-none outline-none text-[13px] w-full text-slate-800 placeholder:text-slate-400 font-medium"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleUpdateSubmit();
                   if (e.key === "Escape") setShowUpdateInput(false);
@@ -159,12 +159,12 @@ function ElementStylePanelWrapper({ containerRef, iframeRef, element, onUpdate, 
     const updatePosition = () => {
       // Use iframeRef for more accurate screen positioning relative to standard anchor
       const anchorEl = iframeRef.current || containerRef.current;
-      
+
       if (anchorEl && element.rect) {
         const anchorRect = anchorEl.getBoundingClientRect();
-        
+
         // Panel Constants
-        const PANEL_WIDTH = 320; 
+        const PANEL_WIDTH = 320;
         const PANEL_GAP = 12;
         const VIEWPORT_PADDING = 16;
 
@@ -176,11 +176,11 @@ function ElementStylePanelWrapper({ containerRef, iframeRef, element, onUpdate, 
         const elementHeight = element.rect.height * scale;
         const elementWidth = element.rect.width * scale;
         const elementLeft = anchorRect.left + (element.rect.left * scale);
-        
+
         // Strategy: Try to place BELOW first
         // If not enough space below, try ABOVE.
         // If not enough space above, try RIGHT.
-        
+
         const BAR_HEIGHT = 60; // Approximate height of the collapsed bar
         const TAG_HEIGHT = 32; // Height of the tag label + padding
         const VISUAL_GAP = 20; // Visual gap
@@ -192,37 +192,37 @@ function ElementStylePanelWrapper({ containerRef, iframeRef, element, onUpdate, 
         // 1. Vertical Constraint
         // Check if Bottom overflows viewport
         if (targetTop + BAR_HEIGHT > window.innerHeight - VIEWPORT_PADDING) {
-            // Try ABOVE
-            targetTop = elementTop - BAR_HEIGHT - VISUAL_GAP;
-            
-            // If Top also overflows (too high), fallback to RIGHT side
-            if (targetTop < 70) {
-                targetLeft = elementLeft + elementWidth + VISUAL_GAP;
-                targetTop = elementTop;
-            }
+          // Try ABOVE
+          targetTop = elementTop - BAR_HEIGHT - VISUAL_GAP;
+
+          // If Top also overflows (too high), fallback to RIGHT side
+          if (targetTop < 70) {
+            targetLeft = elementLeft + elementWidth + VISUAL_GAP;
+            targetTop = elementTop;
+          }
         }
 
         // 2. Horizontal Constraint
         if (targetLeft + PANEL_WIDTH + VIEWPORT_PADDING > window.innerWidth) {
-             targetLeft = window.innerWidth - PANEL_WIDTH - VIEWPORT_PADDING;
+          targetLeft = window.innerWidth - PANEL_WIDTH - VIEWPORT_PADDING;
         }
         targetLeft = Math.max(VIEWPORT_PADDING, targetLeft);
-        
+
         setPosition({
           top: targetTop,
           left: targetLeft,
         });
       } else if (containerRef.current) {
-         // Fallback
-         const rect = containerRef.current.getBoundingClientRect();
-         setPosition({
-            top: rect.top,
-            left: rect.right + 20,
-         });
+        // Fallback
+        const rect = containerRef.current.getBoundingClientRect();
+        setPosition({
+          top: rect.top,
+          left: rect.right + 20,
+        });
       }
       rafId = requestAnimationFrame(updatePosition);
     };
-    
+
     updatePosition();
     return () => cancelAnimationFrame(rafId);
   }, [containerRef, iframeRef, element.rect, scale]);
@@ -230,7 +230,7 @@ function ElementStylePanelWrapper({ containerRef, iframeRef, element, onUpdate, 
   if (!position) return null;
 
   return (
-    <ElementStylePanel 
+    <ElementStylePanel
       element={element}
       onUpdate={onUpdate}
       onClose={onClose}
@@ -295,17 +295,17 @@ export const MobileFrame = React.memo(
     const [showUpdateInput, setShowUpdateInput] = useState(false);
     const [isInspecting, setIsInspecting] = useState(false);
     const [selectedElement, setSelectedElement] = useState<{
-        id: string;
-        tagName: string;
-        innerText: string;
-        styles: any;
-        rect?: {
-            top: number;
-            left: number;
-            width: number;
-            height: number;
-        };
-        outerHTML?: string;
+      id: string;
+      tagName: string;
+      innerText: string;
+      styles: any;
+      rect?: {
+        top: number;
+        left: number;
+        width: number;
+        height: number;
+      };
+      outerHTML?: string;
     } | null>(null);
 
     // Sync isInspecting with activeTool and selection state
@@ -313,12 +313,12 @@ export const MobileFrame = React.memo(
 
     // Send toggle inspect message whenever isInspecting changes
     useEffect(() => {
-        if (iframeRef.current?.contentWindow) {
-            iframeRef.current.contentWindow.postMessage({
-                type: "TOGGLE_INSPECT",
-                enabled: isInspecting
-            }, "*");
-        }
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage({
+          type: "TOGGLE_INSPECT",
+          enabled: isInspecting
+        }, "*");
+      }
     }, [isInspecting]);
 
     // State for dimensions - Large Mobile (480x1100 minimum)
@@ -340,28 +340,28 @@ export const MobileFrame = React.memo(
 
     // Sync isInspecting with activeTool and selection state
     useEffect(() => {
-        // If active tool is inspect, always inspect
-        // If active tool is select AND we are selected, allow inspect (click-through)
-        // BUT strict requirement: "after selecting the frame user can select element"
-        
-        if (activeTool === 'inspect') {
-            setIsInspecting(true);
-        } else if (activeTool === 'select' && isSelected) {
-             // We want to enable inspection when frame is selected, 
-             // BUT we need to be careful not to interfere with dragging/resizing too much.
-             // Rnd handles drag via drag-target class.
-             // Interaction with iframe requires pointer-events.
-             // If we enable inspect, clicks go to iframe.
-             setIsInspecting(true);
-        } else {
-            setIsInspecting(false);
-            setSelectedElement(null);
-        }
+      // If active tool is inspect, always inspect
+      // If active tool is select AND we are selected, allow inspect (click-through)
+      // BUT strict requirement: "after selecting the frame user can select element"
+
+      if (activeTool === 'inspect') {
+        setIsInspecting(true);
+      } else if (activeTool === 'select' && isSelected) {
+        // We want to enable inspection when frame is selected, 
+        // BUT we need to be careful not to interfere with dragging/resizing too much.
+        // Rnd handles drag via drag-target class.
+        // Interaction with iframe requires pointer-events.
+        // If we enable inspect, clicks go to iframe.
+        setIsInspecting(true);
+      } else {
+        setIsInspecting(false);
+        setSelectedElement(null);
+      }
     }, [activeTool, isSelected]);
 
     const isHandTool = activeTool === 'hand';
     const isSelectTool = activeTool === 'select';
-    
+
     // Track if height was explicitly set/locked by user (from saved flag or manual resize)
     // When true, we don't auto-resize based on content height
     // Uses the explicit isHeightLocked prop from database for reliable state
@@ -515,7 +515,7 @@ export const MobileFrame = React.memo(
         if (rndRef.current) {
           const rndElement = rndRef.current.getSelfElement();
           const isInsideStylePanel = target.closest('[data-style-panel="true"]');
-          
+
           if (rndElement && !rndElement.contains(target) && !isInsideStylePanel) {
             setIsSelected(false);
             setShowUpdateInput(false);
@@ -559,34 +559,34 @@ export const MobileFrame = React.memo(
     };
 
     const toggleInspect = useCallback(() => {
-        const newState = !isInspecting;
-        setIsInspecting(newState);
-        if (!newState) {
-            setSelectedElement(null);
-        } else {
-             // Make sure we are selected so toolbar stays visible
-             setIsSelected(true);
-        }
-        iframeRef.current?.contentWindow?.postMessage({
-            type: "TOGGLE_INSPECT",
-            enabled: newState
-        }, "*");
+      const newState = !isInspecting;
+      setIsInspecting(newState);
+      if (!newState) {
+        setSelectedElement(null);
+      } else {
+        // Make sure we are selected so toolbar stays visible
+        setIsSelected(true);
+      }
+      iframeRef.current?.contentWindow?.postMessage({
+        type: "TOGGLE_INSPECT",
+        enabled: newState
+      }, "*");
     }, [isInspecting]);
 
     const handleStyleUpdate = useCallback((elId: string, styles: any, textContent?: string, outerHTML?: string) => {
-        iframeRef.current?.contentWindow?.postMessage({
-            type: "UPDATE_ELEMENT_STYLE",
-            id: elId,
-            styles,
-            textContent,
-            outerHTML
-        }, "*");
+      iframeRef.current?.contentWindow?.postMessage({
+        type: "UPDATE_ELEMENT_STYLE",
+        id: elId,
+        styles,
+        textContent,
+        outerHTML
+      }, "*");
 
-        // If replacing element via AI, deselect to avoid stale reference
-        if (outerHTML) {
-            setSelectedElement(null);
-            // We keep the frame selected, but no specific element
-        }
+      // If replacing element via AI, deselect to avoid stale reference
+      if (outerHTML) {
+        setSelectedElement(null);
+        // We keep the frame selected, but no specific element
+      }
     }, []);
 
     return (
@@ -666,19 +666,19 @@ export const MobileFrame = React.memo(
           resizeHandleComponent={
             isSelected
               ? {
-                  bottomRight: (
-                    <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-                  ),
-                  bottomLeft: (
-                    <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-                  ),
-                  topRight: (
-                    <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-                  ),
-                  topLeft: (
-                    <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
-                  ),
-                }
+                bottomRight: (
+                  <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                ),
+                bottomLeft: (
+                  <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                ),
+                topRight: (
+                  <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                ),
+                topLeft: (
+                  <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                ),
+              }
               : {}
           }
         >
@@ -692,7 +692,7 @@ export const MobileFrame = React.memo(
                 "absolute -top-10 w-full text-center transition-opacity drag-target cursor-grab z-20",
                 isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
               )}>
-                <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider bg-zinc-950/80 px-2 py-1 rounded shadow-sm border border-white/10 backdrop-blur-sm">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest bg-white/95 px-2 py-1 rounded shadow-sm border border-black/[0.04] backdrop-blur-sm">
                   {title}
                 </span>
               </div>
@@ -720,11 +720,10 @@ export const MobileFrame = React.memo(
 
               {/* Inner Frame Container */}
               <div
-                className={`relative overflow-hidden isolate w-full h-full ${
-                  !isSelected
-                    ? "drag-target cursor-grab active:cursor-grabbing"
-                    : ""
-                }`}
+                className={`relative overflow-hidden isolate w-full h-full ${!isSelected
+                  ? "drag-target cursor-grab active:cursor-grabbing"
+                  : ""
+                  }`}
                 style={{
                   borderRadius: "28px",
                   background:
@@ -738,9 +737,8 @@ export const MobileFrame = React.memo(
                 <iframe
                   ref={iframeRef}
                   src="/renderers/canvas?mode=editor"
-                  className={`size-full border-0 block transition-opacity duration-300 ${
-                    isLoaded ? "opacity-100" : "opacity-0"
-                  }`}
+                  className={`size-full border-0 block transition-opacity duration-300 ${isLoaded ? "opacity-100" : "opacity-0"
+                    }`}
                   title="Canvas Frame"
                   data-artboard-id={id}
                   sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
@@ -766,9 +764,9 @@ export const MobileFrame = React.memo(
                 )}
 
                 {!isLoaded && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900 border border-white/5 rounded-[26px]">
-                    <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-lg shadow-primary/20" />
-                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500 animate-pulse">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-white border border-black/5 rounded-[26px]">
+                    <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-sm shadow-primary/10" />
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-400 font-bold animate-pulse">
                       Initializing
                     </p>
                   </div>
@@ -778,9 +776,9 @@ export const MobileFrame = React.memo(
 
             {/* Dimensions Label (Bottom) */}
             {isSelected && !showUpdateInput && (
-              <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full bg-zinc-950/80 backdrop-blur-xl border border-white/10 px-3 py-1 text-zinc-100 text-[10px] shadow-2xl font-bold tracking-widest tabular-nums z-[60] pointer-events-none uppercase">
+              <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full bg-white/95 backdrop-blur-xl border border-black/[0.04] px-3 py-1 text-slate-600 text-[10px] shadow-sm font-bold tracking-widest tabular-nums z-[60] pointer-events-none uppercase">
                 {Math.round(size.width)}{" "}
-                <span className="text-zinc-500 mx-1">×</span>{" "}
+                <span className="text-slate-400 mx-1">×</span>{" "}
                 {Math.round(size.height)}
               </div>
             )}
@@ -819,7 +817,7 @@ export const MobileFrame = React.memo(
             />,
             document.body
           )}
-          
+
         {/* Element Style Panel */}
         {/* Render separate from portal to move with scrolling or fixed? 
             Since Rnd uses transform, fixed children move with it ONLY if not using portal.
@@ -827,28 +825,28 @@ export const MobileFrame = React.memo(
             Let's use a portal but position it next to the frame.
          */}
         {selectedElement && isInspecting && isSelected && containerRef.current && (
-             // We can just render it here if we want it to move with the Rnd component naturally?
-             // But Rnd has overflow: hidden sometimes? No.
-             // But z-index issues. Portal is safer.
-             // Let's compute position.
-             createPortal(
-                 <ElementStylePanelWrapper
-                    containerRef={containerRef}
-                    iframeRef={iframeRef}
-                    element={selectedElement}
-                    onUpdate={handleStyleUpdate}
-                    onClose={() => setSelectedElement(null)}
-                    onDelete={() => {
-                        iframeRef.current?.contentWindow?.postMessage({
-                            type: "DELETE_ELEMENT",
-                            id: selectedElement.id
-                        }, "*");
-                        setSelectedElement(null);
-                    }}
-                    scale={scale}
-                 />,
-                 document.body
-             )
+          // We can just render it here if we want it to move with the Rnd component naturally?
+          // But Rnd has overflow: hidden sometimes? No.
+          // But z-index issues. Portal is safer.
+          // Let's compute position.
+          createPortal(
+            <ElementStylePanelWrapper
+              containerRef={containerRef}
+              iframeRef={iframeRef}
+              element={selectedElement}
+              onUpdate={handleStyleUpdate}
+              onClose={() => setSelectedElement(null)}
+              onDelete={() => {
+                iframeRef.current?.contentWindow?.postMessage({
+                  type: "DELETE_ELEMENT",
+                  id: selectedElement.id
+                }, "*");
+                setSelectedElement(null);
+              }}
+              scale={scale}
+            />,
+            document.body
+          )
         )}
 
         <CodeViewerModal

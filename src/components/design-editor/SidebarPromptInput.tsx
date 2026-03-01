@@ -53,12 +53,12 @@ export function SidebarPromptInput({
 
   return (
     <div className="relative group">
-      <div 
+      <div
         className={cn(
-          "relative bg-zinc-900/40 backdrop-blur-xl border transition-all duration-300 rounded-2xl overflow-hidden shadow-lg",
-          loading 
-            ? "border-primary/20 ring-1 ring-primary/10 shadow-[0_0_20px_-10px_var(--primary)]" 
-            : "border-white/5 hover:border-white/10 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/10"
+          "relative bg-white backdrop-blur-xl border transition-all duration-300 rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.03)]",
+          loading
+            ? "border-primary/20 ring-1 ring-primary/10 shadow-[0_0_20px_-10px_rgba(83,56,255,0.2)]"
+            : "border-black/[0.06] hover:border-black/[0.1] focus-within:border-primary/20 focus-within:ring-1 focus-within:ring-primary/10"
         )}
       >
         <div className="relative flex items-end gap-3 p-3.5">
@@ -70,45 +70,45 @@ export function SidebarPromptInput({
               onKeyDown={handleKeyDown}
               placeholder={loading ? "Generating designs..." : placeholder}
               className={cn(
-                "w-full resize-none border-0 bg-transparent p-0 text-[13px] leading-relaxed text-zinc-100 placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-medium custom-scrollbar disabled:opacity-50",
-                loading && "text-zinc-400 cursor-not-allowed italic"
+                "w-full resize-none border-0 bg-transparent p-0 text-[13.5px] leading-relaxed text-[#0a0f1c] placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-medium custom-scrollbar disabled:opacity-50",
+                loading && "text-slate-500 cursor-not-allowed italic"
               )}
               rows={1}
               disabled={loading}
               style={{ minHeight: "20px", maxHeight: "200px" }}
             />
           </div>
-          
+
           <div className="flex items-center gap-1 flex-shrink-0 mb-[1px]">
-             {loading && onCancel ? (
-               <Button
-                 size="icon"
-                 variant="ghost"
-                 onClick={onCancel}
-                 className="h-7 w-7 rounded-lg group/stop relative overflow-hidden bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all"
-                 title="Stop generation"
-               >
-                 <span className="sr-only">Stop</span>
-                 <Square className="w-2.5 h-2.5 fill-current" />
-               </Button>
-             ) : (
-                <Button
-                  size="icon"
-                  onClick={handleSubmit}
-                  disabled={!prompt.trim() || loading}
-                  className={cn(
-                    "h-7 w-7 rounded-lg transition-all duration-300 shadow-sm",
-                    prompt.trim() 
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-95" 
-                      : "bg-zinc-800 text-zinc-600 cursor-not-allowed opacity-50"
-                  )}
-                >
-                  <SendHorizontal className="h-3.5 w-3.5" />
-                </Button>
-             )}
+            {loading && onCancel ? (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={onCancel}
+                className="h-7 w-7 rounded-lg group/stop relative overflow-hidden bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all"
+                title="Stop generation"
+              >
+                <span className="sr-only">Stop</span>
+                <Square className="w-2.5 h-2.5 fill-current" />
+              </Button>
+            ) : (
+              <Button
+                size="icon"
+                onClick={handleSubmit}
+                disabled={!prompt.trim() || loading}
+                className={cn(
+                  "h-8 w-8 rounded-xl transition-all duration-300 shadow-sm",
+                  prompt.trim()
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-95"
+                    : "bg-slate-100 text-slate-400 cursor-not-allowed opacity-50 shadow-none border border-black/5"
+                )}
+              >
+                <SendHorizontal className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
-        
+
         {/* Loading Progress Bar at bottom */}
         {loading && (
           <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary/10">
@@ -116,11 +116,11 @@ export function SidebarPromptInput({
           </div>
         )}
       </div>
-      
+
       {/* Keyboard hint */}
       {!loading && (
         <div className="absolute -bottom-5 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-           <span className="text-[9px] text-zinc-600 font-medium tracking-wide">Press Enter to send</span>
+          <span className="text-[10px] text-slate-400 font-medium tracking-wide">Press Enter to send</span>
         </div>
       )}
     </div>
