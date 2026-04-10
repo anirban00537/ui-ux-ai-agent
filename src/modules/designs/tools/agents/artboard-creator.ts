@@ -298,8 +298,8 @@ export class ArtboardCreator {
       signal,
     );
 
-    const content = response.choices[0]?.message?.content;
-    let cleanContent = content || '{}';
+    const content = response?.choices?.[0]?.message?.content || '{}';
+    let cleanContent = content;
     if (cleanContent.startsWith('```')) {
       cleanContent = cleanContent.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '');
     }

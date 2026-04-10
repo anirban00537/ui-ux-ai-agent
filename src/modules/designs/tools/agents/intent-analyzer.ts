@@ -97,7 +97,7 @@ Output JSON Format: {"intent": "CHAT" | "DESIGN"}`;
         signal,
       );
 
-      const message = response.choices[0]?.message;
+      const message = response?.choices?.[0]?.message;
       let content = message?.content || '{}';
       // Strip markdown code blocks if present
       if (content.trim().startsWith('```')) {

@@ -129,7 +129,7 @@ Provide the response in the following JSON format:
     );
 
     // 3. Parse Response
-    let content = response.choices[0]?.message?.content;
+    let content = response?.choices?.[0]?.message?.content;
     if (!content || typeof content !== 'string') {
       throw new Error('No valid content received from LLM for update');
     }

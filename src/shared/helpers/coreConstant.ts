@@ -82,25 +82,25 @@ export const coreConstant = {
   DESIGN_CONTEXT: {
     MAX_PREVIOUS_SCREENS: 3,
   } as const,
-AI_MODELS:{
-  DESIGN: {
-    NAME: 'minimax/minimax-m2.5:nitro',
-    PRICING: { prompt: 2, completion: 4.5 },
-    PROVIDER: {
-      ENABLED: false,
-      ORDER: ['nebius/fp8'] as any,
-      ALLOW_FALLBACKS: true,
+  AI_MODELS: {
+    DESIGN: {
+      NAME: 'kwaipilot/kat-coder-pro-v2',
+      PRICING: { prompt: 2, completion: 4.5 },
+      PROVIDER: {
+        ENABLED: false,
+        ORDER: ['nebius/fp8'] as any,
+        ALLOW_FALLBACKS: true,
+      },
     },
-  },
-  AGENT: {
-    NAME: 'google/gemini-3-flash-preview',
-    PRICING: { prompt: 2, completion: 4.5 },
-    PROVIDER: {
-      ENABLED: false,
-      ORDER: ['nebius/fp8']as any,
-      ALLOW_FALLBACKS: true,
+    AGENT: {
+      NAME: 'kwaipilot/kat-coder-pro-v2',
+      PRICING: { prompt: 2, completion: 4.5 },
+      PROVIDER: {
+        ENABLED: false,
+        ORDER: ['nebius/fp8'] as any,
+        ALLOW_FALLBACKS: true,
+      },
     },
-  }
   },
 
   // Subscription Status Constants

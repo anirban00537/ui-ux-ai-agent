@@ -109,7 +109,12 @@ export class ArtboardPlanner {
       signal,
     );
 
-    const messageObj = response.choices[0]?.message;
+    const messageObj = response?.choices?.[0]?.message;
+    if (!messageObj) {
+      console.error(`[ArtboardPlanner] LLM Error:`, JSON.stringify(response, null, 2));
+      const errorMsg = (response as any)?.error?.message || 'No response from LLM';
+      throw new Error(`LLM call failed: ${errorMsg}`);
+    }
     let content = messageObj?.content || '{}';
     // Strip markdown code blocks if present
     if (content.trim().startsWith('```')) {

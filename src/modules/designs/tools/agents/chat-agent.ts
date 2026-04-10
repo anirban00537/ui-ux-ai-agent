@@ -58,7 +58,7 @@ Instructions:
       signal,
     );
 
-    const messageObj = response.choices[0]?.message;
+    const messageObj = response?.choices?.[0]?.message;
     const responseText = messageObj?.content || "I'm here to help with your designs!";
     const thinking = (messageObj as any)?.reasoning;
 
