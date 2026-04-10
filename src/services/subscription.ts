@@ -63,6 +63,7 @@ export const getCreditBalance = () => api.get<CreditBalance>("/subscription/cred
 export const getPlanTiers = () => api.get<PlanTiersResponse>("/subscription/plan-tiers");
 export const useCredits = (payload: UseCreditsDto) => api.post<CreditBalance>("/subscription/use-credits", payload);
 export const cancelSubscription = () => api.post<void>("/subscription/cancel");
-export const verifyCheckout = (customerSessionToken?: string) => 
+export const verifyCheckout = (customerSessionToken?: string) =>
   api.post<SubscriptionStatus>("/subscription/verify-checkout", { customerSessionToken });
+export const syncSubscription = () => api.get<SubscriptionStatus>("/subscription/sync");
 

@@ -9,11 +9,12 @@ import {
 } from "@/store/slices/subscriptionSlice";
 import { useProducts } from "@/hooks/use-pricing";
 import { createCheckout } from "@/services/pricing";
+import { syncSubscription } from "@/services/subscription";
 import { PricingCard } from "@/components/pricing-card";
 import { PricingHeader } from "@/components/pricing";
 import { toast } from "sonner";
 import { trackEvent } from "@/components/analytics/trackEvent";
-import { IconLoader2, IconSparkles } from "@tabler/icons-react";
+import { IconLoader2, IconSparkles, IconRefresh } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { DotPattern } from "@/components/ui/dot-pattern";
@@ -52,6 +53,17 @@ export function PlanGate({ children }: PlanGateProps) {
       toast.error(error?.response?.data?.message || "Checkout failed");
     } finally {
       setLoadingCheckout(null);
+    }
+  };
+
+  const handleSync = async () => {
+    toast.info("Syncing subscription...");
+    try {
+      await syncSubscription();
+      toast.success("Subscription synced successfully");
+      window.location.reload();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Sync failed");
     }
   };
 
@@ -104,6 +116,13 @@ export function PlanGate({ children }: PlanGateProps) {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Choose a plan to unlock the full power of Butterfast and start designing stunning mobile apps today.
             </p>
+            <button
+              onClick={handleSync}
+              className="mt-4 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              <IconRefresh size={16} />
+              Sync subscription
+            </button>
           </div>
 
           {productsLoading ? (
