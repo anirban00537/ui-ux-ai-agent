@@ -316,6 +316,7 @@ export class PolarService implements OnModuleInit {
       const response = await client.products.list({
         organizationId,
         isArchived: false,
+        include: 'benefits',
         // Note: Sorting is handled client-side in getProducts() method
       });
       return response;
