@@ -230,8 +230,8 @@ export class PolarService implements OnModuleInit {
         id: subscriptionId,
       });
       return response;
-    } catch (error) {
-      this.logger.error(`Failed to get subscription: ${error.message}`);
+    } catch (error: any) {
+      this.logger.error(`Failed to get subscription: ${error?.message || 'Unknown error'}`);
       return null;
     }
   }
@@ -248,9 +248,9 @@ export class PolarService implements OnModuleInit {
         customerId,
       });
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
-        `Failed to get customer subscriptions: ${error.message}`,
+        `Failed to get customer subscriptions: ${error?.message || 'Unknown error'}`,
       );
       return null;
     }
@@ -297,9 +297,9 @@ export class PolarService implements OnModuleInit {
         id: meterId,
       });
       return response;
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
-        `Failed to get customer meter balance: ${error.message}`,
+        `Failed to get customer meter balance: ${error?.message || 'Unknown error'}`,
       );
       return null;
     }
@@ -316,7 +316,6 @@ export class PolarService implements OnModuleInit {
       const response = await client.products.list({
         organizationId,
         isArchived: false,
-        include: 'benefits',
         // Note: Sorting is handled client-side in getProducts() method
       });
       return response;
@@ -356,8 +355,8 @@ export class PolarService implements OnModuleInit {
         id: productId,
       });
       return response;
-    } catch (error) {
-      this.logger.error(`Failed to get product: ${error.message}`);
+    } catch (error: any) {
+      this.logger.error(`Failed to get product: ${error?.message || 'Unknown error'}`);
       return null;
     }
   }
