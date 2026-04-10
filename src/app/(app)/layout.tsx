@@ -1,23 +1,9 @@
 import type { Metadata } from "next";
-import { Poppins, Libre_Baskerville } from "next/font/google";
 import "../globals.css";
 import Providers from "../providers";
 import Script from "next/script";
 import React, { Suspense } from "react";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
-
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-});
-
-const libre = Libre_Baskerville({
-  variable: "--font-libre",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -129,8 +115,6 @@ const jsonLd = {
   ]
 };
 
-import { TorchLights } from "@/components/shared/TorchLights";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -138,22 +122,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className={`${poppins.variable} ${libre.variable} font-sans antialiased h-full`}>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+      <body className="font-sans antialiased h-full bg-[#1f2228]">
         <Script
           id="json-ld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Providers>
-          <div className="relative isolate min-h-screen">
-            <TorchLights />
-            <div className="relative z-10">
-              {children}
-            </div>
-          </div>
+          {children}
         </Providers>
-        {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID && (
           <Suspense fallback={null}>
             <GoogleAnalytics GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID} />

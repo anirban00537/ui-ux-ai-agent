@@ -58,29 +58,29 @@ function AgentActivityLine({
     <div className="relative flex items-start gap-4 pl-1 group">
       {/* Timeline Line */}
       {!isLast && (
-        <div className="absolute left-[5.5px] top-6 bottom-[-8px] w-px bg-black/[0.06] group-hover:bg-black/10 transition-colors" />
+        <div className="absolute left-[5.5px] top-6 bottom-[-8px] w-px bg-white/10 group-hover:bg-white/20 transition-colors" />
       )}
 
       {/* Status Dot */}
       <div className="relative flex-shrink-0 mt-1.5">
         {status === "loading" ? (
           <div className="relative flex items-center justify-center w-3 h-3">
-            <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
-            <div className="relative w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
+            <div className="absolute inset-0 bg-white/20 rounded-full animate-ping" />
+            <div className="relative w-1.5 h-1.5 rounded-full bg-white" />
           </div>
         ) : (
-          <div className="w-3 h-3 rounded-full bg-white border border-black/10 flex items-center justify-center shadow-sm">
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+          <div className="w-3 h-3 rounded-full bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
           </div>
         )}
       </div>
 
       <span
         className={cn(
-          "text-[12px] leading-relaxed transition-all duration-500 py-0.5",
+          "text-[12px] leading-relaxed transition-all duration-500 py-0.5 font-mono uppercase tracking-[1.4px]",
           status === "completed"
-            ? "text-slate-500 font-medium"
-            : "text-slate-800 font-semibold"
+            ? "text-white/50 font-medium"
+            : "text-white font-semibold"
         )}
       >
         {label}
@@ -106,25 +106,25 @@ function ScreenCard({
   return (
     <div
       className={cn(
-        "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all duration-300",
+        "group relative flex items-center gap-3 px-3 py-2.5 rounded border transition-all duration-300",
         isGenerating
-          ? "bg-white border-primary/20 shadow-[0_4px_12px_-4px_rgba(83,56,255,0.15)] ring-1 ring-primary/5"
+          ? "bg-white/5 border-white/20"
           : isCompleted
-            ? "bg-white border-black/[0.04] shadow-[0_2px_8px_-4px_rgba(0,0,0,0.05)] hover:border-black/[0.1]"
-            : "bg-slate-50 border-transparent opacity-60"
+            ? "bg-white/5 border-white/10 hover:border-white/20"
+            : "bg-transparent border-transparent opacity-40"
       )}
     >
       {/* Index Badge */}
       <div
         className={cn(
-          "flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold font-mono transition-colors duration-300",
-          isGenerating && "bg-[#f0f5ff] text-primary shadow-sm border border-primary/10",
-          isCompleted && "bg-slate-100 text-slate-500",
-          isPending && "bg-slate-200/50 text-slate-400"
+          "flex-shrink-0 w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-colors duration-300",
+          isGenerating && "bg-white/10 text-white border border-white/20",
+          isCompleted && "bg-white/10 text-white/70",
+          isPending && "bg-white/5 text-white/40"
         )}
       >
         {isGenerating ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
         ) : (
           <span className="mt-[1px]">{index + 1}</span>
         )}
@@ -134,8 +134,8 @@ function ScreenCard({
       <div className="flex-1 min-w-0 flex flex-col justify-center pl-1">
         <span
           className={cn(
-            "text-[12.5px] font-semibold truncate transition-colors duration-300",
-            isGenerating ? "text-[#0a0f1c]" : "text-slate-500 group-hover:text-slate-700"
+            "text-[12.5px] font-semibold truncate transition-colors duration-300 font-mono uppercase tracking-[1.4px]",
+            isGenerating ? "text-white" : "text-white/50 group-hover:text-white/70"
           )}
         >
           {title}
@@ -144,7 +144,7 @@ function ScreenCard({
 
       {/* Status Icon */}
       {isCompleted && (
-        <CheckCircle2 className="w-4 h-4 text-emerald-500 opacity-90" />
+        <CheckCircle2 className="w-4 h-4 text-white/50 opacity-90" />
       )}
     </div>
   );
@@ -166,21 +166,21 @@ function ThinkingBlock({ content }: { content: string }) {
   if (!content) return null;
 
   return (
-    <div className="group/think mb-5 border border-primary/20 rounded-xl p-3 bg-[#f0f5ff]/60 shadow-sm">
+    <div className="group/think mb-5 border border-white/10 rounded p-3 bg-white/5">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center gap-2.5 text-[11.5px] font-bold text-primary/80 hover:text-primary transition-colors uppercase tracking-wider"
+        className="flex items-center gap-2.5 text-[11.5px] font-bold text-white/70 hover:text-white transition-colors uppercase tracking-wider font-mono"
       >
-        <div className="w-5 h-5 rounded-md bg-primary/10 flex items-center justify-center">
-          <Brain className={cn("w-3.5 h-3.5 transition-transform duration-300", isExpanded ? "rotate-6 text-primary" : "text-primary/70")} />
+        <div className="w-5 h-5 rounded bg-white/10 flex items-center justify-center">
+          <Brain className={cn("w-3.5 h-3.5 transition-transform duration-300 text-white/70", isExpanded ? "rotate-6" : "")} />
         </div>
         Thinking Process
         <ChevronRight className={cn("w-3.5 h-3.5 transition-transform duration-200 ml-auto mr-1", isExpanded && "rotate-90")} />
       </button>
 
       {isExpanded && (
-        <div className="mt-3 pl-2.5 border-l-[2px] border-primary/20 overflow-hidden animate-in slide-in-from-top-2 duration-300">
-          <div className="text-[12.5px] leading-relaxed text-slate-600 font-medium pr-2">
+        <div className="mt-3 pl-2.5 border-l-2 border-white/10 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+          <div className="text-[12.5px] leading-relaxed text-white/60 font-mono pr-2">
             {content}
           </div>
         </div>
@@ -380,32 +380,32 @@ export function SidebarContent({
   }, [onGenerate, prompt, refetchBalance]);
 
   return (
-    <div className="relative flex flex-col h-full font-sans bg-white border-l border-black/[0.04] shadow-[-10px_0_40px_rgba(0,0,0,0.02)]">
+    <div className="relative flex flex-col h-full font-sans bg-[#1f2228] border-l border-white/10">
       {/* Header - Minimal with transparency */}
-      <div className="flex-shrink-0 px-5 py-3 border-b border-black/[0.04] bg-white z-10 flex items-center justify-between">
-        <Link href="/my-designs" className="group flex items-center gap-2 -ml-2 px-3 py-1.5 rounded-xl transition-colors hover:bg-slate-50 border border-transparent hover:border-black/[0.06]">
-          <svg className="w-4 h-4 text-slate-400 group-hover:text-slate-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="flex-shrink-0 px-5 py-3 border-b border-white/10 bg-[#1f2228] z-10 flex items-center justify-between">
+        <Link href="/my-designs" className="group flex items-center gap-2 -ml-2 px-3 py-1.5 rounded transition-colors hover:bg-white/5 border border-transparent hover:border-white/10">
+          <svg className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="text-[12px] font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Home</span>
+          <span className="text-[12px] font-bold text-white/50 group-hover:text-white transition-colors font-mono uppercase tracking-[1.4px]">Home</span>
         </Link>
 
         {!balanceLoading && (
-          <div className={`flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider ${getCreditColor(balance?.remainingCredits)} bg-white shadow-sm px-3 py-1.5 rounded-full border border-black/5`}>
+          <div className={`flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider ${getCreditColor(balance?.remainingCredits)} bg-white/5 px-3 py-1.5 rounded border border-white/10 font-mono`}>
             <span>{formatCredits(balance?.remainingCredits)} Credits</span>
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-black/[0.04] bg-white z-10">
+      <div className="flex border-b border-white/10 bg-[#1f2228] z-10">
         <button
           onClick={() => setActiveTab("chat")}
           className={cn(
-            "flex-1 py-3 text-[13px] font-bold transition-all relative",
+            "flex-1 py-3 text-[13px] font-bold transition-all relative font-mono uppercase tracking-[1.4px]",
             activeTab === "chat"
-              ? "text-primary"
-              : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+              ? "text-white"
+              : "text-white/50 hover:text-white hover:bg-white/5"
           )}
         >
           <div className="flex items-center justify-center gap-2">
@@ -413,16 +413,16 @@ export function SidebarContent({
             Chat
           </div>
           {activeTab === "chat" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-sm" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
           )}
         </button>
         <button
           onClick={() => setActiveTab("theme")}
           className={cn(
-            "flex-1 py-3 text-[13px] font-bold transition-all relative border-l border-black/[0.02]",
+            "flex-1 py-3 text-[13px] font-bold transition-all relative border-l border-white/10 font-mono uppercase tracking-[1.4px]",
             activeTab === "theme"
-              ? "text-primary"
-              : "text-slate-500 hover:text-slate-800 hover:bg-slate-50"
+              ? "text-white"
+              : "text-white/50 hover:text-white hover:bg-white/5"
           )}
         >
           <div className="flex items-center justify-center gap-2">
@@ -430,7 +430,7 @@ export function SidebarContent({
             Theme
           </div>
           {activeTab === "theme" && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-sm" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
           )}
         </button>
       </div>
@@ -454,16 +454,16 @@ export function SidebarContent({
               <>
                 <div ref={loadMoreRef} className="h-10 flex items-center justify-center">
                   {hasMore && (
-                    <div className="flex items-center gap-2.5 text-[11px] text-slate-400 font-bold tracking-wide py-4">
+                    <div className="flex items-center gap-2.5 text-[11px] text-white/40 font-bold tracking-wide py-4 font-mono uppercase tracking-[1.4px]">
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>LOADING HISTORY</span>
+                      <span>Loading History</span>
                     </div>
                   )}
                 </div>
 
                 <div className="flex items-center justify-center pb-6">
                   {!hasMore && (
-                    <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Session Started</span>
+                    <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest font-mono">Session Started</span>
                   )}
                 </div>
 
@@ -505,7 +505,7 @@ export function SidebarContent({
                       {/* User Bubble */}
                       {turn.userMessage.content && (
                         <div className="flex justify-end mb-6">
-                          <div className="max-w-[90%] bg-white text-[#0a0f1c] px-4 py-3 rounded-[20px] rounded-tr-sm shadow-[0_4px_12px_rgba(0,0,0,0.04)] border border-black/[0.04] text-[13.5px] font-medium leading-relaxed">
+                          <div className="max-w-[90%] bg-white text-[#1f2228] px-4 py-3 rounded text-[13.5px] font-medium leading-relaxed font-mono">
                             {turn.userMessage.content}
                           </div>
                         </div>
@@ -513,7 +513,7 @@ export function SidebarContent({
 
                       {/* Agent Response Area */}
                       {(turn.isActive || turn.aiMessage || turn.thinkingMessage || turn.cardMessages.length > 0 || (displaySteps && displaySteps.length > 0)) && (
-                        <div className="pl-4 border-l-2 border-black/5 ml-2 space-y-7">
+                        <div className="pl-4 border-l-2 border-white/10 ml-2 space-y-7">
 
                           {/* Thinking Process */}
                           {turn.thinkingMessage && (
@@ -522,7 +522,7 @@ export function SidebarContent({
 
                           {/* AI Text Response */}
                           {turn.aiMessage && (
-                            <div className="text-[13.5px] leading-relaxed text-slate-700 font-medium pr-2 animate-in fade-in slide-in-from-left-1 duration-500">
+                            <div className="text-[13.5px] leading-relaxed text-white/70 font-medium pr-2 animate-in fade-in slide-in-from-left-1 duration-500">
                               {turn.aiMessage.content}
                             </div>
                           )}
@@ -572,12 +572,12 @@ export function SidebarContent({
               </>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-70">
-                <div className="w-16 h-16 rounded-[24px] bg-slate-50 border border-black/5 flex items-center justify-center shadow-sm">
-                  <Palette className="w-8 h-8 text-slate-300" />
+                <div className="w-16 h-16 rounded bg-white/5 border border-white/10 flex items-center justify-center">
+                  <Palette className="w-8 h-8 text-white/30" />
                 </div>
                 <div className="max-w-[200px]">
-                  <p className="text-[15px] font-bold text-[#0a0f1c]">Ready to Create</p>
-                  <p className="text-[12px] text-slate-500 mt-1 font-medium leading-relaxed">Describe your app idea below to start generating screens.</p>
+                  <p className="text-[15px] font-bold text-white font-mono uppercase tracking-[1.4px]">Ready to Create</p>
+                  <p className="text-[12px] text-white/50 mt-1 font-medium leading-relaxed">Describe your app idea below to start generating screens.</p>
                 </div>
               </div>
             )}

@@ -22,19 +22,16 @@ const footerLinks = {
 
 export function FooterSection() {
   return (
-    <footer className="bg-background pt-24 pb-12 overflow-hidden border-t border-black/5">
-      {/* Butter Wash Gradient */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/[0.02] to-transparent pointer-events-none" />
-
+    <footer className="bg-[#1f2228] pt-24 pb-12 border-t border-white/10">
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="md:col-span-1">
             <Link href="/" className="inline-block mb-6">
-              <span className="text-2xl font-bold tracking-tight text-foreground">
+              <span className="font-mono text-2xl text-white tracking-tight">
                 Butterfast.
               </span>
             </Link>
-            <p className="text-muted-foreground/90 text-sm leading-relaxed max-w-xs font-medium">
+            <p className="font-sans text-sm text-white/50 leading-relaxed max-w-xs">
               Effortless AI mobile app designs for teams who value design.
             </p>
           </div>
@@ -42,11 +39,11 @@ export function FooterSection() {
           <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-8">
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category}>
-                <h3 className="text-foreground font-semibold mb-4 capitalize text-sm">{category}</h3>
+                <h3 className="font-mono text-xs uppercase tracking-[1.4px] text-white/50 mb-4">{category}</h3>
                 <ul className="space-y-3">
                   {links.map((link) => (
                     <li key={link.name}>
-                      <Link href={link.href} className="text-muted-foreground hover:text-primary transition-colors text-sm font-medium">
+                      <Link href={link.href} className="font-sans text-sm text-white/70 hover:text-white transition-colors">
                         {link.name}
                       </Link>
                     </li>
@@ -57,12 +54,11 @@ export function FooterSection() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-secondary/10">
-          <p className="text-xs text-muted-foreground">
+        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/10">
+          <p className="font-sans text-xs text-white/30">
             &copy; {new Date().getFullYear()} Butterfast Inc.
           </p>
           <div className="flex items-center gap-6 mt-4 md:mt-0">
-            {/* Socials could go here */}
           </div>
         </div>
       </div>

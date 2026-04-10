@@ -6,12 +6,10 @@ import { useAppSelector } from "@/store/hooks";
 import { selectSubscriptionStatus } from "@/store/slices/subscriptionSlice";
 import { createCheckout } from "@/services";
 import { PricingCard } from "@/components/pricing-card";
-import { PageSkeleton } from "@/components/shared";
 import { Skeleton } from "@/components/ui";
 import { trackEvent } from "@/components/analytics/trackEvent";
 import { toast } from "sonner";
 
-// Sub-components
 import { PricingHeader, PricingFooter } from "@/components/pricing";
 import { Navbar } from "@/components/navbar";
 
@@ -20,8 +18,6 @@ export default function PricingPage() {
   const subscriptionStatus = useAppSelector(selectSubscriptionStatus);
   const currentSubscription = subscriptionStatus?.subscription;
   const [loadingCheckout, setLoadingCheckout] = useState<string | null>(null);
-
-
 
   const handleSelectPlan = async (productId: string, priceId?: string) => {
     if (!priceId) {
@@ -49,14 +45,15 @@ export default function PricingPage() {
             action: { label: "Manage Subscription", onClick: () => {
               trackEvent('already_subscribed_manage_click', 'engagement', 'pricing_page');
               window.location.href = "/subscription";
-            } },
+            }},
           });
         } else {
           toast.error(errorMessage);
         }
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to create checkout session";
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      const errorMessage = err?.response?.data?.message || err?.message || "Failed to create checkout session";
       trackEvent('checkout_session_error', 'engagement', errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -66,17 +63,17 @@ export default function PricingPage() {
 
   if (productsLoading) {
     return (
-      <div className="relative flex-1 min-h-screen overflow-auto bg-background">
+      <div className="relative flex-1 min-h-screen overflow-auto bg-[#1f2228]">
         <div className="flex flex-col items-center px-4 py-16 w-full min-h-full">
           <div className="w-full max-w-7xl">
-            <PageSkeleton>
-              <Skeleton className="h-12 w-1/3 mx-auto rounded-2xl border border-border" />
+            <div className="flex flex-col items-center gap-8">
+              <Skeleton className="h-12 w-1/3 border border-white/10" />
               <div className="flex flex-col md:flex-row flex-wrap justify-center gap-8 w-full pt-10">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-[500px] w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-2rem)] max-w-sm rounded-3xl border border-border" />
+                  <Skeleton key={i} className="h-[500px] w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-2rem)] max-w-sm border border-white/10" />
                 ))}
               </div>
-            </PageSkeleton>
+            </div>
           </div>
         </div>
       </div>
@@ -95,7 +92,7 @@ export default function PricingPage() {
   });
 
   return (
-    <div className="relative flex-1 min-h-screen">
+    <div className="relative flex-1 min-h-screen bg-[#1f2228]">
       <Navbar />
       <div className="flex flex-col items-center px-4 py-16 min-h-full w-full">
         <div className="w-full mt-16 max-w-7xl flex flex-col gap-16">

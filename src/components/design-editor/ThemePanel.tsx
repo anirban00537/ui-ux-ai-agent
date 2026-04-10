@@ -25,33 +25,33 @@ export function ThemePanel({
   if (!colorPalette) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center space-y-3 opacity-70">
-        <Palette className="w-10 h-10 text-slate-300" />
-        <p className="text-[14px] font-bold text-[#0a0f1c]">No theme loaded</p>
-        <p className="text-[12px] text-slate-500 font-medium">Generate a design to customize its theme.</p>
+        <Palette className="w-10 h-10 text-white/30" />
+        <p className="text-[14px] font-bold text-white font-mono uppercase tracking-[1.4px]">No theme loaded</p>
+        <p className="text-[12px] text-white/50 font-medium">Generate a design to customize its theme.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-white custom-scrollbar overflow-y-auto pb-20">
+    <div className="flex flex-col h-full bg-[#1f2228] custom-scrollbar overflow-y-auto pb-20">
       {/* Reset Header */}
-      <div className="p-5 border-b border-black/[0.04] sticky top-0 bg-white/95 backdrop-blur z-10 shadow-sm">
+      <div className="p-5 border-b border-white/10 sticky top-0 bg-[#1f2228]/95 backdrop-blur z-10">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 flex items-center gap-2 font-mono">
             <Palette className="w-4 h-4" />
             Theme Settings
           </h3>
           {onResetTheme && (
             <button
               onClick={onResetTheme}
-              className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-slate-700 transition-colors"
+              className="p-1.5 hover:bg-white/5 rounded text-white/40 hover:text-white transition-colors"
               title="Reset to Original Theme"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
           )}
         </div>
-        <p className="text-[12px] text-slate-500 font-medium leading-relaxed">
+        <p className="text-[12px] text-white/50 font-medium leading-relaxed">
           Customize your app's visual identity. Changes are applied automatically.
         </p>
       </div>

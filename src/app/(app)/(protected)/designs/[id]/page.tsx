@@ -114,17 +114,17 @@ export default function DesignEditorPage() {
 
   if (isLoadingDesign) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1f2228]">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <p className="text-sm font-medium text-muted-foreground">Loading your designs...</p>
+          <Loader2 className="w-8 h-8 animate-spin text-white" />
+          <p className="text-sm font-medium text-white/50 font-mono uppercase tracking-[1.4px]">Loading your designs...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-30 flex overflow-hidden bg-background">
+    <div className="fixed inset-0 z-30 flex overflow-hidden bg-[#1f2228]">
       <div className="absolute inset-0 opacity-40">
         <BackgroundGrid />
       </div>

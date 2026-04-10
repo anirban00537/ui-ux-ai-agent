@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { IconSparkles, IconCheck, IconRocket } from "@tabler/icons-react";
+import { IconSparkles, IconCheck } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { formatPrice, type Product, type Price } from "@/services/pricing";
 import { Button } from "@/components/ui/button";
@@ -47,8 +47,6 @@ export function PricingCard({
 }: PricingCardProps) {
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
-  // Only use href redirect if href is explicitly passed AND no onSelect handler is provided
-  // This ensures checkout flow works when onSelect is passed (dashboard pricing page)
   const targetHref = onSelect
     ? undefined
     : isAuthenticated
@@ -57,8 +55,6 @@ export function PricingCard({
 
   const primaryPrice = product.prices?.[0];
 
-  // Get features from product.features (extracted from feature_1, feature_2, feature_3, etc. metadata keys)
-  // Fallback to benefits if features array is not available
   const features =
     product.features && product.features.length > 0
       ? product.features
@@ -84,66 +80,58 @@ export function PricingCard({
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5, ease: "easeOut" }}
       className={cn(
-        "relative rounded-[40px] p-8 transition-all duration-500 transform",
+        "relative p-8 transition-all duration-500 border",
         isPopular
-          ? "bg-white border-border shadow-2xl md:scale-105 z-10"
-          : "bg-secondary/20 border border-border shadow-sm hover:border-primary/20 hover:bg-white hover:shadow-lg hover:scale-[1.01]",
+          ? "border-white bg-white/[0.05] md:scale-105 z-10"
+          : "border-white/10 bg-white/[0.03] hover:border-white/20",
         className
       )}
     >
-      {/* Pro Glow Effect */}
       {isPopular && (
-        <div className="absolute inset-0 -z-10 rounded-[40px] bg-gradient-to-b from-primary/10 via-primary/5 to-transparent blur-2xl opacity-50" />
-      )}
-
-      {isPopular && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-white text-xs font-bold uppercase tracking-widest rounded-full shadow-coral-glow flex items-center gap-1">
-          <IconSparkles size={12} fill="currentColor" />
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 border border-white/20 font-mono text-xs uppercase tracking-[1.4px] flex items-center gap-1">
+          <IconSparkles size={12} />
           Most Popular
         </div>
       )}
 
       <div className="flex flex-col h-full">
-        {/* Header */}
         <div className="mb-8">
-          <h3 className="font-serif text-2xl text-foreground mb-2">
+          <h3 className="font-sans text-2xl text-white mb-2">
             {product.name}
           </h3>
           {product.description && (
-            <p className="text-sm text-muted-foreground min-h-[40px] leading-relaxed">
+            <p className="font-sans text-sm text-white/70 leading-relaxed">
               {product.description}
             </p>
           )}
         </div>
 
-        {/* Pricing */}
         <div className="flex items-baseline gap-1 mb-8">
           {primaryPrice ? (
             <>
-              <span className="text-4xl font-bold text-foreground tracking-tight">
+              <span className="font-mono text-4xl text-white tracking-tight">
                 {formatPrice(primaryPrice)}
               </span>
               {product.recurringInterval && (
-                <span className="text-muted-foreground text-sm">
+                <span className="font-sans text-white/50 text-sm">
                   /{product.recurringInterval}
                 </span>
               )}
             </>
           ) : (
-            <span className="text-2xl font-bold">Custom</span>
+            <span className="font-mono text-2xl text-white">Custom</span>
           )}
         </div>
 
-        {/* Features List */}
         <div className="flex-1 mb-8">
           {features && features.length > 0 ? (
             <ul className="space-y-4">
               {features.map((feature: string, idx: number) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-3 text-sm text-foreground/80"
+                  className="flex items-start gap-3 font-sans text-sm text-white/70"
                 >
-                  <span className="mt-0.5 flex items-center justify-center w-5 h-5 rounded-full bg-secondary/30 text-secondary-foreground shrink-0">
+                  <span className="mt-0.5 flex items-center justify-center w-5 h-5 border border-white/20 shrink-0">
                     <IconCheck size={12} strokeWidth={3} />
                   </span>
                   {feature}
@@ -151,24 +139,18 @@ export function PricingCard({
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground/50 italic">
+            <p className="font-sans text-sm text-white/30 italic">
               No features listed
             </p>
           )}
         </div>
 
-        {/* CTA Button */}
         <div className="mt-auto">
           {targetHref ? (
             <Button
               asChild
               variant={isPopular ? "default" : "outline"}
-              className={cn(
-                "w-full h-12 rounded-full text-base transition-all",
-                isPopular
-                  ? "bg-primary hover:bg-primary/90 text-white shadow-coral-glow"
-                  : "border-secondary/20 hover:bg-secondary/10 text-foreground"
-              )}
+              className="w-full font-mono"
             >
               <Link
                 href={targetHref || "#"}
@@ -184,14 +166,7 @@ export function PricingCard({
                 (isCurrentPlan && !isCanceled) || loading || !primaryPrice
               }
               variant={isPopular ? "default" : "outline"}
-              className={cn(
-                "w-full h-12 rounded-full text-base transition-all",
-                isCurrentPlan && !isCanceled
-                  ? "bg-secondary/20 text-secondary-foreground cursor-not-allowed hover:bg-secondary/20 border-transparent"
-                  : isPopular
-                    ? "bg-primary hover:bg-primary/90 text-white shadow-coral-glow"
-                    : "border-secondary/20 hover:bg-secondary/10 text-foreground"
-              )}
+              className="w-full font-mono"
             >
               {loading
                 ? "Loading..."

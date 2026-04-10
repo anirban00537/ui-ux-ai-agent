@@ -29,14 +29,14 @@ export function Navbar() {
   return (
     <motion.header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-8 transition-all duration-300 pointer-events-none",
-        isScrolled ? "bg-white/90 backdrop-blur-md border-b border-border/50 py-3" : "bg-transparent py-5"
+        "fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-8 transition-all duration-300",
+        isScrolled ? "bg-[#1f2228]/95 backdrop-blur-md border-b border-white/10 py-3" : "bg-transparent py-5"
       )}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="pointer-events-auto flex items-center justify-between w-full max-w-7xl mx-auto">
+      <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
         <div className="flex items-center min-w-[150px]">
           <Link
             href="/"
@@ -48,32 +48,29 @@ export function Navbar() {
               alt="Butterfast Logo"
               width={130}
               height={32}
-              className="h-8 w-auto"
+              className="h-8 w-auto brightness-0 invert"
             />
           </Link>
         </div>
 
-        {/* Desktop Menu - Centered */}
         <nav className="hidden md:flex items-center justify-center gap-6 flex-1">
           {menuItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="text-[15px] font-medium text-foreground/70 hover:text-foreground transition-colors relative group py-2"
+              className="text-sm font-sans text-white/70 hover:text-white transition-colors relative group py-2"
             >
               {item.name}
             </Link>
           ))}
         </nav>
 
-        {/* Action Buttons - Right */}
         <div className="flex items-center justify-end min-w-[150px] gap-3">
           {user ? (
             <Link href="/home">
               <Button
                 size="sm"
                 onClick={() => trackEvent("button_click", "engagement", "nav_dashboard")}
-                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-6 shadow-sm transition-all hover:scale-[1.02]"
               >
                 Dashboard
               </Button>
@@ -85,7 +82,7 @@ export function Navbar() {
                   variant="ghost"
                   size="sm"
                   onClick={() => trackEvent("button_click", "engagement", "nav_login")}
-                  className="hidden sm:inline-flex text-[15px] font-medium text-foreground/80 hover:text-foreground hover:bg-transparent px-2"
+                  className="hidden sm:inline-flex text-sm font-sans text-white/70 hover:text-white"
                 >
                   Log In
                 </Button>
@@ -94,7 +91,6 @@ export function Navbar() {
                 <Button
                   size="sm"
                   onClick={() => trackEvent("button_click", "engagement", "nav_get_started")}
-                  className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground px-6 w-auto h-10 shadow-sm transition-all hover:scale-[1.02] text-[15px] font-medium"
                 >
                   Sign Up
                 </Button>

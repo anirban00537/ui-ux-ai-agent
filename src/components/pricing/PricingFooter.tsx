@@ -11,16 +11,16 @@ export const PricingFooter = () => {
       transition={{ delay: 0.8 }}
       className="text-center space-y-4 pt-4"
     >
-      <p className="text-sm text-muted-foreground font-medium">
+      <p className="font-sans text-sm text-white/50">
         Join thousands of creators building amazing mobile app designs with
         Butterfast.
       </p>
       <div className="flex items-center justify-center gap-6">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
+        <span className="font-mono text-[10px] uppercase tracking-[1.4px] text-white/30">
           Secured with Polar.sh
         </span>
-        <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/20" />
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
+        <div className="w-1.5 h-1.5 bg-white/20" />
+        <span className="font-mono text-[10px] uppercase tracking-[1.4px] text-white/30">
           No Hidden Fees
         </span>
       </div>

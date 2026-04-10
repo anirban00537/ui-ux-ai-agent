@@ -12,14 +12,12 @@ import {
   selectCreditBalance,
   selectIsSubscribed,
   selectSubscriptionLoading,
-  fetchSubscriptionInfo,
 } from "@/store/slices/subscriptionSlice";
 import { PageSkeleton, PageHeader } from "@/components/shared";
 import { Skeleton, Button } from "@/components/ui";
 import { trackEvent } from "@/components/analytics/trackEvent";
 import { IconPlus } from "@tabler/icons-react";
 
-// Sub-components
 import {
   CreditBalanceCard,
   PlanStatusCard,
@@ -41,26 +39,22 @@ export default function SubscriptionPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const hasVerified = React.useRef(false);
 
-  // Handle checkout success - verify and sync subscription immediately
   useEffect(() => {
     const checkoutStatus = searchParams.get("checkout");
     const customerSessionToken = searchParams.get("customer_session_token");
 
     if (checkoutStatus === "success" && !hasVerified.current) {
-      hasVerified.current = true; // Mark as started immediately
+      hasVerified.current = true;
       setIsVerifying(true);
       
       const verify = async () => {
         try {
-          // Immediately verify the checkout and sync subscription
           await verifyCheckoutMutation.mutateAsync(customerSessionToken || undefined);
           trackEvent('checkout_success', 'engagement', 'subscription');
         } catch (error) {
           console.error("Checkout verification failed", error);
         } finally {
           setIsVerifying(false);
-          // Clean up the URL (remove query params) content-preservingly
-          // using history API avoids Next.js router re-renders/race conditions
           const url = new URL(window.location.href);
           url.searchParams.delete("checkout");
           url.searchParams.delete("customer_session_token");
@@ -81,14 +75,13 @@ export default function SubscriptionPage() {
     });
   };
 
-  // Show verifying state when processing checkout
   if (isVerifying) {
     return (
-      <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 py-16 w-full">
+      <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 py-16 w-full bg-[#1f2228]">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto" />
-          <h2 className="text-xl font-semibold">Activating your subscription...</h2>
-          <p className="text-muted-foreground">This will only take a moment.</p>
+          <div className="animate-spin rounded-full h-12 w-12 border border-white/20 border-t-white mx-auto" />
+          <h2 className="font-mono text-xl text-white">Activating your subscription...</h2>
+          <p className="font-sans text-white/50">This will only take a moment.</p>
         </div>
       </div>
     );
@@ -96,15 +89,15 @@ export default function SubscriptionPage() {
 
   if (isLoading) {
     return (
-      <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] px-4 py-16 w-full">
+      <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] px-4 py-16 w-full bg-[#1f2228]">
         <div className="relative z-10 w-full max-w-7xl">
           <PageSkeleton>
-            <Skeleton className="h-12 w-1/3 rounded-2xl" />
+            <Skeleton className="h-12 w-1/3 border border-white/10" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Skeleton className="h-64 rounded-[32px] border border-secondary/10 shadow-sm" />
-              <Skeleton className="h-64 rounded-[32px] border border-secondary/10 shadow-sm" />
+              <Skeleton className="h-64 border border-white/10" />
+              <Skeleton className="h-64 border border-white/10" />
             </div>
-            <Skeleton className="h-12 w-full rounded-2xl" />
+            <Skeleton className="h-12 w-full border border-white/10" />
           </PageSkeleton>
         </div>
       </div>
@@ -112,20 +105,17 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-6 py-12 lg:py-20">
+    <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-6 py-12 lg:py-20 bg-[#1f2228]">
       <div className="relative z-10 w-full max-w-5xl flex flex-col gap-12">
         <PageHeader
           title={
-            <>
-              Subscription <span className="text-primary italic">& Billing</span>
-            </>
+            <>Subscription & Billing</>
           }
           subtitle="View and manage your plan, usage, and billing history."
           action={
             <Button
               onClick={() => router.push("/home")}
-              variant="default"
-              className="shadow-coral-glow hover:scale-105 transition-transform"
+              className="font-mono"
             >
               <IconPlus size={18} className="mr-2" />
               New Design

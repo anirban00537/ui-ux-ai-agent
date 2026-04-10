@@ -180,14 +180,14 @@ export function CodeViewerModal({
       onMouseDown={(e) => e.stopPropagation()}
     >
       <div
-        className="absolute inset-0 bg-white/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-5xl h-full max-h-[85vh] bg-white border border-black/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black/5 shrink-0 bg-slate-50">
+      <div className="relative w-full max-w-5xl h-full max-h-[85vh] bg-[#1f2228] border border-white/10 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0 bg-[#1a1d24]">
           <div className="flex items-center gap-3">
-            <h2 className="text-[15px] font-bold text-slate-800 tracking-tight">
+            <h2 className="text-[15px] font-bold text-white tracking-tight font-mono uppercase tracking-[1.4px]">
               {title || 'Design'} Code
             </h2>
           </div>
@@ -195,7 +195,7 @@ export function CodeViewerModal({
           <div className="flex items-center gap-3">
             <button
               onClick={handleDownloadCode}
-              className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 disabled:opacity-50 text-white rounded-lg text-[13px] font-bold transition-all active:scale-95 shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-white/90 disabled:opacity-50 text-[#1f2228] rounded text-[13px] font-bold transition-all active:scale-95 font-mono uppercase tracking-[1.4px]"
             >
               <Download className="w-4 h-4" />
               <span>Download</span>
@@ -203,21 +203,21 @@ export function CodeViewerModal({
 
             <button
               onClick={onClose}
-              className="p-2 hover:bg-black/5 rounded-lg text-slate-500 hover:text-slate-800 transition-colors ml-2"
+              className="p-2 hover:bg-white/5 rounded text-white/50 hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden relative group bg-white">
+        <div className="flex-1 overflow-hidden relative group bg-[#1f2228]">
           <div className="absolute top-4 right-6 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={handleCopyCode}
-              className="p-2.5 bg-white border border-black/10 hover:bg-slate-50 rounded-xl text-slate-600 transition-all active:scale-90 shadow-sm"
+              className="p-2.5 bg-white/5 border border-white/10 hover:bg-white/10 rounded text-white/60 transition-all active:scale-90"
               title="Copy Code"
             >
-              {isCopied ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
+              {isCopied ? <Check className="w-5 h-5 text-white" /> : <Copy className="w-5 h-5" />}
             </button>
           </div>
 
@@ -243,18 +243,18 @@ export function CodeViewerModal({
                 contextmenu: false,
               }}
               beforeMount={(monaco) => {
-                monaco.editor.defineTheme('custom-light', {
-                  base: 'vs',
+                monaco.editor.defineTheme('custom-dark', {
+                  base: 'vs-dark',
                   inherit: true,
                   rules: [],
                   colors: {
-                    'editor.background': '#ffffff',
-                    'editor.lineHighlightBackground': '#f8fafc',
-                    'editorLineNumber.foreground': '#94a3b8',
+                    'editor.background': '#1f2228',
+                    'editor.lineHighlightBackground': '#2a2d35',
+                    'editorLineNumber.foreground': '#5c6370',
                   }
                 });
               }}
-              theme="custom-light"
+              theme="custom-dark"
             />
           </div>
         </div>

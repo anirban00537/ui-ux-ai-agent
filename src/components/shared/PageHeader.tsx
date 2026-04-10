@@ -8,7 +8,7 @@ interface PageHeaderProps {
     title: React.ReactNode;
     subtitle?: React.ReactNode;
     action?: React.ReactNode;
-    className?: string; // Additional classes for the container
+    className?: string;
 }
 
 export const PageHeader: React.FC<PageHeaderProps> = ({
@@ -27,11 +27,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             )}
         >
             <div className="space-y-4">
-                <h1 className="font-serif text-2xl md:text-4xl text-foreground tracking-tight leading-tight">
+                <h1 className="font-mono text-2xl md:text-4xl text-white tracking-tight leading-tight">
                     {title}
                 </h1>
                 {subtitle && (
-                    <p className="text-sm md:text-base text-muted-foreground/80 font-medium max-w-md">
+                    <p className="font-sans text-sm md:text-base text-white/50 max-w-md">
                         {subtitle}
                     </p>
                 )}

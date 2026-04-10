@@ -102,16 +102,16 @@ function ToolbarPortalContent({
       {showUpdateInput && (
         <div className="w-[400px] animate-in slide-in-from-top-2 duration-300">
           <div
-            className="flex items-center gap-3 p-2 bg-white/95 backdrop-blur-2xl border border-black/[0.04] rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] ring-1 ring-black/5"
+            className="flex items-center gap-3 p-2 bg-[#1f2228]/95 backdrop-blur-2xl border border-white/10 rounded"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-slate-50 rounded-xl border border-black/5 focus-within:border-primary/50 transition-all">
-              <Sparkles className="w-4 h-4 text-primary animate-pulse shrink-0" />
+            <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-white/5 rounded border border-white/10 focus-within:border-white/20 transition-all">
+              <Sparkles className="w-4 h-4 text-white/70 animate-pulse shrink-0" />
               <input
                 ref={updateInputRef}
                 type="text"
                 placeholder="Ask me to change anything..."
-                className="bg-transparent border-none outline-none text-[13px] w-full text-slate-800 placeholder:text-slate-400 font-medium"
+                className="bg-transparent border-none outline-none text-[13px] w-full text-white placeholder:text-white/40 font-medium font-mono"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleUpdateSubmit();
                   if (e.key === "Escape") setShowUpdateInput(false);
@@ -121,7 +121,7 @@ function ToolbarPortalContent({
             </div>
             <button
               onClick={handleUpdateSubmit}
-              className="w-10 h-10 flex items-center justify-center bg-primary text-primary-foreground rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-all active:scale-95 shrink-0"
+              className="w-10 h-10 flex items-center justify-center bg-white text-[#1f2228] rounded hover:scale-105 transition-all active:scale-95 shrink-0"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -667,16 +667,16 @@ export const MobileFrame = React.memo(
             isSelected
               ? {
                 bottomRight: (
-                  <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                  <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
                 ),
                 bottomLeft: (
-                  <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                  <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
                 ),
                 topRight: (
-                  <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                  <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
                 ),
                 topLeft: (
-                  <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+                  <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
                 ),
               }
               : {}
@@ -692,7 +692,7 @@ export const MobileFrame = React.memo(
                 "absolute -top-10 w-full text-center transition-opacity drag-target cursor-grab z-20",
                 isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
               )}>
-                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest bg-white/95 px-2 py-1 rounded shadow-sm border border-black/[0.04] backdrop-blur-sm">
+                <span className="text-[11px] font-bold text-white/50 uppercase tracking-widest bg-[#1f2228]/95 px-2 py-1 rounded border border-white/10 font-mono">
                   {title}
                 </span>
               </div>
@@ -702,16 +702,16 @@ export const MobileFrame = React.memo(
             <div className="relative w-full h-full group">
               {/* Selection Border - Rectangular Bounding Box */}
               {isSelected && (
-                <div className="absolute -inset-[1.5px] border-2 border-primary/50 z-20 pointer-events-none rounded-[32px]" />
+                <div className="absolute -inset-[1.5px] border-2 border-white/50 z-20 pointer-events-none rounded" />
               )}
 
               {/* Generating Animation */}
               {isGenerating && (
                 <div
-                  className="absolute -inset-1.5 rounded-[34px] opacity-75 blur-md pointer-events-none transition-all duration-500"
+                  className="absolute -inset-1.5 rounded opacity-50 blur-md pointer-events-none transition-all duration-500"
                   style={{
                     background:
-                      "linear-gradient(90deg, #6366f1, #a855f7, #ec4899, #6366f1)",
+                      "linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1), rgba(255,255,255,0.3))",
                     backgroundSize: "300% 100%",
                     animation: "gradient-flow 2s linear infinite",
                   }}
@@ -725,13 +725,13 @@ export const MobileFrame = React.memo(
                   : ""
                   }`}
                 style={{
-                  borderRadius: "28px",
+                  borderRadius: "0px",
                   background:
                     colorPalette?.background || "var(--background, #ffffff)",
-                  border: "1px solid var(--border, #e5e7eb)",
+                  border: "1px solid var(--border, rgba(255,255,255,0.1))",
                   boxShadow: isSelected
-                    ? "0 20px 45px rgba(0,0,0,0.25)"
-                    : "0 8px 24px rgba(0,0,0,0.12)",
+                    ? "0 20px 45px rgba(0,0,0,0.4)"
+                    : "0 8px 24px rgba(0,0,0,0.2)",
                 }}
               >
                 <iframe
@@ -764,9 +764,9 @@ export const MobileFrame = React.memo(
                 )}
 
                 {!isLoaded && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-white border border-black/5 rounded-[26px]">
-                    <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-sm shadow-primary/10" />
-                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-400 font-bold animate-pulse">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1f2228] border border-white/10 rounded">
+                    <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-transparent animate-spin mb-4" />
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 font-bold animate-pulse">
                       Initializing
                     </p>
                   </div>
@@ -776,17 +776,17 @@ export const MobileFrame = React.memo(
 
             {/* Dimensions Label (Bottom) */}
             {isSelected && !showUpdateInput && (
-              <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded-full bg-white/95 backdrop-blur-xl border border-black/[0.04] px-3 py-1 text-slate-600 text-[10px] shadow-sm font-bold tracking-widest tabular-nums z-[60] pointer-events-none uppercase">
+              <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded bg-[#1f2228] border border-white/10 px-3 py-1 text-white/60 text-[10px] font-mono tracking-widest z-[60] pointer-events-none uppercase">
                 {Math.round(size.width)}{" "}
-                <span className="text-slate-400 mx-1">×</span>{" "}
+                <span className="text-white/40 mx-1">×</span>{" "}
                 {Math.round(size.height)}
               </div>
             )}
 
             {/* Generating Badge */}
             {isGenerating && (
-              <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 px-6 py-3 bg-primary text-white rounded-full shadow-2xl shadow-primary/30 whitespace-nowrap z-[70] border border-white/20 animate-in zoom-in-95 duration-300">
-                <div className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+              <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 px-6 py-3 bg-white text-[#1f2228] rounded whitespace-nowrap z-[70] border border-white/20 animate-in zoom-in-95 duration-300 font-mono uppercase tracking-[1.4px]">
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-[#1f2228] border-t-transparent animate-spin" />
                 <span className="text-xs font-bold uppercase tracking-widest">
                   Generating UI
                 </span>

@@ -3,11 +3,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="relative flex min-h-screen w-full overflow-hidden">
-      {/* App Sidebar */}
+    <div className="relative flex min-h-screen w-full overflow-hidden bg-[#1f2228]">
       <AppSidebar />
       
-      {/* Main Content */}
       <main className="relative z-10 flex-1 flex flex-col overflow-hidden">
         <div className="container relative z-10 mx-auto h-full">
           {children}

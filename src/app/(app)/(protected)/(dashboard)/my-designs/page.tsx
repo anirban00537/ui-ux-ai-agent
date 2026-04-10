@@ -80,19 +80,16 @@ export default function MyDesignsPage() {
   };
 
   return (
-    <div className="relative flex-1 flex flex-col min-h-[calc(100vh-80px)]">
+    <div className="relative flex-1 flex flex-col min-h-[calc(100vh-80px)] bg-[#1f2228]">
       <div className="relative z-10 w-full flex-1 px-4 py-8 md:px-8 overflow-y-auto">
         <PageHeader
           title={
-            <>
-              My <span className="text-primary italic">Designs</span>
-            </>
+            <>My Designs</>
           }
           action={
             <Button
               onClick={() => router.push("/home")}
-              variant="default"
-              className="shadow-coral-glow hover:scale-105 transition-transform"
+              className="font-mono"
             >
               <IconPlus size={18} className="mr-2" />
               New Design
@@ -138,19 +135,19 @@ export default function MyDesignsPage() {
       </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="rounded-2xl border-0 bg-card/90 backdrop-blur-3xl shadow-2xl">
+        <AlertDialogContent className="border border-white/10 bg-[#1f2228]">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Design</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="font-mono text-white">Delete Design</AlertDialogTitle>
+            <AlertDialogDescription className="font-sans text-white/50">
               Are you sure you want to delete &ldquo;{designToDelete?.title}
               &rdquo;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="font-mono border border-white/20 bg-transparent text-white hover:bg-white/5">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl"
+              className="font-mono bg-red-500 text-white hover:bg-red-500/90"
               disabled={deleteDesignMutation.isPending}
             >
               {deleteDesignMutation.isPending ? "Deleting..." : "Delete"}
