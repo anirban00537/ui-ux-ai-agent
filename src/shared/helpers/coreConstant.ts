@@ -93,7 +93,7 @@ export const coreConstant = {
       },
     },
     AGENT: {
-      NAME: 'kwaipilot/kat-coder-pro-v2',
+      NAME: 'qwen/qwen3-coder-next',
       PRICING: { prompt: 2, completion: 4.5 },
       PROVIDER: {
         ENABLED: false,
