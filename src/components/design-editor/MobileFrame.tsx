@@ -102,16 +102,16 @@ function ToolbarPortalContent({
       {showUpdateInput && (
         <div className="w-[400px] animate-in slide-in-from-top-2 duration-300">
           <div
-            className="flex items-center gap-3 p-2 bg-[#1f2228]/95 backdrop-blur-2xl border border-white/10 rounded"
+            className="flex items-center gap-3 p-2 bg-background/95 backdrop-blur-2xl border border-border rounded"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-white/5 rounded border border-white/10 focus-within:border-white/20 transition-all">
-              <Sparkles className="w-4 h-4 text-white/70 animate-pulse shrink-0" />
+            <div className="flex-1 flex items-center gap-3 px-3 py-2.5 bg-muted rounded border border-border focus-within:border-border/70 transition-all">
+              <Sparkles className="w-4 h-4 text-muted-foreground/70 animate-pulse shrink-0" />
               <input
                 ref={updateInputRef}
                 type="text"
                 placeholder="Ask me to change anything..."
-                className="bg-transparent border-none outline-none text-[13px] w-full text-white placeholder:text-white/40 font-medium font-mono"
+                className="bg-transparent border-none outline-none text-[13px] w-full text-foreground placeholder:text-muted-foreground/40 font-medium font-mono"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleUpdateSubmit();
                   if (e.key === "Escape") setShowUpdateInput(false);
@@ -121,7 +121,7 @@ function ToolbarPortalContent({
             </div>
             <button
               onClick={handleUpdateSubmit}
-              className="w-10 h-10 flex items-center justify-center bg-white text-[#1f2228] rounded hover:scale-105 transition-all active:scale-95 shrink-0"
+              className="w-10 h-10 flex items-center justify-center bg-foreground text-background rounded hover:scale-105 transition-all active:scale-95 shrink-0"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -667,16 +667,16 @@ export const MobileFrame = React.memo(
             isSelected
               ? {
                 bottomRight: (
-                  <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
+                  <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-foreground border border-border z-[70]" />
                 ),
                 bottomLeft: (
-                  <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
+                  <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-foreground border border-border z-[70]" />
                 ),
                 topRight: (
-                  <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
+                  <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-foreground border border-border z-[70]" />
                 ),
                 topLeft: (
-                  <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-white/20 z-[70]" />
+                  <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-foreground border border-border z-[70]" />
                 ),
               }
               : {}
@@ -692,7 +692,7 @@ export const MobileFrame = React.memo(
                 "absolute -top-10 w-full text-center transition-opacity drag-target cursor-grab z-20",
                 isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"
               )}>
-                <span className="text-[11px] font-bold text-white/50 uppercase tracking-widest bg-[#1f2228]/95 px-2 py-1 rounded border border-white/10 font-mono">
+                <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest bg-background/95 px-2 py-1 rounded border border-border font-mono">
                   {title}
                 </span>
               </div>
@@ -702,7 +702,7 @@ export const MobileFrame = React.memo(
             <div className="relative w-full h-full group">
               {/* Selection Border - Rectangular Bounding Box */}
               {isSelected && (
-                <div className="absolute -inset-[1.5px] border-2 border-white/50 z-20 pointer-events-none rounded" />
+                <div className="absolute -inset-[1.5px] border-2 border-muted-foreground/50 z-20 pointer-events-none rounded" />
               )}
 
               {/* Generating Animation */}
@@ -764,9 +764,9 @@ export const MobileFrame = React.memo(
                 )}
 
                 {!isLoaded && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1f2228] border border-white/10 rounded">
-                    <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-transparent animate-spin mb-4" />
-                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/40 font-bold animate-pulse">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background border border-border rounded">
+                    <div className="w-8 h-8 rounded-full border-2 border-border border-t-transparent animate-spin mb-4" />
+                    <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground/40 font-bold animate-pulse">
                       Initializing
                     </p>
                   </div>
@@ -776,17 +776,17 @@ export const MobileFrame = React.memo(
 
             {/* Dimensions Label (Bottom) */}
             {isSelected && !showUpdateInput && (
-              <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded bg-[#1f2228] border border-white/10 px-3 py-1 text-white/60 text-[10px] font-mono tracking-widest z-[60] pointer-events-none uppercase">
+              <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 rounded bg-background border border-border px-3 py-1 text-muted-foreground/60 text-[10px] font-mono tracking-widest z-[60] pointer-events-none uppercase">
                 {Math.round(size.width)}{" "}
-                <span className="text-white/40 mx-1">×</span>{" "}
+                <span className="text-muted-foreground/40 mx-1">×</span>{" "}
                 {Math.round(size.height)}
               </div>
             )}
 
             {/* Generating Badge */}
             {isGenerating && (
-              <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 px-6 py-3 bg-white text-[#1f2228] rounded whitespace-nowrap z-[70] border border-white/20 animate-in zoom-in-95 duration-300 font-mono uppercase tracking-[1.4px]">
-                <div className="w-3.5 h-3.5 rounded-full border-2 border-[#1f2228] border-t-transparent animate-spin" />
+              <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 flex items-center gap-3 px-6 py-3 bg-foreground text-background rounded whitespace-nowrap z-[70] border border-border animate-in zoom-in-95 duration-300 font-mono uppercase tracking-[1.4px]">
+                <div className="w-3.5 h-3.5 rounded-full border-2 border-background border-t-transparent animate-spin" />
                 <span className="text-xs font-bold uppercase tracking-widest">
                   Generating UI
                 </span>

@@ -25,33 +25,33 @@ export function ThemePanel({
   if (!colorPalette) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center space-y-3 opacity-70">
-        <Palette className="w-10 h-10 text-white/30" />
-        <p className="text-[14px] font-bold text-white font-mono uppercase tracking-[1.4px]">No theme loaded</p>
-        <p className="text-[12px] text-white/50 font-medium">Generate a design to customize its theme.</p>
+        <Palette className="w-10 h-10 text-muted-foreground/30" />
+        <p className="text-[14px] font-bold text-foreground font-mono uppercase tracking-[1.4px]">No theme loaded</p>
+        <p className="text-[12px] text-muted-foreground font-medium">Generate a design to customize its theme.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#1f2228] custom-scrollbar overflow-y-auto pb-20">
+    <div className="flex flex-col h-full bg-background custom-scrollbar overflow-y-auto pb-20">
       {/* Reset Header */}
-      <div className="p-5 border-b border-white/10 sticky top-0 bg-[#1f2228]/95 backdrop-blur z-10">
+      <div className="p-5 border-b border-border sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-white/50 flex items-center gap-2 font-mono">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2 font-mono">
             <Palette className="w-4 h-4" />
             Theme Settings
           </h3>
           {onResetTheme && (
             <button
               onClick={onResetTheme}
-              className="p-1.5 hover:bg-white/5 rounded text-white/40 hover:text-white transition-colors"
+              className="p-1.5 hover:bg-accent rounded text-muted-foreground/40 hover:text-foreground transition-colors"
               title="Reset to Original Theme"
             >
               <RotateCcw className="w-4 h-4" />
             </button>
           )}
         </div>
-        <p className="text-[12px] text-white/50 font-medium leading-relaxed">
+        <p className="text-[12px] text-muted-foreground font-medium leading-relaxed">
           Customize your app's visual identity. Changes are applied automatically.
         </p>
       </div>

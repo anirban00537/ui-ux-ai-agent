@@ -122,7 +122,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <body className="font-sans antialiased h-full bg-[#1f2228]">
+      <body className="font-sans antialiased h-full bg-background">
         <Script
           id="json-ld"
           type="application/ld+json"

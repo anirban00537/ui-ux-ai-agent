@@ -220,7 +220,7 @@ export const PreviewMobileFrame = React.memo(({
       >
         {/* Selection Border - Rectangular Bounding Box */}
         {isSelected && !isStatic && (
-          <div className="absolute -inset-[1.5px] border-2 border-primary/50 z-20 pointer-events-none rounded-[40px]" />
+          <div className="absolute -inset-[1.5px] border-2 border-neutral-600/50 z-20 pointer-events-none rounded-[40px]" />
         )}
 
         {/* Generating Animation */}
@@ -280,7 +280,7 @@ export const PreviewMobileFrame = React.memo(({
 
           {!isLoaded && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-white border border-black/5 rounded-[26px]">
-              <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-4 shadow-sm shadow-primary/10" />
+              <div className="w-8 h-8 rounded-full border-2 border-neutral-600 border-t-transparent animate-spin mb-4 shadow-sm shadow-neutral-600/10" />
               <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-400 font-bold animate-pulse">
                 Initializing
               </p>
@@ -376,16 +376,16 @@ export const PreviewMobileFrame = React.memo(({
         }}
         resizeHandleComponent={isSelected && !disableResize ? {
           bottomRight: (
-            <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+            <div className="absolute -bottom-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-neutral-600 shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
           ),
           bottomLeft: (
-            <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+            <div className="absolute -bottom-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-neutral-600 shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
           ),
           topRight: (
-            <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+            <div className="absolute -top-[4px] -right-[4px] w-2.5 h-2.5 bg-white border border-neutral-600 shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
           ),
           topLeft: (
-            <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-primary shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
+            <div className="absolute -top-[4px] -left-[4px] w-2.5 h-2.5 bg-white border border-neutral-600 shadow-[0_0_0_1px_rgba(0,0,0,0.1)] z-[70]" />
           ),
         } : {}}
       >

@@ -33,52 +33,91 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 4px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 15px;
+  --radius-xl: 40px;
 }
 
 :root {
-  --background: #1f2228;
+  /* Core Colors from DESIGN.md */
+  --background: #000000;
   --foreground: #ffffff;
-  --card: #1f2228;
+  --card: #090909;
   --card-foreground: #ffffff;
-  --popover: #1f2228;
+  --popover: #000000;
   --popover-foreground: #ffffff;
-  --primary: #ffffff;
-  --primary-foreground: #1f2228;
-  --secondary: rgba(255, 255, 255, 0.05);
+  
+  /* Primary Accent - Framer Blue */
+  --primary: #0099ff;
+  --primary-foreground: #000000;
+  
+  /* Secondary & Accent */
+  --secondary: rgba(255, 255, 255, 0.1);
   --secondary-foreground: #ffffff;
   --muted: rgba(255, 255, 255, 0.05);
-  --muted-foreground: rgba(255, 255, 255, 0.5);
-  --accent: rgba(255, 255, 255, 0.08);
+  --muted-foreground: #a6a6a6;
+  --accent: rgba(255, 255, 255, 0.1);
   --accent-foreground: #ffffff;
+  
+  /* Semantic */
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.1);
-  --input: rgba(255, 255, 255, 0.05);
-  --ring: rgba(59, 130, 246, 0.5);
-  --chart-1: #ffffff;
-  --chart-2: rgba(255, 255, 255, 0.7);
-  --chart-3: rgba(255, 255, 255, 0.5);
-  --chart-4: rgba(255, 255, 255, 0.3);
-  --chart-5: rgba(255, 255, 255, 0.2);
+  --success: #22c55e;
+  --success-foreground: #000000;
+  
+  /* Border & Ring - Dark Gray */
+  --border: rgba(80, 80, 80, 0.4);
+  --border-strong: rgba(100, 100, 100, 0.5);
+  --ring: rgba(80, 80, 80, 0.3);
+  --ring-offset: #000000;
+  
+  /* Input */
+  --input: rgba(255, 255, 255, 0.1);
+  --input-border: rgba(255, 255, 255, 0.2);
+  --input-focus: #0099ff;
+  
+  /* Chart Colors */
+  --chart-1: #0099ff;
+  --chart-2: rgba(0, 153, 255, 0.7);
+  --chart-3: rgba(0, 153, 255, 0.5);
+  --chart-4: rgba(0, 153, 255, 0.3);
+  --chart-5: rgba(0, 153, 255, 0.2);
 
-  --font-sans: Geist, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
-  --font-mono: GeistMono, ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Liberation Mono, Courier New, monospace;
+  /* Frosted Glass */
+  --frosted: rgba(255, 255, 255, 0.1);
+  --frosted-hover: rgba(255, 255, 255, 0.15);
+  --frosted-active: rgba(255, 255, 255, 0.2);
+  
+  /* Surface Levels */
+  --surface-elevated: #090909;
+  --surface-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* Text Opacities */
+  --text-primary: #ffffff;
+  --text-secondary: #a6a6a6;
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --text-disabled: rgba(255, 255, 255, 0.3);
+  --text-placeholder: rgba(255, 255, 255, 0.4);
+  
+  /* Fonts */
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: Azeret Mono, ui-monospace, SFMono-Regular, monospace;
 
+  /* Spacing & Tracking */
+  --tracking-tight: -0.02em;
   --tracking-normal: normal;
   --spacing: 0.25rem;
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: var(--border);
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-sans);
     letter-spacing: var(--tracking-normal);
     -webkit-font-smoothing: antialiased;
@@ -86,99 +125,168 @@
   }
 
   ::selection {
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    background: rgba(0, 153, 255, 0.3);
+    color: var(--text-primary);
   }
 }
 
 @layer components {
   .btn-primary {
     background: #ffffff;
-    color: #1f2228;
-    font-family: var(--font-mono);
-    font-size: 14px;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
+    color: #000000;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01px;
     padding: 12px 24px;
     border: none;
+    border-radius: 100px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .btn-primary:hover {
     background: rgba(255, 255, 255, 0.9);
+    transform: scale(0.98);
+  }
+
+  .btn-frosted {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-frosted:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-blue {
+    background: #0099ff;
+    color: #000000;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-blue:hover {
+    background: #0088ee;
+    transform: scale(0.98);
   }
 
   .btn-ghost {
     background: transparent;
     color: #ffffff;
-    font-family: var(--font-mono);
-    font-size: 14px;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01px;
     padding: 12px 24px;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 100px;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
   }
 
   .text-link {
-    color: #ffffff;
+    color: var(--primary);
     font-family: var(--font-sans);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 400;
     text-decoration: none;
     transition: color 0.2s ease;
   }
 
   .text-link:hover {
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--primary);
+    opacity: 0.8;
   }
 
   .card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
   }
 
   .card-hover:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--border-strong);
+    box-shadow: 0 0 30px rgba(0, 153, 255, 0.1);
   }
 
   .input {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    background: var(--muted);
+    border: 1px solid var(--input-border);
+    color: var(--foreground);
     font-family: var(--font-sans);
-    font-size: 16px;
+    font-size: 15px;
     padding: 12px 16px;
+    border-radius: 8px;
     outline: none;
-    transition: border-color 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .input:focus {
-    border-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    border-color: var(--input-focus);
+    box-shadow: 0 0 0 3px var(--ring);
   }
 
   .input::placeholder {
-    color: rgba(255, 255, 255, 0.3);
+    color: var(--text-placeholder);
+  }
+
+  .display-heading {
+    font-family: var(--font-sans);
+    font-size: 110px;
+    font-weight: 500;
+    line-height: 0.85;
+    letter-spacing: -5.5px;
+  }
+
+  .section-heading {
+    font-family: var(--font-sans);
+    font-size: 85px;
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -4.25px;
+  }
+
+  .feature-heading {
+    font-family: var(--font-sans);
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.13;
+    letter-spacing: -1px;
   }
 
   .monospace-tag {
     background: transparent;
-    color: #ffffff;
+    color: #0099ff;
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 10.4px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.21px;
     padding: 4px 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(0, 153, 255, 0.3);
+    border-radius: 4px;
   }
 }
 
@@ -240,6 +348,6 @@
 }
 
 .ProseMirror .ProseMirror-selectednode {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
+  outline: 2px solid rgba(0, 153, 255, 0.5);
   outline-offset: 2px;
 }

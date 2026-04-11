@@ -55,10 +55,10 @@ export function SidebarPromptInput({
     <div className="relative group">
       <div
         className={cn(
-          "relative bg-[#1f2228] backdrop-blur-xl border transition-all duration-300 rounded overflow-hidden",
+          "relative bg-background backdrop-blur-xl border transition-all duration-300 rounded overflow-hidden",
           loading
-            ? "border-white/20 ring-1 ring-white/10"
-            : "border-white/10 hover:border-white/20 focus-within:border-white/20 focus-within:ring-1 focus-within:ring-white/10"
+            ? "border-border ring-1 ring-border"
+            : "border-border hover:border-border-strong focus-within:border-border-strong focus-within:ring-1 focus-within:ring-border"
         )}
       >
         <div className="relative flex items-end gap-3 p-3.5">
@@ -70,8 +70,8 @@ export function SidebarPromptInput({
               onKeyDown={handleKeyDown}
               placeholder={loading ? "Generating designs..." : placeholder}
               className={cn(
-                "w-full resize-none border-0 bg-transparent p-0 text-[13.5px] leading-relaxed text-white placeholder:text-white/40 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-medium custom-scrollbar disabled:opacity-50 font-mono",
-                loading && "text-white/50 cursor-not-allowed italic"
+                "w-full resize-none border-0 bg-transparent p-0 text-[13.5px] leading-relaxed text-foreground placeholder:text-muted-foreground/40 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 font-medium custom-scrollbar disabled:opacity-50 font-mono",
+                loading && "text-muted-foreground/50 cursor-not-allowed italic"
               )}
               rows={1}
               disabled={loading}
@@ -99,8 +99,8 @@ export function SidebarPromptInput({
                 className={cn(
                   "h-8 w-8 rounded transition-all duration-300",
                   prompt.trim()
-                    ? "bg-white text-[#1f2228] hover:bg-white/90 hover:scale-105 active:scale-95 font-mono uppercase tracking-[1.4px]"
-                    : "bg-white/10 text-white/40 cursor-not-allowed opacity-50 font-mono uppercase tracking-[1.4px]"
+                    ? "bg-foreground text-background hover:bg-foreground/90 hover:scale-105 active:scale-95 font-mono uppercase tracking-[1.4px]"
+                    : "bg-accent text-muted-foreground/40 cursor-not-allowed opacity-50 font-mono uppercase tracking-[1.4px]"
                 )}
               >
                 <SendHorizontal className="h-4 w-4" />
@@ -111,8 +111,8 @@ export function SidebarPromptInput({
 
         {/* Loading Progress Bar at bottom */}
         {loading && (
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10">
-            <div className="h-full bg-white/50 animate-progress-indeterminate" />
+          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-border">
+            <div className="h-full bg-muted-foreground/50 animate-progress-indeterminate" />
           </div>
         )}
       </div>
@@ -120,7 +120,7 @@ export function SidebarPromptInput({
       {/* Keyboard hint */}
       {!loading && (
         <div className="absolute -bottom-5 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-          <span className="text-[10px] text-white/40 font-medium tracking-wide font-mono uppercase tracking-[1.4px]">Press Enter to send</span>
+          <span className="text-[10px] text-muted-foreground/40 font-medium tracking-wide font-mono uppercase tracking-[1.4px]">Press Enter to send</span>
         </div>
       )}
     </div>

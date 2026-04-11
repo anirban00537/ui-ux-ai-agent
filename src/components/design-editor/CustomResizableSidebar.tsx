@@ -32,7 +32,7 @@ export function CustomResizableSidebar({
     <div
       ref={sidebarRef}
       className={cn(
-        "relative bg-[#1f2228] border-white/10 flex-shrink-0 transition-none",
+        "relative bg-background border-border flex-shrink-0 transition-none",
         side === "left" ? "border-r" : "border-l",
         className
       )}
@@ -41,13 +41,13 @@ export function CustomResizableSidebar({
       <div
         className={cn(
           "absolute top-0 bottom-0 w-1.5 cursor-col-resize z-50 group",
-          "hover:bg-white/20 transition-all duration-300 hover:scale-105",
+          "hover:bg-primary/20 transition-all duration-300 hover:scale-105",
           side === "left" ? "right-0" : "left-0",
-          isResizing && "bg-white/30"
+          isResizing && "bg-primary/30"
         )}
         onMouseDown={handleMouseDown}
       >
-        <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/10 group-hover:bg-white/30 transition-all duration-300 group-hover:w-0.5" />
+        <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border group-hover:bg-primary/30 transition-all duration-300 group-hover:w-0.5" />
       </div>
       <div className="h-full overflow-hidden flex flex-col">{children}</div>
     </div>

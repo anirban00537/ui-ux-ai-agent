@@ -9,7 +9,7 @@ const spinningWord = "Mobile App";
 
 export default function HeroSection() {
   return (
-    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center isolate bg-[#1f2228]">
+    <section className="relative pt-32 pb-24 overflow-hidden min-h-screen flex flex-col items-center justify-center isolate bg-background">
       <div className="container relative z-10 px-4 flex flex-col items-center">
         <div className="w-full max-w-5xl flex flex-col gap-12 items-center">
           <motion.div
@@ -18,13 +18,13 @@ export default function HeroSection() {
             transition={{ duration: 0.6 }}
             className="text-center flex flex-col items-center gap-8"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 border border-white/20">
-              <span className="font-mono text-xs uppercase tracking-[1.4px] text-white">
+            <div className="inline-flex items-center gap-2 px-4 py-2 border border-border">
+              <span className="font-mono text-xs uppercase tracking-[1.4px] text-foreground">
                 AI-Powered Design
               </span>
             </div>
 
-            <h1 className="font-mono text-5xl md:text-7xl lg:text-[120px] font-light tracking-tight text-white leading-[1] max-w-5xl text-center">
+            <h1 className="font-mono text-5xl md:text-7xl lg:text-[120px] font-light tracking-tight text-foreground leading-[1] max-w-5xl text-center">
               Design{" "}
               <span className="relative inline-block text-left">
                 <AnimatePresence mode="wait">
@@ -34,7 +34,7 @@ export default function HeroSection() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -20, opacity: 0 }}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="absolute left-0 bottom-0 text-white/70 whitespace-nowrap"
+                    className="absolute left-0 bottom-0 text-muted-foreground whitespace-nowrap"
                   >
                     {spinningWord}
                   </motion.span>
@@ -46,7 +46,7 @@ export default function HeroSection() {
               in Seconds
             </h1>
 
-            <p className="font-sans text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed text-center max-w-xl">
+            <p className="font-sans text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed text-center max-w-xl">
               Transform your prompts into stunning mobile app designs instantly.
               No design skills needed—just describe what you want.
             </p>
@@ -71,8 +71,8 @@ export default function HeroSection() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="relative w-full max-w-5xl mx-auto mt-16"
           >
-            <div className="relative z-10 border border-white/10 bg-white/[0.03] p-2">
-              <div className="relative w-full aspect-[16/10] sm:aspect-video overflow-hidden bg-white/5">
+            <div className="relative z-10 border border-border bg-card p-2">
+              <div className="relative w-full aspect-[16/10] sm:aspect-video overflow-hidden bg-muted">
                 <iframe
                   src="https://www.youtube.com/embed/rogYPw2uZjo?autoplay=1&mute=1&loop=1&playlist=rogYPw2uZjo&controls=0&rel=0&modestbranding=1&playsinline=1"
                   title="Butterfast Demo"

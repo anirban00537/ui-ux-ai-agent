@@ -102,9 +102,9 @@ export const ImagePreviewModal = ({
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 p-3 rounded-full z-10 transition-all duration-200 hover:scale-110 bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-sm border border-white/10"
+        className="absolute top-6 right-6 p-3 rounded-full z-10 transition-all duration-200 hover:scale-110 bg-accent hover:bg-accent backdrop-blur-md shadow-sm border border-border"
       >
-        <IconX size={24} className="text-white" />
+        <IconX size={24} className="text-foreground" />
       </button>
 
       {/* Navigation arrows */}
@@ -115,9 +115,9 @@ export const ImagePreviewModal = ({
             trackEvent('media_preview_nav_prev', 'engagement', media.id);
             onPrevious();
           }}
-          className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full z-10 transition-all duration-200 hover:scale-110 bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-sm border border-white/10"
+          className="absolute left-6 top-1/2 -translate-y-1/2 p-3 rounded-full z-10 transition-all duration-200 hover:scale-110 bg-accent hover:bg-accent backdrop-blur-md shadow-sm border border-border"
         >
-          <IconChevronLeft size={28} className="text-white" />
+          <IconChevronLeft size={28} className="text-foreground" />
         </button>
       )}
       {hasNext && (
@@ -127,9 +127,9 @@ export const ImagePreviewModal = ({
             trackEvent('media_preview_nav_next', 'engagement', media.id);
             onNext();
           }}
-          className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full z-10 transition-all duration-200 hover:scale-110 bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-sm border border-white/10"
+          className="absolute right-6 top-1/2 -translate-y-1/2 p-3 rounded-full z-10 transition-all duration-200 hover:scale-110 bg-accent hover:bg-accent backdrop-blur-md shadow-sm border border-border"
         >
-          <IconChevronRight size={28} className="text-white" />
+          <IconChevronRight size={28} className="text-foreground" />
         </button>
       )}
 
@@ -158,7 +158,7 @@ export const ImagePreviewModal = ({
             />
           ) : (
             <div className="w-96 h-64 flex items-center justify-center bg-muted/20">
-              <IconPhoto size={64} className="text-white/40" />
+              <IconPhoto size={64} className="text-muted-foreground" />
             </div>
           )}
 
@@ -166,8 +166,8 @@ export const ImagePreviewModal = ({
           <div
             className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent"
           >
-            <p className="text-white font-medium truncate">{media.name}</p>
-            <p className="text-white/60 text-sm">
+            <p className="text-foreground font-medium truncate">{media.name}</p>
+            <p className="text-muted-foreground text-sm">
               {formatFileSize(media.size)} • {media.width && media.height ? `${media.width} × ${media.height}` : formatDate(media.createdAt)}
             </p>
           </div>
@@ -185,14 +185,14 @@ export const ImagePreviewModal = ({
               trackEvent('media_preview_favorite_toggle', 'engagement', media.id);
               onToggleFavorite();
             }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-accent hover:bg-accent backdrop-blur-md border border-border"
           >
             {media.isFavorite ? (
               <IconHeartFilled size={18} className="text-red-400" />
             ) : (
-              <IconHeart size={18} className="text-white" />
+              <IconHeart size={18} className="text-foreground" />
             )}
-            <span className="text-white text-sm font-medium">
+            <span className="text-foreground text-sm font-medium">
               {media.isFavorite ? "Favorited" : "Favorite"}
             </span>
           </button>
@@ -202,10 +202,10 @@ export const ImagePreviewModal = ({
               trackEvent('media_preview_copy_url', 'engagement', media.id);
               onCopyUrl();
             }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-accent hover:bg-accent backdrop-blur-md border border-border"
           >
-            <IconCopy size={18} className="text-white" />
-            <span className="text-white text-sm font-medium">Copy URL</span>
+            <IconCopy size={18} className="text-foreground" />
+            <span className="text-foreground text-sm font-medium">Copy URL</span>
           </button>
 
           <button
@@ -213,10 +213,10 @@ export const ImagePreviewModal = ({
               trackEvent('media_preview_download', 'engagement', media.id);
               onDownload();
             }}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-accent hover:bg-accent backdrop-blur-md border border-border"
           >
-            <IconDownload size={18} className="text-white" />
-            <span className="text-white text-sm font-medium">Download</span>
+            <IconDownload size={18} className="text-foreground" />
+            <span className="text-foreground text-sm font-medium">Download</span>
           </button>
 
           <button
@@ -225,12 +225,12 @@ export const ImagePreviewModal = ({
               setShowInfo(!showInfo);
             }}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10",
-              showInfo && "bg-white/20 ring-1 ring-white/30"
+              "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105 bg-accent hover:bg-accent backdrop-blur-md border border-border",
+              showInfo && "bg-accent ring-1 ring-border"
             )}
           >
-            <IconInfoCircle size={18} className="text-white" />
-            <span className="text-white text-sm font-medium">Info</span>
+            <IconInfoCircle size={18} className="text-foreground" />
+            <span className="text-foreground text-sm font-medium">Info</span>
           </button>
         </motion.div>
 
@@ -249,35 +249,35 @@ export const ImagePreviewModal = ({
             >
               <div className="p-4 grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-white/50 text-xs uppercase tracking-wider mb-1">File Name</p>
-                  <p className="text-white font-medium truncate">{media.name}</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">File Name</p>
+                  <p className="text-foreground font-medium truncate">{media.name}</p>
                 </div>
                 <div>
-                  <p className="text-white/50 text-xs uppercase tracking-wider mb-1">File Type</p>
-                  <p className="text-white font-medium">{media.mimeType}</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">File Type</p>
+                  <p className="text-foreground font-medium">{media.mimeType}</p>
                 </div>
                 <div>
-                  <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Size</p>
-                  <p className="text-white font-medium">{formatFileSize(media.size)}</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Size</p>
+                  <p className="text-foreground font-medium">{formatFileSize(media.size)}</p>
                 </div>
                 <div>
-                  <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Dimensions</p>
-                  <p className="text-white font-medium">
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Dimensions</p>
+                  <p className="text-foreground font-medium">
                     {media.width && media.height ? `${media.width} × ${media.height} px` : "N/A"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-white/50 text-xs uppercase tracking-wider mb-1">Uploaded</p>
-                  <p className="text-white font-medium">{formatDate(media.createdAt)}</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Uploaded</p>
+                  <p className="text-foreground font-medium">{formatDate(media.createdAt)}</p>
                 </div>
                 {media.tags.length > 0 && (
                   <div className="col-span-2">
-                    <p className="text-white/50 text-xs uppercase tracking-wider mb-2">Tags</p>
+                    <p className="text-muted-foreground text-xs uppercase tracking-wider mb-2">Tags</p>
                     <div className="flex flex-wrap gap-1">
                       {media.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-1 text-xs font-medium rounded-lg bg-white/10 text-white"
+                          className="px-2 py-1 text-xs font-medium rounded-lg bg-accent text-foreground"
                         >
                           {tag}
                         </span>

@@ -184,10 +184,10 @@ export function CodeViewerModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-5xl h-full max-h-[85vh] bg-[#1f2228] border border-white/10 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0 bg-[#1a1d24]">
+      <div className="relative w-full max-w-5xl h-full max-h-[85vh] bg-background border border-border flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0 bg-card">
           <div className="flex items-center gap-3">
-            <h2 className="text-[15px] font-bold text-white tracking-tight font-mono uppercase tracking-[1.4px]">
+            <h2 className="text-[15px] font-bold text-foreground tracking-tight font-mono uppercase tracking-[1.4px]">
               {title || 'Design'} Code
             </h2>
           </div>
@@ -195,7 +195,7 @@ export function CodeViewerModal({
           <div className="flex items-center gap-3">
             <button
               onClick={handleDownloadCode}
-              className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-white/90 disabled:opacity-50 text-[#1f2228] rounded text-[13px] font-bold transition-all active:scale-95 font-mono uppercase tracking-[1.4px]"
+              className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 disabled:opacity-50 text-background rounded text-[13px] font-bold transition-all active:scale-95 font-mono uppercase tracking-[1.4px]"
             >
               <Download className="w-4 h-4" />
               <span>Download</span>
@@ -203,21 +203,21 @@ export function CodeViewerModal({
 
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white/5 rounded text-white/50 hover:text-white transition-colors"
+              className="p-2 hover:bg-accent rounded text-muted-foreground hover:text-foreground transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden relative group bg-[#1f2228]">
+        <div className="flex-1 overflow-hidden relative group bg-background">
           <div className="absolute top-4 right-6 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={handleCopyCode}
-              className="p-2.5 bg-white/5 border border-white/10 hover:bg-white/10 rounded text-white/60 transition-all active:scale-90"
+              className="p-2.5 bg-accent border border-border hover:bg-accent/80 rounded text-muted-foreground transition-all active:scale-90"
               title="Copy Code"
             >
-              {isCopied ? <Check className="w-5 h-5 text-white" /> : <Copy className="w-5 h-5" />}
+              {isCopied ? <Check className="w-5 h-5 text-foreground" /> : <Copy className="w-5 h-5" />}
             </button>
           </div>
 
@@ -248,8 +248,8 @@ export function CodeViewerModal({
                   inherit: true,
                   rules: [],
                   colors: {
-                    'editor.background': '#1f2228',
-                    'editor.lineHighlightBackground': '#2a2d35',
+                    'editor.background': '#000000',
+                    'editor.lineHighlightBackground': '#1a1a1a',
                     'editorLineNumber.foreground': '#5c6370',
                   }
                 });

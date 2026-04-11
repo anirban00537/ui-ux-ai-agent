@@ -28,13 +28,13 @@ interface PlanStatusCardProps {
 
 const getStatusBadge = (status: string) => {
   const configs: Record<string, { label: string; class: string }> = {
-    active: { label: "Active", class: "bg-white/10 text-white border-white/20" },
-    trialing: { label: "Trialing", class: "bg-white/10 text-white border-white/20" },
-    canceled: { label: "Canceled", class: "bg-white/10 text-white/50 border-white/20" },
-    past_due: { label: "Past Due", class: "bg-white/10 text-white border-white/20" },
+    active: { label: "Active", class: "bg-accent text-foreground border-border" },
+    trialing: { label: "Trialing", class: "bg-accent text-foreground border-border" },
+    canceled: { label: "Canceled", class: "bg-accent text-muted-foreground border-border" },
+    past_due: { label: "Past Due", class: "bg-accent text-foreground border-border" },
   };
 
-  const config = configs[status] || { label: status, class: "bg-white/10 text-white/50 border-white/20" };
+  const config = configs[status] || { label: status, class: "bg-accent text-muted-foreground border-border" };
 
   return (
     <div className={cn("px-4 py-1.5 font-mono text-[10px] uppercase tracking-[1.4px] border backdrop-blur-md", config.class)}>
@@ -56,14 +56,14 @@ export const PlanStatusCard: React.FC<PlanStatusCardProps> = ({
         initial={{ opacity: 0, x: 15 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
-        className="relative flex flex-col p-8 border border-white/10 bg-white/[0.03] transition-colors duration-500 hover:border-white/20"
+        className="relative flex flex-col p-8 border border-border bg-card transition-colors duration-500 hover:border-border-strong"
       >
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <div className="w-20 h-20 border border-white/20 flex items-center justify-center mb-8 text-white">
+          <div className="w-20 h-20 border border-border flex items-center justify-center mb-8 text-foreground">
             <IconCreditCard size={40} />
           </div>
-          <h2 className="font-mono text-3xl text-white tracking-tight">No active membership</h2>
-          <p className="font-sans text-base text-white/50 mt-4 max-w-[280px] leading-relaxed">
+          <h2 className="font-mono text-3xl text-foreground tracking-tight">No active membership</h2>
+          <p className="font-sans text-base text-muted-foreground mt-4 max-w-[280px] leading-relaxed">
             Unlock pro features and skyrocket your design productivity today.
           </p>
           <Button 
@@ -85,16 +85,16 @@ export const PlanStatusCard: React.FC<PlanStatusCardProps> = ({
       initial={{ opacity: 0, x: 15 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.2 }}
-      className="relative flex flex-col p-8 border border-white/10 bg-white/[0.03] transition-colors duration-500 hover:border-white/20"
+      className="relative flex flex-col p-8 border border-border bg-card transition-colors duration-500 hover:border-border-strong"
     >
       <div className="relative z-10 flex items-center justify-between mb-10">
         <div className="flex items-center gap-5">
-          <div className="w-14 h-14 border border-white/20 flex items-center justify-center text-white">
+          <div className="w-14 h-14 border border-border flex items-center justify-center text-foreground">
             <IconCreditCard size={28} />
           </div>
           <div>
-            <h2 className="font-mono text-3xl text-white tracking-tight">Plan Status</h2>
-            <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-white/50 mt-0.5">
+            <h2 className="font-mono text-3xl text-foreground tracking-tight">Plan Status</h2>
+            <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground mt-0.5">
               {features?.metadata?.plan_name || features?.productName}
             </p>
           </div>
@@ -104,13 +104,13 @@ export const PlanStatusCard: React.FC<PlanStatusCardProps> = ({
 
       <div className="relative z-10 flex-1 space-y-8">
         {features?.features && features.features.length > 0 && (
-          <div className="p-6 border border-white/10">
-            <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-white/30 mb-5">Plan Capabilities</p>
+          <div className="p-6 border border-border">
+            <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground mb-5">Plan Capabilities</p>
             <div className="grid grid-cols-1 gap-4">
               {features.features.slice(0, 4).map((feature: string, idx: number) => (
-                <div key={idx} className="flex items-center gap-4 font-sans text-sm text-white/70">
-                  <div className="w-6 h-6 border border-white/20 flex items-center justify-center shrink-0">
-                    <IconSparkles size={12} className="text-white" />
+                <div key={idx} className="flex items-center gap-4 font-sans text-sm text-muted-foreground">
+                  <div className="w-6 h-6 border border-border flex items-center justify-center shrink-0">
+                    <IconSparkles size={12} className="text-foreground" />
                   </div>
                   <span className="text-sm tracking-tight">{feature}</span>
                 </div>
@@ -121,17 +121,17 @@ export const PlanStatusCard: React.FC<PlanStatusCardProps> = ({
 
         <div className="flex items-center justify-between px-2">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-white/30 mb-1.5">Next Renewal</p>
-            <div className="font-sans text-xl text-white tabular-nums tracking-tight">
+            <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground mb-1.5">Next Renewal</p>
+            <div className="font-sans text-xl text-foreground tabular-nums tracking-tight">
               {subscription.currentPeriodEnd
                 ? new Date(subscription.currentPeriodEnd).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })
                 : "N/A"}
             </div>
           </div>
-          <div className="h-12 w-px bg-white/10" />
+          <div className="h-12 w-px bg-border" />
           <div className="text-right">
-             <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-white/30 mb-1.5">Billing Type</p>
-             <div className="font-sans text-xl text-white tracking-tight">
+             <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground mb-1.5">Billing Type</p>
+             <div className="font-sans text-xl text-foreground tracking-tight">
                Monthly
              </div>
           </div>
@@ -142,25 +142,25 @@ export const PlanStatusCard: React.FC<PlanStatusCardProps> = ({
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="p-5 border border-white/10 bg-white/[0.03]"
+              className="p-5 border border-border bg-card"
             >
-              <p className="font-sans text-sm text-white">Scheduled Termination</p>
-              <p className="font-sans text-xs text-white/50 mt-1 leading-relaxed">Access remains active until the current period expires. We&apos;d love to have you back!</p>
+              <p className="font-sans text-sm text-foreground">Scheduled Termination</p>
+              <p className="font-sans text-xs text-muted-foreground mt-1 leading-relaxed">Access remains active until the current period expires. We&apos;d love to have you back!</p>
             </motion.div>
           ) : isActive ? (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" className="font-mono text-xs text-white/30 hover:text-white h-10 px-4 hover:bg-white/5 border border-transparent hover:border-white/20">Cancel Membership</Button>
+                <Button variant="ghost" className="font-mono text-xs text-muted-foreground/30 hover:text-foreground h-10 px-4 hover:bg-muted border border-transparent hover:border-border">Cancel Membership</Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="border border-white/10 bg-[#1f2228] p-8 max-w-md">
+              <AlertDialogContent className="border border-border bg-popover p-8 max-w-md">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="font-mono text-2xl text-white tracking-tight">Time to part ways?</AlertDialogTitle>
-                  <AlertDialogDescription className="font-sans text-base text-white/50 mt-4 leading-relaxed">
+                  <AlertDialogTitle className="font-mono text-2xl text-foreground tracking-tight">Time to part ways?</AlertDialogTitle>
+                  <AlertDialogDescription className="font-sans text-base text-muted-foreground mt-4 leading-relaxed">
                     Your premium access will continue until the end of your current cycle. We&apos;d hate to see you stop building amazing mobile experiences.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="gap-3 mt-8">
-                  <AlertDialogCancel className="font-mono h-12 px-6 border border-white/20 hover:bg-white/5">Keep Plan</AlertDialogCancel>
+                  <AlertDialogCancel className="font-mono h-12 px-6 border border-border hover:bg-accent">Keep Plan</AlertDialogCancel>
                   <AlertDialogAction 
                     onClick={() => {
                       trackEvent('subscription_cancel_confirm', 'engagement', 'subscription_card');

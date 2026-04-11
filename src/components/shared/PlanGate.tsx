@@ -106,7 +106,7 @@ export function PlanGate({ children }: PlanGateProps) {
           className="w-full max-w-7xl"
         >
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-neutral-600/30 mb-6">
               <IconSparkles size={14} className="text-primary" />
               <span className="text-xs font-bold uppercase tracking-wider text-primary">Premium Access Required</span>
             </div>

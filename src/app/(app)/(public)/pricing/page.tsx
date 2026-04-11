@@ -63,7 +63,7 @@ export default function PricingPage() {
 
   if (productsLoading) {
     return (
-      <div className="relative flex-1 min-h-screen overflow-auto bg-[#1f2228]">
+      <div className="relative flex-1 min-h-screen overflow-auto bg-background">
         <div className="flex flex-col items-center px-4 py-16 w-full min-h-full">
           <div className="w-full max-w-7xl">
             <div className="flex flex-col items-center gap-8">
@@ -92,7 +92,7 @@ export default function PricingPage() {
   });
 
   return (
-    <div className="relative flex-1 min-h-screen bg-[#1f2228]">
+    <div className="relative flex-1 min-h-screen bg-background">
       <Navbar />
       <div className="flex flex-col items-center px-4 py-16 min-h-full w-full">
         <div className="w-full mt-16 max-w-7xl flex flex-col gap-16">

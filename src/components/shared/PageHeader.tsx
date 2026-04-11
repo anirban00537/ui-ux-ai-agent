@@ -27,11 +27,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             )}
         >
             <div className="space-y-4">
-                <h1 className="font-mono text-2xl md:text-4xl text-white tracking-tight leading-tight">
+                <h1 className="font-mono text-2xl md:text-4xl text-foreground tracking-tight leading-tight">
                     {title}
                 </h1>
                 {subtitle && (
-                    <p className="font-sans text-sm md:text-base text-white/50 max-w-md">
+                    <p className="font-sans text-sm md:text-base text-muted-foreground max-w-md">
                         {subtitle}
                     </p>
                 )}

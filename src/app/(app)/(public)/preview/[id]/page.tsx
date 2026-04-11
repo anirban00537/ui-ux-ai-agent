@@ -263,7 +263,7 @@ export default function PreviewPage() {
       {/* Footer Branding (Optional) */}
       {!user && (
         <div className="fixed bottom-6 right-6 z-40">
-          <Link href="/" className="flex items-center gap-2 text-[10px] font-medium text-foreground/40 hover:text-primary uppercase tracking-widest p-2 bg-white/60 rounded-lg backdrop-blur-sm border border-border hover:border-primary/20 hover:bg-white transition-all shadow-sm">
+          <Link href="/" className="flex items-center gap-2 text-[10px] font-medium text-foreground/40 hover:text-neutral-600 uppercase tracking-widest p-2 bg-white/60 rounded-lg backdrop-blur-sm border border-border hover:border-neutral-600/30 hover:bg-white transition-all shadow-sm">
             Made with Butterfast.com
           </Link>
         </div>
@@ -317,7 +317,7 @@ function ShareControls({
           className={cn(
             "flex items-center gap-2 px-3 py-1.5 rounded-full transition-all border outline-none active:scale-95",
             design.isPublic
-              ? "bg-primary/10 border-primary/20 text-primary hover:bg-primary/20"
+              ? "bg-primary/10 border-neutral-600/30 text-primary hover:bg-primary/20"
               : "bg-secondary/50 border-border text-muted-foreground hover:text-foreground hover:bg-secondary/80"
           )}
           title={design.isPublic ? "Public - Anyone with link can view" : "Private - Only you can view"}

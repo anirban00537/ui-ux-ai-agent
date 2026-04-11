@@ -125,7 +125,7 @@ export default async function IndustryPage({ params }: PageProps) {
               <PromptBox 
                 name="template-prompt"
                 defaultValue={template.promptExample}
-                className="bg-card/80 backdrop-blur-xl border-primary/20 shadow-2xl relative"
+                className="bg-card/80 backdrop-blur-xl border-neutral-600/30 shadow-2xl relative"
               />
               <p className="text-sm text-muted-foreground mt-4">
                 <Zap className="inline-block w-3 h-3 text-yellow-500 mr-1" />
@@ -145,7 +145,7 @@ export default async function IndustryPage({ params }: PageProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {template.features.map((feature, i) => (
-                <div key={i} className="p-6 rounded-2xl bg-background border border-border hover:border-primary/30 transition-all hover:-translate-y-1 shadow-sm">
+                <div key={i} className="p-6 rounded-2xl bg-background border border-border hover:border-neutral-600/40 transition-all hover:-translate-y-1 shadow-sm">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
                     <Check size={20} />
                   </div>

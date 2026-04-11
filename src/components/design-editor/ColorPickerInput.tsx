@@ -37,7 +37,7 @@ export function ColorPickerInput({ label, value, onChange, className }: ColorPic
   return (
     <div className={cn("flex items-center justify-between gap-3", className)}>
       {label && (
-        <label className="text-[10px] text-white/50 font-bold uppercase tracking-wide">
+        <label className="text-[10px] text-muted-foreground font-bold uppercase tracking-wide">
           {label.replace(/([A-Z])/g, ' $1').trim()}
         </label>
       )}
@@ -46,7 +46,7 @@ export function ColorPickerInput({ label, value, onChange, className }: ColorPic
         <Popover.Root>
           <Popover.Trigger asChild>
             <button
-              className="w-8 h-8 rounded overflow-hidden border border-white/10 flex-shrink-0 relative group"
+              className="w-8 h-8 rounded overflow-hidden border border-border flex-shrink-0 relative group"
               style={{ backgroundColor: localValue }}
             >
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
@@ -55,7 +55,7 @@ export function ColorPickerInput({ label, value, onChange, className }: ColorPic
 
           <Popover.Portal>
             <Popover.Content
-              className="z-[1000001] bg-[#1f2228] border border-white/10 rounded p-3 animate-in fade-in zoom-in duration-200"
+              className="z-[1000001] bg-popover border border-border rounded p-3 animate-in fade-in zoom-in duration-200"
               sideOffset={10}
               align="end"
               data-style-panel="true"
@@ -67,18 +67,18 @@ export function ColorPickerInput({ label, value, onChange, className }: ColorPic
                 />
 
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 flex items-center gap-2">
-                    <span className="text-[10px] text-white/40 font-mono">HEX</span>
+                  <div className="flex-1 bg-muted border border-border rounded-lg px-2 py-1.5 flex items-center gap-2">
+                    <span className="text-[10px] text-muted-foreground/40 font-mono">HEX</span>
                     <input
                       type="text"
                       value={localValue}
                       onChange={(e) => handleChange(e.target.value)}
-                      className="bg-transparent border-none text-[11px] font-mono text-white font-semibold focus:outline-none w-full uppercase"
+                      className="bg-transparent border-none text-[11px] font-mono text-foreground font-semibold focus:outline-none w-full uppercase"
                     />
                   </div>
                 </div>
               </div>
-              <Popover.Arrow className="fill-[#1f2228]" />
+              <Popover.Arrow className="fill-popover" />
             </Popover.Content>
           </Popover.Portal>
         </Popover.Root>
@@ -87,7 +87,7 @@ export function ColorPickerInput({ label, value, onChange, className }: ColorPic
           type="text"
           value={localValue}
           onChange={(e) => handleChange(e.target.value)}
-          className="w-24 px-2 py-1.5 text-[11px] font-mono font-semibold bg-white/5 border border-white/10 rounded text-white shadow-sm focus:border-white/20 outline-none uppercase"
+          className="w-24 px-2 py-1.5 text-[11px] font-mono font-semibold bg-muted border border-border rounded text-foreground shadow-sm focus:border-neutral-600 outline-none uppercase"
           placeholder="#000000"
         />
       </div>

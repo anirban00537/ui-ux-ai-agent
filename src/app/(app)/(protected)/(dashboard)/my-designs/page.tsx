@@ -80,7 +80,7 @@ export default function MyDesignsPage() {
   };
 
   return (
-    <div className="relative flex-1 flex flex-col min-h-[calc(100vh-80px)] bg-[#1f2228]">
+    <div className="relative flex-1 flex flex-col min-h-[calc(100vh-80px)] bg-background">
       <div className="relative z-10 w-full flex-1 px-4 py-8 md:px-8 overflow-y-auto">
         <PageHeader
           title={
@@ -135,16 +135,16 @@ export default function MyDesignsPage() {
       </div>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="border border-white/10 bg-[#1f2228]">
+        <AlertDialogContent className="border border-border bg-popover">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-mono text-white">Delete Design</AlertDialogTitle>
-            <AlertDialogDescription className="font-sans text-white/50">
+            <AlertDialogTitle className="font-mono text-foreground">Delete Design</AlertDialogTitle>
+            <AlertDialogDescription className="font-sans text-muted-foreground">
               Are you sure you want to delete &ldquo;{designToDelete?.title}
               &rdquo;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="font-mono border border-white/20 bg-transparent text-white hover:bg-white/5">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="font-mono border border-border bg-transparent text-foreground hover:bg-muted">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="font-mono bg-red-500 text-white hover:bg-red-500/90"

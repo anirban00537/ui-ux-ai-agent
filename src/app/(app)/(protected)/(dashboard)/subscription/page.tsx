@@ -77,11 +77,11 @@ export default function SubscriptionPage() {
 
   if (isVerifying) {
     return (
-      <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 py-16 w-full bg-[#1f2228]">
+      <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 py-16 w-full bg-background">
         <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border border-white/20 border-t-white mx-auto" />
-          <h2 className="font-mono text-xl text-white">Activating your subscription...</h2>
-          <p className="font-sans text-white/50">This will only take a moment.</p>
+          <div className="animate-spin rounded-full h-12 w-12 border border-border border-t-foreground mx-auto" />
+          <h2 className="font-mono text-xl text-foreground">Activating your subscription...</h2>
+          <p className="font-sans text-muted-foreground">This will only take a moment.</p>
         </div>
       </div>
     );
@@ -89,15 +89,15 @@ export default function SubscriptionPage() {
 
   if (isLoading) {
     return (
-      <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] px-4 py-16 w-full bg-[#1f2228]">
+      <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] px-4 py-16 w-full bg-background">
         <div className="relative z-10 w-full max-w-7xl">
           <PageSkeleton>
-            <Skeleton className="h-12 w-1/3 border border-white/10" />
+            <Skeleton className="h-12 w-1/3 border border-border" />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Skeleton className="h-64 border border-white/10" />
-              <Skeleton className="h-64 border border-white/10" />
+              <Skeleton className="h-64 border border-border" />
+              <Skeleton className="h-64 border border-border" />
             </div>
-            <Skeleton className="h-12 w-full border border-white/10" />
+            <Skeleton className="h-12 w-full border border-border" />
           </PageSkeleton>
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-6 py-12 lg:py-20 bg-[#1f2228]">
+      <div className="relative flex-1 flex flex-col items-center min-h-[calc(100vh-80px)] overflow-y-auto px-6 py-12 lg:py-20 bg-background">
       <div className="relative z-10 w-full max-w-5xl flex flex-col gap-12">
         <PageHeader
           title={

@@ -216,7 +216,7 @@ export function Editor({
   return (
     <div className="flex flex-col w-full h-full bg-background relative overflow-hidden">
       {/* Top Navbar */}
-      <header className="h-16 border-b border-white/10 bg-[#1f2228] flex items-center justify-between px-6 z-40 shrink-0">
+      <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6 z-40 shrink-0">
         <div className="flex items-center gap-5">
           {/* Logo */}
           <img
@@ -226,14 +226,14 @@ export function Editor({
           />
 
           {/* Divider */}
-          <div className="h-5 w-px bg-white/10" />
+          <div className="h-5 w-px bg-border" />
 
           {/* Design Title */}
           <div className="flex flex-col">
-            <span className="text-[15px] font-semibold text-white leading-none tracking-tight">
+            <span className="text-[15px] font-semibold text-foreground leading-none tracking-tight">
               {conversation?.title || "Untitled Design"}
             </span>
-            <span className="text-[11px] text-white/50 font-medium mt-1">
+            <span className="text-[11px] text-muted-foreground font-medium mt-1">
               v1.0 • Auto-saved
             </span>
           </div>
@@ -244,7 +244,7 @@ export function Editor({
           {conversation?.id && (
             <button
               onClick={() => window.open(`/preview/${conversation.id}`, '_blank')}
-              className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded transition-all font-mono uppercase tracking-[1.4px]"
+              className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground bg-accent hover:bg-accent/80 border border-border rounded transition-all font-mono uppercase tracking-[1.4px]"
             >
               <Eye className="w-4 h-4" />
               Preview
@@ -270,7 +270,7 @@ export function Editor({
                 }}
                 disabled={isExporting}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 bg-white text-[#1f2228] hover:bg-white/90 border border-white/20 rounded transition-all duration-200 active:scale-95 font-mono text-xs uppercase tracking-[1.4px] font-semibold",
+                  "flex items-center gap-2 px-3 py-1.5 bg-foreground text-background hover:bg-foreground/90 border border-border rounded transition-all duration-200 active:scale-95 font-mono text-xs uppercase tracking-[1.4px] font-semibold",
                   isExporting && "opacity-70 cursor-not-allowed"
                 )}
                 title="Export All"
@@ -283,33 +283,33 @@ export function Editor({
               {/* Export Dropdown */}
               {showExportMenu && (
                 <div
-                  className="absolute top-full right-0 mt-2 w-56 bg-[#1f2228] border border-white/10 rounded overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[70]"
+                  className="absolute top-full right-0 mt-2 w-56 bg-popover border border-border rounded overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[70]"
                   onMouseDown={(e) => e.stopPropagation()}
                 >
                   <div className="p-1.5 flex flex-col gap-1">
                     <button
                       onClick={() => handleExportAllImages()}
-                      className="flex items-center gap-3 w-full px-3 py-3 text-xs font-bold text-white/70 hover:text-white hover:bg-white/5 rounded transition-all active:scale-[0.98] group"
+                      className="flex items-center gap-3 w-full px-3 py-3 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-all active:scale-[0.98] group"
                     >
-                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center text-white/70 group-hover:bg-white group-hover:text-[#1f2228] transition-colors">
+                      <div className="w-8 h-8 rounded bg-accent flex items-center justify-center text-muted-foreground group-hover:bg-foreground group-hover:text-background transition-colors">
                         <ImageIcon className="w-4 h-4" />
                       </div>
                       <div className="flex flex-col items-start text-left">
-                        <span className="text-white text-[13px]">Export as Images</span>
-                        <span className="text-[11px] text-white/50 font-medium">ZIP with PNG files</span>
+                        <span className="text-foreground text-[13px]">Export as Images</span>
+                        <span className="text-[11px] text-muted-foreground font-medium">ZIP with PNG files</span>
                       </div>
                     </button>
 
                     <button
                       onClick={() => handleExportAllHtml()}
-                      className="flex items-center gap-3 w-full px-3 py-3 text-xs font-bold text-white/70 hover:text-white hover:bg-white/5 rounded transition-all active:scale-[0.98] group"
+                      className="flex items-center gap-3 w-full px-3 py-3 text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-accent rounded transition-all active:scale-[0.98] group"
                     >
-                      <div className="w-8 h-8 rounded bg-white/10 flex items-center justify-center text-white/70 group-hover:bg-white group-hover:text-[#1f2228] transition-colors">
+                      <div className="w-8 h-8 rounded bg-accent flex items-center justify-center text-muted-foreground group-hover:bg-foreground group-hover:text-background transition-colors">
                         <FileCode className="w-4 h-4" />
                       </div>
                       <div className="flex flex-col items-start text-left">
-                        <span className="text-white text-[13px]">Export as Code</span>
-                        <span className="text-[11px] text-white/50 font-medium">ZIP with HTML files</span>
+                        <span className="text-foreground text-[13px]">Export as Code</span>
+                        <span className="text-[11px] text-muted-foreground font-medium">ZIP with HTML files</span>
                       </div>
                     </button>
                   </div>
@@ -322,7 +322,7 @@ export function Editor({
 
       {/* Main Canvas Area */}
       <div
-        className="flex-1 relative overflow-hidden bg-[#1a1d24]"
+        className="flex-1 relative overflow-hidden bg-background"
         onWheelCapture={handleWheel}
       >
         {/* Grid Pattern */}
@@ -449,8 +449,8 @@ export function Editor({
               />
 
               <div className="absolute bottom-6 left-6 z-20">
-                <div className="bg-[#1f2228] border border-white/10 px-5 py-3">
-                  <p className="text-[13px] text-white font-mono uppercase tracking-[1.4px] font-semibold">
+                <div className="bg-card border border-border px-5 py-3">
+                  <p className="text-[13px] text-foreground font-mono uppercase tracking-[1.4px] font-semibold">
                     {artboards.length} screen{artboards.length !== 1 ? "s" : ""}
                   </p>
                 </div>
@@ -521,8 +521,8 @@ function ShareControls({
         className={cn(
           "flex items-center gap-2 px-3.5 py-2 rounded border transition-all active:scale-95 font-mono uppercase tracking-[1.4px] text-xs font-semibold",
           isPublic
-            ? "bg-white text-[#1f2228] hover:bg-white/90 border-white/20"
-            : "bg-white/5 border-white/10 text-white/70 hover:text-white hover:bg-white/10"
+            ? "bg-foreground text-background hover:bg-foreground/90 border-border"
+            : "bg-accent border-border text-muted-foreground hover:text-foreground hover:bg-accent/80"
         )}
         title={isPublic ? "Public - Anyone with link can view" : "Private - Only you can view"}
       >
@@ -540,11 +540,11 @@ function ShareControls({
 
       <button
         onClick={copyLink}
-        className="flex items-center gap-2 px-3.5 py-2 rounded bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all active:scale-95 group font-mono uppercase tracking-[1.4px] text-xs font-semibold"
+        className="flex items-center gap-2 px-3.5 py-2 rounded bg-accent hover:bg-accent/80 border border-border text-muted-foreground hover:text-foreground transition-all active:scale-95 group font-mono uppercase tracking-[1.4px] text-xs font-semibold"
         title="Copy Preview Link"
       >
         {copied ? (
-          <Check className="w-4 h-4 text-white" />
+          <Check className="w-4 h-4 text-foreground" />
         ) : (
           <Share2 className="w-4 h-4 group-hover:text-white transition-colors" />
         )}

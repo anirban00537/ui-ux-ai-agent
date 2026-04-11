@@ -74,7 +74,7 @@ export const DesignCard: React.FC<DesignCardProps> = ({
           trackEvent("card_click", "engagement", `design_${design.id}`)
         }
       >
-        <div className="relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer bg-card border border-border hover:border-primary/20 hover:shadow-depth-3 p-4 min-h-[140px] flex flex-col">
+        <div className="relative overflow-hidden rounded-2xl transition-all duration-300 cursor-pointer bg-card border border-border hover:border-neutral-600/30 hover:shadow-depth-3 p-4 min-h-[140px] flex flex-col">
           <h3 className="font-serif text-sm font-bold text-foreground line-clamp-2 mb-3 group-hover:text-primary transition-colors leading-snug min-h-[2.8em]">
             {design.title || "Untitled Design"}
           </h3>

@@ -378,7 +378,7 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                             <select
                                 value={styles.justifyContent}
                                 onChange={e => onChange('justifyContent', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none appearance-none"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none appearance-none"
                             >
                                 <option value="flex-start">Start</option>
                                 <option value="center">Center</option>
@@ -393,7 +393,7 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                             <select
                                 value={styles.alignItems}
                                 onChange={e => onChange('alignItems', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none appearance-none"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none appearance-none"
                             >
                                 <option value="flex-start">Start</option>
                                 <option value="center">Center</option>
@@ -416,7 +416,7 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                             <input
                                 value={styles.width}
                                 onChange={e => onChange('width', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-8 pr-2 py-1.5 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none font-mono placeholder:text-slate-400"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-8 pr-2 py-1.5 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none font-mono placeholder:text-slate-400"
                                 placeholder="auto"
                             />
                             <span className="absolute left-3 top-1.5 text-[10.5px] text-slate-400 font-bold select-none">W</span>
@@ -428,7 +428,7 @@ function LayoutEditor({ styles, onChange }: { styles: any, onChange: (k: string,
                             <input
                                 value={styles.height}
                                 onChange={e => onChange('height', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-8 pr-2 py-1.5 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none font-mono placeholder:text-slate-400"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-8 pr-2 py-1.5 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none font-mono placeholder:text-slate-400"
                                 placeholder="auto"
                             />
                             <span className="absolute left-3 top-1.5 text-[10.5px] text-slate-400 font-bold select-none">H</span>
@@ -484,7 +484,7 @@ function SpacingEditor({ styles, onChange }: { styles: any, onChange: (k: string
                 />
 
                 {/* Padding Box */}
-                <div className="w-[65%] h-[60%] border border-dashed border-primary/20 bg-primary/[0.05] rounded-lg relative flex items-center justify-center bg-white shadow-sm ring-1 ring-black/[0.02]">
+                <div className="w-[65%] h-[60%] border border-dashed border-neutral-600/20 bg-neutral-600/[0.05] rounded-lg relative flex items-center justify-center bg-white shadow-sm ring-1 ring-black/[0.02]">
                     <span className="absolute top-1 left-2 text-[10px] text-primary/60 font-bold uppercase tracking-widest">Padding</span>
 
                     {/* Padding Inputs */}
@@ -535,7 +535,7 @@ function TypographyEditor({ styles, onChange }: { styles: any, onChange: (k: str
                             <input
                                 value={styles.fontSize}
                                 onChange={e => onChange('fontSize', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-8 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none placeholder:text-slate-400"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-8 py-2 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none placeholder:text-slate-400"
                             />
                             <span className="absolute right-3 top-2 text-[10px] text-slate-400 font-bold select-none">px</span>
                         </div>
@@ -546,7 +546,7 @@ function TypographyEditor({ styles, onChange }: { styles: any, onChange: (k: str
                             <select
                                 value={styles.fontWeight}
                                 onChange={e => onChange('fontWeight', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none appearance-none"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-4 py-2 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none appearance-none"
                             >
                                 <option value="100">Thin</option>
                                 <option value="300">Light</option>
@@ -645,7 +645,7 @@ function AppearanceEditor({ styles, onChange, tagName }: { styles: any, onChange
                             <input
                                 value={styles.borderRadius}
                                 onChange={e => onChange('borderRadius', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-3 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none placeholder:text-slate-400"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-3 py-2 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none placeholder:text-slate-400"
                                 placeholder="0px"
                             />
                         </div>
@@ -656,7 +656,7 @@ function AppearanceEditor({ styles, onChange, tagName }: { styles: any, onChange
                             <input
                                 value={styles.borderWidth}
                                 onChange={e => onChange('borderWidth', e.target.value)}
-                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-3 py-2 text-[12px] text-slate-800 font-semibold focus:border-primary/50 outline-none placeholder:text-slate-400"
+                                className="w-full bg-slate-50 border border-black/[0.04] rounded-lg pl-3 pr-3 py-2 text-[12px] text-slate-800 font-semibold focus:border-neutral-600/50 outline-none placeholder:text-slate-400"
                                 placeholder="0px"
                             />
                         </div>

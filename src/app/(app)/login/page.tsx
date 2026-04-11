@@ -9,7 +9,7 @@ export default function LoginPage() {
    const { handleGoogleLogin } = useAuth();
 
    return (
-      <div className="grid min-h-screen w-full lg:grid-cols-2 bg-[#1f2228]">
+      <div className="grid min-h-screen w-full lg:grid-cols-2 bg-background">
          <div className="flex flex-col justify-center items-center px-8 py-12 md:px-16 lg:px-24 relative">
             <div className="w-full max-w-sm space-y-12">
                <div className="flex flex-col items-center text-center space-y-2">
@@ -22,10 +22,10 @@ export default function LoginPage() {
                         priority
                      />
                   </Link>
-                  <h1 className="font-mono text-[32px] text-white tracking-tight">
+                  <h1 className="font-mono text-[32px] text-foreground tracking-tight">
                      Welcome back
                   </h1>
-                  <p className="font-sans text-white/50 text-[15px] max-w-[280px] leading-relaxed mt-2">
+                  <p className="font-sans text-muted-foreground text-[15px] max-w-[280px] leading-relaxed mt-2">
                      Enter your details to access your designs and start creating.
                   </p>
                </div>
@@ -58,67 +58,67 @@ export default function LoginPage() {
 
                   <div className="relative">
                      <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-white/10" />
+                        <span className="w-full border-t border-border" />
                      </div>
                      <div className="relative flex justify-center">
-                        <span className="font-mono text-[10px] uppercase tracking-[1.4px] text-white/30 px-3">
+                        <span className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground/50 px-3">
                            Secure Authentication
                         </span>
                      </div>
                   </div>
                </div>
 
-               <p className="font-sans text-center text-[13px] text-white/30 leading-relaxed">
-                  By clicking continue, you agree to our <a href="/terms" className="text-white/50 hover:text-white transition-colors">Terms of Service</a> and <a href="/privacy" className="text-white/50 hover:text-white transition-colors">Privacy Policy</a>.
+               <p className="font-sans text-center text-[13px] text-muted-foreground/50 leading-relaxed">
+                  By clicking continue, you agree to our <a href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">Terms of Service</a> and <a href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</a>.
                </p>
             </div>
          </div>
 
-         <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-[#1f2228] border-l border-white/10">
+         <div className="hidden lg:flex flex-col items-center justify-center relative overflow-hidden bg-background border-l border-border">
             <div className="relative z-10 w-full max-w-[500px] p-8 -mt-10">
-               <h2 className="font-mono text-4xl md:text-[48px] text-white mb-14 text-center leading-[1] tracking-tight">
+               <h2 className="font-mono text-4xl md:text-[48px] text-foreground mb-14 text-center leading-[1] tracking-tight">
                   From prompt<br />to mobile app.
                </h2>
 
                <div className="space-y-6 relative">
-                  <div className="absolute left-[47px] top-10 bottom-10 w-[1px] bg-white/10" />
+                  <div className="absolute left-[47px] top-10 bottom-10 w-[1px] bg-border" />
 
-                  <div className="relative group border border-white/10 bg-white/[0.03] p-8 transition-colors duration-500 hover:border-white/20">
+                  <div className="relative group border border-border bg-card p-8 transition-colors duration-500 hover:border-border-strong">
                      <div className="flex items-start gap-6">
-                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center border border-white/20 group-hover:border-white/40 transition-colors duration-500">
+                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center border border-border group-hover:border-border-strong transition-colors duration-500">
                            <span className="text-2xl">01</span>
                         </div>
                         <div>
-                           <h3 className="font-sans text-[20px] text-white mb-2 tracking-tight">Describe your app</h3>
-                           <p className="font-sans text-white/50 text-[14px] leading-relaxed">
+                           <h3 className="font-sans text-[20px] text-foreground mb-2 tracking-tight">Describe your app</h3>
+                           <p className="font-sans text-muted-foreground text-[14px] leading-relaxed">
                               Simply type a topic or paste your requirements. Our AI understands context and structure instantly.
                            </p>
                         </div>
                      </div>
                   </div>
 
-                  <div className="relative group border border-white/10 bg-white/[0.03] p-8 transition-colors duration-500 hover:border-white/20">
+                  <div className="relative group border border-border bg-card p-8 transition-colors duration-500 hover:border-border-strong">
                      <div className="flex items-start gap-6">
-                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center border border-white/20 group-hover:border-white/40 transition-colors duration-500">
+                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center border border-border group-hover:border-border-strong transition-colors duration-500">
                            <span className="text-2xl">02</span>
                         </div>
                         <div>
-                           <h3 className="font-sans text-[20px] text-white mb-2 tracking-tight">AI generates UI</h3>
-                           <p className="font-sans text-white/50 text-[14px] leading-relaxed">
+                           <h3 className="font-sans text-[20px] text-foreground mb-2 tracking-tight">AI generates UI</h3>
+                           <p className="font-sans text-muted-foreground text-[14px] leading-relaxed">
                               Watch as layouts, images, and components are generated automatically in our premium design system.
                            </p>
                         </div>
                      </div>
                   </div>
 
-                  <div className="relative group border border-white/10 bg-white/[0.03] p-8 transition-colors duration-500 hover:border-white/20">
+                  <div className="relative group border border-border bg-card p-8 transition-colors duration-500 hover:border-border-strong">
                      <div className="flex items-start gap-6">
-                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center border border-white/20 group-hover:border-white/40 transition-colors duration-500">
+                        <div className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center border border-border group-hover:border-border-strong transition-colors duration-500">
                            <span className="text-2xl">03</span>
                         </div>
                         <div>
-                           <h3 className="font-sans text-[20px] text-white mb-2 tracking-tight">Export & Share</h3>
-                           <p className="font-sans text-white/50 text-[14px] leading-relaxed">
+                           <h3 className="font-sans text-[20px] text-foreground mb-2 tracking-tight">Export & Share</h3>
+                           <p className="font-sans text-muted-foreground text-[14px] leading-relaxed">
                               Get production-ready code, export to design tools, or share a live prototype with your team.
                            </p>
                         </div>

@@ -18,11 +18,11 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
       animate={{ opacity: 1, y: 0 }}
       className="text-center space-y-4"
     >
-      <h1 className="font-mono text-3xl md:text-4xl text-white tracking-tight leading-tight">
+      <h1 className="font-mono text-3xl md:text-4xl text-foreground tracking-tight leading-tight">
         {title}
       </h1>
       {subtitle && (
-        <p className="font-sans text-white/50 max-w-lg mx-auto">
+        <p className="font-sans text-muted-foreground max-w-lg mx-auto">
           {subtitle}
         </p>
       )}

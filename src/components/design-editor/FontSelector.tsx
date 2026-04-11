@@ -26,8 +26,8 @@ export function FontSelector({ value, onChange, className }: FontSelectorProps) 
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center gap-2 mb-1">
-        <Type className="w-3.5 h-3.5 text-white/40" />
-        <label className="text-[12px] font-bold text-white/50 uppercase tracking-widest font-mono">
+        <Type className="w-3.5 h-3.5 text-muted-foreground" />
+        <label className="text-[12px] font-bold text-muted-foreground uppercase tracking-widest font-mono">
           Primary Font
         </label>
       </div>
@@ -35,7 +35,7 @@ export function FontSelector({ value, onChange, className }: FontSelectorProps) 
         <select
           value={value || "Inter"}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 text-[13px] font-semibold bg-white/5 border border-white/10 rounded text-white/70 focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all appearance-none cursor-pointer hover:border-white/20 font-mono"
+          className="w-full px-3 py-2 text-[13px] font-semibold bg-accent border border-border rounded text-muted-foreground focus:ring-1 focus:ring-border focus:border-border transition-all appearance-none cursor-pointer hover:border-border font-mono"
         >
           {AVAILABLE_FONTS.map((font) => (
             <option key={font.value} value={font.value}>
@@ -43,7 +43,7 @@ export function FontSelector({ value, onChange, className }: FontSelectorProps) 
             </option>
           ))}
         </select>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-white/40">
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
           </svg>

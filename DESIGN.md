@@ -1,257 +1,246 @@
-# Design System Inspired by xAI
+# Design System Inspired by Framer
 
 ## 1. Visual Theme & Atmosphere
 
-xAI's website is a masterclass in dark-first, monospace-driven brutalist minimalism -- a design system that feels like it was built by engineers who understand that restraint is the ultimate form of sophistication. The entire experience is anchored to an almost-black background (`#1f2228`) with pure white text (`#ffffff`), creating a high-contrast, terminal-inspired aesthetic that signals deep technical credibility. There are no gradients, no decorative illustrations, no color accents competing for attention. This is a site that communicates through absence.
+Framer's website is a cinematic, tool-obsessed dark canvas that radiates the confidence of a design tool built by designers who worship craft. The entire experience is drenched in pure black — not a warm charcoal or a cozy dark gray, but an absolute void (`#000000`) that makes every element, every screenshot, every typographic flourish feel like it's floating in deep space. This is a website that treats its own product UI as the hero art, embedding full-fidelity screenshots and interactive demos directly into the narrative flow.
 
-The typographic system is split between two carefully chosen typefaces. `GeistMono` (Vercel's monospace font) handles display-level headlines at an extraordinary 320px with weight 300, and also serves as the button typeface in uppercase with tracked-out letter-spacing (1.4px). `universalSans` handles all body and secondary heading text with a clean, geometric sans-serif voice. The monospace-as-display-font choice is the defining aesthetic decision -- it positions xAI not as a consumer product but as infrastructure, as something built by people who live in terminals.
+The typography is the signature move: GT Walsheim with aggressively tight letter-spacing (as extreme as -5.5px on 110px display text) creates headlines that feel compressed, kinetic, almost spring-loaded — like words under pressure that might expand at any moment. The transition to Inter for body text is seamless, with extensive OpenType feature usage (`cv01`, `cv05`, `cv09`, `cv11`, `ss03`, `ss07`) that gives even small text a refined, custom feel. Framer Blue (`#0099ff`) is deployed sparingly but decisively — as link color, border accents, and subtle ring shadows — creating a cold, electric throughline against the warm-less black.
 
-The spacing system operates on an 8px base grid with values concentrated at the small end (4px, 8px, 24px, 48px), reflecting a dense, information-focused layout philosophy. Border radius is minimal -- the site barely rounds anything, maintaining sharp, architectural edges. There are no decorative shadows, no gradients, no layered elevation. Depth is communicated purely through contrast and whitespace.
+The overall effect is a nightclub for web designers: dark, precise, seductive, and unapologetically product-forward. Every section exists to showcase what the tool can do, with the website itself serving as proof of concept.
 
 **Key Characteristics:**
-- Pure dark theme: `#1f2228` background with `#ffffff` text -- no gray middle ground
-- GeistMono at extreme display sizes (320px, weight 300) -- monospace as luxury
-- Uppercase monospace buttons with 1.4px letter-spacing -- technical, commanding
-- universalSans for body text at 16px/1.5 and headings at 30px/1.2 -- clean contrast
-- Zero decorative elements: no shadows, no gradients, no colored accents
-- 8px spacing grid with a sparse, deliberate scale
-- Heroicons SVG icon system -- minimal, functional
-- Tailwind CSS with arbitrary values -- utility-first engineering approach
+- Pure black (`#000000`) void canvas — absolute dark, not warm or gray-tinted
+- GT Walsheim display font with extreme negative letter-spacing (-5.5px at 110px)
+- Framer Blue (`#0099ff`) as the sole accent color — cold, electric, precise
+- Pill-shaped buttons (40px–100px radius) — no sharp corners on interactive elements
+- Product screenshots as hero art — the tool IS the marketing
+- Frosted glass button variants using `rgba(255, 255, 255, 0.1)` on dark surfaces
+- Extensive OpenType feature usage across Inter for refined micro-typography
 
 ## 2. Color Palette & Roles
 
 ### Primary
-- **Pure White** (`#ffffff`): The singular text color, link color, and all foreground elements. In xAI's system, white is not a background -- it is the voice.
-- **Dark Background** (`#1f2228`): The canvas. A warm near-black with a subtle blue undertone (not pure black, not neutral gray). This specific hue prevents the harsh eye strain of `#000000` while maintaining deep darkness.
+- **Pure Black** (`#000000`): Primary background, the void canvas that defines Framer's dark-first identity
+- **Pure White** (`#ffffff`): Primary text color on dark surfaces, button text on accent backgrounds
+- **Framer Blue** (`#0099ff`): Primary accent color — links, borders, ring shadows, interactive highlights
 
-### Interactive
-- **White Default** (`#ffffff`): Link and interactive element color in default state.
-- **White Muted** (`rgba(255, 255, 255, 0.5)`): Hover state for links -- a deliberate dimming rather than brightening, which is unusual and distinctive.
-- **White Subtle** (`rgba(255, 255, 255, 0.2)`): Borders, dividers, and subtle surface treatments.
-- **Ring Blue** (`rgb(59, 130, 246) / 0.5`): Tailwind's default focus ring color (`--tw-ring-color`), used for keyboard accessibility focus states.
+### Secondary & Accent
+- **Muted Silver** (`#a6a6a6`): Secondary text, subdued labels, dimmed descriptions on dark surfaces
+- **Near Black** (`#090909`): Elevated dark surface, shadow ring color for subtle depth separation
 
-### Surface & Borders
-- **Surface Elevated** (`rgba(255, 255, 255, 0.05)`): Subtle card backgrounds and hover surfaces -- barely visible lift.
-- **Surface Hover** (`rgba(255, 255, 255, 0.08)`): Slightly more visible hover state for interactive containers.
-- **Border Default** (`rgba(255, 255, 255, 0.1)`): Standard border for cards, dividers, and containers.
-- **Border Strong** (`rgba(255, 255, 255, 0.2)`): Emphasized borders for active states and button outlines.
+### Surface & Background
+- **Void Black** (`#000000`): Page background, primary canvas
+- **Frosted White** (`rgba(255, 255, 255, 0.1)`): Translucent button backgrounds, glass-effect surfaces on dark
+- **Subtle White** (`rgba(255, 255, 255, 0.5)`): Slightly more opaque frosted elements for hover states
 
-### Functional
-- **Text Primary** (`#ffffff`): All headings, body text, labels.
-- **Text Secondary** (`rgba(255, 255, 255, 0.7)`): Descriptions, captions, supporting text.
-- **Text Tertiary** (`rgba(255, 255, 255, 0.5)`): Muted labels, placeholder text, timestamps.
-- **Text Quaternary** (`rgba(255, 255, 255, 0.3)`): Disabled text, very subtle annotations.
+### Neutrals & Text
+- **Pure White** (`#ffffff`): Heading text, high-emphasis body text
+- **Muted Silver** (`#a6a6a6`): Body text, descriptions, secondary information
+- **Ghost White** (`rgba(255, 255, 255, 0.6)`): Tertiary text, placeholders on dark surfaces
+
+### Semantic & Accent
+- **Framer Blue** (`#0099ff`): Links, interactive borders, focus rings
+- **Blue Glow** (`rgba(0, 153, 255, 0.15)`): Focus ring shadow, subtle blue halo around interactive elements
+- **Default Link Blue** (`#0000ee`): Standard browser link color (used sparingly in content areas)
+
+### Gradient System
+- No prominent gradient usage — Framer relies on pure flat black surfaces with occasional blue-tinted glows for depth
+- Subtle radial glow effects behind product screenshots using Framer Blue at very low opacity
 
 ## 3. Typography Rules
 
 ### Font Family
-- **Display / Buttons**: `GeistMono`, with fallback: `ui-monospace, SFMono-Regular, Roboto Mono, Menlo, Monaco, Liberation Mono, DejaVu Sans Mono, Courier New`
-- **Body / Headings**: `universalSans`, with fallback: `universalSans Fallback`
+- **Display**: `GT Walsheim Framer Medium` / `GT Walsheim Medium` — custom geometric sans-serif, weight 500. Fallbacks: `GT Walsheim Framer Medium Placeholder`, system sans-serif
+- **Body/UI**: `Inter Variable` / `Inter` — variable sans-serif with extensive OpenType features. Fallbacks: `Inter Placeholder`, `-apple-system`, `system-ui`
+- **Accent**: `Mona Sans` — GitHub's open-source font, used for select elements at ultra-light weight (100)
+- **Monospace**: `Azeret Mono` — companion mono for code and technical labels
+- **Rounded**: `Open Runde` — small rounded companion font for micro-labels
 
 ### Hierarchy
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Transform | Notes |
-|------|------|------|--------|-------------|----------------|-----------|-------|
-| Display Hero | GeistMono | 320px (20rem) | 300 | 1.50 | normal | none | Extreme scale, monospace luxury |
-| Section Heading | universalSans | 30px (1.88rem) | 400 | 1.20 (tight) | normal | none | Clean sans-serif contrast |
-| Body | universalSans | 16px (1rem) | 400 | 1.50 | normal | none | Standard reading text |
-| Button | GeistMono | 14px (0.88rem) | 400 | 1.43 | 1.4px | uppercase | Tracked monospace, commanding |
-| Label / Caption | universalSans | 14px (0.88rem) | 400 | 1.50 | normal | none | Supporting text |
-| Small / Meta | universalSans | 12px (0.75rem) | 400 | 1.50 | normal | none | Timestamps, footnotes |
+| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
+|------|------|------|--------|-------------|----------------|-------|
+| Display Hero | GT Walsheim Framer Medium | 110px | 500 | 0.85 | -5.5px | Extreme negative tracking, compressed impact |
+| Section Display | GT Walsheim Medium | 85px | 500 | 0.95 | -4.25px | OpenType: ss02, tnum |
+| Section Heading | GT Walsheim Medium | 62px | 500 | 1.00 | -3.1px | OpenType: ss02 |
+| Feature Heading | GT Walsheim Medium | 32px | 500 | 1.13 | -1px | Tightest of the smaller headings |
+| Accent Display | Mona Sans | 61.5px | 100 | 1.00 | -3.1px | Ultra-light weight, ethereal |
+| Card Title | Inter Variable | 24px | 400 | 1.30 | -0.01px | OpenType: cv01, cv05, cv09, cv11, ss03, ss07 |
+| Feature Title | Inter | 22px | 700 | 1.20 | -0.8px | OpenType: cv05 |
+| Sub-heading | Inter | 20px | 600 | 1.20 | -0.8px | OpenType: cv01, cv09 |
+| Body Large | Inter Variable | 18px | 400 | 1.30 | -0.01px | OpenType: cv01, cv05, cv09, cv11, ss03, ss07 |
+| Body | Inter Variable | 15px | 400 | 1.30 | -0.01px | OpenType: cv11 |
+| Nav/UI | Inter Variable | 15px | 400 | 1.00 | -0.15px | OpenType: cv06, cv11, dlig, ss03 |
+| Body Readable | Inter Framer Regular | 14px | 400 | 1.60 | normal | Long-form body text |
+| Caption | Inter Variable | 14px | 400 | 1.40 | normal | OpenType: cv01, cv06, cv09, cv11, ss03, ss07 |
+| Label | Inter | 13px | 500 | 1.60 | normal | OpenType: cv06, cv11, ss03 |
+| Small Caption | Inter Variable | 12px | 400 | 1.40 | normal | OpenType: cv01, cv06, cv09, cv11, ss03, ss07 |
+| Micro Code | Azeret Mono | 10.4px | 400 | 1.60 | normal | OpenType: cv06, cv11, ss03 |
+| Badge | Open Runde | 9px | 600 | 1.11 | normal | OpenType: cv01, cv09 |
+| Micro Uppercase | Inter Variable | 7px | 400 | 1.00 | 0.21px | uppercase transform |
 
 ### Principles
-- **Monospace as display**: GeistMono at 320px is not a gimmick -- it is the brand statement. The fixed-width characters at extreme scale create a rhythmic, architectural quality that no proportional font can achieve.
-- **Light weight at scale**: Weight 300 for the 320px headline prevents the monospace from feeling heavy or brutish at extreme sizes. It reads as precise, not overwhelming.
-- **Uppercase buttons**: All button text is uppercase GeistMono with 1.4px letter-spacing. This creates a distinctly technical, almost command-line aesthetic for interactive elements.
-- **Sans-serif for reading**: universalSans at 16px/1.5 provides excellent readability for body content, creating a clean contrast against the monospace display elements.
-- **Two-font clarity**: The system uses exactly two typefaces with clear roles -- monospace for impact and interaction, sans-serif for information and reading. No overlap, no ambiguity.
+- **Compression as personality**: GT Walsheim's extreme negative letter-spacing (-5.5px at 110px) is the defining typographic gesture — headlines feel spring-loaded, urgent, almost breathless
+- **OpenType maximalism**: Inter is deployed with 6+ OpenType features simultaneously (`cv01`, `cv05`, `cv09`, `cv11`, `ss03`, `ss07`), creating a subtly custom feel even at body sizes
+- **Weight restraint on display**: All GT Walsheim usage is weight 500 (medium) — never bold, never regular. This creates a confident-but-not-aggressive display tone
+- **Ultra-tight line heights**: Display text at 0.85 line-height means letters nearly overlap vertically — intentional density that rewards reading at arm's length
 
 ## 4. Component Stylings
 
 ### Buttons
-
-**Primary (White on Dark)**
-- Background: `#ffffff`
-- Text: `#1f2228`
-- Padding: 12px 24px
-- Radius: 0px (sharp corners)
-- Font: GeistMono 14px weight 400, uppercase, letter-spacing 1.4px
-- Hover: `rgba(255, 255, 255, 0.9)` background
-- Use: Primary CTA ("TRY GROK", "GET STARTED")
-
-**Ghost / Outlined**
-- Background: transparent
-- Text: `#ffffff`
-- Padding: 12px 24px
-- Radius: 0px
-- Border: `1px solid rgba(255, 255, 255, 0.2)`
-- Font: GeistMono 14px weight 400, uppercase, letter-spacing 1.4px
-- Hover: `rgba(255, 255, 255, 0.05)` background
-- Use: Secondary actions ("LEARN MORE", "VIEW API")
-
-**Text Link**
-- Background: none
-- Text: `#ffffff`
-- Font: universalSans 16px weight 400
-- Hover: `rgba(255, 255, 255, 0.5)` -- dims on hover
-- Use: Inline links, navigation items
+- **Frosted Pill**: `rgba(255, 255, 255, 0.1)` background, black text (`#000000`), pill shape (40px radius). The glass-effect button that lives on dark surfaces — translucent, ambient, subtle
+- **Solid White Pill**: `rgb(255, 255, 255)` background, black text (`#000000`), full pill shape (100px radius), padding `10px 15px`. The primary CTA — clean, high-contrast on dark, unmissable
+- **Ghost**: No visible background, white text, relies on text styling alone. Hover reveals subtle frosted background
+- **Transition**: Scale-based animations (matrix transform with 0.85 scale factor), opacity transitions for reveal effects
 
 ### Cards & Containers
-- Background: `rgba(255, 255, 255, 0.03)` or transparent
-- Border: `1px solid rgba(255, 255, 255, 0.1)`
-- Radius: 0px (sharp) or 4px (subtle)
-- Shadow: none -- xAI does not use box shadows
-- Hover: border shifts to `rgba(255, 255, 255, 0.2)`
-
-### Navigation
-- Dark background matching page (`#1f2228`)
-- Brand logotype: white text, left-aligned
-- Links: universalSans 14px weight 400, `#ffffff` text
-- Hover: `rgba(255, 255, 255, 0.5)` text color
-- CTA: white primary button, right-aligned
-- Mobile: hamburger toggle
-
-### Badges / Tags
-**Monospace Tag**
-- Background: transparent
-- Text: `#ffffff`
-- Padding: 4px 8px
-- Border: `1px solid rgba(255, 255, 255, 0.2)`
-- Radius: 0px
-- Font: GeistMono 12px uppercase, letter-spacing 1px
+- **Dark Surface Card**: Black or near-black (`#090909`) background, `rgba(0, 153, 255, 0.15) 0px 0px 0px 1px` blue ring shadow border, rounded corners (10px–15px radius)
+- **Elevated Card**: Multi-layer shadow — `rgba(255, 255, 255, 0.1) 0px 0.5px 0px 0.5px` (subtle top highlight) + `rgba(0, 0, 0, 0.25) 0px 10px 30px` (deep ambient shadow)
+- **Product Screenshots**: Full-width or padded within dark containers, 8px–12px border-radius for software UI previews
+- **Hover**: Subtle glow increase on Framer Blue ring shadow, or brightness shift on frosted surfaces
 
 ### Inputs & Forms
-- Background: transparent or `rgba(255, 255, 255, 0.05)`
-- Border: `1px solid rgba(255, 255, 255, 0.2)`
-- Radius: 0px
-- Focus: ring with `rgb(59, 130, 246) / 0.5`
-- Text: `#ffffff`
-- Placeholder: `rgba(255, 255, 255, 0.3)`
-- Label: `rgba(255, 255, 255, 0.7)`, universalSans 14px
+- Minimal form presence on the marketing site
+- Input fields follow dark theme: dark background, subtle border, white text
+- Focus state: Framer Blue (`#0099ff`) ring border, `1px solid #0099ff`
+- Placeholder text in `rgba(255, 255, 255, 0.4)`
+
+### Navigation
+- **Dark floating nav bar**: Black background with frosted glass effect, white text links
+- **Nav links**: Inter at 15px, weight 400, white text with subtle hover opacity change
+- **CTA button**: Pill-shaped, white or frosted, positioned at right end of nav
+- **Mobile**: Collapses to hamburger menu, maintains dark theme
+- **Sticky behavior**: Nav remains fixed at top on scroll
+
+### Image Treatment
+- **Product screenshots as hero art**: Full-width embedded UI screenshots with rounded corners (8px–12px)
+- **Dark-on-dark composition**: Screenshots placed on black backgrounds with subtle shadow for depth separation
+- **16:9 and custom aspect ratios**: Product demos fill their containers
+- **No decorative imagery**: All images are functional — showing the tool, the output, or the workflow
+
+### Trust & Social Proof
+- Customer logos and testimonials in muted gray on dark surfaces
+- Minimal ornamentation — the product screenshots serve as the trust signal
 
 ## 5. Layout Principles
 
 ### Spacing System
-- Base unit: 8px
-- Scale: 4px, 8px, 24px, 48px
-- The scale is deliberately sparse -- xAI avoids granular spacing distinctions, preferring large jumps that create clear visual hierarchy through whitespace alone
+- **Base unit**: 8px
+- **Scale**: 1px, 2px, 3px, 4px, 5px, 6px, 8px, 10px, 12px, 15px, 20px, 30px, 35px
+- **Section padding**: Large vertical spacing (80px–120px between sections)
+- **Card padding**: 15px–30px internal padding
+- **Component gaps**: 8px–20px between related elements
 
 ### Grid & Container
-- Max content width: approximately 1200px
-- Hero: full-viewport height with massive centered monospace headline
-- Feature sections: simple vertical stacking with generous section padding (48px-96px)
-- Two-column layouts for feature descriptions at desktop
-- Full-width dark sections maintain the single dark background throughout
+- **Max width**: ~1200px container, centered
+- **Column patterns**: Full-width hero, 2-column feature sections, single-column product showcases
+- **Asymmetric layouts**: Feature sections often pair text (40%) with screenshot (60%)
 
 ### Whitespace Philosophy
-- **Extreme generosity**: xAI uses vast amounts of whitespace. The 320px headline with 48px+ surrounding padding creates a sense of emptiness that is itself a design statement -- the content is so important it needs room to breathe.
-- **Vertical rhythm over horizontal density**: Content stacks vertically with large gaps between sections rather than packing horizontally. This creates a scroll-driven experience that feels deliberate and cinematic.
-- **No visual noise**: The absence of decorative elements, borders between sections, and color variety means whitespace is the primary structural tool.
-
-### Breakpoints
-- 2000px, 1536px, 1280px, 1024px, 1000px, 768px, 640px
-- Tailwind responsive modifiers drive breakpoint behavior
+- **Breathe through darkness**: Generous vertical spacing between sections — the black background means whitespace manifests as void, creating dramatic pauses between content blocks
+- **Dense within, spacious between**: Individual components are tightly composed (tight line-heights, compressed text) but float in generous surrounding space
+- **Product-first density**: Screenshot areas are allowed to be dense and information-rich, contrasting with the sparse marketing text
 
 ### Border Radius Scale
-- Sharp (0px): Primary treatment for buttons, cards, inputs -- the default
-- Subtle (4px): Occasional softening on secondary containers
-- The near-zero radius philosophy is core to the brand's brutalist identity
+- **1px**: Micro-elements, nearly squared precision edges
+- **5px–7px**: Small UI elements, image thumbnails — subtly softened
+- **8px**: Standard component radius — code blocks, buttons, interactive elements
+- **10px–12px**: Cards, product screenshots — comfortably rounded
+- **15px–20px**: Large containers, feature cards — generously rounded
+- **30px–40px**: Navigation pills, pagination — noticeably rounded
+- **100px**: Full pill shape — primary CTAs, tag elements
 
 ## 6. Depth & Elevation
 
 | Level | Treatment | Use |
 |-------|-----------|-----|
-| Flat (Level 0) | No shadow, no border | Page background, body content |
-| Surface (Level 1) | `rgba(255,255,255,0.03)` background | Subtle card surfaces |
-| Bordered (Level 2) | `1px solid rgba(255,255,255,0.1)` border | Cards, containers, dividers |
-| Active (Level 3) | `1px solid rgba(255,255,255,0.2)` border | Hover states, active elements |
-| Focus (Accessibility) | `ring` with `rgb(59,130,246)/0.5` | Keyboard focus indicator |
+| Level 0 (Flat) | No shadow, pure black surface | Page background, empty areas |
+| Level 1 (Ring) | `rgba(0, 153, 255, 0.15) 0px 0px 0px 1px` | Card borders, interactive element outlines — Framer Blue glow ring |
+| Level 2 (Contained) | `rgb(9, 9, 9) 0px 0px 0px 2px` | Near-black ring for subtle containment on dark surfaces |
+| Level 3 (Floating) | `rgba(255, 255, 255, 0.1) 0px 0.5px 0px 0.5px, rgba(0, 0, 0, 0.25) 0px 10px 30px` | Elevated cards, floating elements — subtle white top-edge highlight + deep ambient shadow |
 
-**Elevation Philosophy**: xAI rejects the conventional shadow-based elevation system entirely. There are no box-shadows anywhere on the site. Instead, depth is communicated through three mechanisms: (1) opacity-based borders that brighten on interaction, creating a sense of elements "activating" rather than lifting; (2) extremely subtle background opacity shifts (`0.03` to `0.08`) that create barely-perceptible surface differentiation; and (3) the massive scale contrast between the 320px display type and 16px body text, which creates typographic depth. This is elevation through contrast and opacity, not through simulated light and shadow.
+### Shadow Philosophy
+Framer's elevation system is inverted from traditional light-theme designs. Instead of darker shadows on light backgrounds, Framer uses:
+- **Blue-tinted ring shadows** at very low opacity (0.15) for containment — a signature move that subtly brands every bordered element
+- **White edge highlights** (0.5px) on the top edge of elevated elements — simulating light hitting the top surface
+- **Deep ambient shadows** for true floating elements — `rgba(0, 0, 0, 0.25)` at large spread (30px)
+
+### Decorative Depth
+- **Blue glow auras**: Subtle Framer Blue (`#0099ff`) radial gradients behind key interactive areas
+- **No background blur/glassmorphism**: Despite the frosted button effect, there's no heavy glass blur usage — the translucency is achieved through simple rgba opacity
 
 ## 7. Do's and Don'ts
 
 ### Do
-- Use `#1f2228` as the universal background -- never pure black `#000000`
-- Use GeistMono for all display headlines and button text -- monospace IS the brand
-- Apply uppercase + 1.4px letter-spacing to all button labels
-- Use weight 300 for the massive display headline (320px)
-- Keep borders at `rgba(255, 255, 255, 0.1)` -- barely visible, not absent
-- Dim interactive elements on hover to `rgba(255, 255, 255, 0.5)` -- the reverse of convention
-- Maintain sharp corners (0px radius) as the default -- brutalist precision
-- Use universalSans for all body and reading text at 16px/1.5
+- Use pure black (`#000000`) as the primary background — not dark gray, not charcoal
+- Apply extreme negative letter-spacing on GT Walsheim display text (-3px to -5.5px)
+- Keep all buttons pill-shaped (40px+ radius) — never use squared or slightly-rounded buttons
+- Use Framer Blue (`#0099ff`) exclusively for interactive accents — links, borders, focus states
+- Deploy `rgba(255, 255, 255, 0.1)` for frosted glass surfaces on dark backgrounds
+- Maintain GT Walsheim at weight 500 only — the medium weight IS the brand
+- Use extensive OpenType features on Inter text (cv01, cv05, cv09, cv11, ss03, ss07)
+- Let product screenshots be the visual centerpiece — the tool markets itself
+- Apply blue ring shadows (`rgba(0, 153, 255, 0.15) 0px 0px 0px 1px`) for card containment
 
 ### Don't
-- Don't use box-shadows -- xAI has zero shadow elevation
-- Don't introduce color accents beyond white and the dark background -- the monochromatic palette is sacred
-- Don't use large border-radius (8px+, pill shapes) -- the sharp edge is intentional
-- Don't use bold weights (600-700) for headlines -- weight 300-400 only
-- Don't brighten elements on hover -- xAI dims to `0.5` opacity instead
-- Don't add decorative gradients, illustrations, or color blocks
-- Don't use proportional fonts for buttons -- GeistMono uppercase is mandatory
-- Don't use colored status indicators unless absolutely necessary -- keep everything in the white/dark spectrum
+- Use warm dark backgrounds (no `#1a1a1a`, `#2d2d2d`, or brownish blacks)
+- Apply bold (700+) weight to GT Walsheim display text — medium 500 only
+- Introduce additional accent colors beyond Framer Blue — this is a one-accent-color system
+- Use large border-radius on non-interactive elements (cards use 10px–15px, only buttons get 40px+)
+- Add decorative imagery, illustrations, or icons — the product IS the illustration
+- Use positive letter-spacing on headlines — everything is compressed, negative tracking
+- Create heavy drop shadows — depth is communicated through subtle rings and minimal ambients
+- Place light/white backgrounds behind content sections — the void is sacred
+- Use serif or display-weight fonts — the system is geometric sans-serif only
 
 ## 8. Responsive Behavior
 
 ### Breakpoints
 | Name | Width | Key Changes |
 |------|-------|-------------|
-| Mobile | <640px | Single column, hero headline scales dramatically down |
-| Small Tablet | 640-768px | Slight increase in padding |
-| Tablet | 768-1024px | Two-column layouts begin, heading sizes increase |
-| Desktop | 1024-1280px | Full layout, generous whitespace |
-| Large | 1280-1536px | Wider containers, more breathing room |
-| Extra Large | 1536-2000px | Maximum content width, centered |
-| Ultra | >2000px | Content stays centered, extreme margins |
+| Mobile | <809px | Single column, stacked feature sections, reduced hero text (62px→40px), hamburger nav |
+| Tablet | 809px–1199px | 2-column features begin, nav links partially visible, screenshots scale down |
+| Desktop | >1199px | Full layout, expanded nav with all links + CTA, 110px display hero, side-by-side features |
 
 ### Touch Targets
-- Buttons use 12px 24px padding for comfortable touch
-- Navigation links spaced with 24px gaps
-- Minimum tap target: 44px height
-- Mobile: full-width buttons for easy thumb reach
+- Pill buttons: minimum 40px height with 10px vertical padding — exceeds 44px WCAG minimum
+- Nav links: 15px text with generous padding for touch accessibility
+- Mobile CTA buttons: Full-width pills on mobile for easy thumb reach
 
 ### Collapsing Strategy
-- Hero: 320px monospace headline scales down dramatically (to ~48px-64px on mobile)
-- Navigation: horizontal links collapse to hamburger menu
-- Feature sections: two-column to single-column stacking
-- Section padding: 96px -> 48px -> 24px across breakpoints
-- Massive display type is the first thing to resize -- it must remain impactful but not overflow
+- **Navigation**: Full horizontal nav → hamburger menu at mobile breakpoint
+- **Hero text**: 110px display → 85px → 62px → ~40px across breakpoints, maintaining extreme negative tracking proportionally
+- **Feature sections**: Side-by-side (text + screenshot) → stacked vertically on mobile
+- **Product screenshots**: Scale responsively within containers, maintaining aspect ratios
+- **Section spacing**: Reduces proportionally — 120px desktop → 60px mobile
 
 ### Image Behavior
-- Minimal imagery -- the site relies on typography and whitespace
-- Any product screenshots maintain sharp corners
-- Full-width media scales proportionally with viewport
+- Product screenshots are responsive, scaling within their container boundaries
+- No art direction changes — same crops across breakpoints
+- Dark background ensures screenshots maintain visual impact at any size
+- Screenshots lazy-load as user scrolls into view
 
 ## 9. Agent Prompt Guide
 
 ### Quick Color Reference
-- Background: Dark (`#1f2228`)
-- Text Primary: White (`#ffffff`)
-- Text Secondary: White 70% (`rgba(255, 255, 255, 0.7)`)
-- Text Muted: White 50% (`rgba(255, 255, 255, 0.5)`)
-- Text Disabled: White 30% (`rgba(255, 255, 255, 0.3)`)
-- Border Default: White 10% (`rgba(255, 255, 255, 0.1)`)
-- Border Strong: White 20% (`rgba(255, 255, 255, 0.2)`)
-- Surface Subtle: White 3% (`rgba(255, 255, 255, 0.03)`)
-- Surface Hover: White 8% (`rgba(255, 255, 255, 0.08)`)
-- Focus Ring: Blue (`rgb(59, 130, 246)` at 50% opacity)
-- Button Primary BG: White (`#ffffff`), text Dark (`#1f2228`)
+- Primary Background: Void Black (`#000000`)
+- Primary Text: Pure White (`#ffffff`)
+- Accent/CTA: Framer Blue (`#0099ff`)
+- Secondary Text: Muted Silver (`#a6a6a6`)
+- Frosted Surface: Translucent White (`rgba(255, 255, 255, 0.1)`)
+- Elevation Ring: Blue Glow (`rgba(0, 153, 255, 0.15)`)
 
 ### Example Component Prompts
-- "Create a hero section on #1f2228 background. Headline in GeistMono at 72px weight 300, color #ffffff, centered. Subtitle in universalSans 18px weight 400, rgba(255,255,255,0.7), max-width 600px centered. Two buttons: primary (white bg, #1f2228 text, 0px radius, GeistMono 14px uppercase, 1.4px letter-spacing, 12px 24px padding) and ghost (transparent bg, 1px solid rgba(255,255,255,0.2), white text, same font treatment)."
-- "Design a card: transparent or rgba(255,255,255,0.03) background, 1px solid rgba(255,255,255,0.1) border, 0px radius, 24px padding. No shadow. Title in universalSans 22px weight 400, #ffffff. Body in universalSans 16px weight 400, rgba(255,255,255,0.7), line-height 1.5. Hover: border changes to rgba(255,255,255,0.2)."
-- "Build navigation: #1f2228 background, full-width. Brand text left (GeistMono 14px uppercase). Links in universalSans 14px #ffffff with hover to rgba(255,255,255,0.5). White primary button right-aligned (GeistMono 14px uppercase, 1.4px letter-spacing)."
-- "Create a form: dark background #1f2228. Label in universalSans 14px rgba(255,255,255,0.7). Input with transparent bg, 1px solid rgba(255,255,255,0.2) border, 0px radius, white text 16px universalSans. Focus: blue ring rgb(59,130,246)/0.5. Placeholder: rgba(255,255,255,0.3)."
-- "Design a monospace tag/badge: transparent bg, 1px solid rgba(255,255,255,0.2), 0px radius, GeistMono 12px uppercase, 1px letter-spacing, white text, 4px 8px padding."
+- "Create a hero section on pure black background with 110px GT Walsheim heading in white, letter-spacing -5.5px, line-height 0.85, and a pill-shaped white CTA button (100px radius) with black text"
+- "Design a feature card on black background with a 1px Framer Blue ring shadow border (rgba(0,153,255,0.15)), 12px border-radius, white heading in Inter at 22px weight 700, and muted silver (a6a6a6) body text"
+- "Build a navigation bar with black background, white Inter text links at 15px, and a frosted pill button (rgba(255,255,255,0.1) background, 40px radius) as the CTA"
+- "Create a product showcase section with a full-width screenshot embedded on black, 10px border-radius, subtle multi-layer shadow (white 0.5px top highlight + rgba(0,0,0,0.25) 30px ambient)"
+- "Design a pricing card using pure black surface, Framer Blue (#0099ff) accent for the selected plan border, white text hierarchy (24px Inter bold heading, 14px regular body), and a solid white pill CTA button"
 
 ### Iteration Guide
-1. Always start with `#1f2228` background -- never use pure black or gray backgrounds
-2. GeistMono for display and buttons, universalSans for everything else -- never mix these roles
-3. All buttons must be GeistMono uppercase with 1.4px letter-spacing -- this is non-negotiable
-4. No shadows, ever -- depth comes from border opacity and background opacity only
-5. Borders are always white with low opacity (0.1 default, 0.2 for emphasis)
-6. Hover behavior dims to 0.5 opacity rather than brightening -- the reverse of most systems
-7. Sharp corners (0px) by default -- only use 4px for specific secondary containers
-8. Body text at 16px universalSans with 1.5 line-height for comfortable reading
-9. Generous section padding (48px-96px) -- let content breathe in the darkness
-10. The monochromatic white-on-dark palette is absolute -- resist adding color unless critical for function
+When refining existing screens generated with this design system:
+1. Focus on ONE component at a time — the dark canvas makes each element precious
+2. Always verify letter-spacing on GT Walsheim headings — the extreme negative tracking is non-negotiable
+3. Check that Framer Blue appears ONLY on interactive elements — never as decorative background or text color for non-links
+4. Ensure all buttons are pill-shaped — any squared corner immediately breaks the Framer aesthetic
+5. Test frosted glass surfaces by checking they have exactly `rgba(255, 255, 255, 0.1)` — too opaque looks like a bug, too transparent disappears

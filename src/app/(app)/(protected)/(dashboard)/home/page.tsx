@@ -18,7 +18,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 bg-[#1f2228]">
+      <div className="relative flex-1 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 bg-background">
 
       <div className="relative w-full max-w-4xl flex flex-col gap-10 z-10 py-12">
         <HomeHeader />

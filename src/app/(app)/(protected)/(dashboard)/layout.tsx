@@ -3,7 +3,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="relative flex min-h-screen w-full overflow-hidden bg-[#1f2228]">
+    <div className="relative flex min-h-screen w-full overflow-hidden bg-background">
       <AppSidebar />
       
       <main className="relative z-10 flex-1 flex flex-col overflow-hidden">

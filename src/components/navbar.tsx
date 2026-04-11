@@ -30,7 +30,7 @@ export function Navbar() {
     <motion.header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 flex justify-center px-4 sm:px-8 transition-all duration-300",
-        isScrolled ? "bg-[#1f2228]/95 backdrop-blur-md border-b border-white/10 py-3" : "bg-transparent py-5"
+        isScrolled ? "bg-background/95 backdrop-blur-md border-b border-border py-3" : "bg-transparent py-5"
       )}
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -53,14 +53,15 @@ export function Navbar() {
           </Link>
         </div>
 
-        <nav className="hidden md:flex items-center justify-center gap-6 flex-1">
+        <nav className="hidden md:flex items-center justify-center gap-8 flex-1">
           {menuItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm font-sans text-white/70 hover:text-white transition-colors relative group py-2"
+              className="text-[15px] font-sans text-muted-foreground hover:text-foreground transition-colors relative group py-2"
             >
               {item.name}
+              <span className="absolute bottom-0 left-0 w-0 h-px bg-primary transition-all duration-200 group-hover:w-full" />
             </Link>
           ))}
         </nav>
@@ -82,7 +83,7 @@ export function Navbar() {
                   variant="ghost"
                   size="sm"
                   onClick={() => trackEvent("button_click", "engagement", "nav_login")}
-                  className="hidden sm:inline-flex text-sm font-sans text-white/70 hover:text-white"
+                  className="hidden sm:inline-flex text-[15px] font-sans text-muted-foreground hover:text-foreground"
                 >
                   Log In
                 </Button>

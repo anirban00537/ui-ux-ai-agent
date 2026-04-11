@@ -82,13 +82,13 @@ export function PricingCard({
       className={cn(
         "relative p-8 transition-all duration-500 border",
         isPopular
-          ? "border-white bg-white/[0.05] md:scale-105 z-10"
-          : "border-white/10 bg-white/[0.03] hover:border-white/20",
+          ? "border-foreground bg-accent md:scale-105 z-10"
+          : "border-border bg-card hover:border-border",
         className
       )}
     >
       {isPopular && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 border border-white/20 font-mono text-xs uppercase tracking-[1.4px] flex items-center gap-1">
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 border border-border font-mono text-xs uppercase tracking-[1.4px] flex items-center gap-1">
           <IconSparkles size={12} />
           Most Popular
         </div>
@@ -96,11 +96,11 @@ export function PricingCard({
 
       <div className="flex flex-col h-full">
         <div className="mb-8">
-          <h3 className="font-sans text-2xl text-white mb-2">
+          <h3 className="font-sans text-2xl text-foreground mb-2">
             {product.name}
           </h3>
           {product.description && (
-            <p className="font-sans text-sm text-white/70 leading-relaxed">
+            <p className="font-sans text-sm text-muted-foreground leading-relaxed">
               {product.description}
             </p>
           )}
@@ -109,17 +109,17 @@ export function PricingCard({
         <div className="flex items-baseline gap-1 mb-8">
           {primaryPrice ? (
             <>
-              <span className="font-mono text-4xl text-white tracking-tight">
+              <span className="font-mono text-4xl text-foreground tracking-tight">
                 {formatPrice(primaryPrice)}
               </span>
               {product.recurringInterval && (
-                <span className="font-sans text-white/50 text-sm">
+                <span className="font-sans text-muted-foreground text-sm">
                   /{product.recurringInterval}
                 </span>
               )}
             </>
           ) : (
-            <span className="font-mono text-2xl text-white">Custom</span>
+            <span className="font-mono text-2xl text-foreground">Custom</span>
           )}
         </div>
 
@@ -129,9 +129,9 @@ export function PricingCard({
               {features.map((feature: string, idx: number) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-3 font-sans text-sm text-white/70"
+                  className="flex items-start gap-3 font-sans text-sm text-muted-foreground"
                 >
-                  <span className="mt-0.5 flex items-center justify-center w-5 h-5 border border-white/20 shrink-0">
+                  <span className="mt-0.5 flex items-center justify-center w-5 h-5 border border-border shrink-0">
                     <IconCheck size={12} strokeWidth={3} />
                   </span>
                   {feature}
@@ -139,7 +139,7 @@ export function PricingCard({
               ))}
             </ul>
           ) : (
-            <p className="font-sans text-sm text-white/30 italic">
+            <p className="font-sans text-sm text-muted-foreground/50 italic">
               No features listed
             </p>
           )}
