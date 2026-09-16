@@ -1,0 +1,657 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+model User {
+  id             String    @id
+  email          String    @unique @db.VarChar(255)
+  emailVerified  Boolean   @default(false)
+  name           String    @db.VarChar(255)
+  image          String?   @db.VarChar(500)
+  password       String?   @db.VarChar(255)
+  user_name      String?   @unique @db.VarChar(255)
+  unique_code    String?   @unique @db.VarChar(255)
+  phone          String?   @db.VarChar(180)
+  country        String?   @db.VarChar(180)
+  birth_date     DateTime?
+  role           Int       @default(2) @db.SmallInt
+  status         Int       @default(0) @db.SmallInt
+  email_verified Int       @default(0) @db.SmallInt
+  phone_verified Int       @default(0) @db.SmallInt
+  gender         Int       @default(1) @db.SmallInt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  login_provider String?   @db.VarChar(50)
+
+  UserTokens            UserTokens[]
+  UserVerificationCodes UserVerificationCodes[]
+  Docs                  Doc[]
+  Media                 Media[]
+  Themes                Theme[]
+  Layouts               Layout[]
+  Subscription          Subscription?
+  CreditBalance         CreditBalance?
+  CreditTransactions    CreditTransaction[]
+  AiUsages              AiUsage[]
+  SystemActivities      SystemActivity[]
+  BlogPosts             BlogPost[]
+  sessions              Session[]
+  accounts              Account[]
+  designs               Design[]
+
+  @@index([id])
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model UserTokens {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @db.Text
+  family       String   @db.VarChar(255)
+  browserInfo  String?  @db.VarChar(255)
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshToken])
+}
+
+model UserVerificationCodes {
+  id         String   @id @default(cuid())
+  userId     String
+  code       String   @unique @db.VarChar(10)
+  status     Int      @default(0) @db.SmallInt
+  type       Int      @default(1) @db.SmallInt
+  expired_at DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Doc {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String  @default("Untitled Doc")
+  description String?
+  thumbnail   String? @db.VarChar(500)
+  
+  // Document type: presentation, carousel, resume, etc.
+  docType     String  @default("presentation") @db.VarChar(50)
+
+  globalTheme Json @default("{}")
+
+  isPublic   Boolean  @default(false)
+  isTemplate Boolean  @default(false)
+  tags       String[]
+
+  version    Int     @default(1)
+  parentId   String?
+  forkedFrom String?
+
+  sharedWith String[]
+  ownerId    String
+
+  shareEnabled Boolean  @default(false)
+
+  // Outline fields (merged from Outline model)
+  prompt         String? @db.Text
+  numberOfCards  Int?
+  outlineStatus  String? @default("none") @db.VarChar(50) // none, generating, completed, failed
+
+  deletedAt DateTime?
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastViewedAt DateTime?
+
+  cards    Card[]
+  versions  DocVersion[]
+  analytics DocAnalytics?
+  views     DocView[]
+
+  @@index([userId])
+  @@index([ownerId])
+  @@index([deletedAt])
+  @@index([isPublic])
+  @@index([isTemplate])
+  @@index([docType])
+  @@index([createdAt])
+  @@index([updatedAt])
+  @@index([parentId])
+  @@index([forkedFrom])
+  @@map("docs")
+}
+
+model DocVersion {
+  id             String       @id @default(cuid())
+  docId          String
+  doc            Doc          @relation(fields: [docId], references: [id], onDelete: Cascade)
+
+  title       String
+  globalTheme Json
+  version     Int
+  changeNote  String?
+
+  createdAt DateTime @default(now())
+  createdBy String?
+
+  @@index([docId])
+  @@index([createdAt])
+  @@map("doc_versions")
+}
+
+model Card {
+  id             String       @id @default(cuid())
+  docId          String
+  doc            Doc          @relation(fields: [docId], references: [id], onDelete: Cascade)
+
+  data    Json @default("{}")
+  order   Int
+  outline Json? // Individual outline data for this card (content, layoutId, etc.)
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([docId])
+  @@index([docId, order])
+  @@index([deletedAt])
+  @@index([createdAt])
+  @@map("cards")
+}
+
+model DocAnalytics {
+  id             String       @id @default(cuid())
+  docId          String
+  doc            Doc          @relation(fields: [docId], references: [id], onDelete: Cascade)
+
+  viewCount    Int       @default(0)
+  uniqueViews  Int       @default(0)
+  lastViewedAt DateTime?
+
+  avgViewDuration Int?
+  completionRate  Float?
+
+  shareCount    Int @default(0)
+  downloadCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([docId])
+  @@index([viewCount])
+  @@index([lastViewedAt])
+  @@map("doc_analytics")
+}
+
+model DocView {
+  id             String       @id @default(cuid())
+  docId          String
+  doc            Doc          @relation(fields: [docId], references: [id], onDelete: Cascade)
+
+  userId    String?
+  sessionId String
+  ipAddress String? @db.VarChar(45)
+  userAgent String? @db.VarChar(500)
+
+  duration     Int?
+  cardsViewed  Int[]
+  completed    Boolean @default(false)
+
+  viewedAt DateTime @default(now())
+
+  @@index([docId])
+  @@index([userId])
+  @@index([viewedAt])
+  @@index([sessionId])
+  @@map("doc_views")
+}
+
+model Media {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name     String @db.VarChar(255)
+  imageUrl String @db.VarChar(1000) @map("url")
+  mimeType String @db.VarChar(100)
+  size     Int // Size in bytes
+  width    Int?
+  height   Int?
+
+  tags       String[]
+  isFavorite Boolean  @default(false)
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, deletedAt])
+  @@index([createdAt])
+  @@index([isFavorite])
+  @@map("media")
+}
+
+model Theme {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String  @db.VarChar(255)
+  description String? @db.VarChar(500)
+
+  // Theme data stored as JSON for better scalability
+  themeData Json @default("{}")
+
+  // Admin themes are official themes created by admins
+  isAdmin Boolean @default(false)
+
+  // Usage stats
+  usageCount Int @default(0)
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isAdmin])
+  @@index([deletedAt])
+  @@index([createdAt])
+  @@map("themes")
+}
+
+model Layout {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String  @db.VarChar(255)
+  description String? @db.VarChar(500)
+  thumbnail   String? @db.VarChar(500)
+
+  // Layout/template data stored as JSON (similar to Slide data)
+  // Contains slide structure, widgets, and layout configuration
+  data Json @default("{}")
+
+  // Template type: "admin" for admin-created templates, "user" for user-created templates
+  type String @default("user") @db.VarChar(50)
+
+  // Category/tags for organizing layouts
+  tags String[]
+
+  // Usage stats
+  usageCount Int @default(0)
+
+  isAdmin Boolean @default(true)
+  published Boolean @default(true)
+
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([deletedAt])
+  @@index([createdAt])
+  @@index([usageCount])
+  @@index([published])
+  @@map("layouts")
+}
+
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Polar.sh subscription data
+  polarSubscriptionId String? @unique @db.VarChar(255)
+  polarCustomerId     String? @db.VarChar(255)
+  status              String  @default("inactive") @db.VarChar(50) // active, inactive, canceled, past_due
+  productId           String? @db.VarChar(255)
+  priceId             String? @db.VarChar(255)
+
+  // Subscription details
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean   @default(false)
+  canceledAt         DateTime?
+
+  // Metadata
+  metadata Json? @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([polarSubscriptionId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model CreditBalance {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Single source of truth for UI
+  balance Int @default(30)
+  
+  // The total entitlement for the current cycle
+  quota   Int @default(30)
+
+  // Tracking for analytics
+  usedCredits Int @default(0)
+
+  // Last reset/purchase date
+  lastResetAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("credit_balances")
+}
+
+model CreditTransaction {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Transaction details
+  amount      Int // Positive for credits added, negative for credits used
+  type        String  @db.VarChar(50) // purchase, usage, refund, bonus, reset
+  description String? @db.VarChar(500)
+
+  // Related entities
+  docId          String?
+  subscriptionId String?
+
+  // Balance after transaction
+  balanceAfter Int
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("credit_transactions")
+}
+
+model AiUsage {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Technical details
+  modelName    String
+  inputTokens  Int
+  outputTokens Int
+  cost         Float // Actual cost in USD
+  credits      Float? // Credits deducted
+  provider     String @default("openrouter")
+
+  // Success tracking
+  isSuccess    Boolean @default(true)
+  errorMessage String? @db.Text
+
+  // Context
+  type           String // doc, cards, image
+  docId          String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([isSuccess])
+  @@map("ai_usages")
+}
+
+model GlobalConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("global_configs")
+}
+
+model PromoCode {
+  id    String @id @default(cuid())
+  code  String @unique
+  type  String // percentage, fixed
+  value Float
+
+  maxUses Int?
+  used    Int @default(0)
+
+  productId String? // If specific to a plan
+  
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([code])
+  @@map("promo_codes")
+}
+
+model SystemActivity {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  action      String // login, registration, doc_create, doc_export, etc.
+  description String? @db.Text
+  ipAddress   String? @db.VarChar(45)
+  userAgent   String? @db.VarChar(500)
+  
+  metadata Json? @default("{}")
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("system_activities")
+}
+model BlogPost {
+  id    String @id @default(cuid())
+  title String
+  slug  String @unique
+  
+  // Content
+  content     Json    @default("{}") // Rich content structure
+  excerpt     String? @db.Text
+  featuredImg String? @db.VarChar(500)
+  
+  // Status & Publication
+  status      String   @default("draft") // draft, published, scheduled
+  publishedAt DateTime?
+  
+  // Relations
+  authorId   String
+  author     User      @relation(fields: [authorId], references: [id])
+  categoryId String?
+  category   BlogCategory? @relation(fields: [categoryId], references: [id])
+  tags       BlogTag[]
+  
+  // SEO Metadata
+  metaTitle       String? @db.VarChar(255)
+  metaDescription String? @db.Text
+  metaKeywords    String? @db.Text
+  canonicalUrl    String? @db.VarChar(500)
+  ogImage         String? @db.VarChar(500)
+  
+  // Stats
+  viewCount Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([slug])
+  @@index([status])
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?  @db.Text
+  
+  posts BlogPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blog_categories")
+}
+
+model BlogTag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+  
+  posts BlogPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blog_tags")
+}
+
+model ContactInquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("pending") // pending, read, replied, archived
+  
+  metadata  Json?    @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@map("contact_inquiries")
+}
+
+model Design {
+  id           String   @id @default(cuid())
+  userId       String
+  title        String?
+  type         String   @default("mobile_app")
+  colorPalette Json?
+  isPublic     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  Message[]
+  artboards Artboard[]
+
+  @@map("designs")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  designId  String
+  role      String // "user" or "assistant" or "system"
+  content   String   @db.Text
+  status    String? // For system messages: "intent_analysis", "planning", "screen_start", etc.
+  data      Json?   // Optional payload for status messages (title, screenId, kind, etc.)
+  createdAt DateTime @default(now())
+
+  design Design @relation(fields: [designId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Artboard {
+  id          String   @id @default(cuid())
+  designId    String
+  title       String
+  description String?
+  html        String   @db.Text
+  createdAt   DateTime @default(now())
+  
+  // Position and Size
+  x           Int      @default(0)
+  y           Int      @default(0)
+  width       Int      @default(440)
+  height      Int      @default(800)
+  isHeightLocked Boolean? @default(false) // When true, user has manually set height - don't auto-resize
+
+  design Design @relation(fields: [designId], references: [id], onDelete: Cascade)
+
+  @@map("artboards")
+}
