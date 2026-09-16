@@ -1,378 +1,154 @@
-<p>
-  <a href="https://7code.ro/" target="blank"><img src="https://avatars.githubusercontent.com/u/41831998" height="100" alt="7Code Logo" /></a>
+# UI/UX AI Agent Backend ⚙️🎨
+
+<p align="center">
+  <strong>Autonomous Multi-Agent AI Backend for UI/UX Design & Component Generation</strong>
 </p>
 
-## Description
+<p align="center">
+  High-performance NestJS 10 API powering multi-agent design workflows, dynamic layout structuring, theme synthesis, real-time SSE design streaming, and Polar.sh subscription monetization.
+</p>
 
-[Nest](https://github.com/nestjs/nest) + [Prisma](https://github.com/prisma/prisma) + [TypeScript](https://github.com/microsoft/TypeScript) starter repository.
+<p align="center">
+  <img src="https://img.shields.io/badge/NestJS-10.4-E0234E?style=for-the-badge&logo=nestjs&logoColor=white" alt="NestJS 10" />
+  <img src="https://img.shields.io/badge/TypeScript-5.6-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Prisma_ORM-5.22-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Qwen_3_Coder-Agent-blueviolet?style=for-the-badge" alt="Qwen Coder" />
+  <img src="https://img.shields.io/badge/Polar.sh-Billing-000000?style=for-the-badge&logo=polar&logoColor=white" alt="Polar.sh" />
+</p>
 
-### Production-ready REST API:
-* Error Handling (Exception Filters)
-* Logging System
-* DB Seeds/Migrations
-* Built-in AuthModule, using JWT. Route Guards
-* Model Events Listener (onCreated, …)
-* Deployable. CI/CD pipeline using Github Actions.
-* Advanced ESLint/TSLint config. (e.g: auto-fix will remove unused imports)
-* Shared services/constants/helpers
-* Middlewares/Interceptors implementation example.
+---
 
-## Prerequisites
+## 🌟 Overview
 
-Before you begin, ensure you have the following installed:
+The **UI/UX AI Agent Backend** is a specialized NestJS microservice responsible for orchestrating generative design agents. It enables users to describe design intent in natural language and receive production-ready UI layouts, responsive components, customized color themes, and exportable slide designs.
 
-- **Node.js** >= 20.0.0
-- **npm** or **yarn** package manager
-- **PostgreSQL** database (with pgvector extension for vector support)
-- **Git**
+### Core Capabilities:
+1. **Multi-Agent Design Pipeline**: Autonomous LLM agents (`qwen/qwen3-coder-next`, DeepInfra, OpenAI) equipped with structured tools to construct UI layouts, style tokens, and content blocks.
+2. **Dynamic Layout & Theme Engine**: Programmatic creation and mutation of design grids, card containers, typography rules, and theme palettes.
+3. **Real-Time Streaming Design Chat**: Server-Sent Events (SSE) streaming conversational refinement of generated designs.
+4. **Production Export Service**: Compiles canvas designs into clean HTML/Tailwind, JSON schemas, or image snapshots.
+5. **Subscription & Credit Ledger**: Cryptographic Polar.sh webhook processing and real-time generation quota accounting.
 
-## Installation
+---
 
-1. **Clone the repository** (if you haven't already):
+## 🏛 System Architecture & Modules
+
+```text
+src/
+├── modules/
+│   ├── designs/                 # Core UI/UX design generation & agent chat
+│   │   ├── chat/                # Real-time SSE streaming design companion
+│   │   ├── dto/                 # Input validation DTOs (class-validator)
+│   │   ├── tools/               # AI Agent execution tools (layout, styling, blocks)
+│   │   ├── schemas.ts           # Zod schemas for structured agent outputs
+│   │   ├── designs.controller.ts# REST endpoints for design CRUD & generation
+│   │   ├── designs.service.ts   # Design lifecycle & persistence logic
+│   │   ├── designs-chat.service.ts # Streaming agent chat engine
+│   │   └── designs-export.service.ts # Code & asset export compiler
+│   ├── layouts/                 # Structural templates and grid systems
+│   ├── themes/                  # Color palettes, typography & theme management
+│   ├── images/                  # Asset uploads & Backblaze B2 / AWS S3 presigned URLs
+│   ├── subscription/            # Polar.sh checkout, webhooks & credit management
+│   ├── auth/                    # Better-Auth, Google OAuth, JWT cookie authentication
+│   ├── blog/                    # Built-in Markdown SEO publishing engine
+│   ├── prisma/                  # Prisma ORM client singleton & extensions
+│   └── logger/                  # Structured Winston logging
+└── shared/                      # Global guards, interceptors & exception filters
+```
+
+---
+
+## 🔬 Key Engineering Highlights
+
+### 1. Multi-Agent Design Orchestration
+- Uses agent tool-calling patterns where specialized agents generate layout grids, compose visual elements, select accessible color palettes, and validate responsiveness.
+- All agent responses are strictly validated against **Zod schemas** to guarantee deterministic JSON output.
+
+### 2. Live SSE Streaming Canvas Refinement
+- When users converse with the design assistant (e.g. *"Change hero section to a 3-column split with amber accents"*), the backend streams updates over Server-Sent Events (SSE), dynamically updating the client canvas in real-time.
+
+### 3. Clean Code & Asset Exporting
+- `designs-export.service.ts` converts JSON design trees into production-ready Tailwind CSS and React component code that developers can copy-paste directly into their apps.
+
+### 4. Enterprise Auth & Secure Billing
+- **Cookie Security**: Auth tokens are stored exclusively in `httpOnly` secure cookies.
+- **HMAC Webhooks**: Polar.sh billing events are verified with raw HMAC cryptographic signatures to guarantee payment safety.
+
+---
+
+## 🔌 API Endpoint Reference
+
+### Designs & AI Agents
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/designs` | Create a new design project from user prompt |
+| `GET` | `/api/designs` | List paginated designs for authenticated user |
+| `GET` | `/api/designs/:id` | Get full design state (blocks, rows, columns, theme) |
+| `PATCH`| `/api/designs/:id` | Update design structure or layout manually |
+| `DELETE`| `/api/designs/:id` | Delete design and associated assets |
+| `GET` | `/api/designs/:id/chat/stream` | **SSE Stream**: Real-time design assistant conversational stream |
+| `GET` | `/api/designs/:id/export` | Export design as React/Tailwind code or template |
+
+### Layouts & Themes
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/layouts` | Retrieve layout templates and structural presets |
+| `GET` | `/api/themes` | Retrieve active color palettes and typography themes |
+| `POST` | `/api/themes` | Create custom user theme |
+
+### Subscriptions & Credits
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/subscription/plans` | Retrieve available subscription tiers |
+| `POST` | `/api/subscription/checkout` | Create checkout session URL |
+| `POST` | `/api/subscription/webhook` | Raw-body HMAC verified Polar.sh webhook |
+| `GET` | `/api/subscription/credits` | Check user's remaining generation credits |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- **Node.js**: `v20.0.0` or higher
+- **PostgreSQL 15+**
+- **LLM API Key**: OpenAI, DeepInfra, or OpenRouter API key
+
+### Setup & Installation
+
+1. Install dependencies:
    ```bash
-   git clone <repository-url>
-   cd butterfast-backend
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   # Using npm
    npm install
-
-   # Or using yarn
-   yarn install
    ```
 
-3. **Set up environment variables**:
-   Create a `.env` file in the root directory and configure the required environment variables (see [Environment Variables](#environment-variables) section below).
-
-4. **Set up the database**:
+2. Configure environment variables:
    ```bash
-   # Generate Prisma Client
+   cp .env.example .env
+   ```
+   *Fill in your database URL, JWT secret, and LLM API keys.*
+
+3. Run Prisma database migrations:
+   ```bash
+   npx prisma migrate dev --name init
    npx prisma generate
-
-   # Run database migrations
-   npx prisma migrate dev
-
-   # (Optional) Seed the database
-   npx prisma db seed
    ```
 
-5. **Start the development server**:
+4. Start development server:
    ```bash
-   # Using npm
    npm run start:dev
-
-   # Or using yarn
-   yarn start:dev
    ```
+   *The API will be live at `http://localhost:3001`.*
 
-The application will be available at `http://localhost:3001` (or the port specified in `APP_PORT`).
+---
 
-## Environment Variables
+## 👤 Author
 
-Create a `.env` file in the root directory with the following variables:
+**Anirban Roy**  
+- GitHub: [@anirban00537](https://github.com/anirban00537)  
+- Email: [anirban00537@gmail.com](mailto:anirban00537@gmail.com)
 
-### Required Environment Variables
+---
 
-#### Database Configuration
-```env
-# PostgreSQL database connection string
-# Format: postgresql://user:password@host:port/database?schema=public
-DATABASE_URL="postgresql://user:password@localhost:5432/butterfast_meeting?schema=public"
-```
+## 📄 License
 
-#### JWT Configuration
-```env
-# JWT secret for token signing
-JWT_SIGNATURE="your-super-secret-jwt-key-change-this-in-production"
-
-# Access token configuration
-ACCESS_TOKEN_SECRET="your-access-token-secret"
-ACCESS_TOKEN_EXPIRY="7d"  # Token expiry time (e.g., 7d, 24h, 1h)
-
-# Refresh token configuration
-REFRESH_TOKEN_SECRET="your-refresh-token-secret"
-```
-
-#### Application Configuration
-```env
-# Application port (default: 3001)
-APP_PORT=3001
-
-# Base URL of the application
-APP_URL="http://localhost:3001"
-
-# Application name
-APP_NAME="Butterfast"
-
-# Exchange app URL (if applicable)
-EXCHANGE_APP_URL="http://localhost:3000"
-
-# CORS allowed origins (comma-separated)
-CORS_ORIGIN="http://localhost:5173,http://localhost:3000"
-
-# API secret key for middleware validation
-API_SECRET="your-api-secret-key"
-```
-
-#### Mail Configuration
-```env
-# Mail service configuration
-MAIL_MAILER="smtp"  # Default: smtp
-MAIL_HOST="smtp.mailtrap.io"  # SMTP server host
-MAIL_PORT=587  # SMTP server port
-MAIL_USERNAME="your-smtp-username"
-MAIL_PASSWORD="your-smtp-password"
-MAIL_ENCRYPTION="tls"  # tls or ssl
-MAIL_FROM_ADDRESS="info@example.com"
-MAIL_FROM_NAME="Butterfast"
-```
-
-#### Backblaze B2 Storage Configuration (Optional)
-```env
-# Backblaze B2 credentials for file storage
-B2_APPLICATION_KEY_ID="your-b2-application-key-id"
-B2_APPLICATION_KEY="your-b2-application-key"
-B2_BUCKET_NAME="your-b2-bucket-name"
-```
-
-#### Development/Debugging
-```env
-# Enable Prisma query debugging (true/false)
-QUERY_DEBUG="false"
-```
-
-### Example `.env` File
-
-```env
-# Database
-DATABASE_URL="postgresql://postgres:password@localhost:5432/butterfast_meeting?schema=public"
-
-# JWT
-JWT_SIGNATURE="change-this-to-a-random-secret-key-in-production"
-ACCESS_TOKEN_SECRET="change-this-to-a-random-secret-key-in-production"
-ACCESS_TOKEN_EXPIRY="7d"
-REFRESH_TOKEN_SECRET="change-this-to-a-random-secret-key-in-production"
-
-# Application
-APP_PORT=3001
-APP_URL="http://localhost:3001"
-APP_NAME="Butterfast"
-EXCHANGE_APP_URL="http://localhost:3000"
-CORS_ORIGIN="http://localhost:5173,http://localhost:3000"
-API_SECRET="your-api-secret-key-here"
-
-# Mail
-MAIL_MAILER="smtp"
-MAIL_HOST="smtp.mailtrap.io"
-MAIL_PORT=587
-MAIL_USERNAME="your-username"
-MAIL_PASSWORD="your-password"
-MAIL_ENCRYPTION="tls"
-MAIL_FROM_ADDRESS="noreply@butterfast.com"
-MAIL_FROM_NAME="Butterfast"
-
-# Backblaze B2 (Optional)
-B2_APPLICATION_KEY_ID=""
-B2_APPLICATION_KEY=""
-B2_BUCKET_NAME=""
-
-# Debugging
-QUERY_DEBUG="false"
-```
-
-## Running the App
-
-```bash
-# Development mode (with hot-reload)
-npm run start:dev
-# or
-yarn start:dev
-
-# Watch mode
-npm run start:watch
-
-# Production mode
-npm run build
-npm run start:prod
-# or
-yarn build
-yarn start:prod
-
-# Debug mode
-npm run start:debug
-```
-
-## Database Management
-
-### Prisma Commands
-
-```bash
-# Generate Prisma Client
-npx prisma generate
-
-# Create and apply a new migration
-npx prisma migrate dev
-
-# Apply migrations in production
-npx prisma migrate deploy
-
-# Push schema changes without creating migration (development only)
-npx prisma db push
-
-# Open Prisma Studio (database GUI)
-npx prisma studio
-
-# Seed the database
-npx prisma db seed
-```
-
-### Database Setup
-
-1. **Create a PostgreSQL database**:
-   ```sql
-   CREATE DATABASE butterfast_meeting;
-   ```
-
-2. **Enable pgvector extension** (required for vector support):
-   ```sql
-   CREATE EXTENSION IF NOT EXISTS vector;
-   ```
-
-3. **Run migrations**:
-   ```bash
-   npx prisma migrate dev
-   ```
-
-## Testing
-
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-
-# Watch mode
-npm run test:watch
-```
-
-## Project Structure
-
-```
-butterfast-backend/
-├── prisma/
-│   ├── schema.prisma          # Database schema
-│   └── seed.ts                # Database seed file
-├── src/
-│   ├── modules/               # Feature modules
-│   │   ├── app/              # Main app module
-│   │   ├── auth/             # Authentication module
-│   │   ├── users/            # User management
-│   │   ├── subscription/     # Subscription management
-│   │   └── ...
-│   ├── shared/               # Shared utilities
-│   │   ├── configs/          # Configuration files
-│   │   ├── constants/        # Constants
-│   │   ├── guards/           # Route guards
-│   │   ├── helpers/          # Helper functions
-│   │   └── middlewares/      # Middlewares
-│   └── main.ts               # Application entry point
-├── .env                      # Environment variables (create this)
-├── package.json
-└── tsconfig.json
-```
-
-## API Documentation
-
-Once the server is running, you can access the Swagger API documentation at:
-```
-http://localhost:3001/api/docs
-```
-
-## Authentication
-
-This implementation uses `httpOnly` (server-side) cookie-based authentication. [Read more](https://dev.to/guillerbr/authentication-cookies-http-http-only-jwt-reactjs-context-api-and-node-on-backend-industry-structure-3f8e)
-
-That means that the `JWT Token` is never stored on the client. 
-Usually it was stored in `localStorage` / `sessionStorage` / `cookies` (browser), but this is not secure. 
-
-Storing the token on a server side cookie is more secure, but it requires a small adjustment on frontend HTTP requests in order to work.
-
-### Frontend Adjustments
-
-* If you're using `axios` then you need to set: `withCredentials: true`. [Read more](https://flaviocopes.com/axios-credentials/)
-* If you're using `fetch` then you need to set: `credentials: 'include'`. [Read more](https://github.com/github/fetch#sending-cookies)
-
-## Code Style
-
-Sync your IDE with project `.eslintrc.js`. 
-
-Check `Run ESLint --fix on save`
-
-## Troubleshooting
-
-### Database Connection Issues
-
-- Ensure PostgreSQL is running
-- Verify `DATABASE_URL` is correct
-- Check if the database exists
-- Ensure pgvector extension is installed
-
-### Port Already in Use
-
-If port 3001 is already in use, change `APP_PORT` in your `.env` file.
-
-### Migration Issues
-
-If you encounter migration errors:
-```bash
-# Reset the database (WARNING: This will delete all data)
-npx prisma migrate reset
-
-# Or push schema without migration (development only)
-npx prisma db push
-```
-
-## Production Deployment
-
-1. **Build the application**:
-   ```bash
-   npm run build
-   ```
-
-2. **Set production environment variables** in your hosting platform
-
-3. **Run database migrations**:
-   ```bash
-   npx prisma migrate deploy
-   ```
-
-4. **Start the application**:
-   ```bash
-   npm run start:prod
-   ```
-
-## TO-DO
-
-* Add Mail Service 
-* Add [Recap.DEV](https://recap.dev/) integration - Tracing/Monitoring service
-* Add Unit tests.
-* Add Social Media Auth
-* Add documentation for setting the GitHub Secrets for the CI/CD pipeline
-* Add API Throttling - https://docs.nestjs.com/security/rate-limiting
-* ...
-
-## Stay in touch
-
-- Author - [Igor Mardari](https://www.linkedin.com/in/igor-mardari-7code/) | [GarryOne](https://github.com/GarryOne)
-- Website - [7code.ro](https://7code.ro/)
-- Github - [@7codeRO](https://github.com/7codeRO/)
-
-## License
-
-[MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is licensed under the **MIT License**.
