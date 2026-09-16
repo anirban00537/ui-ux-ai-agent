@@ -1,0 +1,80 @@
+"use client";
+
+import React from "react";
+import { motion } from "framer-motion";
+
+import { formatCredits } from "@/lib/credit-utils";
+
+interface UsageStatsBarProps {
+  usedCredits: number;
+  balance: number;
+  quota: number;
+  lastResetAt?: string;
+}
+
+export const UsageStatsBar: React.FC<UsageStatsBarProps> = ({
+  usedCredits,
+  balance,
+  quota,
+  lastResetAt,
+}) => {
+  const usagePercentage = Math.round((Math.max(0, quota - balance) / (quota || 1)) * 100);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="relative p-8 border border-border bg-card transition-colors duration-500 hover:border-border"
+    >
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+        <div className="flex flex-col items-center lg:items-start">
+          <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground/50 mb-2">Historical Impact</p>
+          <div className="flex items-center gap-4">
+            <span className="font-mono text-4xl text-foreground tracking-tight tabular-nums">{formatCredits(usedCredits)}</span>
+            <div className="flex flex-col">
+               <span className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground">Total Consumed</span>
+               <span className="font-mono text-[10px] text-muted-foreground/50 uppercase tracking-[0.05em]">Since inception</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="hidden lg:block w-px h-16 bg-border" />
+
+        <div className="flex-1 w-full max-w-xl">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <div className="flex items-center gap-2">
+               <div className="w-1.5 h-1.5 bg-muted-foreground" />
+               <span className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground">Usage Velocity</span>
+            </div>
+            <span className="font-mono text-sm text-foreground tracking-widest">{usagePercentage}%</span>
+          </div>
+          <div className="h-4 w-full bg-accent border border-border">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min(100, usagePercentage)}%` }}
+              transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
+              className="h-full bg-muted-foreground/50"
+            />
+          </div>
+          <div className="mt-3 flex justify-between px-1">
+             <p className="font-mono text-[9px] text-muted-foreground/30 uppercase tracking-widest">Efficiency Optimized</p>
+             <p className="font-mono text-[9px] text-muted-foreground/30 uppercase tracking-widest">Resource Monitoring</p>
+          </div>
+        </div>
+
+        <div className="hidden lg:block w-px h-16 bg-border" />
+
+        {lastResetAt && (
+          <div className="flex flex-col items-center lg:items-end">
+            <p className="font-mono text-[10px] uppercase tracking-[1.4px] text-muted-foreground/50 mb-2">Cycle Reset</p>
+            <div className="font-sans text-xl text-foreground tabular-nums tracking-tight">
+              {new Date(lastResetAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
+            </div>
+            <p className="font-mono text-[9px] text-muted-foreground/50 uppercase tracking-[0.1em] mt-1">Automatic sync</p>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};

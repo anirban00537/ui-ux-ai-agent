@@ -1,0 +1,17 @@
+[phases.setup]
+nixPkgs = ["nodejs_22"]
+
+[phases.install]
+cmds = ["npm install --legacy-peer-deps"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[variables]
+NIXPACKS_NODE_VERSION = "22"
+NODE_ENV = "production"
+# Helps prevent out-of-memory errors during Next.js build
+NODE_OPTIONS = "--max-old-space-size=2048"
+
+[start]
+cmd = "npm start"
